@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/project_labels"
+        android:icon="@drawable/ic_labels"
+        android:title="@string/labels"
+        android:contentDescription="@string/labels"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/project_milestones"
+        android:icon="@drawable/ic_milestones"
+        android:title="@string/milestones"
+        android:contentDescription="@string/milestones"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/project_wiki"
+        android:icon="@drawable/ic_wiki"
+        android:title="@string/wiki"
+        android:contentDescription="@string/wiki"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/project_members"
+        android:icon="@drawable/ic_users"
+        android:title="@string/members"
+        android:contentDescription="@string/members"
+        app:showAsAction="ifRoom" />
+
+</menu>

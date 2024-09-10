@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_frame"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingTop="@dimen/dimen4dp"
+    android:paddingBottom="@dimen/dimen4dp">
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="?attr/materialCardViewFilledStyle"
+        app:strokeWidth="@dimen/dimen0dp"
+        app:cardElevation="@dimen/dimen0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:padding="@dimen/dimen12dp"
+            android:orientation="horizontal"
+            tools:ignore="UseCompoundDrawables">
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/profile_picture_layout"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                app:strokeWidth="@dimen/dimen0dp"
+                android:layout_gravity="end|center_horizontal"
+                app:cardElevation="@dimen/dimen0dp">
+
+                <ImageView
+                    android:id="@+id/user_avatar"
+                    android:layout_height="@dimen/dimen32dp"
+                    android:layout_width="@dimen/dimen32dp"
+                    android:scaleType="fitCenter"
+                    android:layout_gravity="center_horizontal"
+                    android:contentDescription="@string/generic_img_copy"
+                    android:src="@drawable/ic_spinner" />
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dimen16dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/user_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/dimen16sp" />
+
+                <TextView
+                    android:id="@+id/user_id"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:alpha=".7"
+                    android:textSize="@dimen/dimen14sp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</LinearLayout>

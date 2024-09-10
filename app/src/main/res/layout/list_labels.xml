@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_frame"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingTop="@dimen/dimen4dp"
+    android:paddingBottom="@dimen/dimen4dp">
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="?attr/materialCardViewFilledStyle"
+        app:strokeWidth="@dimen/dimen0dp"
+        app:cardElevation="@dimen/dimen0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/dimen12dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/labels"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical|center_horizontal"
+                android:orientation="horizontal"
+                tools:ignore="UseCompoundDrawables">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:orientation="horizontal"
+                    android:layout_weight="1"
+                    tools:ignore="UseCompoundDrawables">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/labelView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="?attr/materialCardViewElevatedStyle"
+                        app:cardElevation="@dimen/dimen0dp"
+                        app:contentPadding="@dimen/dimen4dp">
+
+                        <TextView
+                            android:id="@+id/label_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/dimen8dp"
+                            android:layout_marginEnd="@dimen/dimen8dp"
+                            android:textColor="@color/md_theme_onPrimary"
+                            android:textSize="@dimen/dimen14sp" />
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/edit_label"
+                    android:layout_width="@dimen/dimen20dp"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/edit"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_edit" />
+
+                <ImageView
+                    android:id="@+id/delete_label"
+                    android:layout_width="@dimen/dimen20dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dimen16dp"
+                    android:contentDescription="@string/delete"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_trash" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen12dp"
+                android:visibility="gone"
+                android:textSize="@dimen/dimen14sp" />
+
+            <!-- label open issues/mr -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:baselineAligned="false"
+                android:orientation="horizontal"
+                android:layout_marginTop="@dimen/dimen12dp"
+                tools:ignore="UseCompoundDrawables">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="?attr/materialCardViewElevatedStyle"
+                    android:backgroundTint="@color/md_theme_background"
+                    app:cardElevation="@dimen/dimen0dp">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:foreground="?android:attr/selectableItemBackground"
+                        android:paddingStart="@dimen/dimen12dp"
+                        android:paddingEnd="@dimen/dimen12dp"
+                        android:paddingTop="@dimen/dimen6dp"
+                        android:paddingBottom="@dimen/dimen6dp"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="@dimen/dimen18dp"
+                            android:layout_height="@dimen/dimen18dp"
+                            android:contentDescription="@string/generic_img_copy"
+                            android:layout_gravity="center_vertical|center_horizontal"
+                            android:layout_marginEnd="@dimen/dimen6dp"
+                            android:src="@drawable/ic_issues" />
+
+                        <TextView
+                            android:id="@+id/label_open_issues"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="@dimen/dimen14sp" />
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="?attr/materialCardViewElevatedStyle"
+                    android:backgroundTint="@color/md_theme_background"
+                    android:layout_marginStart="@dimen/dimen12dp"
+                    app:cardElevation="@dimen/dimen0dp">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:foreground="?android:attr/selectableItemBackground"
+                        android:paddingStart="@dimen/dimen12dp"
+                        android:paddingEnd="@dimen/dimen12dp"
+                        android:paddingTop="@dimen/dimen6dp"
+                        android:paddingBottom="@dimen/dimen6dp"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="@dimen/dimen18dp"
+                            android:layout_height="@dimen/dimen18dp"
+                            android:contentDescription="@string/generic_img_copy"
+                            android:layout_gravity="center_vertical|center_horizontal"
+                            android:layout_marginEnd="@dimen/dimen6dp"
+                            android:src="@drawable/ic_merge_request" />
+
+                        <TextView
+                            android:id="@+id/label_open_merge_requests"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="@dimen/dimen14sp" />
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+            <!-- label open issues/mr -->
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</LinearLayout>

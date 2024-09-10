@@ -1,0 +1,8 @@
+1.0.0
+
+Initial release packed with loads of features.
+
+Check out the features page or release notes for more details.
+
+https://github.com/labnex/LabNex/wiki/Features
+https://github.com/labnex/LabNex/releases

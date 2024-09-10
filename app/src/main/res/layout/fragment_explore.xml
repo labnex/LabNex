@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/main_frame"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/dimen8dp"
+        android:padding="@dimen/dimen16dp"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/search"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/dimen48dp"
+            android:autofillHints="@string/explore"
+            android:background="@drawable/shape_input"
+            android:lineSpacingExtra="@dimen/dimen8sp"
+            android:layout_marginBottom="@dimen/dimen8dp"
+            android:gravity="start|center_vertical"
+            android:singleLine="true"
+            android:layout_weight="1"
+            android:inputType="text"
+            android:maxLength="100"
+            android:hint="@string/explore"
+            android:imeOptions="actionDone"
+            android:textSize="@dimen/dimen14sp" />
+
+        <ImageView
+            android:id="@+id/scope"
+            android:layout_height="@dimen/dimen24dp"
+            android:layout_width="@dimen/dimen24dp"
+            android:scaleType="fitCenter"
+            android:layout_marginTop="@dimen/dimen12dp"
+            android:layout_marginStart="@dimen/dimen12dp"
+            android:contentDescription="@string/search"
+            android:gravity="center_horizontal|center_vertical"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_filter" />
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/dimen70dp"
+        android:paddingBottom="@dimen/dimen70dp"
+        app:layout_behavior="@string/searchbar_scrolling_view_behavior">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/dimen10dp" />
+
+    </FrameLayout>
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:indeterminate="true" />
+
+    <include
+        android:id="@+id/nothing_found_frame"
+        android:visibility="gone"
+        layout="@layout/nothing_found" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

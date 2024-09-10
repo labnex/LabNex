@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- five o clock colors -->
+    <color name="five_dark_black">#252526</color>
+    <color name="five_dark_blue">#267ae9</color>
+    <color name="five_dark_yellow">#fde92f</color>
+    <color name="five_dark_purple">#eb84f3</color>
+    <color name="five_dark_grey">#a9b1ae</color>
+    <color name="five_dark_white">#ffffff</color>
+    <color name="gold">#e6b121</color>
+    <color name="five_yellow">#fdc92f</color>
+    <color name="five_background_grey">#f5f2f0</color>
+
+    <!-- blue moon colors -->
+    <color name="moon_dark_black">#252526</color>
+    <color name="moon_dark_blue">#1E90FF</color>
+    <color name="moon_dark_aquamarine">#7FFFD4</color>
+    <color name="moon_dark_turquoise">#40E0D0</color>
+    <color name="moon_dark_grey">#B0C4DE</color>
+    <color name="moon_dark_white">#ffffff</color>
+    <color name="moon_deep_sky_blue">#00BFFF</color>
+    <color name="moon_background_grey">#f5f2f0</color>
+</resources>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingEnd="@dimen/dimen24dp"
+    android:paddingStart="@dimen/dimen24dp">
+
+    <CheckBox
+        android:id="@+id/remove_source_branch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:text="@string/remove_source_branch" />
+
+    <CheckBox
+        android:id="@+id/squash_commits"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="false"
+        android:text="@string/squash_commits" />
+
+</LinearLayout>

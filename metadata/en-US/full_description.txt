@@ -1,0 +1,72 @@
+Simplify your mobile experience with LabNex
+
+# Features
+
+- M3 design
+- Projects listing
+- Create new project
+- Project overview with README rendering
+- Project labels listing
+- Create/edit/delete a label
+- Milestones listing
+- Delete a milestone
+- Project wiki pages listing
+- Create/delete a wiki page
+- View project members
+- View and switch project branches
+- File browser
+- File viewer
+- View images in file viewer
+- Download files in file viewer
+- Render markdown in file viewer for MD file
+- Source code highlight in file viewer
+- Create new file
+- Project commits listing
+- View commits diff in diff viewer
+- List project issues
+- Create new issue
+- Comment on issue
+- Close and reopen an issue
+- Issue notes and activities
+- Copy issue URL to clipboard
+- Project merge requests listing
+- Create a merge request
+- Comment on merge request
+- See merge request notes and activities
+- Merge a merge request
+- View merge request commits
+- View merge request diffs
+- Close and reopen merge requests
+- Delete branch when merging
+- Project releases listing
+- Delete a release
+- View most visited projects in home screen
+- Clear most visited projects
+- Take notes (app only feature)
+- Activities listing
+- Explore users, projects, groups and merge requests
+- Multiple accounts support
+- Light/dark themes
+- Localized with translations
+- Biometric lock for security
+- Groups listing
+- Group overview
+- Create a group
+- List group projects
+- List group labels
+- Create/delete/edit group labels
+- View group members
+- Starred project listings
+- User created issues listing
+- User created merge requests listing
+- User profile view
+- Login via token
+- Themed icon for Android 13
+- Markdown support
+- Emoji support
+- Markdown preview for issue, merge request descriptions
+- Code editor
+
+Complete list of features: https://github.com/labnex/LabNex/wiki/Features
+Source code: https://github.com/labnex/LabNex
+Developer: https://mastodon.social/@mmarif

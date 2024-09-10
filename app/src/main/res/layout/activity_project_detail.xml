@@ -1,0 +1,550 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dimen96dp"
+            android:orientation="vertical">
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/archived_project_frame"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="?attr/materialCardViewElevatedStyle"
+                android:layout_marginTop="@dimen/dimen16dp"
+                android:layout_marginStart="@dimen/dimen16dp"
+                android:layout_marginEnd="@dimen/dimen16dp"
+                android:visibility="gone"
+                app:cardElevation="@dimen/dimen0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/dimen12dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/archived_project"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/archived_project"
+                        android:textSize="@dimen/dimen14sp"
+                        android:textColor="@color/md_theme_error"
+                        android:drawablePadding="@dimen/dimen12dp"
+                        app:drawableStartCompat="@drawable/ic_info" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- project basic info section -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/basic_info_frame"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="?attr/materialCardViewElevatedStyle"
+                android:layout_marginTop="@dimen/dimen16dp"
+                android:layout_marginStart="@dimen/dimen16dp"
+                android:layout_marginEnd="@dimen/dimen16dp"
+                android:visibility="gone"
+                app:cardElevation="@dimen/dimen0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/dimen12dp"
+                    android:layout_gravity="center_horizontal|center_vertical"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="@dimen/dimen16dp"
+                        tools:ignore="UseCompoundDrawables">
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/group_avatar_frame"
+                            android:layout_height="@dimen/dimen36dp"
+                            android:layout_width="@dimen/dimen36dp"
+                            android:layout_marginEnd="@dimen/dimen10dp"
+                            app:strokeWidth="@dimen/dimen0dp"
+                            android:layout_gravity="center_vertical|center_horizontal"
+                            app:cardElevation="@dimen/dimen0dp">
+
+                            <ImageView
+                                android:id="@+id/project_avatar"
+                                android:layout_height="@dimen/dimen40dp"
+                                android:layout_width="@dimen/dimen40dp"
+                                android:scaleType="fitCenter"
+                                android:layout_gravity="center_vertical|center_horizontal"
+                                android:contentDescription="@string/groups"
+                                app:srcCompat="@drawable/ic_spinner" />
+
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <TextView
+                            android:id="@+id/project_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal|center_vertical"
+                            tools:text="@string/projects"
+                            android:textSize="@dimen/dimen18sp" />
+
+                        <ImageView
+                            android:id="@+id/copy_project_url"
+                            android:layout_height="@dimen/dimen18dp"
+                            android:layout_width="@dimen/dimen18dp"
+                            android:scaleType="fitCenter"
+                            android:layout_marginStart="16dp"
+                            android:layout_gravity="center_vertical|center_horizontal"
+                            android:contentDescription="@string/copy"
+                            app:srcCompat="@drawable/ic_copy" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/project_path"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/dimen16sp"
+                        android:alpha=".7" />
+
+                    <TextView
+                        android:id="@+id/project_description"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dimen12dp"
+                        android:text="@string/description"
+                        android:autoLink="all"
+                        android:visibility="gone"
+                        android:textSize="@dimen/dimen16sp" />
+
+                    <!-- stars/forks frame -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="@dimen/dimen12dp"
+                        tools:ignore="UseCompoundDrawables">
+
+                        <ImageView
+                            android:layout_width="@dimen/dimen18dp"
+                            android:layout_height="@dimen/dimen18dp"
+                            android:contentDescription="@string/generic_img_copy"
+                            android:layout_gravity="center_vertical|center_horizontal"
+                            android:layout_marginEnd="@dimen/dimen8dp"
+                            android:src="@drawable/ic_star" />
+
+                        <TextView
+                            android:id="@+id/project_stars"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="@dimen/dimen16sp" />
+
+                        <ImageView
+                            android:layout_width="@dimen/dimen18dp"
+                            android:layout_height="@dimen/dimen18dp"
+                            android:contentDescription="@string/generic_img_copy"
+                            android:layout_gravity="center_vertical|center_horizontal"
+                            android:layout_marginStart="@dimen/dimen16dp"
+                            android:layout_marginEnd="@dimen/dimen8dp"
+                            android:src="@drawable/ic_forks" />
+
+                        <TextView
+                            android:id="@+id/project_forks"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="@dimen/dimen16sp" />
+
+                    </LinearLayout>
+                    <!-- stars/forks frame -->
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+            <!-- project basic info section -->
+
+            <!-- branch section -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/branch_section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="?attr/materialCardViewElevatedStyle"
+                android:layout_marginTop="@dimen/dimen16dp"
+                android:layout_marginStart="@dimen/dimen16dp"
+                android:layout_marginEnd="@dimen/dimen16dp"
+                android:visibility="gone"
+                app:strokeWidth="@dimen/dimen0dp"
+                app:cardElevation="@dimen/dimen0dp">
+
+                <LinearLayout
+                    android:id="@+id/files_branches_main_frame"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/dimen12dp">
+
+                    <ImageView
+                        android:layout_width="@dimen/dimen24dp"
+                        android:layout_height="@dimen/dimen24dp"
+                        android:contentDescription="@string/branch"
+                        android:layout_marginEnd="@dimen/dimen16dp"
+                        app:tint="?attr/iconsColor"
+                        app:srcCompat="@drawable/ic_branch" />
+
+                    <LinearLayout
+                        android:id="@+id/files_branches_frame"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        tools:ignore="UseCompoundDrawables">
+
+                        <TextView
+                            android:id="@+id/branch_title"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="@dimen/dimen16dp"
+                            android:text="@string/branch"
+                            android:textSize="@dimen/dimen16sp" />
+
+                        <TextView
+                            android:id="@+id/switch_branch"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/switch_branch"
+                            android:textAllCaps="true"
+                            android:textSize="@dimen/dimen14sp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+            <!-- branch section -->
+
+            <!-- files/commits/issues/mr and more section -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/code_section"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                style="?attr/materialCardViewElevatedStyle"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="@dimen/dimen16dp"
+                android:layout_marginStart="@dimen/dimen16dp"
+                android:layout_marginEnd="@dimen/dimen16dp"
+                android:visibility="gone"
+                app:strokeWidth="@dimen/dimen0dp"
+                app:cardElevation="@dimen/dimen0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:id="@+id/branch_main_frame"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:visibility="gone"
+                        android:padding="@dimen/dimen12dp">
+
+                        <ImageView
+                            android:layout_width="@dimen/dimen24dp"
+                            android:layout_height="@dimen/dimen24dp"
+                            android:contentDescription="@string/issues"
+                            android:layout_marginEnd="@dimen/dimen16dp"
+                            app:tint="?attr/iconsColor"
+                            app:srcCompat="@drawable/ic_branch" />
+
+                        <LinearLayout
+                            android:id="@+id/branch_frame"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            tools:ignore="UseCompoundDrawables">
+
+                            <TextView
+                                android:id="@+id/branch_title_"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/branch"
+                                android:textSize="@dimen/dimen16sp" />
+
+                            <TextView
+                                android:id="@+id/switch_branch_"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/switch_branch"
+                                android:textSize="@dimen/dimen16sp" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/files_main_frame"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="@dimen/dimen12dp">
+
+                        <ImageView
+                            android:layout_width="@dimen/dimen24dp"
+                            android:layout_height="@dimen/dimen24dp"
+                            android:contentDescription="@string/files"
+                            android:layout_marginEnd="@dimen/dimen16dp"
+                            app:tint="?attr/iconsColor"
+                            app:srcCompat="@drawable/ic_files_code" />
+
+                        <LinearLayout
+                            android:id="@+id/files_frame"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            tools:ignore="UseCompoundDrawables">
+
+                            <TextView
+                                android:id="@+id/files_title"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/files"
+                                android:textSize="@dimen/dimen16sp" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/commits_main_frame"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="@dimen/dimen12dp">
+
+                        <ImageView
+                            android:layout_width="@dimen/dimen24dp"
+                            android:layout_height="@dimen/dimen24dp"
+                            android:contentDescription="@string/commits"
+                            android:layout_marginEnd="@dimen/dimen16dp"
+                            app:srcCompat="@drawable/ic_commits" />
+
+                        <LinearLayout
+                            android:id="@+id/commits_frame"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            tools:ignore="UseCompoundDrawables">
+
+                            <TextView
+                                android:id="@+id/commits_title"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/commits"
+                                android:textSize="@dimen/dimen16sp" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/issues_main_frame"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="@dimen/dimen12dp">
+
+                        <ImageView
+                            android:layout_width="@dimen/dimen24dp"
+                            android:layout_height="@dimen/dimen24dp"
+                            android:contentDescription="@string/issues"
+                            android:layout_marginEnd="@dimen/dimen16dp"
+                            app:tint="?attr/iconsColor"
+                            app:srcCompat="@drawable/ic_issues" />
+
+                        <LinearLayout
+                            android:id="@+id/issues_frame"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            tools:ignore="UseCompoundDrawables">
+
+                            <TextView
+                                android:id="@+id/issues_title"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/issues"
+                                android:textSize="@dimen/dimen16sp" />
+
+                            <TextView
+                                android:id="@+id/issues_open_count"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="@dimen/dimen16sp" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/merge_requests_main_frame"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="@dimen/dimen12dp">
+
+                        <ImageView
+                            android:layout_width="@dimen/dimen24dp"
+                            android:layout_height="@dimen/dimen24dp"
+                            android:contentDescription="@string/merge_requests"
+                            android:layout_marginEnd="@dimen/dimen16dp"
+                            app:srcCompat="@drawable/ic_merge_request" />
+
+                        <LinearLayout
+                            android:id="@+id/merge_requests_frame"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            tools:ignore="UseCompoundDrawables">
+
+                            <TextView
+                                android:id="@+id/merge_requests_title"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/merge_requests"
+                                android:textSize="@dimen/dimen16sp" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/releases_main_frame"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="@dimen/dimen12dp">
+
+                        <ImageView
+                            android:layout_width="@dimen/dimen24dp"
+                            android:layout_height="@dimen/dimen24dp"
+                            android:contentDescription="@string/milestones"
+                            android:layout_marginEnd="@dimen/dimen16dp"
+                            app:srcCompat="@drawable/ic_releases" />
+
+                        <LinearLayout
+                            android:id="@+id/releases_frame"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/releases_title"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/releases"
+                                android:textSize="@dimen/dimen16sp" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+            <!-- files/commits/issues/mr and more section -->
+
+            <!-- project readme.md -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/project_readme_section"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                style="?attr/materialCardViewElevatedStyle"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="@dimen/dimen16dp"
+                android:layout_marginStart="@dimen/dimen16dp"
+                android:layout_marginEnd="@dimen/dimen16dp"
+                android:visibility="gone"
+                app:strokeWidth="@dimen/dimen0dp"
+                app:cardElevation="@dimen/dimen0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/dimen12dp">
+
+                    <!-- readme file section -->
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/readme"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textIsSelectable="true"
+                        android:textSize="@dimen/dimen14sp" />
+                    <!-- readme file section -->
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+            <!-- project readme.md -->
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.bottomappbar.BottomAppBar
+        android:id="@+id/bottom_app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen80dp"
+        android:layout_gravity="bottom"
+        style="@style/Widget.Material3.BottomAppBar"
+        app:menu="@menu/project_menu"
+        app:backgroundTint="?attr/bottomNavigationColor"
+        app:navigationIcon="@drawable/ic_arrow_back">
+
+    </com.google.android.material.bottomappbar.BottomAppBar>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/new_issue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/add"
+        app:srcCompat="@drawable/ic_add"
+        android:visibility="gone"
+        app:layout_anchor="@id/bottom_app_bar" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

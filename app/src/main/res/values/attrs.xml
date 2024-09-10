@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="diffAddedColor" format="reference"/>
+    <attr name="diffRemovedColor" format="reference"/>
+    <attr name="diffSelectedColor" format="reference"/>
+    <attr name="iconsColor" format="reference"/>
+    <attr name="textColor" format="reference"/>
+    <attr name="bottomNavigationColor" format="reference"/>
+    <attr name="snackbarContainer" format="reference"/>
+    <attr name="snackbarOnContainer" format="reference"/>
+    <attr name="divider" format="reference"/>
+    <attr name="inputBsDividerColor" format="reference"/>
+    <attr name="inputBackgroundColor" format="reference" />
+    <attr name="isDark" format="integer"/>
+</resources>

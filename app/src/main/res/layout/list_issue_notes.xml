@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:id="@+id/timeline_divider_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/dimen12dp"
+        android:paddingEnd="@dimen/dimen0dp"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:id="@+id/timeline_line"
+            android:layout_width="@dimen/dimen2dp"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/dimen8dp"
+            android:background="?attr/colorPrimary" />
+
+    </LinearLayout>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/note_main_card"
+        style="?attr/materialCardViewElevatedStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardElevation="@dimen/dimen0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- avatar/name/date section -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/dimen12dp"
+                android:orientation="horizontal">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/picture_layout"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    app:strokeWidth="@dimen/dimen0dp"
+                    android:layout_gravity="start|center_vertical"
+                    android:layout_marginEnd="@dimen/dimen12dp"
+                    app:cardCornerRadius="@dimen/dimen8dp"
+                    app:cardElevation="@dimen/dimen0dp">
+
+                    <ImageView
+                        android:id="@+id/user_avatar"
+                        android:layout_height="@dimen/dimen28dp"
+                        android:layout_width="@dimen/dimen28dp"
+                        android:scaleType="fitCenter"
+                        android:layout_gravity="center_horizontal"
+                        android:contentDescription="@string/generic_img_copy"
+                        android:src="@drawable/ic_spinner" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start|center_vertical"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/username"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textIsSelectable="true"
+                        android:textSize="@dimen/dimen14sp" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dimen8dp"
+                        android:layout_marginEnd="@dimen/dimen8dp"
+                        android:alpha=".7"
+                        android:textSize="@dimen/dimen12sp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+            <!-- avatar/name/date section -->
+
+            <!-- description section -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/note_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="@dimen/dimen12dp"
+                android:paddingEnd="@dimen/dimen12dp"
+                android:paddingBottom="@dimen/dimen12dp"
+                android:textIsSelectable="true"
+                android:textSize="@dimen/dimen14sp" />
+            <!-- description section -->
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</LinearLayout>

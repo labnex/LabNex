@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_frame"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/main_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/dimen70dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dimen8dp"
+            android:padding="@dimen/dimen16dp"
+            android:orientation="vertical">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/create"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/dimen16dp"
+                android:layout_gravity="end|center_vertical"
+                android:text="@string/create"
+                style="@style/CustomMaterialButton" />
+
+            <EditText
+                android:id="@+id/filename"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dimen54dp"
+                android:autofillHints="@string/filename"
+                android:background="@drawable/shape_input"
+                android:lineSpacingExtra="@dimen/dimen8sp"
+                android:layout_marginBottom="@dimen/dimen4dp"
+                android:gravity="start|center_vertical"
+                android:singleLine="true"
+                android:inputType="text"
+                android:maxLength="200"
+                android:hint="@string/filename"
+                android:textSize="@dimen/dimen16sp" />
+
+            <TextView
+                android:id="@+id/filename_hint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start|center_vertical"
+                android:layout_marginStart="@dimen/dimen4dp"
+                android:layout_marginEnd="@dimen/dimen4dp"
+                android:layout_marginBottom="@dimen/dimen12dp"
+                android:text="@string/filename_hint"
+                android:textSize="@dimen/dimen12sp" />
+
+            <TextView
+                android:id="@+id/choose_branch"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dimen54dp"
+                android:autofillHints="@string/branch"
+                android:background="@drawable/shape_input"
+                android:gravity="start|center_vertical"
+                android:layout_marginBottom="@dimen/dimen12dp"
+                android:hint="@string/branch"
+                android:textSize="@dimen/dimen16sp" />
+
+            <EditText
+                android:id="@+id/commit_message"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dimen54dp"
+                android:autofillHints="@string/commit_message"
+                android:hint="@string/commit_message"
+                android:background="@drawable/shape_input"
+                android:lineSpacingExtra="@dimen/dimen8sp"
+                android:layout_marginBottom="@dimen/dimen12dp"
+                android:singleLine="true"
+                android:inputType="textCapSentences"
+                android:labelFor="@+id/commit_message"
+                android:textSize="@dimen/dimen16sp" />
+
+            <EditText
+                android:id="@+id/file_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:minHeight="@dimen/dimen280dp"
+                android:autofillHints="@string/file_content"
+                android:hint="@string/file_content"
+                android:background="@drawable/shape_input"
+                android:lineSpacingExtra="@dimen/dimen8sp"
+                android:gravity="top"
+                android:inputType="textMultiLine|textImeMultiLine"
+                android:labelFor="@+id/file_content"
+                android:textSize="@dimen/dimen16sp" />
+
+            <TextView
+                android:id="@+id/open_ce"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end|center_vertical"
+                android:layout_marginStart="@dimen/dimen4dp"
+                android:layout_marginEnd="@dimen/dimen4dp"
+                android:layout_marginTop="@dimen/dimen8dp"
+                android:text="@string/open_ce"
+                android:textSize="@dimen/dimen14sp" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.bottomappbar.BottomAppBar
+        android:id="@+id/bottom_app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen80dp"
+        android:layout_gravity="bottom"
+        style="@style/Widget.Material3.BottomAppBar"
+        app:backgroundTint="?attr/bottomNavigationColor"
+        app:navigationIcon="@drawable/ic_arrow_back">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/bottom_bar_title_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen24dp"
+                android:text="@string/create_file"
+                android:layout_alignParentStart="true"
+                android:textSize="@dimen/dimen20sp" />
+
+        </RelativeLayout>
+
+    </com.google.android.material.bottomappbar.BottomAppBar>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_frame"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <com.amrdeveloper.codeview.CodeView
+        android:id="@+id/code_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/source_info_layout"
+        android:layout_marginTop="@dimen/dimen28dp"
+        android:dropDownWidth="@dimen/dimen150dp"
+        android:dropDownHorizontalOffset="@dimen/dimen0dp"
+        android:gravity="top|start"
+        android:textSize="@dimen/dimen14sp"/>
+
+    <LinearLayout
+        android:id="@+id/source_info_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen24dp"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true">
+
+        <TextView
+            android:id="@+id/language_name"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/dimen8dp"
+            android:layout_weight="1"
+            android:gravity="start|center_vertical"
+            android:textSize="@dimen/dimen14sp" />
+
+        <TextView
+            android:id="@+id/source_position"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="@dimen/dimen8dp"
+            android:gravity="end|center_vertical"
+            android:textSize="@dimen/dimen14sp" />
+
+    </LinearLayout>
+
+    <com.google.android.material.bottomappbar.BottomAppBar
+        android:id="@+id/bottom_app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen80dp"
+        android:layout_gravity="bottom"
+        style="@style/Widget.Material3.BottomAppBar"
+        app:backgroundTint="?attr/bottomNavigationColor"
+        app:navigationIcon="@drawable/ic_arrow_back">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/bottom_bar_title_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen24dp"
+                android:text="@string/code_editor"
+                android:layout_alignParentStart="true"
+                android:textSize="@dimen/dimen20sp" />
+
+        </RelativeLayout>
+
+    </com.google.android.material.bottomappbar.BottomAppBar>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

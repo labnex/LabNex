@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_frame"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/main_view_scroller"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/dimen70dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dimen8dp"
+            android:padding="@dimen/dimen16dp"
+            android:orientation="vertical">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/create"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/dimen16dp"
+                android:layout_gravity="end|center_vertical"
+                android:text="@string/create"
+                style="@style/CustomMaterialButton" />
+
+            <EditText
+                android:id="@+id/name"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dimen54dp"
+                android:autofillHints="@string/name"
+                android:background="@drawable/shape_input"
+                android:lineSpacingExtra="@dimen/dimen8sp"
+                android:layout_marginBottom="@dimen/dimen8dp"
+                android:gravity="start|center_vertical"
+                android:singleLine="true"
+                android:inputType="text|textCapSentences"
+                android:maxLength="100"
+                android:hint="@string/name"
+                android:textSize="@dimen/dimen16sp" />
+
+            <EditText
+                android:id="@+id/description"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:minHeight="@dimen/dimen240dp"
+                android:autofillHints="@string/description"
+                android:hint="@string/description"
+                android:background="@drawable/shape_input"
+                android:lineSpacingExtra="@dimen/dimen8sp"
+                android:gravity="top"
+                android:inputType="textMultiLine|textImeMultiLine|textCapSentences"
+                android:labelFor="@+id/description"
+                android:textSize="@dimen/dimen16sp" />
+
+            <CheckBox
+                android:id="@+id/initialize_with_readme"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen12dp"
+                android:textSize="@dimen/dimen16sp"
+                android:text="@string/initialize_with_readme" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen12dp"
+                android:layout_marginStart="@dimen/dimen6dp"
+                android:layout_marginEnd="@dimen/dimen6dp"
+                android:layout_marginBottom="@dimen/dimen8dp"
+                android:text="@string/project_visibility"
+                android:textSize="@dimen/dimen16sp" />
+
+            <RadioGroup
+                android:id="@+id/project_visibility"
+                android:checkedButton="@+id/project_private"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <RadioButton
+                    android:id="@+id/project_private"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/private_placeholder" />
+
+                <RadioButton
+                    android:id="@+id/project_public"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/public_placeholder" />
+
+            </RadioGroup>
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.bottomappbar.BottomAppBar
+        android:id="@+id/bottom_app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen80dp"
+        android:layout_gravity="bottom"
+        style="@style/Widget.Material3.BottomAppBar"
+        app:backgroundTint="?attr/bottomNavigationColor"
+        app:navigationIcon="@drawable/ic_arrow_back">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/bottom_bar_title_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen24dp"
+                android:text="@string/create_project"
+                android:layout_alignParentStart="true"
+                android:textSize="@dimen/dimen20sp" />
+
+        </RelativeLayout>
+
+    </com.google.android.material.bottomappbar.BottomAppBar>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

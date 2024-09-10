@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayoutFrame"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="@dimen/dimen6dp">
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="?attr/materialCardViewElevatedStyle"
+        app:cardElevation="@dimen/dimen0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:padding="@dimen/dimen12dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/info_frame"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/project_avatar_frame"
+                    android:layout_height="@dimen/dimen36dp"
+                    android:layout_width="@dimen/dimen36dp"
+                    android:layout_marginEnd="@dimen/dimen10dp"
+                    app:strokeWidth="@dimen/dimen0dp"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    app:cardElevation="@dimen/dimen0dp">
+
+                    <ImageView
+                        android:id="@+id/project_avatar"
+                        android:layout_height="@dimen/dimen40dp"
+                        android:layout_width="@dimen/dimen40dp"
+                        android:scaleType="fitCenter"
+                        android:layout_gravity="center_vertical|center_horizontal"
+                        android:contentDescription="@string/projects"
+                        app:srcCompat="@drawable/ic_spinner" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <LinearLayout
+                    android:id="@+id/project_name_frame"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/project_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal|center_vertical"
+                        android:textSize="@dimen/dimen16sp" />
+
+                    <TextView
+                        android:id="@+id/project_path"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal|center_vertical"
+                        android:alpha=".7"
+                        android:textSize="@dimen/dimen14sp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/project_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:layout_marginTop="@dimen/dimen8dp"
+                android:textSize="@dimen/dimen14sp" />
+
+            <!-- stars/forks/updated frame -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:baselineAligned="false"
+                android:orientation="horizontal"
+                android:layout_marginTop="@dimen/dimen12dp"
+                tools:ignore="UseCompoundDrawables">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/dimen12dp"
+                    android:layout_weight="1"
+                    tools:ignore="UseCompoundDrawables">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="?attr/materialCardViewElevatedStyle"
+                        android:backgroundTint="@color/md_theme_background"
+                        app:cardElevation="@dimen/dimen0dp">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:foreground="?android:attr/selectableItemBackground"
+                            android:paddingStart="@dimen/dimen12dp"
+                            android:paddingEnd="@dimen/dimen12dp"
+                            android:paddingTop="@dimen/dimen6dp"
+                            android:paddingBottom="@dimen/dimen6dp"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:id="@+id/project_stars_icon"
+                                android:layout_width="@dimen/dimen18dp"
+                                android:layout_height="@dimen/dimen18dp"
+                                android:contentDescription="@string/generic_img_copy"
+                                android:layout_gravity="center_vertical|center_horizontal"
+                                android:layout_marginEnd="@dimen/dimen6dp"
+                                android:src="@drawable/ic_star" />
+
+                            <TextView
+                                android:id="@+id/project_stars"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="@dimen/dimen14sp" />
+
+                        </LinearLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="?attr/materialCardViewElevatedStyle"
+                        android:backgroundTint="@color/md_theme_background"
+                        android:layout_marginStart="@dimen/dimen12dp"
+                        app:cardElevation="@dimen/dimen0dp">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:foreground="?android:attr/selectableItemBackground"
+                            android:paddingStart="@dimen/dimen12dp"
+                            android:paddingEnd="@dimen/dimen12dp"
+                            android:paddingTop="@dimen/dimen6dp"
+                            android:paddingBottom="@dimen/dimen6dp"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="@dimen/dimen18dp"
+                                android:layout_height="@dimen/dimen18dp"
+                                android:contentDescription="@string/generic_img_copy"
+                                android:layout_gravity="center_vertical|center_horizontal"
+                                android:layout_marginEnd="@dimen/dimen6dp"
+                                android:src="@drawable/ic_forks" />
+
+                            <TextView
+                                android:id="@+id/project_forks"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="@dimen/dimen14sp" />
+
+                        </LinearLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/dimen12dp"
+                    tools:ignore="UseCompoundDrawables">
+
+                    <TextView
+                        android:id="@+id/project_updated_at"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical|center_horizontal"
+                        android:textSize="@dimen/dimen14sp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+            <!-- stars/forks/updated frame -->
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</LinearLayout>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <solid
+        android:color="?attr/inputBackgroundColor">
+    </solid>
+
+    <corners
+        android:topLeftRadius="@dimen/dimen16dp"
+        android:topRightRadius="@dimen/dimen16dp"
+        android:bottomLeftRadius="@dimen/dimen16dp"
+        android:bottomRightRadius="@dimen/dimen4dp">
+    </corners>
+
+    <padding
+        android:bottom="@dimen/dimen16dp"
+        android:left="@dimen/dimen16dp"
+        android:right="@dimen/dimen16dp"
+        android:top="@dimen/dimen18dp">
+    </padding>
+
+</shape>
