@@ -48,7 +48,7 @@ We use [Crowdin](https://crowdin.com/project/labnex) for translations. If your l
 [<img src="https://raw.githubusercontent.com/labnex/LabNex/main/metadata/en-US/images/phoneScreenshots/001.png" alt="001.png" width="200"/>](https://raw.githubusercontent.com/labnex/LabNex/main/metadata/en-US/images/phoneScreenshots/001.png) | [<img src="https://raw.githubusercontent.com/labnex/LabNex/main/metadata/en-US/images/phoneScreenshots/002.png" alt="002.png" width="200"/>](https://raw.githubusercontent.com/labnex/LabNex/main/metadata/en-US/images/phoneScreenshots/002.png) | [<img src="https://raw.githubusercontent.com/labnex/LabNex/main/metadata/en-US/images/phoneScreenshots/003.png" alt="003.png" width="200"/>](https://raw.githubusercontent.com/labnex/LabNex/main/metadata/en-US/images/phoneScreenshots/003.png) | [<img src="https://raw.githubusercontent.com/labnex/LabNex/main/metadata/en-US/images/phoneScreenshots/004.png" alt="004.png" width="200"/>](https://raw.githubusercontent.com/labnex/LabNex/main/metadata/en-US/images/phoneScreenshots/004.png)
 ---|---|---|---
 
-[More screenshots](https://raw.githubusercontent.com/labnex/LabNex/main/metadata/en-US/images/phoneScreenshots)
+[More screenshots](https://github.com/labnex/LabNex/tree/main/metadata/en-US/images/phoneScreenshots)
 
 ## Links
 
