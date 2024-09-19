@@ -75,12 +75,6 @@ public class AppSettingsActivity extends BaseActivity implements BottomSheetList
 								this,
 								AppSettingsActivity.this,
 								getResources().getString(R.string.support_link_patreon)));
-		binding.supportBmcFrame.setOnClickListener(
-				v12 ->
-						Utils.openUrlInBrowser(
-								this,
-								AppSettingsActivity.this,
-								getResources().getString(R.string.support_link_buy_me_a_coffee)));
 		binding.crowdinFrame.setOnClickListener(
 				v13 ->
 						Utils.openUrlInBrowser(
@@ -103,8 +97,6 @@ public class AppSettingsActivity extends BaseActivity implements BottomSheetList
 		if (Utils.isPremium(ctx)) {
 			binding.supportPatreonFrame.setVisibility(View.GONE);
 			binding.dividerPatreon.setVisibility(View.GONE);
-			binding.supportBmcFrame.setVisibility(View.GONE);
-			binding.dividerBmc.setVisibility(View.GONE);
 		}
 
 		Bundle bsBundle = new Bundle();

@@ -20,7 +20,7 @@ LabNex is licensed under the GPLv3 License.
 - Projects listing
 - Groups listing
 - Biometric lock for security
-- List project issues amd merge requests
+- List project issues and merge requests
 - Project releases, milestones, labels, members, wiki pages
 - Localized
 - View commits diff in diff viewer
@@ -39,7 +39,7 @@ LabNex is licensed under the GPLv3 License.
 
 ## Translation
 
-We use [Crowdin](https://crowdin.com/project/labnex) for translations. If your language is not listed, please request to add it to the project [here](https://github.com/labnex/LabNex/issues).
+LabNex use [Crowdin](https://crowdin.com/project/labnex) for translations. If your language is not listed, please request to add it to the project [here](https://github.com/labnex/LabNex/issues).
 
 **Link: https://crowdin.com/project/labnex**
 

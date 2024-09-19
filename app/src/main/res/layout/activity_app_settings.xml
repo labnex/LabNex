@@ -454,56 +454,6 @@
                     android:background="?android:attr/listDivider" />
 
                 <LinearLayout
-                    android:id="@+id/support_bmc_frame"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="@dimen/dimen24dp"
-                        android:layout_height="@dimen/dimen24dp"
-                        android:contentDescription="@string/support_text_buy_me_a_coffee"
-                        android:layout_marginEnd="@dimen/dimen16dp"
-                        app:srcCompat="@drawable/ic_bmc" />
-
-                    <LinearLayout
-                        android:id="@+id/support_bmc_selection"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        tools:ignore="UseCompoundDrawables">
-
-                        <TextView
-                            android:id="@+id/support_bmc_title"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="@string/support_text_buy_me_a_coffee"
-                            android:textSize="@dimen/dimen16sp" />
-
-                        <ImageView
-                            android:id="@+id/support_bmc"
-                            android:layout_width="@dimen/dimen24dp"
-                            android:layout_height="@dimen/dimen24dp"
-                            android:contentDescription="@string/support_text_buy_me_a_coffee"
-                            app:srcCompat="@drawable/ic_external_link" />
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-                <com.google.android.material.divider.MaterialDivider
-                    android:id="@+id/divider_bmc"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/dimen2dp"
-                    app:dividerColor="?attr/divider"
-                    android:layout_marginTop="@dimen/dimen12dp"
-                    android:layout_marginBottom="@dimen/dimen12dp"
-                    android:background="?android:attr/listDivider" />
-
-                <LinearLayout
                     android:id="@+id/crowdin_frame"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
