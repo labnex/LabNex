@@ -1,7 +1,7 @@
 [![License: GPL v3](https://raw.githubusercontent.com/labnex/LabNex/main/assets/license.svg)](https://www.gnu.org/licenses/gpl-3.0) [![Release](https://img.shields.io/github/v/release/labnex/LabNex?display_name=release&label=release
 )](https://github.com/labnex/LabNex/releases) [![Crowdin](https://badges.crowdin.net/labnex/localized.svg)](https://crowdin.com/project/labnex)
 
-[<img alt="Become a Patreon" src="https://raw.githubusercontent.com/labnex/LabNex/main/assets/patreon.png" height="40"/>](https://www.patreon.com/mmarif) [<img alt="Buy me a coffee" src="https://raw.githubusercontent.com/labnex/LabNex/main/assets/buy-me-a-coffee.png" height="40"/>](https://www.buymeacoffee.com/mmarif)
+[<img alt="Become a Patreon" src="https://raw.githubusercontent.com/labnex/LabNex/main/assets/patreon.png" height="40"/>](https://www.patreon.com/mmarif)
 
 # LabNex - Android app for GitLab
 

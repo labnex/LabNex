@@ -2,6 +2,7 @@ package com.labnex.app.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,12 +14,18 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.labnex.app.R;
+import com.labnex.app.activities.ProjectDetailActivity;
+import com.labnex.app.clients.RetrofitClient;
+import com.labnex.app.contexts.ProjectsContext;
 import com.labnex.app.helpers.TimeUtils;
 import com.labnex.app.models.events.Events;
+import com.labnex.app.models.projects.Projects;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import retrofit2.Call;
+import retrofit2.Callback;
 
 /**
  * @author mmarif
@@ -121,18 +128,44 @@ public class ActivitiesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 			content = itemView.findViewById(R.id.content);
 			body = itemView.findViewById(R.id.body);
 
-			/*itemView.setOnClickListener(
-			v -> {
-				bundle.putString("source", "commits");
-				//bundle.putString("sha", events.getId());
-				//bundle.putInt("projectId", projectId);
+			itemView.setOnClickListener(
+					v -> {
+						Call<Projects> call =
+								RetrofitClient.getApiInterface(context)
+										.getProjectInfo(events.getProjectId());
 
-				CommitDiffsBottomSheet bottomSheet = new CommitDiffsBottomSheet();
-				bottomSheet.setArguments(bundle);
-				bottomSheet.show(
-						((FragmentActivity) context).getSupportFragmentManager(),
-						"CommitDiffsBottomSheet");
-			});*/
+						call.enqueue(
+								new Callback<>() {
+
+									@Override
+									public void onResponse(
+											@NonNull Call<Projects> call,
+											@NonNull retrofit2.Response<Projects> response) {
+
+										Projects projectDetails = response.body();
+
+										if (response.isSuccessful()) {
+
+											if (response.code() == 200) {
+												assert projectDetails != null;
+												Context context = v.getContext();
+												ProjectsContext project =
+														new ProjectsContext(
+																projectDetails, context);
+												Intent intent =
+														project.getIntent(
+																context,
+																ProjectDetailActivity.class);
+												context.startActivity(intent);
+											}
+										}
+									}
+
+									@Override
+									public void onFailure(
+											@NonNull Call<Projects> call, @NonNull Throwable t) {}
+								});
+					});
 		}
 
 		void bindData(Events events) {
