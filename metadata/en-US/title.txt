@@ -1,1 +1,1 @@
-LabNex
+LabNex for GitLab

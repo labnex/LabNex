@@ -55,8 +55,6 @@ public class MainActivity extends BaseActivity {
 		activitiesFragment = new ActivitiesFragment();
 		exploreFragment = new ExploreFragment();
 
-		loadFragment(homeFragment);
-
 		binding.navView.setOnItemSelectedListener(
 				item -> {
 					if (R.id.navigation_home_menu == item.getItemId()) {

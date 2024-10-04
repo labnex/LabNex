@@ -94,10 +94,10 @@ public class AppSettingsActivity extends BaseActivity implements BottomSheetList
 								AppSettingsActivity.this,
 								getResources().getString(R.string.source_code_link)));
 
-		if (Utils.isPremium(ctx)) {
+		/*if (Utils.isPremium(ctx)) {
 			binding.supportPatreonFrame.setVisibility(View.GONE);
 			binding.dividerPatreon.setVisibility(View.GONE);
-		}
+		}*/
 
 		Bundle bsBundle = new Bundle();
 		binding.accountsSheetLayout.setOnClickListener(

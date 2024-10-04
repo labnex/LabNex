@@ -272,7 +272,7 @@ public class Utils {
 	}
 
 	public static boolean isPremium(Context context) {
-		return context.getPackageName().equals("org.mian.com.labnex.app.premium");
+		return context.getPackageName().equals("com.labnex.app.premium");
 	}
 
 	public static void setAppLocale(Resources resource, String locCode) {
