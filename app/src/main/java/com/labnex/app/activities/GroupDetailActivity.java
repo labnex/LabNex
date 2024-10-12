@@ -183,7 +183,6 @@ public class GroupDetailActivity extends BaseActivity implements BottomSheetList
 								binding.recyclerView.setAdapter(projectsAdapter);
 							} else {
 
-								projectsAdapter.notifyDataChanged();
 								binding.recyclerView.setAdapter(projectsAdapter);
 							}
 
