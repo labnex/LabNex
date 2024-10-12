@@ -9,7 +9,7 @@ import java.io.Serializable;
 public class Notes implements Serializable {
 
 	@SerializedName("noteable_id")
-	private int noteableId;
+	private Long noteableId;
 
 	@SerializedName("internal")
 	private boolean internal;
@@ -24,7 +24,7 @@ public class Notes implements Serializable {
 	private String createdAt;
 
 	@SerializedName("type")
-	private Object type;
+	private String type;
 
 	@SerializedName("body")
 	private String body;
@@ -33,13 +33,13 @@ public class Notes implements Serializable {
 	private CommandsChanges commandsChanges;
 
 	@SerializedName("noteable_iid")
-	private int noteableIid;
+	private Long noteableIid;
 
 	@SerializedName("system")
 	private boolean system;
 
 	@SerializedName("attachment")
-	private Object attachment;
+	private String attachment;
 
 	@SerializedName("updated_at")
 	private String updatedAt;
@@ -57,12 +57,12 @@ public class Notes implements Serializable {
 	private boolean imported;
 
 	@SerializedName("id")
-	private int id;
+	private Long id;
 
 	@SerializedName("confidential")
 	private boolean confidential;
 
-	public int getNoteableId() {
+	public long getNoteableId() {
 		return noteableId;
 	}
 
@@ -82,7 +82,7 @@ public class Notes implements Serializable {
 		return createdAt;
 	}
 
-	public Object getType() {
+	public String getType() {
 		return type;
 	}
 
@@ -94,7 +94,7 @@ public class Notes implements Serializable {
 		return commandsChanges;
 	}
 
-	public int getNoteableIid() {
+	public long getNoteableIid() {
 		return noteableIid;
 	}
 
@@ -102,7 +102,7 @@ public class Notes implements Serializable {
 		return system;
 	}
 
-	public Object getAttachment() {
+	public String getAttachment() {
 		return attachment;
 	}
 
@@ -126,7 +126,7 @@ public class Notes implements Serializable {
 		return imported;
 	}
 
-	public int getId() {
+	public Long getId() {
 		return id;
 	}
 

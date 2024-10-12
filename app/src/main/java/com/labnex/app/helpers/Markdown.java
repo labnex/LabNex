@@ -1,11 +1,11 @@
 package com.labnex.app.helpers;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -213,7 +213,7 @@ public class Markdown {
 												@NonNull TextView textView,
 												@NonNull Spanned markdown) {
 
-											textView.setTypeface(tf);
+											// textView.setTypeface(tf);
 											textView.setTextIsSelectable(true);
 											textView.setMovementMethod(
 													LinkMovementMethod.getInstance());
@@ -389,17 +389,17 @@ public class Markdown {
 													(view, link) -> {
 														ProjectsContext repoLocal =
 																linkPostProcessor.projects;
-														/*if (link.startsWith("labnexuser://")) {
-															Intent i =
+														if (link.startsWith("labnexuser://")) {
+															/*Intent i =
 																	new Intent(
 																			view.getContext(),
 																			ProfileActivity.class);
 															i.putExtra(
 																	"username", link.substring(13));
-															view.getContext().startActivity(i);
+															view.getContext().startActivity(i);*/
 														} else if (link.startsWith(
 																"labnexissue://")) {
-															link = link.substring(14); // remove
+															/*link = link.substring(14); // remove
 															// labnexissue://
 															String index;
 															if (link.contains("/")) {
@@ -439,10 +439,10 @@ public class Markdown {
 																		"openedFromLink", "true");
 															}
 
-															view.getContext().startActivity(i);
+															view.getContext().startActivity(i);*/
 														} else if (link.startsWith(
 																"labnexcommit://")) {
-															link = link.substring(15);
+															/*link = link.substring(15);
 															Intent i =
 																	repoLocal.getIntent(
 																			view.getContext(),
@@ -456,11 +456,13 @@ public class Markdown {
 															}
 
 															i.putExtra("sha", sha);
-															view.getContext().startActivity(i);
+															view.getContext().startActivity(i);*/
 														} else {
-															AppUtil.openUrlInBrowser(
-																	view.getContext(), link);
-														}*/
+															Utils.openUrlInBrowser(
+																	view.getContext(),
+																	new Activity(),
+																	link);
+														}
 													});
 											super.configureConfiguration(builder);
 										}
@@ -769,12 +771,6 @@ public class Markdown {
 								.matcher(node.getDestination());
 				if (patternAttachments.matches()) {
 					node.setDestination(
-							instanceUrl
-									+ "-/project/"
-									+ projects.getProjectId()
-									+ patternAttachments.group(1));
-					Log.e(
-							"instanceUrl",
 							instanceUrl
 									+ "-/project/"
 									+ projects.getProjectId()
