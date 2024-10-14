@@ -112,7 +112,10 @@ public class ProfileActivity extends BaseActivity {
 
 									if (!user.getDiscord().isEmpty()) {
 										binding.discord.setVisibility(View.VISIBLE);
-										binding.discord.setText(user.getDiscord());
+										binding.discord.setText(
+												getString(
+														R.string.discord_user_profile_link,
+														user.getDiscord()));
 									}
 
 									if (!user.getLinkedin().isEmpty()) {

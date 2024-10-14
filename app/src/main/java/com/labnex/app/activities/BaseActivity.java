@@ -47,15 +47,31 @@ public abstract class BaseActivity extends AppCompatActivity {
 				setTheme(R.style.AppTheme);
 				break;
 		}
+	}
+
+	@Override
+	protected void attachBaseContext(Context base) {
+		super.attachBaseContext(Utils.setLocale(base, getCurrentLocale()));
+	}
+
+	private String getCurrentLocale() {
 
 		String[] locale =
 				AppSettingsInit.getSettingsValue(ctx, AppSettingsInit.APP_LOCALE_KEY).split("\\|");
 
+		String lang;
 		if (locale[0].equals("0")) {
-			Utils.setAppLocale(getResources(), Locale.getDefault().getLanguage());
+			lang = Locale.getDefault().getLanguage();
 		} else {
-			Utils.setAppLocale(getResources(), locale[1]);
+			lang = locale[1];
 		}
+
+		String[] multiCodeLang = lang.split("-");
+		if (lang.contains("-")) {
+			lang = multiCodeLang[0];
+		}
+
+		return lang;
 	}
 
 	public void onResume() {

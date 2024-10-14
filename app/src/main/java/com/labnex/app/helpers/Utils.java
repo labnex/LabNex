@@ -10,6 +10,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Paint;
@@ -21,9 +22,7 @@ import android.util.Base64;
 import android.util.TypedValue;
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.pm.PackageInfoCompat;
-import androidx.core.os.LocaleListCompat;
 import com.labnex.app.R;
 import com.labnex.app.core.CoreApplication;
 import com.labnex.app.database.models.UserAccount;
@@ -272,26 +271,19 @@ public class Utils {
 	}
 
 	public static boolean isPremium(Context context) {
-		return context.getPackageName().equals("org.mian.com.labnex.app.premium");
+		return context.getPackageName().equals("com.labnex.app.premium");
 	}
 
-	public static void setAppLocale(Resources resource, String locCode) {
+	public static Context setLocale(Context context, String languageCode) {
 
-		String[] multiCodeLang = locCode.split("-");
-		String countryCode;
-		if (locCode.contains("-")) {
-			locCode = multiCodeLang[0];
-			countryCode = multiCodeLang[1];
-		} else {
-			countryCode = "";
-		}
+		Locale locale = new Locale(languageCode);
+		Locale.setDefault(locale);
 
-		/*DisplayMetrics dm = resource.getDisplayMetrics();
-		Configuration config = resource.getConfiguration();
-		config.setLocale(new Locale(locCode.toLowerCase(), countryCode));
-		resource.updateConfiguration(config, dm);*/
-		AppCompatDelegate.setApplicationLocales(
-				LocaleListCompat.create(Locale.forLanguageTag(locCode)));
+		Resources resources = context.getResources();
+		Configuration config = resources.getConfiguration();
+
+		config.setLocale(locale);
+		return context.createConfigurationContext(config);
 	}
 
 	public static void copyToClipboard(

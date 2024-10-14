@@ -1,87 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- non translatable strings -->
-    <string name="app_name" translatable="false">LabNex</string>
-    <string name="app_version_build" translatable="false">%s / %d</string>
-    <string name="support_link_patreon" translatable="false">https://www.patreon.com/mmarif</string>
-    <string name="crowd_in_link" translatable="false">https://crowdin.com/project/labnex</string>
-    <string name="app_website_link" translatable="false">https://labnex.app</string>
-    <string name="source_code_link" translatable="false">https://github.com/labnex/LabNex</string>
-    <string name="support_text_patreon" translatable="false">Patreon</string>
-    <string name="crowd_in_text" translatable="false">Crowdin</string>
-
-    <string name="gitlab" translatable="false">GitLab</string>
-    <string name="private_placeholder" translatable="false">Private</string>
-    <string name="internal_placeholder" translatable="false">Internal</string>
-    <string name="public_placeholder" translatable="false">Public</string>
-    <string name="gitlab_saas" translatable="false">GitLab SaaS</string>
-    <string name="data_concatenate" translatable="false">%s - %s</string>
-    <string name="single_string_conversion" translatable="false">%s</string>
-    <string name="hash" translatable="false">#</string>
-    <string name="username_with_at_sign" translatable="false">\@%s</string>
-    <string name="source_position" translatable="false">%1$d:%2$d</string>
-    <string name="discord_user_profile_link" translatable="false">https://discord.com/users/%s</string>
     <!-- non translatable strings -->
-
-    <string name="action_sign_in">Sign in</string>
-    <string name="hi_username">Hi %s 👋</string>
-    <string name="welcome_back">Welcome back</string>
-    <string name="login_failed">Login failed</string>
-    <string name="all_good">You\'re all caught up</string>
+    <string name="action_sign_in">Connexion</string>
+    <string name="hi_username">Bonjour %s 👋</string>
+    <string name="welcome_back">Contents de vous revoir</string>
+    <string name="login_failed">Échec de la connexion</string>
+    <string name="all_good">Vous êtes à jour</string>
     <string name="most_visited">Most visited</string>
-    <string name="gitlab_link">GitLab URL</string>
-    <string name="gitlab_link_help">i.e., gitlab.com (do not add https, http is not supported by LabNex)</string>
-    <string name="personal_access_token">Personal access token</string>
-    <string name="personal_access_token_helper"><u>Where can I get a personal access token?</u></string>
-    <string name="personal_access_token_helper_link" translatable="false">https://gitlab.com/-/user_settings/personal_access_tokens</string>
-    <string name="add_new_account">Add account</string>
-    <string name="account_token_expires_at">Token expires on %s</string>
-    <string name="remove_account_from_app_title">Remove account</string>
-    <string name="remove_account_from_app_message">Are you sure you want to remove this account from the app?\n\nThis will remove all data related to this account on the app only.</string>
-    <string name="remove_account_from_app_success">Account removed successfully</string>
-    <string name="api_scopes">Scopes: all api scopes are required</string>
-    <string name="gitlab_version">GitLab version</string>
-    <string name="theme_selector_dialog_title">Select app theme</string>
-    <string name="settings_saved">Settings saved</string>
-    <string name="settings_language_selector_dialog_title">Choose language</string>
-    <string name="settings_biometric_header">Biometric lock</string>
-    <string name="biometric_auth_title">Biometric authentication</string>
-    <string name="biometric_auth_sub_title">Unlock using your biometric credentials</string>
-    <string name="biometric_not_supported">No biometric features available on this device</string>
-    <string name="biometric_not_available">Biometric features are currently unavailable</string>
-    <string name="enroll_biometric">Enroll biometric from phone settings</string>
-    <string name="nothing_found">Nothing here at the moment</string>
-    <string name="created_with">Created %s</string>
-    <string name="updated_with">Updated %s</string>
-    <string name="merge_requests">Merge requests</string>
+    <string name="gitlab_link">URL GitLab</string>
+    <string name="gitlab_link_help">ex: gitlab.com (ne pas ajouter https, LabNex ne supporte pas http)</string>
+    <string name="personal_access_token">Jeton d\'accès personnel</string>
+    <string name="personal_access_token_helper"><u>Où puis-je trouver le jeton d\'accès personnel ?</u></string>
+    <string name="add_new_account">Ajouter un compte</string>
+    <string name="account_token_expires_at">Le jeton expire le %s</string>
+    <string name="remove_account_from_app_title">Supprimer le compte</string>
+    <string name="remove_account_from_app_message">Êtes-vous certain de vouloir supprimer ce compte de l’application ?\n\nSeules les données concernant ce compte au sein de l’application seront supprimées.</string>
+    <string name="remove_account_from_app_success">Compte supprimé avec succès</string>
+    <string name="api_scopes">Étendues : touts les étendues de l\'API sont requises</string>
+    <string name="gitlab_version">Version de GitLab</string>
+    <string name="theme_selector_dialog_title">Thème de l’application</string>
+    <string name="settings_saved">Paramètres enregistrés</string>
+    <string name="settings_language_selector_dialog_title">Choisir la langue</string>
+    <string name="settings_biometric_header">Verrouillage biométrique</string>
+    <string name="biometric_auth_title">Authentification biométrique</string>
+    <string name="biometric_auth_sub_title">Déverrouillez avec vos identifiants biométriques</string>
+    <string name="biometric_not_supported">Aucune fonctionnalité biométrique disponible sur cet appareil</string>
+    <string name="biometric_not_available">Les fonctionnalités biométriques ne sont actuellement pas disponibles</string>
+    <string name="enroll_biometric">Faites l\'inscription biométrique depuis les paramètres de l\'appareil</string>
+    <string name="nothing_found">Rien ici pour le moment</string>
+    <string name="created_with">%s créé</string>
+    <string name="updated_with">Mis à jour %s</string>
+    <string name="merge_requests">Demandes de fusion</string>
     <plurals name="note_delete_message">
-        <item quantity="one">Note deleted successfully</item>
-        <item quantity="other">Notes deleted successfully</item>
+        <item quantity="one">Note supprimée avec succès</item>
+        <item quantity="other">Notes supprimées avec succès</item>
     </plurals>
-    <string name="delete_note_dialog_message">Do you really want to delete this note?</string>
-    <string name="delete_all_notes_dialog_message">This will delete all of your notes. This action cannot be undone.</string>
-    <string name="new_note_content_hint">Start taking your notes here</string>
-    <string name="group_name">Group name</string>
-    <string name="gitlab_saas_message">It looks like you are using GitLab SaaS (gitlab.com). Currently, the SaaS version does not support this feature.</string>
-    <string name="gitlab_saas_message_extra">On GitLab SaaS, you must use the GitLab UI to create groups without a parent group.</string>
-    <string name="group_created">New group created</string>
-    <string name="starred_projects">Starred projects</string>
-    <string name="most_visited_empty_message">You haven\'t visited any projects yet. Explore projects to list them here.</string>
-    <string name="archived_project">This is an archived project. Repository and other project resources are read-only.</string>
+    <string name="delete_note_dialog_message">Voulez-vous vraiment supprimer cette note ?</string>
+    <string name="delete_all_notes_dialog_message">Cela supprimera toutes vos notes. Cette action est irréversible.</string>
+    <string name="new_note_content_hint">Commencez à prendre vos notes ici</string>
+    <string name="group_name">Nom du groupe</string>
+    <string name="gitlab_saas_message">Il semble que vous utilisiez GitLab SaaS (gitlab.com). Pour le moment, la version SaaS ne prend pas en charge cette fonctionnalité.</string>
+    <string name="gitlab_saas_message_extra">Sur GitLab SaaS, vous devez utiliser l\'interface utilisateur GitLab pour créer des groupes sans groupe parent.</string>
+    <string name="group_created">Nouveau groupe créé</string>
+    <string name="starred_projects">Projets favoris</string>
+    <string name="most_visited_empty_message">Vous n\'avez encore visité aucun projet. Explorez les projets pour remplir cette liste.</string>
+    <string name="archived_project">Ce projet est archivé. Le dépôt et les autres ressources du projet sont en lecture seule.</string>
     <plurals name="project_stars">
-        <item quantity="one">%s star</item>
-        <item quantity="other">%s stars</item>
+        <item quantity="one">%s étoile</item>
+        <item quantity="other">%s étoiles</item>
     </plurals>
     <plurals name="project_forks">
-        <item quantity="one">%s fork</item>
-        <item quantity="other">%s forks</item>
+        <item quantity="one">%s branche</item>
+        <item quantity="other">%s branches</item>
     </plurals>
-    <string name="switch_branch">Switch branch</string>
-    <string name="create_new_label">Create new label</string>
-    <string name="label_color">Background color</string>
-    <string name="label_title_empty">Label title is required</string>
-    <string name="label_created">Label created successfully</string>
-    <string name="new_label">New label</string>
-    <string name="update_label">Update %s</string>
+    <string name="switch_branch">Changer de branche</string>
+    <string name="create_new_label">Créer un nouveau label</string>
+    <string name="label_color">Couleur d\'arrière-plan</string>
+    <string name="label_title_empty">Titre de l\'étiquette requis</string>
+    <string name="label_created">Étiquette créée avec succès</string>
+    <string name="new_label">Nouvelle étiquette</string>
+    <string name="update_label">Mise à jour %s</string>
     <string name="delete_dialog_title">Delete %s</string>
     <string name="delete_label_dialog_message">Do you really want to delete this label?</string>
     <string name="label_deleted">Label deleted successfully</string>
@@ -131,49 +110,48 @@
     <string name="mr_cannot_be_merged">This merge request cannot be merged at this time. Please check for merge conflicts and other issues.</string>
     <string name="close_issue">You are about to close this issue. Tap the Close button to proceed.</string>
     <string name="issue_closed">Issue was closed successfully</string>
-    <string name="close_mr">You are about to close this merge request. Tap the Close button to proceed.</string>
-    <string name="mr_closed">Merge request was closed successfully</string>
-    <string name="initialize_with_readme">Initialize repository with a README</string>
-    <string name="create_project">Create project</string>
-    <string name="project_name_required">Project name is required</string>
-    <string name="project_visibility">Project visibility</string>
-    <string name="project_craeted">Project created successfully</string>
-    <string name="activity_commented_on_issue">Commented on issue %s #%s</string>
-    <string name="activity_commented_on_mr">Commented on merge request %s !%s</string>
-    <string name="activity_opened_mr">Opened merge request %s !%s</string>
-    <string name="activity_closed_mr">Closed merge request %s !%s</string>
-    <string name="activity_closed_issue">Closed issue %s #%s</string>
-    <string name="activity_opened_issue">Opened issue %s #%s</string>
-    <string name="activity_pushed_to">Pushed to branch %s with commit %s %s</string>
-    <string name="activity_pushed_new_branch">Pushed new branch %s</string>
-    <string name="activity_deleted_branch">Deleted branch %s</string>
-    <string name="activity_accepted_mr">Accepted merge request %s !%s</string>
-    <string name="activity_opened_milestone">Opened milestone %s</string>
-    <string name="activity_closed_milestone">Closed milestone %s</string>
-    <string name="activity_created_wiki_page">Created wiki page %s</string>
-    <string name="activity_updated_wiki_page">Updated wiki page %s</string>
-    <string name="activity_created_project">Created project %s</string>
-    <string name="files_ref">Files - ref:%s</string>
-    <string name="exclude_files_in_fileviewer">This file type/size is not supported by the file viewer. You can download it to your phone instead.</string>
-    <string name="render_md">Render Markdown</string>
-    <string name="file_viewer_notification_title_started">Download in progress</string>
-    <string name="file_viewer_notification_description_started">Downloading %s</string>
-    <string name="file_viewer_notification_title_finished">Download successful</string>
-    <string name="file_viewer_notification_description_finished">Downloaded %s</string>
-    <string name="file_viewer_notification_title_failed">Download failed</string>
-    <string name="file_viewer_notification_description_failed">Couldn\'t download %s</string>
-    <string name="delete_all_most_visited_dialog_message">This will delete all projects added to Most Visited. Press Clear to remove them.</string>
-    <string name="create_file">Create file</string>
-    <string name="filename">File name</string>
-    <string name="filename_hint">with directory: app/config.json</string>
-    <string name="commit_message">Commit message</string>
-    <string name="file_content">File content</string>
-    <string name="all_fields_are_required">All fields are required and must be filled out</string>
-    <string name="open_ce">Open in Code Editor</string>
+    <string name="close_mr">Vous êtes sur le point de fermer cette demande de fusion. Appuyez sur le bouton Fermer pour continuer.</string>
+    <string name="mr_closed">Demande de fusion fermée avec succès</string>
+    <string name="initialize_with_readme">Initialiser le dépôt avec un README</string>
+    <string name="create_project">Créer un projet</string>
+    <string name="project_name_required">Le nom du projet est obligatoire</string>
+    <string name="project_visibility">Visibilité du projet</string>
+    <string name="project_craeted">Projet créé avec succès</string>
+    <string name="activity_commented_on_issue">Commenté sur le ticket %s #%s</string>
+    <string name="activity_commented_on_mr">Commenté sur la demande de fusion %s !%s</string>
+    <string name="activity_opened_mr">Demande de fusion ouverte %s !%s</string>
+    <string name="activity_closed_mr">Demande de fusion fermée %s !%s</string>
+    <string name="activity_closed_issue">Ticket fermé %s #%s</string>
+    <string name="activity_opened_issue">Ticket ouvert %s #%s</string>
+    <string name="activity_pushed_to">Poussé vers la branche %s avec la validation %s %s</string>
+    <string name="activity_pushed_new_branch">Nouvelle branche poussée %s</string>
+    <string name="activity_deleted_branch">Branche supprimée %s</string>
+    <string name="activity_accepted_mr">Demande de fusion acceptée %s !%s</string>
+    <string name="activity_opened_milestone">Jalon ouvert %s</string>
+    <string name="activity_closed_milestone">Jalon fermé %s</string>
+    <string name="activity_created_wiki_page">Page wiki créée %s</string>
+    <string name="activity_updated_wiki_page">Page wiki mise à jour %s</string>
+    <string name="activity_created_project">Projet créé %s</string>
+    <string name="files_ref">Fichiers - réf:%s</string>
+    <string name="exclude_files_in_fileviewer">Ce type ou cette taille de fichiers ne sont pas supportés par la visionneuse de fichier. Vous pouvez toutefois le télécharger depuis le menu.</string>
+    <string name="render_md">Rendu Markdown</string>
+    <string name="file_viewer_notification_title_started">Téléchargement en cours</string>
+    <string name="file_viewer_notification_description_started">Téléchargement de %s</string>
+    <string name="file_viewer_notification_title_finished">Téléchargement réussi</string>
+    <string name="file_viewer_notification_description_finished">%s téléchargé</string>
+    <string name="file_viewer_notification_title_failed">Échec du téléchargement</string>
+    <string name="file_viewer_notification_description_failed">Impossible de télécharger %s</string>
+    <string name="delete_all_most_visited_dialog_message">Cela supprimera tous les projets ajoutés à la liste Les Plus Visités. Appuyez sur Effacer pour les supprimer.</string>
+    <string name="create_file">Créer un fichier</string>
+    <string name="filename">Nom du fichier</string>
+    <string name="filename_hint">avec répertoire: app/config.json</string>
+    <string name="commit_message">Message de validation</string>
+    <string name="file_content">Contenu du fichier</string>
+    <string name="all_fields_are_required">Tous les champs sont obligatoires et doivent être remplis</string>
+    <string name="open_ce">Ouvrir dans l’Éditeur de code</string>
     <string name="ce_no_filename_filled">You haven\'t entered a filename in the File name field. To better utilize the code editor\'s capabilities, it is recommended to provide a filename with an extension.\n\nPress Ignore to continue or Cancel to exit.</string>
     <string name="code_editor">Code editor</string>
     <string name="new_file_created">New file created successfully</string>
-
     <!-- errors -->
     <string name="generic_error">Something went wrong</string>
     <string name="browserOpenFailed">No application found to open this link</string>
@@ -193,7 +171,6 @@
     <string name="access_forbidden_403">Access forbidden, the request isn’t allowed</string>
     <string name="no_description">No description provided</string>
     <!-- errors -->
-
     <!-- generic copy -->
     <string name="home">Home</string>
     <string name="activities">Activities</string>

@@ -1,7 +1,7 @@
 [![License: GPL v3](https://raw.githubusercontent.com/labnex/LabNex/main/assets/license.svg)](https://www.gnu.org/licenses/gpl-3.0) [![Release](https://img.shields.io/github/v/release/labnex/LabNex?display_name=release&label=release
 )](https://github.com/labnex/LabNex/releases) [![Crowdin](https://badges.crowdin.net/labnex/localized.svg)](https://crowdin.com/project/labnex)
 
-[<img alt="Become a Patreon" src="https://raw.githubusercontent.com/labnex/LabNex/main/assets/patreon.png" height="40"/>](https://www.patreon.com/mmarif)
+[<img alt="Become a Patreon" src="https://raw.githubusercontent.com/labnex/LabNex/main/assets/patreon.png" height="80"/>](https://www.patreon.com/mmarif)
 
 # LabNex - Android app for GitLab
 
@@ -13,6 +13,7 @@ LabNex is licensed under the GPLv3 License.
 [<img alt='Get it on F-Droid' src='https://raw.githubusercontent.com/labnex/LabNex/main/assets/fdroid.png' height="80"/>](https://f-droid.org/en/packages/com.labnex.app/)
 [<img alt='Get it on Google Play' src='https://raw.githubusercontent.com/labnex/LabNex/main/assets/google-play.png' height="80"/>](https://play.google.com/store/apps/details?id=com.labnex.app.premium)
 [<img alt='Download builds and releases' src='https://raw.githubusercontent.com/labnex/LabNex/main/assets/apk-badge.png' height="82"/>](https://github.com/labnex/LabNex/releases)
+[<img alt='Get it on OpenAPK' src='https://raw.githubusercontent.com/labnex/LabNex/main/assets/openapk.png' height="82"/>](https://www.openapk.net/labnex/com.labnex.app/)
 
 ## Features
 
