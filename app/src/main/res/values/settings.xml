@@ -2,6 +2,7 @@
     <string-array name="languages">
         <item>en</item>
         <item>de</item>
+        <item>fr</item>
     </string-array>
 
     <string-array name="themes">

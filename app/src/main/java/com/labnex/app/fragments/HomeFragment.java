@@ -167,11 +167,14 @@ public class HomeFragment extends Fragment {
 
 							assert messageDetails != null;
 
-							if (messageDetails.isActive()) {
-								binding.broadcastMessage.setVisibility(View.VISIBLE);
-								binding.message.setText(messageDetails.getMessage());
-							} else {
-								binding.broadcastMessage.setVisibility(View.GONE);
+							if (isAdded() && ctx != null) {
+
+								if (messageDetails.isActive()) {
+									binding.broadcastMessage.setVisibility(View.VISIBLE);
+									binding.message.setText(messageDetails.getMessage());
+								} else {
+									binding.broadcastMessage.setVisibility(View.GONE);
+								}
 							}
 						}
 					}
@@ -222,29 +225,32 @@ public class HomeFragment extends Fragment {
 
 								assert userDetails != null;
 
-								((BaseActivity) requireContext())
-										.getAccount()
-										.setUserInfo(userDetails);
+								if (isAdded() && ctx != null) {
+									((BaseActivity) requireActivity())
+											.getAccount()
+											.setUserInfo(userDetails);
 
-								binding.welcomeTextHi.setText(
-										String.format(
-												getString(R.string.hi_username),
-												userDetails.getFullName()));
+									binding.welcomeTextHi.setText(
+											String.format(
+													getString(R.string.hi_username),
+													userDetails.getFullName()));
 
-								Glide.with(requireContext())
-										.load(userDetails.getAvatarUrl())
-										.diskCacheStrategy(DiskCacheStrategy.ALL)
-										.placeholder(R.drawable.ic_spinner)
-										.centerCrop()
-										.into(binding.userAvatar);
+									Glide.with(requireContext())
+											.load(userDetails.getAvatarUrl())
+											.diskCacheStrategy(DiskCacheStrategy.ALL)
+											.placeholder(R.drawable.ic_spinner)
+											.centerCrop()
+											.into(binding.userAvatar);
 
-								binding.userAvatar.setOnClickListener(
-										profile -> {
-											Intent intent = new Intent(ctx, ProfileActivity.class);
-											intent.putExtra("source", "home");
-											intent.putExtra("userId", userDetails.getId());
-											ctx.startActivity(intent);
-										});
+									binding.userAvatar.setOnClickListener(
+											profile -> {
+												Intent intent =
+														new Intent(ctx, ProfileActivity.class);
+												intent.putExtra("source", "home");
+												intent.putExtra("userId", userDetails.getId());
+												ctx.startActivity(intent);
+											});
+								}
 							}
 						}
 					}
