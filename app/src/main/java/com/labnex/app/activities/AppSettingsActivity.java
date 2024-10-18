@@ -7,7 +7,6 @@ import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import androidx.biometric.BiometricManager;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -27,7 +26,6 @@ import java.util.Locale;
  */
 public class AppSettingsActivity extends BaseActivity implements BottomSheetListener {
 
-	private Context ctx;
 	private static String[] themeList;
 	private static int themeSelectedChoice;
 	private static int langSelectedChoice;
@@ -39,8 +37,6 @@ public class AppSettingsActivity extends BaseActivity implements BottomSheetList
 		ActivityAppSettingsBinding binding =
 				ActivityAppSettingsBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
-
-		ctx = getApplicationContext();
 
 		binding.bottomAppBar.setNavigationOnClickListener(topBar -> finish());
 
@@ -175,13 +171,17 @@ public class AppSettingsActivity extends BaseActivity implements BottomSheetList
 														i + "|" + selectedLanguage,
 														AppSettingsInit.APP_LOCALE_KEY);
 
+												String[] multiCodeLang =
+														selectedLanguage.split("-");
+												if (selectedLanguage.contains("-")) {
+													selectedLanguage = multiCodeLang[0];
+												}
+
+												Utils.setLocale(this, selectedLanguage);
+
 												MainActivity.refActivity = true;
 												this.overridePendingTransition(0, 0);
 												dialogInterface.dismiss();
-												Snackbar.info(
-														AppSettingsActivity.this,
-														findViewById(R.id.bottom_app_bar),
-														getString(R.string.settings_saved));
 												this.recreate();
 											});
 
@@ -291,21 +291,15 @@ public class AppSettingsActivity extends BaseActivity implements BottomSheetList
 	@Override
 	public void onButtonClicked(String text) {
 
-		/*String url =
-				UrlBuilder.fromString(getAccount().getAccount().getInstanceUrl())
-						.withPath("/")
-						.toString();
-		url = url + getIntent().getStringExtra("orgName");*/
-
 		switch (text) {
 			case "newAccount":
-				// AppUtil.copyToClipboard(this, url, ctx.getString(R.string.copyIssueUrlToastMsg));
+				// Utils.copyToClipboard(this, url, ctx.getString(R.string.copyIssueUrlToastMsg));
 				break;
 			case "share":
-				// AppUtil.sharingIntent(this, url);
+				// Utils.sharingIntent(this, url);
 				break;
 			case "open":
-				// AppUtil.openUrlInBrowser(this, url);
+				// Utils.openUrlInBrowser(this, url);
 				break;
 		}
 	}

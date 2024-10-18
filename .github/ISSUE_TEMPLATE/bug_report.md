@@ -30,12 +30,21 @@ If applicable, add screenshots to help explain your problem. (remove this line)
 **Versions (please complete the following information)**
  - LabNex:  
  - Android:  
+ - GitLab:  
+
+**GitLab instance**
+ - [ ] gitlab.com
+ - [ ] framagit.org
+ - [ ] Self-hosted instance
+ - [ ] Other service (Name/URL: )
 
 **Mode of installation**
  - [ ] Google Play Store
  - [ ] F-droid
  - [ ] APK
  - [ ] Built from source
+ - [ ] OpenAPK
+ - [ ] Other stores (Name: )
 
 **Additional context**
 Add any other context about the problem here. (remove this line)
