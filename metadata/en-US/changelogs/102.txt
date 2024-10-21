@@ -1,0 +1,15 @@
+1.0.2
+
+Improvements:
+- Add new languages and update translations
+- Render Discord link in user profiles
+- Open links in comments
+
+Bug fixes:
+- Fix crash when opening group projects in certain cases
+- Fix language switching on Android 12 and below
+- Fix crash when loading the home screen in certain cases
+- Fix screen resizing issue on the sign-in screen
+- Fix integer data type for long IDs in issue/MR notes
+
+https://github.com/labnex/LabNex/releases
