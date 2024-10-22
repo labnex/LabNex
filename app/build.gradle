@@ -11,8 +11,8 @@ android {
         applicationId "com.labnex.app"
         minSdk 24
         targetSdk 34
-        versionCode 101
-        versionName "1.0.1"
+        versionCode 195
+        versionName "2.0.0-dev"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
