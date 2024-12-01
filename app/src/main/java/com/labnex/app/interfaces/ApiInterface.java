@@ -20,6 +20,7 @@ import com.labnex.app.models.notes.Notes;
 import com.labnex.app.models.personal_access_tokens.PersonalAccessTokens;
 import com.labnex.app.models.projects.CrudeProject;
 import com.labnex.app.models.projects.Projects;
+import com.labnex.app.models.projects.Stars;
 import com.labnex.app.models.release.Releases;
 import com.labnex.app.models.repository.CrudeFile;
 import com.labnex.app.models.repository.FileContents;
@@ -116,6 +117,10 @@ public interface ApiInterface {
 
 	@GET("projects/{id}/members") // get a project members
 	Call<List<User>> getProjectMembers(
+			@Path("id") int id, @Query("per_page") int per_page, @Query("page") int page);
+
+	@GET("projects/{id}/starrers") // get a project starrers
+	Call<List<Stars>> getProjectStarrers(
 			@Path("id") int id, @Query("per_page") int per_page, @Query("page") int page);
 
 	@GET("projects/{id}/repository/files/{filename}") // get a project file

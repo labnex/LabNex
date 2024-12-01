@@ -17,9 +17,11 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.labnex.app.R;
 import com.labnex.app.activities.BaseActivity;
 import com.labnex.app.adapters.MembersAdapter;
+import com.labnex.app.adapters.StarsAdapter;
 import com.labnex.app.databinding.BottomSheetProjectMembersBinding;
 import com.labnex.app.interfaces.BottomSheetListener;
 import com.labnex.app.viewmodels.MembersViewModel;
+import com.labnex.app.viewmodels.ProjectStarsViewModel;
 
 /**
  * @author mmarif
@@ -28,10 +30,13 @@ public class ProjectMembersBottomSheet extends BottomSheetDialogFragment {
 
 	private BottomSheetProjectMembersBinding bottomSheetProjectMembersBinding;
 	private MembersViewModel membersViewModel;
+	private ProjectStarsViewModel projectStarsViewModel;
 	private MembersAdapter membersAdapter;
+	private StarsAdapter starsAdapter;
 	private int page = 1;
 	private int resultLimit;
 	private int projectId;
+	private String type;
 
 	@Nullable @Override
 	public View onCreateView(
@@ -43,8 +48,10 @@ public class ProjectMembersBottomSheet extends BottomSheetDialogFragment {
 				BottomSheetProjectMembersBinding.inflate(inflater, container, false);
 
 		membersViewModel = new ViewModelProvider(this).get(MembersViewModel.class);
+		projectStarsViewModel = new ViewModelProvider(this).get(ProjectStarsViewModel.class);
 
 		projectId = requireArguments().getInt("projectId", 0);
+		type = requireArguments().getString("type");
 		resultLimit = ((BaseActivity) requireContext()).getAccount().getMaxPageLimit();
 
 		bottomSheetProjectMembersBinding.closeBs.setOnClickListener(close -> dismiss());
@@ -53,9 +60,78 @@ public class ProjectMembersBottomSheet extends BottomSheetDialogFragment {
 		bottomSheetProjectMembersBinding.membersList.setHasFixedSize(true);
 		bottomSheetProjectMembersBinding.membersList.setLayoutManager(
 				new LinearLayoutManager(getContext()));
-		fetchProjectMembers();
+
+		if (type.equalsIgnoreCase("stars")) {
+			fetchProjectStarrers();
+		} else {
+			fetchProjectMembers();
+		}
 
 		return bottomSheetProjectMembersBinding.getRoot();
+	}
+
+	public void fetchProjectStarrers() {
+
+		projectStarsViewModel
+				.getProjectStarrers(
+						getContext(),
+						projectId,
+						resultLimit,
+						page,
+						getActivity(),
+						bottomSheetProjectMembersBinding)
+				.observe(
+						this,
+						listMain -> {
+							starsAdapter = new StarsAdapter(getContext(), listMain);
+							starsAdapter.setLoadMoreListener(
+									new StarsAdapter.OnLoadMoreListener() {
+
+										@Override
+										public void onLoadMore() {
+
+											page += 1;
+											projectStarsViewModel.loadMore(
+													getContext(),
+													projectId,
+													resultLimit,
+													page,
+													starsAdapter,
+													getActivity(),
+													bottomSheetProjectMembersBinding);
+											bottomSheetProjectMembersBinding.progressBar
+													.setVisibility(View.VISIBLE);
+										}
+
+										@Override
+										public void onLoadFinished() {
+
+											bottomSheetProjectMembersBinding.progressBar
+													.setVisibility(View.GONE);
+										}
+									});
+
+							if (starsAdapter.getItemCount() > 0) {
+
+								bottomSheetProjectMembersBinding.membersList.setAdapter(
+										starsAdapter);
+								bottomSheetProjectMembersBinding
+										.nothingFoundFrame
+										.getRoot()
+										.setVisibility(View.GONE);
+							} else {
+
+								starsAdapter.notifyDataChanged();
+								bottomSheetProjectMembersBinding.membersList.setAdapter(
+										starsAdapter);
+								bottomSheetProjectMembersBinding
+										.nothingFoundFrame
+										.getRoot()
+										.setVisibility(View.VISIBLE);
+							}
+
+							bottomSheetProjectMembersBinding.progressBar.setVisibility(View.GONE);
+						});
 	}
 
 	public void fetchProjectMembers() {

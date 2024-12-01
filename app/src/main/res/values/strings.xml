@@ -173,6 +173,8 @@
     <string name="ce_no_filename_filled">You haven\'t entered a filename in the File name field. To better utilize the code editor\'s capabilities, it is recommended to provide a filename with an extension.\n\nPress Ignore to continue or Cancel to exit.</string>
     <string name="code_editor">Code editor</string>
     <string name="new_file_created">New file created successfully</string>
+    <string name="home_screen">Home screen</string>
+    <string name="home_screen_dialog_title">Select home screen</string>
 
     <!-- errors -->
     <string name="generic_error">Something went wrong</string>

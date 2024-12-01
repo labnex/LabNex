@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace 'com.labnex.app'
-    compileSdk 34
+    compileSdk 35
 
     defaultConfig {
         applicationId "com.labnex.app"
         minSdk 24
-        targetSdk 34
+        targetSdk 35
         versionCode 195
         versionName "2.0.0-dev"
 

@@ -118,12 +118,22 @@ public class ProjectDetailActivity extends BaseActivity
 					bottomSheet.show(getSupportFragmentManager(), "projectReleasesBottomSheet");
 				});
 
+		binding.projectStars.setOnClickListener(
+				stars -> {
+					bsBundle.putInt("projectId", projectId);
+					bsBundle.putString("type", "stars");
+					ProjectMembersBottomSheet bottomSheet = new ProjectMembersBottomSheet();
+					bottomSheet.setArguments(bsBundle);
+					bottomSheet.show(getSupportFragmentManager(), "projectMembersBottomSheet");
+				});
+
 		binding.bottomAppBar.setNavigationOnClickListener(bottomAppBar -> finish());
 
 		binding.bottomAppBar.setOnMenuItemClickListener(
 				menuItem -> {
 					if (menuItem.getItemId() == R.id.project_members) {
 						bsBundle.putInt("projectId", projectId);
+						bsBundle.putString("type", "members");
 						ProjectMembersBottomSheet bottomSheet = new ProjectMembersBottomSheet();
 						bottomSheet.setArguments(bsBundle);
 						bottomSheet.show(getSupportFragmentManager(), "projectMembersBottomSheet");
