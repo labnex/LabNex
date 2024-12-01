@@ -29,6 +29,8 @@ public class AppSettingsActivity extends BaseActivity implements BottomSheetList
 	private static String[] themeList;
 	private static int themeSelectedChoice;
 	private static int langSelectedChoice;
+	private static String[] homeScreenList;
+	private static int homeScreenSelectedChoice;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -188,6 +190,41 @@ public class AppSettingsActivity extends BaseActivity implements BottomSheetList
 					materialAlertDialogBuilder.create().show();
 				});
 		// language selection dialog
+
+		// home screen selection dialog
+		homeScreenList = getResources().getStringArray(R.array.home_screen);
+		homeScreenSelectedChoice =
+				Integer.parseInt(
+						AppSettingsInit.getSettingsValue(ctx, AppSettingsInit.APP_HOME_SCREEN_KEY));
+		binding.homeScreenSelected.setText(homeScreenList[homeScreenSelectedChoice]);
+
+		binding.homeScreenSelectionFrame.setOnClickListener(
+				view -> {
+					MaterialAlertDialogBuilder materialAlertDialogBuilder =
+							new MaterialAlertDialogBuilder(AppSettingsActivity.this)
+									.setTitle(R.string.home_screen_dialog_title)
+									.setSingleChoiceItems(
+											homeScreenList,
+											homeScreenSelectedChoice,
+											(dialogInterfaceTheme, i) -> {
+												homeScreenSelectedChoice = i;
+												binding.homeScreenSelected.setText(
+														homeScreenList[i]);
+												AppSettingsInit.updateSettingsValue(
+														ctx,
+														String.valueOf(i),
+														AppSettingsInit.APP_HOME_SCREEN_KEY);
+
+												dialogInterfaceTheme.dismiss();
+												Snackbar.info(
+														AppSettingsActivity.this,
+														findViewById(R.id.bottom_app_bar),
+														getString(R.string.settings_saved));
+											});
+
+					materialAlertDialogBuilder.create().show();
+				});
+		// home screen selection dialog
 
 		// biometric switcher
 		binding.switchBiometric.setChecked(

@@ -35,6 +35,12 @@
         <item>8</item>
     </string-array>
 
+    <string-array name="home_screen">
+        <item>@string/home</item>
+        <item>@string/activities</item>
+        <item>@string/explore</item>
+    </string-array>
+
     <string-array name="licenses">
         <item>0BSD</item>
         <item>AAL</item>

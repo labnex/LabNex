@@ -15,6 +15,7 @@ import com.labnex.app.databinding.ActivityMainBinding;
 import com.labnex.app.fragments.ActivitiesFragment;
 import com.labnex.app.fragments.ExploreFragment;
 import com.labnex.app.fragments.HomeFragment;
+import com.labnex.app.helpers.AppSettingsInit;
 import com.labnex.app.models.metadata.Metadata;
 import com.labnex.app.models.personal_access_tokens.PersonalAccessTokens;
 import java.util.Objects;
@@ -26,17 +27,19 @@ import retrofit2.Callback;
  */
 public class MainActivity extends BaseActivity {
 
+	private ActivityMainBinding binding;
 	private Fragment homeFragment;
 	private Fragment activitiesFragment;
 	private Fragment exploreFragment;
 	public static boolean refActivity = false;
 	public static boolean closeActivity = false;
+	public static boolean homeScreen = true;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
-		ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
+		binding = ActivityMainBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
 		UserAccountsApi userAccountsApi = BaseApi.getInstance(ctx, UserAccountsApi.class);
@@ -85,6 +88,26 @@ public class MainActivity extends BaseActivity {
 			this.recreate();
 			this.overridePendingTransition(0, 0);
 			refActivity = false;
+		}
+
+		if (homeScreen) {
+			switch (Integer.parseInt(
+					AppSettingsInit.getSettingsValue(ctx, AppSettingsInit.APP_HOME_SCREEN_KEY))) {
+				case 0:
+					binding.navView.getMenu().getItem(0).setChecked(true);
+					loadFragment(homeFragment);
+					break;
+				case 1:
+					binding.navView.getMenu().getItem(1).setChecked(true);
+					loadFragment(activitiesFragment);
+					break;
+				case 2:
+					binding.navView.getMenu().getItem(2).setChecked(true);
+					loadFragment(exploreFragment);
+					break;
+			}
+		} else {
+			homeScreen = true;
 		}
 	}
 
