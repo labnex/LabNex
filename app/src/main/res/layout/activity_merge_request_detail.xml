@@ -396,6 +396,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@string/add"
+        android:backgroundTint="?attr/iconsColor"
         app:srcCompat="@drawable/ic_comments"
         app:layout_anchor="@id/bottom_app_bar" />
 

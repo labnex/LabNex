@@ -60,8 +60,4 @@
         <item name="inputBsDividerColor">@color/md_system_input_divider_color</item>
     </style>
     <!-- System default - dark -->
-
-    <!-- Dynamic colors -->
-    <style name="AppThemeDynamicSystem" parent="AppThemeDarkDynamicColors"/>
-    <!-- Dynamic colors -->
 </resources>

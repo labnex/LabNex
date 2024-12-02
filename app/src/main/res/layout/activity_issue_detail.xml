@@ -341,7 +341,7 @@
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/dimen2dp"
-                    app:dividerColor="?attr/colorOnPrimary"
+                    app:dividerColor="?attr/divider"
                     android:layout_marginTop="12dp"
                     android:background="?android:attr/listDivider" />
 
@@ -397,6 +397,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@string/add"
+        android:backgroundTint="?attr/iconsColor"
         app:srcCompat="@drawable/ic_comments"
         app:layout_anchor="@id/bottom_app_bar" />
 

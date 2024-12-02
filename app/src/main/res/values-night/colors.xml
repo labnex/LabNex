@@ -146,4 +146,5 @@
     <color name="md_system_default_text_color">#18120E</color>
     <color name="md_system_input_divider_color">#221C14</color>
     <color name="md_system_default_input_background_color">#000000</color>
+    <color name="material_alert_dialog_background">#2A2A2E</color>
 </resources>
