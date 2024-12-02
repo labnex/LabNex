@@ -12,4 +12,15 @@
     <attr name="inputBsDividerColor" format="reference"/>
     <attr name="inputBackgroundColor" format="reference" />
     <attr name="isDark" format="integer"/>
+    <attr name="materialCardBackgroundColor" format="reference"/>
+    <attr name="primaryTextColor" format="reference"/>
+    <attr name="primaryBackgroundColor" format="reference"/>
+    <attr name="hintColor" format="reference"/>
+    <attr name="progressIndicatorColor" format="reference"/>
+    <attr name="fabColor" format="reference"/>
+    <attr name="pagerTabIndicatorColor" format="reference"/>
+    <attr name="inputTextColor" format="reference"/>
+    <attr name="selectedTextColor" format="reference"/>
+    <attr name="inputSelectedColor" format="reference"/>
+    <attr name="materialAlertDialogBackgroundColor" format="reference" />
 </resources>

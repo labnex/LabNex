@@ -1,56 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="AppThemeDarkDynamicColors" parent="Theme.Material3.Dark.NoActionBar">
-        <item name="android:statusBarColor">@android:color/system_neutral1_900</item>
-        <item name="colorAccent">@android:color/system_accent1_200</item>
-        <item name="android:textColorSecondary">@android:color/system_accent1_0</item>
-        <item name="android:textColorPrimary">@android:color/system_accent1_0</item>
-        <item name="colorOnSurfaceVariant">@android:color/system_accent2_100</item>
-        <item name="colorSecondaryContainer">@android:color/system_neutral2_800</item>
-        <item name="colorControlActivated">@android:color/system_accent1_300</item>
-        <item name="dividerColor">@android:color/system_accent2_600</item>
-        <item name="materialSwitchStyle">@style/materialSwitchStyle</item>
-
-        <item name="colorPrimary">@android:color/system_accent1_200</item>
-        <item name="colorOnPrimary">@android:color/system_accent1_800</item>
-        <item name="colorSecondary">@android:color/system_accent2_200</item>
-        <item name="colorOnSecondary">@android:color/system_accent2_800</item>
-        <item name="android:colorBackground">@android:color/system_neutral1_900</item>
-        <item name="colorOnBackground">@android:color/system_neutral1_100</item>
-        <item name="colorSurface">@android:color/system_neutral1_900</item>
-        <item name="colorOnSurface">@android:color/system_neutral1_100</item>
-
-        <item name="iconsColor">@android:color/system_neutral1_100</item>
-        <item name="isDark">1</item>
-    </style>
-
-    <style name="AppThemeLightDynamicColors" parent="Theme.Material3.Light.NoActionBar">
+    <!-- dynamic colors - light -->
+    <style name="AppThemeDynamicColors" parent="Theme.Material3.Light.NoActionBar">
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">true</item>
-        <item name="dividerColor">@android:color/system_accent2_600</item>
-        <item name="colorAccent">@android:color/system_accent1_100</item>
+        <item name="materialCardBackgroundColor">@android:color/system_accent2_50</item>
         <item name="colorOnSurfaceVariant">@android:color/system_accent2_900</item>
         <item name="colorSecondaryContainer">@android:color/system_accent1_200</item>
+        <item name="colorPrimary">@android:color/system_accent1_300</item>
+        <item name="colorAccent">@android:color/system_neutral1_800</item>
+        <item name="android:textColorSecondary">@android:color/system_neutral1_800</item>
+        <item name="android:textColorPrimary">@android:color/system_neutral1_800</item>
+        <item name="colorSecondary">@android:color/system_accent1_200</item>
+        <item name="colorOnSurface">@android:color/system_accent2_900</item>
 
-        <item name="colorPrimary">@android:color/system_accent1_600</item>
-        <item name="colorOnPrimary">@android:color/system_accent1_0</item>
-        <item name="colorSecondary">@android:color/system_accent2_600</item>
-        <item name="colorOnSecondary">@android:color/system_accent2_0</item>
-        <item name="android:colorBackground">@android:color/system_neutral1_10</item>
-        <item name="colorOnBackground">@android:color/system_neutral1_900</item>
+        <item name="primaryTextColor">@android:color/system_accent2_900</item>
+        <item name="primaryBackgroundColor">@android:color/system_neutral1_10</item>
+        <item name="hintColor">@android:color/system_accent1_800</item>
+        <item name="dividerColor">@android:color/system_accent2_600</item>
         <item name="colorSurface">@android:color/system_neutral1_10</item>
-        <item name="colorOnSurface">@android:color/system_neutral1_900</item>
+        <item name="progressIndicatorColor">@android:color/system_accent1_300</item>
+        <item name="fabColor">@android:color/system_accent1_300</item>
+        <item name="iconsColor">@android:color/system_accent1_300</item>
+        <item name="pagerTabIndicatorColor">@android:color/system_accent1_300</item>
+        <item name="selectedTextColor">@android:color/system_accent1_300</item>
+        <item name="colorControlActivated">@android:color/system_accent1_300</item>
+        <item name="inputBackgroundColor">@android:color/system_neutral1_50</item>
+        <item name="inputSelectedColor">@android:color/system_accent1_300</item>
+        <item name="inputTextColor">@android:color/system_accent2_900</item>
 
-        <item name="iconsColor">@android:color/system_neutral1_900</item>
-        <item name="isDark">0</item>
+        <item name="android:navigationBarColor">@android:color/system_accent1_50</item>
+        <item name="bottomNavigationColor">@android:color/system_accent1_50</item>
+        <item name="snackbarContainer">@color/snackbar_on_container</item>
+        <item name="snackbarOnContainer">@color/snackbar_container</item>
+        <item name="divider">@android:color/system_neutral1_100</item>
+        <item name="materialAlertDialogBackgroundColor">@color/material_alert_dialog_background</item>
     </style>
-
-    <style name="AppThemeLightCheckBoxStyle" parent="Widget.Material3.CompoundButton.CheckBox">
-        <item name="buttonTint">@android:color/system_accent1_300</item>
-    </style>
-
-    <style name="materialSwitchStyle" parent="Widget.Material3.CompoundButton.MaterialSwitch">
-        <item name="thumbTint">@android:color/system_accent1_0</item>
-    </style>
-
+    <!-- dynamic colors - light -->
 </resources>

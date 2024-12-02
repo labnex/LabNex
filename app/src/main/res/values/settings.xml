@@ -9,6 +9,13 @@
         <item>Dark</item>
         <item>Light</item>
         <item>Follow system</item>
+        <item>Dynamic colors (Follow system)</item>
+    </string-array>
+
+    <string-array name="themes_older_versions">
+        <item>Dark</item>
+        <item>Light</item>
+        <item>Follow system</item>
     </string-array>
 
     <string-array name="cacheSizeList">

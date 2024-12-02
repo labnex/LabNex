@@ -6,6 +6,7 @@ import static androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTI
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import androidx.biometric.BiometricManager;
 import com.bumptech.glide.Glide;
@@ -107,7 +108,11 @@ public class AppSettingsActivity extends BaseActivity implements BottomSheetList
 				});
 
 		// theme selection dialog
-		themeList = getResources().getStringArray(R.array.themes);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S || "S".equals(Build.VERSION.CODENAME)) {
+			themeList = getResources().getStringArray(R.array.themes);
+		} else {
+			themeList = getResources().getStringArray(R.array.themes_older_versions);
+		}
 		themeSelectedChoice =
 				Integer.parseInt(
 						AppSettingsInit.getSettingsValue(ctx, AppSettingsInit.APP_THEME_KEY));

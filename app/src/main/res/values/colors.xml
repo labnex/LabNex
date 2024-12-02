@@ -9,6 +9,7 @@
     <color name="cardview_dark_background">#FF424242</color>
     <color name="diff_removed_color">#4A2223</color>
     <color name="diff_added_color">#1E3622</color>
+    <color name="material_alert_dialog_background">#ECE6F0</color>
     <!-- generic colors -->
 
     <!-- System default - light -->
