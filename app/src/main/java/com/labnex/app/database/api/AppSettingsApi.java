@@ -69,4 +69,8 @@ public class AppSettingsApi extends BaseApi {
 			executorService.execute(() -> appSettingsDao.deleteBySettingKey(settingKey));
 		}
 	}
+
+	public void deleteAllSettings() {
+		executorService.execute(appSettingsDao::deleteAllAppSettings);
+	}
 }

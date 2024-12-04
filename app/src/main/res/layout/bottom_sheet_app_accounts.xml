@@ -9,8 +9,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="end"
         android:layout_marginBottom="@dimen/dimen16dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/remove_all_accounts"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/remove_all_accounts"
+            android:textSize="@dimen/dimen12sp"
+            android:layout_weight="1"
+            android:gravity="start|center_vertical"
+            android:layout_gravity="center_vertical|center_horizontal" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/add_new_account"
@@ -18,6 +27,7 @@
             android:layout_height="wrap_content"
             android:text="@string/add_new_account"
             style="@style/CustomMaterialButton"
+            android:textSize="@dimen/dimen12sp"
             android:layout_gravity="center_vertical|center_horizontal" />
 
     </LinearLayout>

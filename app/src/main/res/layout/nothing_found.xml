@@ -16,7 +16,7 @@
         android:contentDescription="@string/nothing_found"
         android:layout_gravity="center"
         android:src="@drawable/ic_nothing_found"
-        app:tint="@color/md_theme_error" />
+        app:tint="?attr/iconsColor" />
 
     <TextView
         android:id="@+id/nothing_found"
@@ -24,7 +24,7 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:text="@string/nothing_found"
-        android:textColor="@color/md_theme_error"
+        android:textColor="?attr/iconsColor"
         android:textSize="@dimen/dimen18sp" />
 
 </LinearLayout>

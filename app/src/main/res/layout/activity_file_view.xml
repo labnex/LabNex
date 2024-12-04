@@ -83,6 +83,7 @@
         app:menu="@menu/file_viewer_menu"
         style="@style/Widget.Material3.BottomAppBar"
         app:backgroundTint="?attr/bottomNavigationColor"
-        app:navigationIcon="@drawable/ic_arrow_back" />
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:navigationIconTint="?attr/iconsColor" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

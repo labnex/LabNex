@@ -351,7 +351,7 @@
                         android:contentDescription="@string/app_name"
                         android:layout_marginEnd="@dimen/dimen16dp"
                         app:tint="?attr/iconsColor"
-                        app:srcCompat="@drawable/ic_info" />
+                        app:srcCompat="@drawable/ic_letter_v" />
 
                     <LinearLayout
                         android:id="@+id/about_version_selection"
@@ -654,6 +654,7 @@
         style="@style/Widget.Material3.BottomAppBar"
         app:backgroundTint="?attr/bottomNavigationColor"
         app:navigationIcon="@drawable/ic_arrow_back"
+        app:navigationIconTint="?attr/iconsColor"
         tools:ignore="TooManyViews">
 
         <RelativeLayout

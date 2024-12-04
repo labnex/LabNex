@@ -34,6 +34,8 @@
     <string name="personal_access_token_helper"><u>Where can I get a personal access token?</u></string>
     <string name="personal_access_token_helper_link" translatable="false">https://gitlab.com/-/user_settings/personal_access_tokens</string>
     <string name="add_new_account">Add account</string>
+    <string name="remove_all_accounts">Remove all accounts</string>
+    <string name="remove_all_accounts_from_app_message">This will remove all the accounts from the app only, including projects data, personal notes, etc.</string>
     <string name="account_token_expires_at">Token expires on %s</string>
     <string name="remove_account_from_app_title">Remove account</string>
     <string name="remove_account_from_app_message">Are you sure you want to remove this account from the app?\n\nThis will remove all data related to this account on the app only.</string>
@@ -265,5 +267,7 @@
     <string name="clear">Clear</string>
     <string name="content">Content</string>
     <string name="ignore">Ignore</string>
+    <string name="closed">Closed</string>
+    <string name="merged">Merged</string>
     <!-- generic copy -->
 </resources>

@@ -1,6 +1,7 @@
 package com.labnex.app.activities;
 
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -13,6 +14,7 @@ import com.labnex.app.contexts.ProjectsContext;
 import com.labnex.app.databinding.ActivityIssuesBinding;
 import com.labnex.app.helpers.Snackbar;
 import com.labnex.app.viewmodels.IssuesViewModel;
+import java.util.Objects;
 
 /**
  * @author mmarif
@@ -25,11 +27,11 @@ public class IssuesActivity extends BaseActivity implements CreateIssueActivity.
 	private int page = 1;
 	private int resultLimit;
 	private final String scope = "created_by_me";
-	private final String state = "opened";
 	private String source;
 	private int id;
 	public ProjectsContext projectsContext;
 	public static boolean updateIssuesList = false;
+	private String filter = "opened";
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -53,6 +55,46 @@ public class IssuesActivity extends BaseActivity implements CreateIssueActivity.
 		binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
 		binding.bottomAppBar.setNavigationOnClickListener(bottomAppBar -> finish());
+
+		Objects.requireNonNull(binding.bottomAppBar.getMenu().getItem(0).getIcon())
+				.setColorFilter(
+						getResources().getColor(R.color.md_light_theme_text_color, null),
+						PorterDuff.Mode.SRC_IN);
+
+		binding.bottomAppBar.setOnMenuItemClickListener(
+				menuItem -> {
+					page = 1;
+					if (menuItem.getItemId() == R.id.closed) {
+
+						Objects.requireNonNull(binding.bottomAppBar.getMenu().getItem(1).getIcon())
+								.setColorFilter(
+										getResources()
+												.getColor(R.color.md_light_theme_text_color, null),
+										PorterDuff.Mode.SRC_IN);
+						Objects.requireNonNull(binding.bottomAppBar.getMenu().getItem(0).getIcon())
+								.clearColorFilter();
+
+						binding.progressBar.setVisibility(View.VISIBLE);
+						filter = "closed";
+						fetchDataAsync(filter);
+					}
+					if (menuItem.getItemId() == R.id.open) {
+
+						Objects.requireNonNull(binding.bottomAppBar.getMenu().getItem(0).getIcon())
+								.setColorFilter(
+										getResources()
+												.getColor(R.color.md_light_theme_text_color, null),
+										PorterDuff.Mode.SRC_IN);
+						Objects.requireNonNull(binding.bottomAppBar.getMenu().getItem(1).getIcon())
+								.clearColorFilter();
+
+						binding.progressBar.setVisibility(View.VISIBLE);
+						filter = "opened";
+						fetchDataAsync(filter);
+						;
+					}
+					return false;
+				});
 
 		Bundle bsBundle = new Bundle();
 
@@ -79,12 +121,12 @@ public class IssuesActivity extends BaseActivity implements CreateIssueActivity.
 										() -> {
 											page = 1;
 											binding.pullToRefresh.setRefreshing(false);
-											fetchDataAsync();
+											fetchDataAsync(filter);
 											binding.progressBar.setVisibility(View.VISIBLE);
 										},
 										250));
 
-		fetchDataAsync();
+		fetchDataAsync(filter);
 	}
 
 	@Override
@@ -93,12 +135,12 @@ public class IssuesActivity extends BaseActivity implements CreateIssueActivity.
 
 		if (updateIssuesList) {
 			page = 1;
-			fetchDataAsync();
+			fetchDataAsync(filter);
 			updateIssuesList = false;
 		}
 	}
 
-	private void fetchDataAsync() {
+	private void fetchDataAsync(String filter) {
 
 		issuesViewModel
 				.getIssues(
@@ -106,7 +148,7 @@ public class IssuesActivity extends BaseActivity implements CreateIssueActivity.
 						source,
 						id,
 						scope,
-						state,
+						filter,
 						resultLimit,
 						page,
 						IssuesActivity.this,
@@ -127,7 +169,7 @@ public class IssuesActivity extends BaseActivity implements CreateIssueActivity.
 													source,
 													id,
 													scope,
-													state,
+													filter,
 													resultLimit,
 													page,
 													adapter,
@@ -171,6 +213,6 @@ public class IssuesActivity extends BaseActivity implements CreateIssueActivity.
 
 		adapter.clearAdapter();
 		page = 1;
-		fetchDataAsync();
+		fetchDataAsync(filter);
 	}
 }
