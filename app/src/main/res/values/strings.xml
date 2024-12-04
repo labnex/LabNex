@@ -265,5 +265,7 @@
     <string name="clear">Clear</string>
     <string name="content">Content</string>
     <string name="ignore">Ignore</string>
+    <string name="closed">Closed</string>
+    <string name="merged">Merged</string>
     <!-- generic copy -->
 </resources>

@@ -534,7 +534,8 @@
         style="@style/Widget.Material3.BottomAppBar"
         app:menu="@menu/project_menu"
         app:backgroundTint="?attr/bottomNavigationColor"
-        app:navigationIcon="@drawable/ic_arrow_back">
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:navigationIconTint="?attr/iconsColor">
 
     </com.google.android.material.bottomappbar.BottomAppBar>
 

@@ -44,24 +44,9 @@
         android:layout_gravity="bottom"
         style="@style/Widget.Material3.BottomAppBar"
         app:backgroundTint="?attr/bottomNavigationColor"
-        app:navigationIcon="@drawable/ic_arrow_back">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:id="@+id/issues_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimen24dp"
-                android:text="@string/issues"
-                android:layout_alignParentStart="true"
-                android:textSize="@dimen/dimen20sp" />
-
-        </RelativeLayout>
-
-    </com.google.android.material.bottomappbar.BottomAppBar>
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:navigationIconTint="?attr/iconsColor"
+        app:menu="@menu/issues_menu" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/new_issue"
