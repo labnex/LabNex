@@ -97,6 +97,10 @@ public class UserAccountsApi extends BaseApi {
 		executorService.execute(() -> userAccountsDao.deleteAccount(accountId));
 	}
 
+	public void deleteAllAccounts() {
+		executorService.execute(userAccountsDao::deleteAllAccounts);
+	}
+
 	public void updateTokenExpiry(final int accountId, final String tokenExpiry) {
 		executorService.execute(() -> userAccountsDao.updateTokenExpiry(accountId, tokenExpiry));
 	}

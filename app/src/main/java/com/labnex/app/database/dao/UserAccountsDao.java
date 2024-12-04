@@ -65,6 +65,9 @@ public interface UserAccountsDao {
 	@Query("DELETE FROM UserAccounts WHERE accountId = :accountId")
 	void deleteAccount(int accountId);
 
+	@Query("DELETE FROM UserAccounts")
+	void deleteAllAccounts();
+
 	@Query("UPDATE UserAccounts SET tokenExpiry = :tokenExpiry WHERE accountId = :accountId")
 	void updateTokenExpiry(int accountId, String tokenExpiry);
 }

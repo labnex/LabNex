@@ -39,4 +39,7 @@ public interface AppSettingsDao {
 
 	@Query("DELETE FROM AppSettings WHERE settingKey = :settingKey")
 	void deleteBySettingKey(String settingKey);
+
+	@Query("DELETE FROM AppSettings")
+	void deleteAllAppSettings();
 }

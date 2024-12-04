@@ -14,7 +14,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.labnex.app.R;
-import com.labnex.app.activities.SignInActivity;
 import com.labnex.app.database.api.BaseApi;
 import com.labnex.app.database.api.UserAccountsApi;
 import com.labnex.app.database.models.UserAccount;
@@ -80,6 +79,8 @@ public class UserAccountsAdapter
 
 		if (sharedPrefDB.getInt("currentActiveAccountId") == currentItem.getAccountId()) {
 			holder.activeAccount.setVisibility(View.VISIBLE);
+		} else {
+			holder.deleteAccount.setVisibility(View.VISIBLE);
 		}
 
 		holder.tokenExpiresAt.setText(
@@ -154,37 +155,6 @@ public class UserAccountsAdapter
 													userAccountsApi.deleteAccount(
 															Integer.parseInt(
 																	String.valueOf(accountId)));
-
-													new Handler()
-															.postDelayed(
-																	() -> {
-																		UserAccountsApi
-																				userAccountsApiInstance =
-																						BaseApi
-																								.getInstance(
-																										itemCtx,
-																										UserAccountsApi
-																												.class);
-																		assert userAccountsApiInstance
-																				!= null;
-																		if (userAccountsApiInstance
-																						.getCount()
-																				== 0) {
-																			Intent intent =
-																					new Intent(
-																							context,
-																							SignInActivity
-																									.class);
-																			intent.setFlags(
-																					Intent
-																									.FLAG_ACTIVITY_NEW_TASK
-																							| Intent
-																									.FLAG_ACTIVITY_CLEAR_TASK);
-																			context.startActivity(
-																					intent);
-																		}
-																	},
-																	500);
 												});
 
 						materialAlertDialogBuilder.create().show();
