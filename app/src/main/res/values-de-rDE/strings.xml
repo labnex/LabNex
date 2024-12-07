@@ -1,7 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- non translatable strings -->
-    <!-- non translatable strings -->
     <string name="action_sign_in">Sign in</string>
     <string name="hi_username">Hi %s 👋</string>
     <string name="welcome_back">Welcome back</string>
@@ -13,6 +10,8 @@
     <string name="personal_access_token">Personal access token</string>
     <string name="personal_access_token_helper"><u>Where can I get a personal access token?</u></string>
     <string name="add_new_account">Add account</string>
+    <string name="remove_all_accounts">Remove all accounts</string>
+    <string name="remove_all_accounts_from_app_message">This will remove all the accounts from the app only, including projects data, personal notes, etc.</string>
     <string name="account_token_expires_at">Token expires on %s</string>
     <string name="remove_account_from_app_title">Remove account</string>
     <string name="remove_account_from_app_message">Are you sure you want to remove this account from the app?\n\nThis will remove all data related to this account on the app only.</string>
@@ -152,6 +151,9 @@
     <string name="ce_no_filename_filled">You haven\'t entered a filename in the File name field. To better utilize the code editor\'s capabilities, it is recommended to provide a filename with an extension.\n\nPress Ignore to continue or Cancel to exit.</string>
     <string name="code_editor">Code editor</string>
     <string name="new_file_created">New file created successfully</string>
+    <string name="home_screen">Home screen</string>
+    <string name="home_screen_dialog_title">Select home screen</string>
+
     <!-- errors -->
     <string name="generic_error">Something went wrong</string>
     <string name="browserOpenFailed">No application found to open this link</string>
@@ -171,6 +173,7 @@
     <string name="access_forbidden_403">Access forbidden, the request isn’t allowed</string>
     <string name="no_description">No description provided</string>
     <!-- errors -->
+
     <!-- generic copy -->
     <string name="home">Home</string>
     <string name="activities">Activities</string>
@@ -240,5 +243,7 @@
     <string name="clear">Clear</string>
     <string name="content">Content</string>
     <string name="ignore">Ignore</string>
+    <string name="closed">Closed</string>
+    <string name="merged">Merged</string>
     <!-- generic copy -->
 </resources>

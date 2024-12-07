@@ -15,7 +15,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.labnex.app.R;
 import com.labnex.app.activities.SignInActivity;
 import com.labnex.app.adapters.UserAccountsAdapter;
-import com.labnex.app.database.api.AppSettingsApi;
 import com.labnex.app.database.api.BaseApi;
 import com.labnex.app.database.api.NotesApi;
 import com.labnex.app.database.api.ProjectsApi;

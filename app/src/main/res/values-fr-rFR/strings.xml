@@ -13,6 +13,8 @@
     <string name="personal_access_token">Jeton d\'accès personnel</string>
     <string name="personal_access_token_helper"><u>Où puis-je trouver le jeton d\'accès personnel ?</u></string>
     <string name="add_new_account">Ajouter un compte</string>
+    <string name="remove_all_accounts">Remove all accounts</string>
+    <string name="remove_all_accounts_from_app_message">This will remove all the accounts from the app only, including projects data, personal notes, etc.</string>
     <string name="account_token_expires_at">Le jeton expire le %s</string>
     <string name="remove_account_from_app_title">Supprimer le compte</string>
     <string name="remove_account_from_app_message">Êtes-vous certain de vouloir supprimer ce compte de l’application ?\n\nSeules les données concernant ce compte au sein de l’application seront supprimées.</string>
@@ -152,6 +154,8 @@
     <string name="ce_no_filename_filled">You haven\'t entered a filename in the File name field. To better utilize the code editor\'s capabilities, it is recommended to provide a filename with an extension.\n\nPress Ignore to continue or Cancel to exit.</string>
     <string name="code_editor">Code editor</string>
     <string name="new_file_created">New file created successfully</string>
+    <string name="home_screen">Home screen</string>
+    <string name="home_screen_dialog_title">Select home screen</string>
     <!-- errors -->
     <string name="generic_error">Something went wrong</string>
     <string name="browserOpenFailed">No application found to open this link</string>
@@ -240,5 +244,7 @@
     <string name="clear">Clear</string>
     <string name="content">Content</string>
     <string name="ignore">Ignore</string>
+    <string name="closed">Closed</string>
+    <string name="merged">Merged</string>
     <!-- generic copy -->
 </resources>
