@@ -1,0 +1,14 @@
+2.0.0
+
+🎉 Features 🎉
+- Dynamic color theme for Android 12 and above
+- Set your own start/home screen
+- Project starrers
+- Filter issues (open and closed)
+- Filter merge requests (open, merged, and closed)
+- Remove all accounts from the app
+
+🚀 Improvements 🚀 
+- UI enhancements throughout the entire app
+
+Release Notes: https://github.com/labnex/LabNex/releases
