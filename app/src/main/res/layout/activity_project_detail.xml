@@ -176,6 +176,52 @@
                     </LinearLayout>
                     <!-- stars/forks frame -->
 
+                    <!-- star a project / fork a project -->
+                    <LinearLayout
+                        android:id="@+id/star_fork_project_frame"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:visibility="gone"
+                        android:layout_marginTop="@dimen/dimen12dp">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/star_a_project"
+                            android:layout_width="@dimen/dimen120dp"
+                            android:layout_height="@dimen/dimen36dp"
+                            app:cornerRadius="@dimen/dimen12dp"
+                            android:insetBottom="0dp"
+                            android:insetTop="0dp"
+                            android:text="@string/star"
+                            android:textSize="@dimen/dimen14sp"
+                            app:icon="@drawable/ic_star" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/unstar_a_project"
+                            android:layout_width="@dimen/dimen120dp"
+                            android:layout_height="@dimen/dimen36dp"
+                            app:cornerRadius="@dimen/dimen12dp"
+                            android:insetBottom="0dp"
+                            android:insetTop="0dp"
+                            android:text="@string/unstar"
+                            android:textSize="@dimen/dimen14sp"
+                            app:icon="@drawable/ic_star_filled" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/fork_a_project"
+                            android:layout_width="wrap_content"
+                            android:layout_height="@dimen/dimen36dp"
+                            app:cornerRadius="@dimen/dimen12dp"
+                            android:layout_marginStart="@dimen/dimen16dp"
+                            android:text="@string/fork"
+                            android:insetTop="0dp"
+                            android:insetBottom="0dp"
+                            android:visibility="gone"
+                            app:icon="@drawable/ic_forks" />
+
+                    </LinearLayout>
+                    <!-- star a project / fork a project -->
+
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>

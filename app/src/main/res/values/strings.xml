@@ -69,6 +69,8 @@
     <string name="starred_projects">Starred projects</string>
     <string name="most_visited_empty_message">You haven\'t visited any projects yet. Explore projects to list them here.</string>
     <string name="archived_project">This is an archived project. Repository and other project resources are read-only.</string>
+    <string name="project_starred">The project has been starred successfully</string>
+    <string name="project_unstarred">The project has been unstarred successfully</string>
     <plurals name="project_stars">
         <item quantity="one">%s star</item>
         <item quantity="other">%s stars</item>
@@ -90,6 +92,7 @@
     <string name="label_updated">Label updated successfully</string>
     <string name="add_new_member">Add new member</string>
     <string name="copy_url_message">URL has been copied to the clipboard</string>
+    <string name="copy_project_id">Copy project ID</string>
     <string name="copy_web_url">Copy project URL</string>
     <string name="copy_clone_https_url">Copy HTTPS clone URL</string>
     <string name="copy_ssh_url">Copy SSH URL</string>
@@ -210,6 +213,9 @@
     <string name="groups">Groups</string>
     <string name="projects">Projects</string>
     <string name="starred">Starred</string>
+    <string name="star">Star</string>
+    <string name="unstar">Unstar</string>
+    <string name="fork">Fork</string>
     <string name="issues">Issues</string>
     <string name="notes">Notes</string>
     <string name="settings">Settings</string>
