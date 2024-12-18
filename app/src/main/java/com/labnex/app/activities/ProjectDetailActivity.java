@@ -132,6 +132,14 @@ public class ProjectDetailActivity extends BaseActivity
 					bottomSheet.show(getSupportFragmentManager(), "projectMembersBottomSheet");
 				});
 
+		binding.projectForks.setOnClickListener(
+				stars -> {
+					bsBundle.putInt("projectId", projectId);
+					ProjectMembersBottomSheet bottomSheet = new ProjectMembersBottomSheet();
+					bottomSheet.setArguments(bsBundle);
+					bottomSheet.show(getSupportFragmentManager(), "projectForksBottomSheet");
+				});
+
 		binding.bottomAppBar.setNavigationOnClickListener(bottomAppBar -> finish());
 
 		binding.bottomAppBar.setOnMenuItemClickListener(
