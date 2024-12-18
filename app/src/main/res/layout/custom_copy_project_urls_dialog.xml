@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingEnd="@dimen/dimen24dp"
+    android:paddingStart="@dimen/dimen24dp">
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/copy_project_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/copy_project_id"
+        android:textSize="@dimen/dimen14sp"
+        android:gravity="start|center_vertical"
+        android:layout_marginTop="@dimen/dimen20dp"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_gravity="center_vertical" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/copy_web_url"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/copy_web_url"
+        android:textSize="@dimen/dimen14sp"
+        android:gravity="start|center_vertical"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_gravity="center_vertical" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/copy_https_url"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/copy_clone_https_url"
+        android:textSize="@dimen/dimen14sp"
+        android:gravity="start|center_vertical"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_gravity="center_vertical" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/copy_ssh_url"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/copy_ssh_url"
+        android:textSize="@dimen/dimen14sp"
+        android:gravity="start|center_vertical"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_gravity="center_vertical" />
+
+</LinearLayout>

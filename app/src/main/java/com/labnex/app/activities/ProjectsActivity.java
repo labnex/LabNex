@@ -143,7 +143,7 @@ public class ProjectsActivity extends BaseActivity
 					ctx,
 					findViewById(android.R.id.content),
 					binding.bottomAppBar,
-					getString(R.string.project_craeted));
+					getString(R.string.project_created));
 		}
 
 		adapter.clearAdapter();

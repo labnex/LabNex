@@ -123,6 +123,12 @@ public interface ApiInterface {
 	Call<List<Stars>> getProjectStarrers(
 			@Path("id") int id, @Query("per_page") int per_page, @Query("page") int page);
 
+	@POST("projects/{id}/star") // star a project
+	Call<Projects> starProject(@Path("id") int id);
+
+	@POST("projects/{id}/unstar") // unstar a project
+	Call<Projects> unstarProject(@Path("id") int id);
+
 	@GET("projects/{id}/repository/files/{filename}") // get a project file
 	Call<FileContents> getProjectFileContent(
 			@Path("id") int id, @Path("filename") String filename, @Query("ref") String ref);

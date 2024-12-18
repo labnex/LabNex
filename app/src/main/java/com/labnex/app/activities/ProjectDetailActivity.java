@@ -3,10 +3,13 @@ package com.labnex.app.activities;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import androidx.annotation.NonNull;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.labnex.app.R;
 import com.labnex.app.bottomsheets.BranchesBottomSheet;
 import com.labnex.app.bottomsheets.ProjectLabelsBottomSheet;
@@ -26,6 +29,8 @@ import com.labnex.app.interfaces.BottomSheetListener;
 import com.labnex.app.models.projects.Projects;
 import com.labnex.app.models.repository.FileContents;
 import com.vdurmont.emoji.EmojiParser;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -69,7 +74,7 @@ public class ProjectDetailActivity extends BaseActivity
 		}
 
 		binding.filesMainFrame.setOnClickListener(
-				releases -> {
+				files -> {
 					ProjectsContext project =
 							new ProjectsContext(projectsContext.getProject(), ctx);
 					Intent intent = project.getIntent(ctx, FilesBrowserActivity.class);
@@ -80,7 +85,7 @@ public class ProjectDetailActivity extends BaseActivity
 				});
 
 		binding.commitsMainFrame.setOnClickListener(
-				issues -> {
+				commits -> {
 					ProjectsContext project =
 							new ProjectsContext(projectsContext.getProject(), ctx);
 					Intent intent = project.getIntent(ctx, CommitsActivity.class);
@@ -162,7 +167,7 @@ public class ProjectDetailActivity extends BaseActivity
 				});
 
 		binding.newIssue.setOnClickListener(
-				accounts -> {
+				newIssue -> {
 					ProjectsContext project =
 							new ProjectsContext(
 									projectsContext.getProjectName(),
@@ -182,7 +187,12 @@ public class ProjectDetailActivity extends BaseActivity
 					bottomSheet.show(getSupportFragmentManager(), "branchesBottomSheet");
 				});
 
+		binding.starAProject.setOnClickListener(starAProject -> starAProject());
+
+		binding.unstarAProject.setOnClickListener(unstarAProject -> unstarAProject());
+
 		getProjectInfo();
+		loadUserStars();
 	}
 
 	@Override
@@ -291,12 +301,77 @@ public class ProjectDetailActivity extends BaseActivity
 								branch = projectDetails.getDefaultBranch();
 
 								binding.copyProjectUrl.setOnClickListener(
-										copy ->
-												Utils.copyToClipboard(
-														ctx,
-														ProjectDetailActivity.this,
-														projectDetails.getWebUrl(),
-														getString(R.string.copy_url_message)));
+										copy -> {
+											MaterialAlertDialogBuilder materialAlertDialogBuilder =
+													new MaterialAlertDialogBuilder(ctx);
+
+											View customDialogView =
+													LayoutInflater.from(ctx)
+															.inflate(
+																	R.layout
+																			.custom_copy_project_urls_dialog,
+																	findViewById(
+																			android.R.id.content),
+																	false);
+
+											materialAlertDialogBuilder
+													.setView(customDialogView)
+													.setNeutralButton(R.string.close, null)
+													.show();
+
+											MaterialButton projId =
+													customDialogView.findViewById(
+															R.id.copy_project_id);
+											MaterialButton webUrl =
+													customDialogView.findViewById(
+															R.id.copy_web_url);
+											MaterialButton httpsUrl =
+													customDialogView.findViewById(
+															R.id.copy_https_url);
+											MaterialButton sshUrl =
+													customDialogView.findViewById(
+															R.id.copy_ssh_url);
+
+											projId.setOnClickListener(
+													projectId ->
+															Utils.copyToClipboard(
+																	ctx,
+																	ProjectDetailActivity.this,
+																	String.valueOf(
+																			projectDetails.getId()),
+																	getString(
+																			R.string
+																					.copy_url_message)));
+											webUrl.setOnClickListener(
+													web ->
+															Utils.copyToClipboard(
+																	ctx,
+																	ProjectDetailActivity.this,
+																	projectDetails.getWebUrl(),
+																	getString(
+																			R.string
+																					.copy_url_message)));
+											httpsUrl.setOnClickListener(
+													https ->
+															Utils.copyToClipboard(
+																	ctx,
+																	ProjectDetailActivity.this,
+																	projectDetails
+																			.getHttpUrlToRepo(),
+																	getString(
+																			R.string
+																					.copy_url_message)));
+											sshUrl.setOnClickListener(
+													ssh ->
+															Utils.copyToClipboard(
+																	ctx,
+																	ProjectDetailActivity.this,
+																	projectDetails
+																			.getSshUrlToRepo(),
+																	getString(
+																			R.string
+																					.copy_url_message)));
+										});
 
 								if (projectDetails.getReadmeUrl() != null) {
 									README =
@@ -357,6 +432,127 @@ public class ProjectDetailActivity extends BaseActivity
 
 					@Override
 					public void onFailure(@NonNull Call<FileContents> call, @NonNull Throwable t) {
+						Snackbar.info(
+								ProjectDetailActivity.this,
+								findViewById(R.id.bottom_app_bar),
+								getString(R.string.generic_server_response_error));
+					}
+				});
+	}
+
+	private void loadUserStars() {
+
+		Call<List<Projects>> call =
+				RetrofitClient.getApiInterface(ctx)
+						.getStarredProjects(getAccount().getUserInfo().getId(), 100, 1);
+
+		call.enqueue(
+				new Callback<>() {
+
+					@Override
+					public void onResponse(
+							@NonNull Call<List<Projects>> call,
+							@NonNull Response<List<Projects>> response) {
+
+						List<Projects> projects = response.body();
+
+						if (response.isSuccessful()) {
+
+							if (response.code() == 200) {
+
+								assert projects != null;
+								List<Integer> starred = new ArrayList<>();
+								for (int i = 0; i < projects.size(); i++) {
+									starred.add(projects.get(i).getId());
+								}
+
+								binding.starForkProjectFrame.setVisibility(View.VISIBLE);
+								if (starred.contains(projectId)) {
+									binding.unstarAProject.setVisibility(View.VISIBLE);
+									binding.starAProject.setVisibility(View.GONE);
+								} else {
+									binding.starAProject.setVisibility(View.VISIBLE);
+									binding.unstarAProject.setVisibility(View.GONE);
+								}
+							}
+						}
+					}
+
+					@Override
+					public void onFailure(
+							@NonNull Call<List<Projects>> call, @NonNull Throwable t) {
+						Snackbar.info(
+								ProjectDetailActivity.this,
+								findViewById(R.id.bottom_app_bar),
+								getString(R.string.generic_server_response_error));
+					}
+				});
+	}
+
+	private void starAProject() {
+
+		Call<Projects> call = RetrofitClient.getApiInterface(ctx).starProject(projectId);
+
+		call.enqueue(
+				new Callback<>() {
+
+					@Override
+					public void onResponse(
+							@NonNull Call<Projects> call, @NonNull Response<Projects> response) {
+
+						if (response.isSuccessful()) {
+
+							if (response.code() == 201) {
+
+								Snackbar.info(
+										ProjectDetailActivity.this,
+										findViewById(R.id.bottom_app_bar),
+										getString(R.string.project_starred));
+
+								binding.starAProject.setVisibility(View.GONE);
+								binding.unstarAProject.setVisibility(View.VISIBLE);
+							}
+						}
+					}
+
+					@Override
+					public void onFailure(@NonNull Call<Projects> call, @NonNull Throwable t) {
+						Snackbar.info(
+								ProjectDetailActivity.this,
+								findViewById(R.id.bottom_app_bar),
+								getString(R.string.generic_server_response_error));
+					}
+				});
+	}
+
+	private void unstarAProject() {
+
+		Call<Projects> call = RetrofitClient.getApiInterface(ctx).unstarProject(projectId);
+
+		call.enqueue(
+				new Callback<>() {
+
+					@Override
+					public void onResponse(
+							@NonNull Call<Projects> call, @NonNull Response<Projects> response) {
+
+						if (response.isSuccessful()) {
+
+							if (response.code() == 201) {
+
+								Snackbar.info(
+										ProjectDetailActivity.this,
+										findViewById(R.id.bottom_app_bar),
+										getString(R.string.project_unstarred));
+
+								binding.starAProject.setVisibility(View.VISIBLE);
+								binding.unstarAProject.setVisibility(View.GONE);
+							}
+						}
+					}
+
+					@Override
+					public void onFailure(@NonNull Call<Projects> call, @NonNull Throwable t) {
 						Snackbar.info(
 								ProjectDetailActivity.this,
 								findViewById(R.id.bottom_app_bar),
