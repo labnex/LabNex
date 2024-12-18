@@ -1,7 +1,6 @@
 <resources>
     <string-array name="languages">
         <item>en</item>
-        <item>de</item>
         <item>fr</item>
     </string-array>
 

@@ -3,10 +3,13 @@ package com.labnex.app.activities;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import androidx.annotation.NonNull;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.labnex.app.R;
 import com.labnex.app.bottomsheets.BranchesBottomSheet;
 import com.labnex.app.bottomsheets.ProjectLabelsBottomSheet;
@@ -291,12 +294,64 @@ public class ProjectDetailActivity extends BaseActivity
 								branch = projectDetails.getDefaultBranch();
 
 								binding.copyProjectUrl.setOnClickListener(
-										copy ->
-												Utils.copyToClipboard(
-														ctx,
-														ProjectDetailActivity.this,
-														projectDetails.getWebUrl(),
-														getString(R.string.copy_url_message)));
+										copy -> {
+											MaterialAlertDialogBuilder materialAlertDialogBuilder =
+													new MaterialAlertDialogBuilder(ctx);
+
+											View customDialogView =
+													LayoutInflater.from(ctx)
+															.inflate(
+																	R.layout
+																			.custom_copy_project_urls_dialog,
+																	findViewById(
+																			android.R.id.content),
+																	false);
+
+											materialAlertDialogBuilder
+													.setView(customDialogView)
+													.setNeutralButton(R.string.close, null)
+													.show();
+
+											MaterialButton webUrl =
+													customDialogView.findViewById(
+															R.id.copy_web_url);
+											MaterialButton httpsUrl =
+													customDialogView.findViewById(
+															R.id.copy_https_url);
+											MaterialButton sshUrl =
+													customDialogView.findViewById(
+															R.id.copy_ssh_url);
+
+											webUrl.setOnClickListener(
+													web ->
+															Utils.copyToClipboard(
+																	ctx,
+																	ProjectDetailActivity.this,
+																	projectDetails.getWebUrl(),
+																	getString(
+																			R.string
+																					.copy_url_message)));
+											httpsUrl.setOnClickListener(
+													https ->
+															Utils.copyToClipboard(
+																	ctx,
+																	ProjectDetailActivity.this,
+																	projectDetails
+																			.getHttpUrlToRepo(),
+																	getString(
+																			R.string
+																					.copy_url_message)));
+											sshUrl.setOnClickListener(
+													ssh ->
+															Utils.copyToClipboard(
+																	ctx,
+																	ProjectDetailActivity.this,
+																	projectDetails
+																			.getSshUrlToRepo(),
+																	getString(
+																			R.string
+																					.copy_url_message)));
+										});
 
 								if (projectDetails.getReadmeUrl() != null) {
 									README =

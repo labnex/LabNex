@@ -118,7 +118,7 @@
     <string name="create_project">Créer un projet</string>
     <string name="project_name_required">Le nom du projet est obligatoire</string>
     <string name="project_visibility">Visibilité du projet</string>
-    <string name="project_craeted">Projet créé avec succès</string>
+    <string name="project_created">Projet créé avec succès</string>
     <string name="activity_commented_on_issue">Commenté sur le ticket %s #%s</string>
     <string name="activity_commented_on_mr">Commenté sur la demande de fusion %s !%s</string>
     <string name="activity_opened_mr">Demande de fusion ouverte %s !%s</string>

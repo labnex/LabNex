@@ -90,6 +90,9 @@
     <string name="label_updated">Label updated successfully</string>
     <string name="add_new_member">Add new member</string>
     <string name="copy_url_message">URL has been copied to the clipboard</string>
+    <string name="copy_web_url">Copy project URL</string>
+    <string name="copy_clone_https_url">Copy HTTPS clone URL</string>
+    <string name="copy_ssh_url">Copy SSH URL</string>
     <string name="new_page">New page</string>
     <string name="delete_wiki_dialog_message">Do you really want to delete this wiki page?</string>
     <string name="wiki_content_hint">Write wiki content here…</string>
@@ -139,7 +142,7 @@
     <string name="create_project">Create project</string>
     <string name="project_name_required">Project name is required</string>
     <string name="project_visibility">Project visibility</string>
-    <string name="project_craeted">Project created successfully</string>
+    <string name="project_created">Project created successfully</string>
     <string name="activity_commented_on_issue">Commented on issue %s #%s</string>
     <string name="activity_commented_on_mr">Commented on merge request %s !%s</string>
     <string name="activity_opened_mr">Opened merge request %s !%s</string>
