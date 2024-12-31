@@ -21,6 +21,7 @@ import com.labnex.app.helpers.TimeUtils;
 import com.labnex.app.models.events.Events;
 import com.labnex.app.models.projects.Projects;
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -357,7 +358,7 @@ public class ActivitiesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 			}
 
 			String modifiedTime =
-					TimeUtils.formatTime(Date.from(Instant.parse(events.getCreatedAt())), locale);
+					TimeUtils.formatTime(Date.from(OffsetDateTime.parse(events.getCreatedAt()).toInstant()), locale);
 			time.setText(modifiedTime);
 		}
 	}

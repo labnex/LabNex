@@ -26,6 +26,7 @@ import com.labnex.app.helpers.TimeUtils;
 import com.labnex.app.models.release.Releases;
 import com.vdurmont.emoji.EmojiParser;
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -210,7 +211,7 @@ public class ProjectReleasesAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 			}
 
 			String modifiedTime =
-					TimeUtils.formatTime(Date.from(Instant.parse(releases.getCreatedAt())), locale);
+					TimeUtils.formatTime(Date.from(OffsetDateTime.parse(releases.getCreatedAt()).toInstant()), locale);
 			published.setText(
 					context.getResources()
 							.getString(
