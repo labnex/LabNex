@@ -39,7 +39,6 @@ import com.labnex.app.models.merge_requests.CrudeMergeRequest;
 import com.labnex.app.models.merge_requests.MergeRequests;
 import com.labnex.app.viewmodels.IssueMrNotesViewModel;
 import com.vdurmont.emoji.EmojiParser;
-import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.Locale;
@@ -249,7 +248,10 @@ public class MergeRequestDetailActivity extends BaseActivity
 				TimeUtils.formatTime(
 						Date.from(
 								OffsetDateTime.parse(
-										mergeRequestContext.getMergeRequest().getCreatedAt()).toInstant()),
+												mergeRequestContext
+														.getMergeRequest()
+														.getCreatedAt())
+										.toInstant()),
 						locale);
 
 		if (mergeRequestContext.getMergeRequest().getAuthor().getAvatarUrl() != null) {

@@ -158,7 +158,8 @@ public class ProjectMilestonesAdapter extends RecyclerView.Adapter<RecyclerView.
 			int startDate = 0;
 
 			if (milestones.getStartDate() != null) {
-				Instant startDate_ = OffsetDateTime.parse(milestones.getStartDate() + "T23:59:59Z").toInstant();
+				Instant startDate_ =
+						OffsetDateTime.parse(milestones.getStartDate() + "T23:59:59Z").toInstant();
 				startDate = (int) startDate_.getEpochSecond();
 			}
 

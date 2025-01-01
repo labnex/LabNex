@@ -36,7 +36,6 @@ import com.labnex.app.models.issues.Issues;
 import com.labnex.app.models.labels.Labels;
 import com.labnex.app.viewmodels.IssueMrNotesViewModel;
 import com.vdurmont.emoji.EmojiParser;
-import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.Locale;
@@ -181,7 +180,9 @@ public class IssueDetailActivity extends BaseActivity
 						+ "</font>";
 		String modifiedTime =
 				TimeUtils.formatTime(
-						Date.from(OffsetDateTime.parse(issue.getIssue().getCreatedAt()).toInstant()), locale);
+						Date.from(
+								OffsetDateTime.parse(issue.getIssue().getCreatedAt()).toInstant()),
+						locale);
 
 		if (issue.getIssue().getAuthor().getAvatarUrl() != null) {
 

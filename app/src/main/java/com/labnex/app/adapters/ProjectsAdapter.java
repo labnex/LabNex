@@ -22,7 +22,6 @@ import com.labnex.app.helpers.TextDrawable.TextDrawable;
 import com.labnex.app.helpers.TimeUtils;
 import com.labnex.app.helpers.Utils;
 import com.labnex.app.models.projects.Projects;
-import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
@@ -185,7 +184,9 @@ public class ProjectsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 			if (projects.getUpdatedAt() != null) {
 				String modifiedTime =
 						TimeUtils.formatTime(
-								Date.from(OffsetDateTime.parse(projects.getUpdatedAt()).toInstant()), locale);
+								Date.from(
+										OffsetDateTime.parse(projects.getUpdatedAt()).toInstant()),
+								locale);
 				projectUpdatedAt.setText(modifiedTime);
 			} else {
 				projectUpdatedAt.setVisibility(View.GONE);
