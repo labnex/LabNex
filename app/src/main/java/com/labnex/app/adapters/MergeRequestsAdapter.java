@@ -21,7 +21,7 @@ import com.labnex.app.contexts.ProjectsContext;
 import com.labnex.app.helpers.TimeUtils;
 import com.labnex.app.models.merge_requests.MergeRequests;
 import com.labnex.app.models.projects.Projects;
-import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -217,7 +217,9 @@ public class MergeRequestsAdapter extends RecyclerView.Adapter<RecyclerView.View
 			issueNotesCount.setText(String.valueOf(mergeRequests.getUserNotesCount()));
 			String modifiedTime =
 					TimeUtils.formatTime(
-							Date.from(Instant.parse(mergeRequests.getCreatedAt())), locale);
+							Date.from(
+									OffsetDateTime.parse(mergeRequests.getCreatedAt()).toInstant()),
+							locale);
 			issueCreatedAt.setText(modifiedTime);
 		}
 	}
