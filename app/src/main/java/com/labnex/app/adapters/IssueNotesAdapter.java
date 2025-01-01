@@ -20,7 +20,6 @@ import com.labnex.app.helpers.Markdown;
 import com.labnex.app.helpers.TimeUtils;
 import com.labnex.app.models.notes.Notes;
 import com.vdurmont.emoji.EmojiParser;
-import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
@@ -163,7 +162,9 @@ public class IssueNotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 					projectsContext);
 
 			String modifiedTime =
-					TimeUtils.formatTime(Date.from(OffsetDateTime.parse(note.getCreatedAt()).toInstant()), locale);
+					TimeUtils.formatTime(
+							Date.from(OffsetDateTime.parse(note.getCreatedAt()).toInstant()),
+							locale);
 			date.setText(modifiedTime);
 		}
 	}

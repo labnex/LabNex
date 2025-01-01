@@ -254,7 +254,10 @@ public class MergeRequestDetailActivity extends BaseActivity
 				TimeUtils.formatTime(
 						Date.from(
 								OffsetDateTime.parse(
-										mergeRequestContext.getMergeRequest().getCreatedAt()).toInstant()),
+												mergeRequestContext
+														.getMergeRequest()
+														.getCreatedAt())
+										.toInstant()),
 						locale);
 
 		if (mergeRequestContext.getMergeRequest().getAuthor().getAvatarUrl() != null) {
