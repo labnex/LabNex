@@ -233,19 +233,26 @@
                     android:orientation="horizontal"
                     android:padding="@dimen/dimen12dp">
 
+                    <TextView
+                        android:id="@+id/mr_approval_info"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/activity_mr_not_eligible"
+                        android:visibility="gone" />
+
                     <Button
                         android:id="@+id/mr_approval_button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Approve" />
+                        android:text="@string/activity_mr_approve" />
 
                     <TextView
                         android:id="@+id/mr_required_approvals"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="4"
-                        android:text="Approvals: 0 / 1"
                         android:textAlignment="viewEnd"
                         android:textAllCaps="false" />
 

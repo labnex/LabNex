@@ -161,6 +161,10 @@
     <string name="activity_created_wiki_page">Created wiki page %s</string>
     <string name="activity_updated_wiki_page">Updated wiki page %s</string>
     <string name="activity_created_project">Created project %s</string>
+    <string name="activity_mr_approve">Approve</string>
+    <string name="activity_mr_revoke">Revoke</string>
+    <string name="activity_mr_approvals">Approvals: %d / %d</string>
+    <string name="activity_mr_not_eligible">You can not approve this merge request</string>
     <string name="files_ref">Files - ref:%s</string>
     <string name="exclude_files_in_fileviewer">This file type/size is not supported by the file viewer. You can download it to your phone instead.</string>
     <string name="render_md">Render Markdown</string>

@@ -242,13 +242,13 @@ public interface ApiInterface {
 			@Path("merge_request_iid") int merge_request_iid);
 
 	@POST("projects/{id}/merge_requests/{merge_request_iid}/approve")
-		// approval/state
+	// approve
 	Call<Approvals> approve(
 			@Path("id") int id,
 			@Path("merge_request_iid") int merge_request_iid);
 
 	@POST("projects/{id}/merge_requests/{merge_request_iid}/unapprove")
-		// approval/state
+	// unapprove
 	Call<Approvals> revokeApproval(
 			@Path("id") int id,
 			@Path("merge_request_iid") int merge_request_iid);

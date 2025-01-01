@@ -710,7 +710,7 @@ public class MergeRequestDetailActivity extends BaseActivity
 							Call<User> userCall = RetrofitClient.getApiInterface(ctx).getCurrentUser();
 
 							userCall.enqueue(
-									new Callback<User>() {
+									new Callback<>() {
 										@Override
 										public void onResponse(Call<User> userCall, Response<User> userResponse) {
 											assert response.body() != null;
@@ -720,7 +720,7 @@ public class MergeRequestDetailActivity extends BaseActivity
 
 											for (ApprovedBy approvedBy : approvedByList) {
 												if (approvedBy.getUser().getId() == userResponse.body().getId()) {
-													activityMergeRequestDetailBinding.mrApprovalButton.setText("Revoke");
+													activityMergeRequestDetailBinding.mrApprovalButton.setText(getString(R.string.activity_mr_revoke));
 												}
 											}
 
@@ -728,36 +728,32 @@ public class MergeRequestDetailActivity extends BaseActivity
 											requiredApprovals = response.body().getApprovalsRequired();
 
 											activityMergeRequestDetailBinding.mrRequiredApprovals.setText(
-													String.format(
-															"Approvals: %s / %s",
-															approvals,
-															requiredApprovals));
+													getString(R.string.activity_mr_approvals, approvals, requiredApprovals));
 
 											activityMergeRequestDetailBinding.mrApprovalButton.setOnClickListener(view -> {
 												activityMergeRequestDetailBinding.progressBar.setVisibility(View.VISIBLE);
 
-												if (activityMergeRequestDetailBinding.mrApprovalButton.getText().toString().equals("Approve")) {
+												if (activityMergeRequestDetailBinding.mrApprovalButton.getText().toString().equals(getString(R.string.activity_mr_approve))) {
 													Call<Approvals> approveCall = RetrofitClient.getApiInterface(ctx).approve(
 															projectId,
 															mergeRequestContext.getMergeRequest().getIid());
 
 													approveCall.enqueue(
-															new Callback<Approvals>() {
+															new Callback<>() {
 																@Override
 																public void onResponse(Call<Approvals> approveCall, Response<Approvals> approveResponse) {
 																	activityMergeRequestDetailBinding.progressBar.setVisibility(View.GONE);
 
 																	if (approveResponse.code() == 201) {
-																		activityMergeRequestDetailBinding.mrApprovalButton.setText("Revoke");
+																		activityMergeRequestDetailBinding.mrApprovalButton.setText(getString(R.string.activity_mr_revoke));
 
 																		approvals = approveResponse.body().getApprovedBy().size();
 																		requiredApprovals = approveResponse.body().getApprovalsRequired();
 
 																		activityMergeRequestDetailBinding.mrRequiredApprovals.setText(
-																				String.format(
-																						"Approvals: %s / %s",
-																						approvals,
-																						requiredApprovals));
+																				getString(R.string.activity_mr_approvals, approvals, requiredApprovals));
+
+																		refreshNotes();
 																	}
 																}
 
@@ -767,27 +763,26 @@ public class MergeRequestDetailActivity extends BaseActivity
 																}
 															}
 													);
-												} else if (activityMergeRequestDetailBinding.mrApprovalButton.getText().toString().equals("Revoke")) {
+												} else if (activityMergeRequestDetailBinding.mrApprovalButton.getText().toString().equals(getString(R.string.activity_mr_revoke))) {
 													Call<Approvals> revokeCall = RetrofitClient.getApiInterface(ctx).revokeApproval(
 															projectId,
 															mergeRequestContext.getMergeRequest().getIid());
 
 													revokeCall.enqueue(
-															new Callback<Approvals>() {
+															new Callback<>() {
 																@Override
 																public void onResponse(Call<Approvals> revokeCall, Response<Approvals> revokeResponse) {
 																	activityMergeRequestDetailBinding.progressBar.setVisibility(View.GONE);
 
 																	if (revokeResponse.code() == 201) {
-																		activityMergeRequestDetailBinding.mrApprovalButton.setText("Approve");
+																		activityMergeRequestDetailBinding.mrApprovalButton.setText(getText(R.string.activity_mr_approve));
 
 																		approvals--;
 
 																		activityMergeRequestDetailBinding.mrRequiredApprovals.setText(
-																				String.format(
-																						"Approvals: %s / %s",
-																						approvals,
-																						requiredApprovals));
+																				getString(R.string.activity_mr_approvals, approvals, requiredApprovals));
+
+																		refreshNotes();
 																	}
 																}
 
@@ -805,7 +800,7 @@ public class MergeRequestDetailActivity extends BaseActivity
 										public void onFailure(Call<User> userCall, Throwable userThrowable) {
 
 										}
-							});
+									});
 						}
 					}
 
@@ -813,5 +808,10 @@ public class MergeRequestDetailActivity extends BaseActivity
 					public void onFailure(
 							@NonNull Call<Approvals> call, @NonNull Throwable t) {}
 				});
+	}
+
+	private void refreshNotes() {
+		page = 1;
+		getMergeRequestNotesData();
 	}
 }
