@@ -731,6 +731,8 @@ public class MergeRequestDetailActivity extends BaseActivity
 															requiredApprovals));
 
 											activityMergeRequestDetailBinding.mrApprovalButton.setOnClickListener(view -> {
+												activityMergeRequestDetailBinding.progressBar.setVisibility(View.VISIBLE);
+
 												if (activityMergeRequestDetailBinding.mrApprovalButton.getText().toString().equals("Approve")) {
 													Call<Approvals> approveCall = RetrofitClient.getApiInterface(ctx).approve(
 															projectId,
@@ -740,6 +742,8 @@ public class MergeRequestDetailActivity extends BaseActivity
 															new Callback<Approvals>() {
 																@Override
 																public void onResponse(Call<Approvals> approveCall, Response<Approvals> approveResponse) {
+																	activityMergeRequestDetailBinding.progressBar.setVisibility(View.GONE);
+
 																	if (approveResponse.code() == 201) {
 																		activityMergeRequestDetailBinding.mrApprovalButton.setText("Revoke");
 
@@ -756,7 +760,7 @@ public class MergeRequestDetailActivity extends BaseActivity
 
 																@Override
 																public void onFailure(Call<Approvals> approveCall, Throwable approveThrowable) {
-
+																	activityMergeRequestDetailBinding.progressBar.setVisibility(View.GONE);
 																}
 															}
 													);
@@ -769,6 +773,8 @@ public class MergeRequestDetailActivity extends BaseActivity
 															new Callback<Approvals>() {
 																@Override
 																public void onResponse(Call<Approvals> revokeCall, Response<Approvals> revokeResponse) {
+																	activityMergeRequestDetailBinding.progressBar.setVisibility(View.GONE);
+
 																	if (revokeResponse.code() == 201) {
 																		activityMergeRequestDetailBinding.mrApprovalButton.setText("Approve");
 
@@ -784,7 +790,7 @@ public class MergeRequestDetailActivity extends BaseActivity
 
 																@Override
 																public void onFailure(Call<Approvals> revokeCall, Throwable revokeThrowable) {
-
+																	activityMergeRequestDetailBinding.progressBar.setVisibility(View.GONE);
 																}
 															}
 													);
