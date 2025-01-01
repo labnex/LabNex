@@ -14,7 +14,7 @@ import com.labnex.app.R;
 import com.labnex.app.bottomsheets.CommitDiffsBottomSheet;
 import com.labnex.app.helpers.TimeUtils;
 import com.labnex.app.models.commits.Commits;
-import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -144,13 +144,15 @@ public class CommitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 				String modifiedTime =
 						TimeUtils.formatTime(
 								Date.from(
-										Instant.parse(
-												commits.getCreatedAt()
-																.substring(
-																		0,
-																		commits.getCommittedDate()
-																				.indexOf("."))
-														+ "Z")),
+										OffsetDateTime.parse(
+														commits.getCreatedAt()
+																		.substring(
+																				0,
+																				commits.getCommittedDate()
+																						.indexOf(
+																								"."))
+																+ "Z")
+												.toInstant()),
 								locale);
 				info.setText(
 						String.format(

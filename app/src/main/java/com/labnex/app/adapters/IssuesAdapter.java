@@ -21,7 +21,7 @@ import com.labnex.app.contexts.ProjectsContext;
 import com.labnex.app.helpers.TimeUtils;
 import com.labnex.app.models.issues.Issues;
 import com.labnex.app.models.projects.Projects;
-import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -201,7 +201,9 @@ public class IssuesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
 			issueNotesCount.setText(String.valueOf(issues.getUserNotesCount()));
 			String modifiedTime =
-					TimeUtils.formatTime(Date.from(Instant.parse(issues.getCreatedAt())), locale);
+					TimeUtils.formatTime(
+							Date.from(OffsetDateTime.parse(issues.getCreatedAt()).toInstant()),
+							locale);
 			issueCreatedAt.setText(modifiedTime);
 		}
 	}
