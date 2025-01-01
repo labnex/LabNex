@@ -3,20 +3,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main_frame"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:orientation="vertical">
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/main_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="@dimen/dimen70dp">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/dimen8dp"
-            android:padding="@dimen/dimen16dp"
+            android:layout_marginBottom="@dimen/dimen80dp"
+            android:fitsSystemWindows="true"
             android:orientation="vertical">
 
             <com.google.android.material.card.MaterialCardView
@@ -25,6 +25,7 @@
                 android:layout_width="wrap_content"
                 app:strokeWidth="@dimen/dimen0dp"
                 android:layout_gravity="center_vertical|center_horizontal"
+                android:layout_margin="@dimen/dimen16dp"
                 app:cardCornerRadius="@dimen/dimen40dp"
                 app:cardElevation="@dimen/dimen0dp">
 
@@ -39,140 +40,117 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-            <TextView
-                android:id="@+id/username"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|center_horizontal"
-                android:layout_marginTop="@dimen/dimen4dp"
-                android:textSize="@dimen/dimen14sp"
-                android:alpha=".7" />
-
-            <TextView
-                android:id="@+id/user_email"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|center_horizontal"
-                android:layout_marginTop="@dimen/dimen2dp"
-                android:textSize="@dimen/dimen14sp"
-                android:visibility="gone"
-                android:alpha=".7" />
-
-            <TextView
-                android:id="@+id/pronouns"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|center_horizontal"
-                android:layout_marginTop="@dimen/dimen2dp"
-                android:textSize="@dimen/dimen12sp"
-                android:visibility="gone"
-                android:alpha=".7" />
-
-            <TextView
-                android:id="@+id/fullname"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|center_horizontal"
-                android:layout_marginTop="@dimen/dimen12dp"
-                android:textSize="@dimen/dimen20sp" />
-
-            <com.google.android.material.button.MaterialButtonToggleGroup
-                android:id="@+id/follow_info"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimen12dp"
-                android:layout_gravity="center_vertical|center_horizontal">
-
-                <com.google.android.material.button.MaterialButton
-                    style="?attr/materialIconButtonFilledTonalStyle"
-                    android:id="@+id/followers"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:insetRight="@dimen/dimen2dp"
-                    android:paddingStart="@dimen/dimen16dp"
-                    android:paddingEnd="@dimen/dimen16dp"
-                    android:clickable="false"
-                    android:text="@string/user_followers" />
-
-                <com.google.android.material.button.MaterialButton
-                    style="?attr/materialIconButtonFilledTonalStyle"
-                    android:id="@+id/following"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:insetLeft="@dimen/dimen2dp"
-                    android:paddingStart="@dimen/dimen16dp"
-                    android:paddingEnd="@dimen/dimen16dp"
-                    android:clickable="false"
-                    android:text="@string/user_following" />
-
-            </com.google.android.material.button.MaterialButtonToggleGroup>
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/location_info"
-                android:layout_height="wrap_content"
+            <LinearLayout
                 android:layout_width="match_parent"
-                style="?attr/materialCardViewElevatedStyle"
-                app:strokeWidth="@dimen/dimen0dp"
-                android:layout_gravity="center_vertical|center_horizontal"
-                android:layout_marginTop="@dimen/dimen12dp"
-                android:visibility="gone"
-                app:cardElevation="@dimen/dimen0dp">
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/dimen16dp">
 
                 <TextView
-                    android:id="@+id/location"
+                    android:id="@+id/username"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="@dimen/dimen12dp"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:layout_marginTop="@dimen/dimen4dp"
                     android:textSize="@dimen/dimen14sp"
-                    android:drawablePadding="@dimen/dimen12dp"
-                    android:gravity="center_vertical"
-                    android:autoLink="web"
-                    app:drawableStartCompat="@drawable/ic_location" />
-
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/website_url_info"
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent"
-                style="?attr/materialCardViewElevatedStyle"
-                app:strokeWidth="@dimen/dimen0dp"
-                android:layout_gravity="center_vertical|center_horizontal"
-                android:layout_marginTop="@dimen/dimen12dp"
-                android:visibility="gone"
-                app:cardElevation="@dimen/dimen0dp">
+                    android:alpha=".7" />
 
                 <TextView
-                    android:id="@+id/website_url"
+                    android:id="@+id/user_email"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="@dimen/dimen12dp"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:layout_marginTop="@dimen/dimen2dp"
                     android:textSize="@dimen/dimen14sp"
-                    android:drawablePadding="@dimen/dimen12dp"
-                    android:gravity="center_vertical"
-                    android:autoLink="web"
-                    app:drawableStartCompat="@drawable/ic_browser" />
+                    android:visibility="gone"
+                    android:alpha=".7" />
 
-            </com.google.android.material.card.MaterialCardView>
+                <TextView
+                    android:id="@+id/pronouns"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:layout_marginTop="@dimen/dimen2dp"
+                    android:textSize="@dimen/dimen12sp"
+                    android:visibility="gone"
+                    android:alpha=".7" />
 
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/social_info"
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent"
-                style="?attr/materialCardViewElevatedStyle"
-                app:strokeWidth="@dimen/dimen0dp"
-                android:layout_gravity="center_vertical|center_horizontal"
-                android:layout_marginTop="@dimen/dimen12dp"
-                android:visibility="gone"
-                app:cardElevation="@dimen/dimen0dp">
+                <TextView
+                    android:id="@+id/fullname"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:layout_marginTop="@dimen/dimen12dp"
+                    android:textSize="@dimen/dimen20sp" />
 
-                <LinearLayout
+                <com.google.android.material.button.MaterialButtonToggleGroup
+                    android:id="@+id/follow_info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dimen12dp"
+                    android:layout_gravity="center_vertical|center_horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        style="?attr/materialIconButtonFilledTonalStyle"
+                        android:id="@+id/followers"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:insetRight="@dimen/dimen2dp"
+                        android:paddingStart="@dimen/dimen16dp"
+                        android:paddingEnd="@dimen/dimen16dp"
+                        android:clickable="false"
+                        android:text="@string/user_followers" />
+
+                    <com.google.android.material.button.MaterialButton
+                        style="?attr/materialIconButtonFilledTonalStyle"
+                        android:id="@+id/following"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:insetLeft="@dimen/dimen2dp"
+                        android:paddingStart="@dimen/dimen16dp"
+                        android:paddingEnd="@dimen/dimen16dp"
+                        android:clickable="false"
+                        android:text="@string/user_following" />
+
+                </com.google.android.material.button.MaterialButtonToggleGroup>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/location_info"
+                    android:layout_height="wrap_content"
                     android:layout_width="match_parent"
+                    style="?attr/materialCardViewElevatedStyle"
+                    app:strokeWidth="@dimen/dimen0dp"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:layout_marginTop="@dimen/dimen12dp"
+                    android:visibility="gone"
+                    app:cardElevation="@dimen/dimen0dp">
+
+                    <TextView
+                        android:id="@+id/location"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/dimen12dp"
+                        android:textSize="@dimen/dimen14sp"
+                        android:drawablePadding="@dimen/dimen12dp"
+                        android:gravity="center_vertical"
+                        android:autoLink="web"
+                        app:drawableStartCompat="@drawable/ic_location" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/website_url_info"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:layout_width="match_parent"
+                    style="?attr/materialCardViewElevatedStyle"
+                    app:strokeWidth="@dimen/dimen0dp"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:layout_marginTop="@dimen/dimen12dp"
+                    android:visibility="gone"
+                    app:cardElevation="@dimen/dimen0dp">
 
                     <TextView
-                        android:id="@+id/skype"
+                        android:id="@+id/website_url"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:padding="@dimen/dimen12dp"
@@ -180,73 +158,104 @@
                         android:drawablePadding="@dimen/dimen12dp"
                         android:gravity="center_vertical"
                         android:autoLink="web"
-                        android:textIsSelectable="true"
-                        android:visibility="gone"
-                        app:drawableStartCompat="@drawable/ic_skype" />
+                        app:drawableStartCompat="@drawable/ic_browser" />
 
-                    <TextView
-                        android:id="@+id/discord"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:padding="@dimen/dimen12dp"
-                        android:textSize="@dimen/dimen14sp"
-                        android:drawablePadding="@dimen/dimen12dp"
-                        android:gravity="center_vertical"
-                        android:autoLink="web"
-                        android:textIsSelectable="true"
-                        android:visibility="gone"
-                        app:drawableStartCompat="@drawable/ic_discord" />
+                </com.google.android.material.card.MaterialCardView>
 
-                    <TextView
-                        android:id="@+id/linkedin"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:padding="@dimen/dimen12dp"
-                        android:textSize="@dimen/dimen14sp"
-                        android:drawablePadding="@dimen/dimen12dp"
-                        android:gravity="center_vertical"
-                        android:autoLink="web"
-                        android:textIsSelectable="true"
-                        android:visibility="gone"
-                        app:drawableStartCompat="@drawable/ic_linkedin" />
-
-                    <TextView
-                        android:id="@+id/twitter"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:padding="@dimen/dimen12dp"
-                        android:textSize="@dimen/dimen14sp"
-                        android:drawablePadding="@dimen/dimen12dp"
-                        android:gravity="center_vertical"
-                        android:autoLink="web"
-                        android:textIsSelectable="true"
-                        android:visibility="gone"
-                        app:drawableStartCompat="@drawable/ic_x" />
-
-                </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/user_bio_info"
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent"
-                style="?attr/materialCardViewElevatedStyle"
-                app:strokeWidth="@dimen/dimen0dp"
-                android:layout_gravity="center_vertical|center_horizontal"
-                android:layout_marginTop="@dimen/dimen12dp"
-                android:visibility="gone"
-                app:cardElevation="@dimen/dimen0dp">
-
-                <TextView
-                    android:id="@+id/user_bio"
-                    android:layout_width="wrap_content"
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/social_info"
                     android:layout_height="wrap_content"
-                    android:padding="@dimen/dimen12dp"
-                    android:autoLink="all"
-                    android:textSize="@dimen/dimen14sp" />
+                    android:layout_width="match_parent"
+                    style="?attr/materialCardViewElevatedStyle"
+                    app:strokeWidth="@dimen/dimen0dp"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:layout_marginTop="@dimen/dimen12dp"
+                    android:visibility="gone"
+                    app:cardElevation="@dimen/dimen0dp">
 
-            </com.google.android.material.card.MaterialCardView>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/skype"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="@dimen/dimen12dp"
+                            android:textSize="@dimen/dimen14sp"
+                            android:drawablePadding="@dimen/dimen12dp"
+                            android:gravity="center_vertical"
+                            android:autoLink="web"
+                            android:textIsSelectable="true"
+                            android:visibility="gone"
+                            app:drawableStartCompat="@drawable/ic_skype" />
+
+                        <TextView
+                            android:id="@+id/discord"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="@dimen/dimen12dp"
+                            android:textSize="@dimen/dimen14sp"
+                            android:drawablePadding="@dimen/dimen12dp"
+                            android:gravity="center_vertical"
+                            android:autoLink="web"
+                            android:textIsSelectable="true"
+                            android:visibility="gone"
+                            app:drawableStartCompat="@drawable/ic_discord" />
+
+                        <TextView
+                            android:id="@+id/linkedin"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="@dimen/dimen12dp"
+                            android:textSize="@dimen/dimen14sp"
+                            android:drawablePadding="@dimen/dimen12dp"
+                            android:gravity="center_vertical"
+                            android:autoLink="web"
+                            android:textIsSelectable="true"
+                            android:visibility="gone"
+                            app:drawableStartCompat="@drawable/ic_linkedin" />
+
+                        <TextView
+                            android:id="@+id/twitter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="@dimen/dimen12dp"
+                            android:textSize="@dimen/dimen14sp"
+                            android:drawablePadding="@dimen/dimen12dp"
+                            android:gravity="center_vertical"
+                            android:autoLink="web"
+                            android:textIsSelectable="true"
+                            android:visibility="gone"
+                            app:drawableStartCompat="@drawable/ic_x" />
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/user_bio_info"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    style="?attr/materialCardViewElevatedStyle"
+                    app:strokeWidth="@dimen/dimen0dp"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:layout_marginTop="@dimen/dimen12dp"
+                    android:visibility="gone"
+                    app:cardElevation="@dimen/dimen0dp">
+
+                    <TextView
+                        android:id="@+id/user_bio"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/dimen12dp"
+                        android:autoLink="all"
+                        android:textSize="@dimen/dimen14sp" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
 
         </LinearLayout>
 
@@ -255,7 +264,7 @@
     <com.google.android.material.bottomappbar.BottomAppBar
         android:id="@+id/bottom_app_bar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dimen80dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         style="@style/Widget.Material3.BottomAppBar"
         app:backgroundTint="?attr/bottomNavigationColor"
@@ -270,7 +279,6 @@
                 android:id="@+id/bottom_bar_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimen24dp"
                 android:text="@string/profile"
                 android:layout_alignParentStart="true"
                 android:textSize="@dimen/dimen20sp" />
