@@ -168,9 +168,7 @@ public class MergeRequestDetailActivity extends BaseActivity
 								.setMessage(R.string.close_mr)
 								.setPositiveButton(
 										R.string.close,
-										(dialog, whichButton) -> {
-											closeMergeRequest();
-										})
+										(dialog, whichButton) -> closeMergeRequest())
 								.setNeutralButton(R.string.cancel, null)
 								.show();
 					}
@@ -207,9 +205,7 @@ public class MergeRequestDetailActivity extends BaseActivity
 									.setMessage(R.string.discussion_locked_message)
 									.setPositiveButton(
 											R.string.proceed,
-											(dialog, whichButton) -> {
-												initComment();
-											})
+											(dialog, whichButton) -> initComment())
 									.setNeutralButton(R.string.cancel, null)
 									.show();
 						} else {

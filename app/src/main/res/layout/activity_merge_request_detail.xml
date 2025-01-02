@@ -258,6 +258,7 @@
                         android:textAllCaps="false" />
 
                 </LinearLayout>
+
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
