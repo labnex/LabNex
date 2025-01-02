@@ -238,20 +238,16 @@ public interface ApiInterface {
 	@GET("projects/{id}/merge_requests/{merge_request_iid}/approvals")
 	// approvals
 	Call<Approvals> getApprovals(
-			@Path("id") int id,
-			@Path("merge_request_iid") int merge_request_iid);
+			@Path("id") int id, @Path("merge_request_iid") int merge_request_iid);
 
 	@POST("projects/{id}/merge_requests/{merge_request_iid}/approve")
 	// approve
-	Call<Approvals> approve(
-			@Path("id") int id,
-			@Path("merge_request_iid") int merge_request_iid);
+	Call<Approvals> approve(@Path("id") int id, @Path("merge_request_iid") int merge_request_iid);
 
 	@POST("projects/{id}/merge_requests/{merge_request_iid}/unapprove")
 	// unapprove
 	Call<Approvals> revokeApproval(
-			@Path("id") int id,
-			@Path("merge_request_iid") int merge_request_iid);
+			@Path("id") int id, @Path("merge_request_iid") int merge_request_iid);
 
 	@GET("merge_requests") // get user merge requests
 	Call<List<MergeRequests>> getMergeRequests(

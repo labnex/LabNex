@@ -241,12 +241,13 @@
                         android:text="@string/activity_mr_not_eligible"
                         android:visibility="gone" />
 
-                    <Button
-                        android:id="@+id/mr_approval_button"
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/approve_mr"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:text="@string/approve"
                         android:layout_weight="1"
-                        android:text="@string/activity_mr_approve" />
+                        style="@style/CustomMaterialButton" />
 
                     <TextView
                         android:id="@+id/mr_required_approvals"

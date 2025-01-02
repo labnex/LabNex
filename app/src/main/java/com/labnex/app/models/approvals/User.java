@@ -8,33 +8,45 @@ import java.io.Serializable;
  */
 public class User implements Serializable {
 
-    @SerializedName("id")
-    private int id;
+	@SerializedName("id")
+	private int id;
 
-    @SerializedName("name")
-    private String name;
+	@SerializedName("name")
+	private String name;
 
-    @SerializedName("username")
-    private String username;
+	@SerializedName("username")
+	private String username;
 
-    @SerializedName("state")
-    private String state;
+	@SerializedName("state")
+	private String state;
 
-    @SerializedName("avatar_url")
-    private String avatarUrl;
+	@SerializedName("avatar_url")
+	private String avatarUrl;
 
-    @SerializedName("web_url")
-    private String webUrl;
+	@SerializedName("web_url")
+	private String webUrl;
 
-    public int getId() { return id; }
+	public int getId() {
+		return id;
+	}
 
-    public String getName() { return name; }
+	public String getName() {
+		return name;
+	}
 
-    public String getUsername() { return username; }
+	public String getUsername() {
+		return username;
+	}
 
-    public String getState() { return state; }
+	public String getState() {
+		return state;
+	}
 
-    public String getAvatarUrl() { return avatarUrl; }
+	public String getAvatarUrl() {
+		return avatarUrl;
+	}
 
-    public String getWebUrl() { return webUrl; }
+	public String getWebUrl() {
+		return webUrl;
+	}
 }

@@ -9,63 +9,87 @@ import java.util.List;
  */
 public class Approvals implements Serializable {
 
-    @SerializedName("id")
-    private int id;
+	@SerializedName("id")
+	private int id;
 
-    @SerializedName("iid")
-    private int iid;
+	@SerializedName("iid")
+	private int iid;
 
-    @SerializedName("project_id")
-    private int projectId;
+	@SerializedName("project_id")
+	private int projectId;
 
-    @SerializedName("title")
-    private String title;
+	@SerializedName("title")
+	private String title;
 
-    @SerializedName("description")
-    private String description;
+	@SerializedName("description")
+	private String description;
 
-    @SerializedName("state")
-    private String state;
+	@SerializedName("state")
+	private String state;
 
-    @SerializedName("created_at")
-    private String createdAt;
+	@SerializedName("created_at")
+	private String createdAt;
 
-    @SerializedName("updated_at")
-    private String updatedAt;
+	@SerializedName("updated_at")
+	private String updatedAt;
 
-    @SerializedName("merge_status")
-    private String mergeStatus;
+	@SerializedName("merge_status")
+	private String mergeStatus;
 
-    @SerializedName("approvals_required")
-    private int approvalsRequired;
+	@SerializedName("approvals_required")
+	private int approvalsRequired;
 
-    @SerializedName("approvals_left")
-    private int approvalsLeft;
+	@SerializedName("approvals_left")
+	private int approvalsLeft;
 
-    @SerializedName("approved_by")
-    private List<ApprovedBy> approvedBy;
+	@SerializedName("approved_by")
+	private List<ApprovedBy> approvedBy;
 
-    public int getId() { return id; }
+	public int getId() {
+		return id;
+	}
 
-    public int getIid() { return iid; }
+	public int getIid() {
+		return iid;
+	}
 
-    public int getProjectId() { return projectId; }
+	public int getProjectId() {
+		return projectId;
+	}
 
-    public String getTitle() { return title; }
+	public String getTitle() {
+		return title;
+	}
 
-    public String getDescription() { return description; }
+	public String getDescription() {
+		return description;
+	}
 
-    public String getState() { return state; }
+	public String getState() {
+		return state;
+	}
 
-    public String getCreatedAt() { return createdAt; }
+	public String getCreatedAt() {
+		return createdAt;
+	}
 
-    public String getUpdatedAt() { return updatedAt; }
+	public String getUpdatedAt() {
+		return updatedAt;
+	}
 
-    public String getMergeStatus() { return mergeStatus; }
+	public String getMergeStatus() {
+		return mergeStatus;
+	}
 
-    public int getApprovalsRequired() { return approvalsRequired; }
+	public int getApprovalsRequired() {
+		return approvalsRequired;
+	}
 
-    public int getApprovalsLeft() { return approvalsLeft; }
+	public int getApprovalsLeft() {
+		return approvalsLeft;
+	}
 
-    public List<ApprovedBy> getApprovedBy() { return approvedBy; }
+	public List<ApprovedBy> getApprovedBy() {
+		return approvedBy;
+	}
 }

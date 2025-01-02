@@ -161,8 +161,6 @@
     <string name="activity_created_wiki_page">Created wiki page %s</string>
     <string name="activity_updated_wiki_page">Updated wiki page %s</string>
     <string name="activity_created_project">Created project %s</string>
-    <string name="activity_mr_approve">Approve</string>
-    <string name="activity_mr_revoke">Revoke</string>
     <string name="activity_mr_approvals">Approvals: %d / %d</string>
     <string name="activity_mr_not_eligible">You can not approve this merge request</string>
     <string name="files_ref">Files - ref:%s</string>
@@ -282,5 +280,7 @@
     <string name="ignore">Ignore</string>
     <string name="closed">Closed</string>
     <string name="merged">Merged</string>
+    <string name="approve">Approve</string>
+    <string name="revoke">Revoke</string>
     <!-- generic copy -->
 </resources>
