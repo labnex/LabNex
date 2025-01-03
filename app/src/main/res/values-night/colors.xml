@@ -143,6 +143,7 @@
     <color name="md_theme_surfaceContainerHighest_highContrast">#3B332F</color>
 
     <color name="md_system_default_icons_color">#EEE0D9</color>
+    <color name="md_system_default_hint_color">#777777</color>
     <color name="md_system_default_text_color">#18120E</color>
     <color name="md_system_input_divider_color">#221C14</color>
     <color name="md_system_default_input_background_color">#000000</color>

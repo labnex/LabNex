@@ -156,6 +156,7 @@
     <color name="md_theme_surfaceContainerHighest_highContrast">#EEE0D9</color>
 
     <color name="md_system_default_icons_color">#424242</color>
+    <color name="md_system_default_hint_color">#CCCCCC</color>
     <color name="md_system_default_text_color">#EEE0D9</color>
     <color name="md_system_input_divider_color">#FDEEE7</color>
     <color name="md_system_default_input_background_color">#FFFFFF</color>
@@ -305,6 +306,7 @@
     <color name="md_theme_surfaceContainerHighest_highContrast_light">#EEE0D9</color>
 
     <color name="md_light_theme_icons_color">#424242</color>
+    <color name="md_light_theme_hint_color">#CCCCCC</color>
     <color name="md_light_theme_text_color">#EEE0D9</color>
     <color name="md_light_input_divider_color">#FDEEE7</color>
     <color name="md_light_input_background_color">#FFFFFF</color>
@@ -454,6 +456,7 @@
     <color name="md_theme_surfaceContainerHighest_highContrast_dark">#3B332F</color>
 
     <color name="md_dark_theme_icons_color">#EEE0D9</color>
+    <color name="md_dark_theme_hint_color">#777777</color>
     <color name="md_dark_theme_text_color">#18120E</color>
     <color name="md_dark_input_divider_color">#221C14</color>
     <color name="md_dark_input_background_color">#000000</color>

@@ -3,7 +3,9 @@ package com.labnex.app.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 import androidx.annotation.NonNull;
+import androidx.appcompat.content.res.AppCompatResources;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.labnex.app.R;
 import com.labnex.app.clients.RetrofitClient;
@@ -65,6 +67,29 @@ public class SignInActivity extends BaseActivity {
 				checkUser -> {
 					disableSignInButton();
 					checkUserInput();
+				});
+
+		binding.atInputVisibilityIcon.setOnClickListener(
+				switchTokenVisibility -> {
+					int selectionIndex = binding.personalToken.getSelectionStart();
+
+					if (binding.personalToken.getInputType()
+							== InputType.TYPE_TEXT_VARIATION_PASSWORD + InputType.TYPE_CLASS_TEXT) {
+						binding.atInputVisibilityIcon.setImageDrawable(
+								AppCompatResources.getDrawable(ctx, R.drawable.ic_eye_closed));
+						binding.personalToken.setInputType(
+								InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+										+ InputType.TYPE_CLASS_TEXT);
+					} else if (binding.personalToken.getInputType()
+							== InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+									+ InputType.TYPE_CLASS_TEXT) {
+						binding.atInputVisibilityIcon.setImageDrawable(
+								AppCompatResources.getDrawable(ctx, R.drawable.ic_eye_open));
+						binding.personalToken.setInputType(
+								InputType.TYPE_TEXT_VARIATION_PASSWORD + InputType.TYPE_CLASS_TEXT);
+					}
+
+					binding.personalToken.setSelection(selectionIndex);
 				});
 	}
 
