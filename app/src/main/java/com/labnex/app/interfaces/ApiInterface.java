@@ -1,5 +1,7 @@
 package com.labnex.app.interfaces;
 
+import com.labnex.app.models.approvals.Approvals;
+import com.labnex.app.models.approvals.Rule;
 import com.labnex.app.models.branches.Branches;
 import com.labnex.app.models.broadcast_messages.Messages;
 import com.labnex.app.models.commits.Commits;
@@ -110,6 +112,9 @@ public interface ApiInterface {
 	// Project endpoints
 	@GET("projects/{id}") // get a single project details
 	Call<Projects> getProjectInfo(@Path("id") int id);
+
+	@GET("projects/{id}/approval_rules") // get project approval rules
+	Call<List<Rule>> getApprovalRules(@Path("id") int id);
 
 	@GET("projects/{id}/repository/branches") // get project branches
 	Call<List<Branches>> getProjectBranches(
@@ -233,6 +238,20 @@ public interface ApiInterface {
 			@Path("id") int id,
 			@Path("merge_request_iid") int merge_request_iid,
 			@Body CreateNote body);
+
+	@GET("projects/{id}/merge_requests/{merge_request_iid}/approvals")
+	// approvals
+	Call<Approvals> getApprovals(
+			@Path("id") int id, @Path("merge_request_iid") int merge_request_iid);
+
+	@POST("projects/{id}/merge_requests/{merge_request_iid}/approve")
+	// approve
+	Call<Approvals> approve(@Path("id") int id, @Path("merge_request_iid") int merge_request_iid);
+
+	@POST("projects/{id}/merge_requests/{merge_request_iid}/unapprove")
+	// unapprove
+	Call<Approvals> revokeApproval(
+			@Path("id") int id, @Path("merge_request_iid") int merge_request_iid);
 
 	@GET("merge_requests") // get user merge requests
 	Call<List<MergeRequests>> getMergeRequests(
