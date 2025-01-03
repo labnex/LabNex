@@ -37,6 +37,7 @@
                     android:orientation="vertical">
 
                     <!-- title/avatar section -->
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -129,14 +130,14 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="@dimen/dimen12dp"
                         android:layout_gravity="center_vertical|center_horizontal"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:padding="@dimen/dimen12dp">
 
                         <com.google.android.material.card.MaterialCardView
+                            style="?attr/materialCardViewElevatedStyle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            style="?attr/materialCardViewElevatedStyle"
                             android:backgroundTint="?attr/inputBackgroundColor"
                             app:cardElevation="@dimen/dimen0dp">
 
@@ -144,20 +145,20 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:foreground="?android:attr/selectableItemBackground"
-                                android:paddingStart="@dimen/dimen12dp"
-                                android:paddingEnd="@dimen/dimen12dp"
-                                android:paddingTop="@dimen/dimen6dp"
-                                android:paddingBottom="@dimen/dimen6dp"
                                 android:orientation="horizontal"
+                                android:paddingStart="@dimen/dimen12dp"
+                                android:paddingTop="@dimen/dimen6dp"
+                                android:paddingEnd="@dimen/dimen12dp"
+                                android:paddingBottom="@dimen/dimen6dp"
                                 tools:ignore="UseCompoundDrawables">
 
                                 <ImageView
                                     android:id="@+id/thumbs_up"
                                     android:layout_width="@dimen/dimen18dp"
                                     android:layout_height="@dimen/dimen18dp"
-                                    android:contentDescription="@string/generic_img_copy"
                                     android:layout_gravity="center_vertical|center_horizontal"
                                     android:layout_marginEnd="@dimen/dimen6dp"
+                                    android:contentDescription="@string/generic_img_copy"
                                     android:src="@drawable/ic_thumb_up_filled" />
 
                                 <TextView
@@ -171,31 +172,31 @@
                         </com.google.android.material.card.MaterialCardView>
 
                         <com.google.android.material.card.MaterialCardView
+                            style="?attr/materialCardViewElevatedStyle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            style="?attr/materialCardViewElevatedStyle"
-                            android:backgroundTint="?attr/inputBackgroundColor"
                             android:layout_marginStart="@dimen/dimen8dp"
+                            android:backgroundTint="?attr/inputBackgroundColor"
                             app:cardElevation="@dimen/dimen0dp">
 
                             <LinearLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:foreground="?android:attr/selectableItemBackground"
-                                android:paddingStart="@dimen/dimen12dp"
-                                android:paddingEnd="@dimen/dimen12dp"
-                                android:paddingTop="@dimen/dimen6dp"
-                                android:paddingBottom="@dimen/dimen6dp"
                                 android:orientation="horizontal"
+                                android:paddingStart="@dimen/dimen12dp"
+                                android:paddingTop="@dimen/dimen6dp"
+                                android:paddingEnd="@dimen/dimen12dp"
+                                android:paddingBottom="@dimen/dimen6dp"
                                 tools:ignore="UseCompoundDrawables">
 
                                 <ImageView
                                     android:id="@+id/thumbs_down"
                                     android:layout_width="@dimen/dimen18dp"
                                     android:layout_height="@dimen/dimen18dp"
-                                    android:contentDescription="@string/generic_img_copy"
                                     android:layout_gravity="center_vertical|center_horizontal"
                                     android:layout_marginEnd="@dimen/dimen6dp"
+                                    android:contentDescription="@string/generic_img_copy"
                                     android:src="@drawable/ic_thumb_down_filled" />
 
                                 <TextView
@@ -209,6 +210,7 @@
                         </com.google.android.material.card.MaterialCardView>
 
                     </LinearLayout>
+
                     <!-- votes section -->
 
                 </LinearLayout>
@@ -216,6 +218,49 @@
             </com.google.android.material.card.MaterialCardView>
 
             <!-- merge info (branches) section -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/approval_info_card"
+                style="?attr/materialCardViewElevatedStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen12dp"
+                app:cardElevation="@dimen/dimen0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/dimen12dp">
+
+                    <TextView
+                        android:id="@+id/mr_approval_info"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/activity_mr_not_eligible"
+                        android:visibility="gone" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/approve_mr"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/approve"
+                        android:layout_weight="1"
+                        style="@style/CustomMaterialButton" />
+
+                    <TextView
+                        android:id="@+id/mr_required_approvals"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="4"
+                        android:textAlignment="viewEnd"
+                        android:textAllCaps="false" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/merge_info_card"
                 style="?attr/materialCardViewElevatedStyle"
