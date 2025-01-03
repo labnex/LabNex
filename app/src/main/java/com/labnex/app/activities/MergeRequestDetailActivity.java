@@ -719,7 +719,7 @@ public class MergeRequestDetailActivity extends BaseActivity
 												if (approvedBy.getUser().getId()
 														== userResponse.body().getId()) {
 													activityMergeRequestDetailBinding.approveMr
-															.setText(getString(R.string.revoke));
+															.setText(getString(R.string.unapprove));
 												}
 											}
 
@@ -739,7 +739,7 @@ public class MergeRequestDetailActivity extends BaseActivity
 															view -> {
 																activityMergeRequestDetailBinding
 																		.progressBar.setVisibility(
-																		View.VISIBLE);
+																				View.VISIBLE);
 
 																if (activityMergeRequestDetailBinding
 																		.approveMr
@@ -763,13 +763,13 @@ public class MergeRequestDetailActivity extends BaseActivity
 																			new Callback<>() {
 																				@Override
 																				public void
-																						onResponse(
-																								@NonNull Call<
-																														Approvals>
-																												approveCall,
-																								@NonNull Response<
-																														Approvals>
-																												approveResponse) {
+																				onResponse(
+																						@NonNull Call<
+																								Approvals>
+																								approveCall,
+																						@NonNull Response<
+																								Approvals>
+																								approveResponse) {
 																					activityMergeRequestDetailBinding
 																							.progressBar
 																							.setVisibility(
@@ -777,7 +777,7 @@ public class MergeRequestDetailActivity extends BaseActivity
 																											.GONE);
 
 																					if (approveResponse
-																									.code()
+																							.code()
 																							== 201) {
 																						activityMergeRequestDetailBinding
 																								.approveMr
@@ -785,10 +785,10 @@ public class MergeRequestDetailActivity extends BaseActivity
 																										getString(
 																												R
 																														.string
-																														.revoke));
+																														.unapprove));
 
 																						assert approveResponse
-																										.body()
+																								.body()
 																								!= null;
 																						approvals =
 																								approveResponse
@@ -811,17 +811,22 @@ public class MergeRequestDetailActivity extends BaseActivity
 																												requiredApprovals));
 
 																						refreshNotes();
+																					} else {
+																						Snackbar.info(
+																								ctx,
+																								findViewById(R.id.bottom_app_bar),
+																								getString(R.string.mr_approve_failed));
 																					}
 																				}
 
 																				@Override
 																				public void
-																						onFailure(
-																								@NonNull Call<
-																														Approvals>
-																												approveCall,
-																								@NonNull Throwable
-																												approveThrowable) {
+																				onFailure(
+																						@NonNull Call<
+																								Approvals>
+																								approveCall,
+																						@NonNull Throwable
+																								approveThrowable) {
 																					activityMergeRequestDetailBinding
 																							.progressBar
 																							.setVisibility(
@@ -836,7 +841,7 @@ public class MergeRequestDetailActivity extends BaseActivity
 																		.equals(
 																				getString(
 																						R.string
-																								.revoke))) {
+																								.unapprove))) {
 																	Call<Approvals> revokeCall =
 																			RetrofitClient
 																					.getApiInterface(
@@ -851,13 +856,13 @@ public class MergeRequestDetailActivity extends BaseActivity
 																			new Callback<>() {
 																				@Override
 																				public void
-																						onResponse(
-																								@NonNull Call<
-																														Approvals>
-																												revokeCall,
-																								@NonNull Response<
-																														Approvals>
-																												revokeResponse) {
+																				onResponse(
+																						@NonNull Call<
+																								Approvals>
+																								revokeCall,
+																						@NonNull Response<
+																								Approvals>
+																								revokeResponse) {
 																					activityMergeRequestDetailBinding
 																							.progressBar
 																							.setVisibility(
@@ -865,7 +870,7 @@ public class MergeRequestDetailActivity extends BaseActivity
 																											.GONE);
 
 																					if (revokeResponse
-																									.code()
+																							.code()
 																							== 201) {
 																						activityMergeRequestDetailBinding
 																								.approveMr
@@ -893,12 +898,12 @@ public class MergeRequestDetailActivity extends BaseActivity
 
 																				@Override
 																				public void
-																						onFailure(
-																								@NonNull Call<
-																														Approvals>
-																												revokeCall,
-																								@NonNull Throwable
-																												revokeThrowable) {
+																				onFailure(
+																						@NonNull Call<
+																								Approvals>
+																								revokeCall,
+																						@NonNull Throwable
+																								revokeThrowable) {
 																					activityMergeRequestDetailBinding
 																							.progressBar
 																							.setVisibility(

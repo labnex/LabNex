@@ -1,6 +1,7 @@
 package com.labnex.app.interfaces;
 
 import com.labnex.app.models.approvals.Approvals;
+import com.labnex.app.models.approvals.Rule;
 import com.labnex.app.models.branches.Branches;
 import com.labnex.app.models.broadcast_messages.Messages;
 import com.labnex.app.models.commits.Commits;
@@ -111,6 +112,9 @@ public interface ApiInterface {
 	// Project endpoints
 	@GET("projects/{id}") // get a single project details
 	Call<Projects> getProjectInfo(@Path("id") int id);
+
+	@GET("projects/{id}/approval_rules") // get project approval rules
+	Call<List<Rule>> getApprovalRules(@Path("id") int id);
 
 	@GET("projects/{id}/repository/branches") // get project branches
 	Call<List<Branches>> getProjectBranches(
