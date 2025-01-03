@@ -4,6 +4,7 @@
     android:id="@+id/main_frame"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:fitsSystemWindows="true"
     android:orientation="vertical">
 
     <com.amrdeveloper.codeview.CodeView
