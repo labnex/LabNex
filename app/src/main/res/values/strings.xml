@@ -163,6 +163,8 @@
     <string name="activity_created_project">Created project %s</string>
     <string name="activity_mr_approvals">Approvals: %d / %d</string>
     <string name="activity_mr_not_eligible">You can not approve this merge request</string>
+    <string name="mr_approve_failed">Approving failed. You are probably not eligible to approve this merge request.</string>
+    <string name="revoke_approval">Revoke approval</string>
     <string name="files_ref">Files - ref:%s</string>
     <string name="exclude_files_in_fileviewer">This file type/size is not supported by the file viewer. You can download it to your phone instead.</string>
     <string name="render_md">Render Markdown</string>
@@ -204,7 +206,6 @@
     <string name="group_name_required">Group name is required</string>
     <string name="access_forbidden_403">Access forbidden, the request isn’t allowed</string>
     <string name="no_description">No description provided</string>
-    <string name="mr_approve_failed">Approving failed. You are probably not eligible to approve this merge request.</string>
     <!-- errors -->
 
     <!-- generic copy -->
@@ -282,6 +283,5 @@
     <string name="closed">Closed</string>
     <string name="merged">Merged</string>
     <string name="approve">Approve</string>
-    <string name="unapprove">Unapprove</string>
     <!-- generic copy -->
 </resources>

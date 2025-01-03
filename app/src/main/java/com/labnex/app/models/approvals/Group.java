@@ -3,89 +3,106 @@ package com.labnex.app.models.approvals;
 import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 
+/**
+ * @author lululujojo123
+ */
 public class Group implements Serializable {
-    @SerializedName("id")
-    private int id;
-    @SerializedName("name")
-    private String name;
-    @SerializedName("path")
-    private String path;
-    @SerializedName("description")
-    private String description;
-    @SerializedName("visibility")
-    private String visibility;
-    @SerializedName("lfs_enabled")
-    private boolean lfsEnabled;
-    @SerializedName("avatar_url")
-    private String avatarUrl;
-    @SerializedName("web_url")
-    private String webUrl;
-    @SerializedName("request_access_enabled")
-    private boolean requestAccessEnabled;
-    @SerializedName("full_name")
-    private String fullName;
-    @SerializedName("full_path")
-    private String fullPath;
-    @SerializedName("parent_id")
-    private int parentId;
-    @SerializedName("ldap_cn")
-    private Object ldabCn;
-    @SerializedName("ldap_access")
-    private Object ldapAccess;
 
-    public int getId() {
-        return id;
-    }
+	@SerializedName("id")
+	private int id;
 
-    public String getName() {
-        return name;
-    }
+	@SerializedName("name")
+	private String name;
 
-    public String getPath() {
-        return path;
-    }
+	@SerializedName("path")
+	private String path;
 
-    public String getDescription() {
-        return description;
-    }
+	@SerializedName("description")
+	private String description;
 
-    public String getVisibility() {
-        return visibility;
-    }
+	@SerializedName("visibility")
+	private String visibility;
 
-    public boolean getLfsEnabled() {
-        return lfsEnabled;
-    }
+	@SerializedName("lfs_enabled")
+	private boolean lfsEnabled;
 
-    public String getAvatarUrl() {
-        return avatarUrl;
-    }
+	@SerializedName("avatar_url")
+	private String avatarUrl;
 
-    public String getWebUrl() {
-        return webUrl;
-    }
+	@SerializedName("web_url")
+	private String webUrl;
 
-    public boolean getRequestAccessEnabled() {
-        return requestAccessEnabled;
-    }
+	@SerializedName("request_access_enabled")
+	private boolean requestAccessEnabled;
 
-    public String getFullName() {
-        return fullName;
-    }
+	@SerializedName("full_name")
+	private String fullName;
 
-    public String getFullPath() {
-        return fullPath;
-    }
+	@SerializedName("full_path")
+	private String fullPath;
 
-    public int getParentId() {
-        return parentId;
-    }
+	@SerializedName("parent_id")
+	private int parentId;
 
-    public Object getLdabCn() {
-        return ldabCn;
-    }
+	@SerializedName("ldap_cn")
+	private Object ldapCn;
 
-    public Object getLdapAccess() {
-        return ldapAccess;
-    }
+	@SerializedName("ldap_access")
+	private Object ldapAccess;
+
+	public int getId() {
+		return id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public String getVisibility() {
+		return visibility;
+	}
+
+	public boolean getLfsEnabled() {
+		return lfsEnabled;
+	}
+
+	public String getAvatarUrl() {
+		return avatarUrl;
+	}
+
+	public String getWebUrl() {
+		return webUrl;
+	}
+
+	public boolean getRequestAccessEnabled() {
+		return requestAccessEnabled;
+	}
+
+	public String getFullName() {
+		return fullName;
+	}
+
+	public String getFullPath() {
+		return fullPath;
+	}
+
+	public int getParentId() {
+		return parentId;
+	}
+
+	public Object getLdapCn() {
+		return ldapCn;
+	}
+
+	public Object getLdapAccess() {
+		return ldapAccess;
+	}
 }
