@@ -163,7 +163,7 @@
     <string name="activity_created_project">Created project %s</string>
     <string name="activity_mr_approvals">Approvals: %d / %d</string>
     <string name="activity_mr_not_eligible">You can not approve this merge request</string>
-    <string name="mr_approve_failed">Approving failed. You are probably not eligible to approve this merge request.</string>
+    <string name="mr_approve_failed">Approval failed. You are probably not authorized to approve this merge request.</string>
     <string name="revoke_approval">Revoke approval</string>
     <string name="files_ref">Files - ref:%s</string>
     <string name="exclude_files_in_fileviewer">This file type/size is not supported by the file viewer. You can download it to your phone instead.</string>
