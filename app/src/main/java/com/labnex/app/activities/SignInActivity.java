@@ -2,6 +2,7 @@ package com.labnex.app.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.InputType;
 import androidx.annotation.NonNull;
@@ -69,13 +70,13 @@ public class SignInActivity extends BaseActivity {
 					checkUserInput();
 				});
 
-		binding.atInputVisibilityIcon.setOnClickListener(
+		binding.personalTokenVisibilityIcon.setOnClickListener(
 				switchTokenVisibility -> {
 					int selectionIndex = binding.personalToken.getSelectionStart();
 
 					if (binding.personalToken.getInputType()
 							== InputType.TYPE_TEXT_VARIATION_PASSWORD + InputType.TYPE_CLASS_TEXT) {
-						binding.atInputVisibilityIcon.setImageDrawable(
+						binding.personalTokenVisibilityIcon.setImageDrawable(
 								AppCompatResources.getDrawable(ctx, R.drawable.ic_eye_closed));
 						binding.personalToken.setInputType(
 								InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
@@ -83,12 +84,13 @@ public class SignInActivity extends BaseActivity {
 					} else if (binding.personalToken.getInputType()
 							== InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
 									+ InputType.TYPE_CLASS_TEXT) {
-						binding.atInputVisibilityIcon.setImageDrawable(
+						binding.personalTokenVisibilityIcon.setImageDrawable(
 								AppCompatResources.getDrawable(ctx, R.drawable.ic_eye_open));
 						binding.personalToken.setInputType(
 								InputType.TYPE_TEXT_VARIATION_PASSWORD + InputType.TYPE_CLASS_TEXT);
 					}
 
+					binding.personalToken.setTypeface(Typeface.DEFAULT);
 					binding.personalToken.setSelection(selectionIndex);
 				});
 	}

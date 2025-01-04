@@ -91,7 +91,7 @@
                         android:text="@string/gitlab_link_help" />
 
                     <FrameLayout
-                        android:id="@+id/access_token_box"
+                        android:id="@+id/access_token_frame"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/dimen16dp">
@@ -112,12 +112,14 @@
                             android:textSize="@dimen/dimen16sp" />
 
                         <ImageView
-                            android:id="@+id/at_input_visibility_icon"
+                            android:id="@+id/personal_token_visibility_icon"
                             android:layout_width="30dp"
                             android:layout_height="30dp"
                             android:layout_gravity="center_vertical|end"
                             android:layout_marginEnd="10dp"
+                            android:contentDescription="@string/generic_img_copy"
                             app:srcCompat="@drawable/ic_eye_open" />
+
                     </FrameLayout>
 
                     <com.google.android.material.textview.MaterialTextView

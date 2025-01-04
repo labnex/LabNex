@@ -52,7 +52,6 @@
         <item name="colorSurfaceContainerHighest">@color/md_theme_surfaceContainerHighest</item>
 
         <item name="iconsColor">@color/md_system_default_icons_color</item>
-        <item name="hintColor">@color/md_system_default_hint_color</item>
         <item name="textColor">@color/md_system_default_text_color</item>
         <item name="inputBackgroundColor">@color/md_system_default_input_background_color</item>
         <item name="bottomNavigationColor">@color/md_theme_inverseOnSurface</item>
@@ -117,7 +116,6 @@
 
         <item name="isDark">0</item>
         <item name="iconsColor">@color/md_light_theme_icons_color</item>
-        <item name="hintColor">@color/md_light_theme_hint_color</item>
         <item name="textColor">@color/md_light_theme_text_color</item>
         <item name="inputBackgroundColor">@color/md_light_input_background_color</item>
         <item name="bottomNavigationColor">@color/md_theme_inverseOnSurface_light</item>
@@ -182,7 +180,6 @@
 
         <item name="isDark">1</item>
         <item name="iconsColor">@color/md_dark_theme_icons_color</item>
-        <item name="hintColor">@color/md_dark_theme_hint_color</item>
         <item name="textColor">@color/md_dark_theme_text_color</item>
         <item name="inputBackgroundColor">@color/md_dark_input_background_color</item>
         <item name="bottomNavigationColor">@color/md_theme_inverseOnSurface_dark</item>
