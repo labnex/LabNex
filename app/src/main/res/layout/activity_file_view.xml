@@ -9,6 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="@dimen/dimen80dp"
+        android:fitsSystemWindows="true"
         android:orientation="vertical">
 
         <androidx.core.widget.NestedScrollView
@@ -68,6 +69,7 @@
         android:id="@+id/progress_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
         android:indeterminate="true" />
 
     <include
@@ -78,7 +80,7 @@
     <com.google.android.material.bottomappbar.BottomAppBar
         android:id="@+id/bottom_app_bar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dimen80dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         app:menu="@menu/file_viewer_menu"
         style="@style/Widget.Material3.BottomAppBar"

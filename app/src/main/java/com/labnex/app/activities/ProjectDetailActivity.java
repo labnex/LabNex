@@ -48,6 +48,7 @@ public class ProjectDetailActivity extends BaseActivity
 	private String branch;
 	private String README;
 	private String source;
+	private Bundle bsBundle;
 
 	public void onCreate(Bundle savedInstanceState) {
 
@@ -60,7 +61,7 @@ public class ProjectDetailActivity extends BaseActivity
 		projectsContext = ProjectsContext.fromIntent(getIntent());
 		projectId = projectsContext.getProjectId();
 
-		Bundle bsBundle = new Bundle();
+		bsBundle = new Bundle();
 
 		if (getIntent().getStringExtra("source") != null) {
 
@@ -121,23 +122,6 @@ public class ProjectDetailActivity extends BaseActivity
 					ProjectReleasesBottomSheet bottomSheet = new ProjectReleasesBottomSheet();
 					bottomSheet.setArguments(bsBundle);
 					bottomSheet.show(getSupportFragmentManager(), "projectReleasesBottomSheet");
-				});
-
-		binding.projectStars.setOnClickListener(
-				stars -> {
-					bsBundle.putInt("projectId", projectId);
-					bsBundle.putString("type", "stars");
-					ProjectMembersBottomSheet bottomSheet = new ProjectMembersBottomSheet();
-					bottomSheet.setArguments(bsBundle);
-					bottomSheet.show(getSupportFragmentManager(), "projectMembersBottomSheet");
-				});
-
-		binding.projectForks.setOnClickListener(
-				stars -> {
-					bsBundle.putInt("projectId", projectId);
-					ProjectMembersBottomSheet bottomSheet = new ProjectMembersBottomSheet();
-					bottomSheet.setArguments(bsBundle);
-					bottomSheet.show(getSupportFragmentManager(), "projectForksBottomSheet");
 				});
 
 		binding.bottomAppBar.setNavigationOnClickListener(bottomAppBar -> finish());
@@ -389,6 +373,35 @@ public class ProjectDetailActivity extends BaseActivity
 															projectDetails.getReadmeUrl().length()
 																	- 9);
 									loadProjectReadme();
+								}
+
+								if (projectDetails.getStarCount() > 0) {
+									binding.projectStars.setOnClickListener(
+											stars -> {
+												bsBundle.putInt("projectId", projectId);
+												bsBundle.putString("type", "stars");
+												ProjectMembersBottomSheet bottomSheet =
+														new ProjectMembersBottomSheet();
+												bottomSheet.setArguments(bsBundle);
+												bottomSheet.show(
+														getSupportFragmentManager(),
+														"projectMembersBottomSheet");
+											});
+								}
+
+								if (projectDetails.getForksCount() > 0) {
+									binding.projectForks.setOnClickListener(
+											forks -> {
+												ProjectsContext project =
+														new ProjectsContext(
+																projectsContext.getProject(), ctx);
+												Intent intent =
+														project.getIntent(
+																ctx, ProjectsActivity.class);
+												intent.putExtra("source", "forks");
+												intent.putExtra("projectId", projectId);
+												ctx.startActivity(intent);
+											});
 								}
 							}
 						}

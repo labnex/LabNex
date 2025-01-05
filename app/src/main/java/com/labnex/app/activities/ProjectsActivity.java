@@ -49,6 +49,12 @@ public class ProjectsActivity extends BaseActivity
 			if (Objects.requireNonNull(source).equalsIgnoreCase("starred")) {
 				binding.projectsText.setText(R.string.starred_projects);
 			}
+
+			if (Objects.requireNonNull(source).equalsIgnoreCase("forks")) {
+				binding.newProject.setVisibility(View.GONE);
+				binding.projectsText.setText(R.string.forks);
+				userId = getIntent().getIntExtra("projectId", 0);
+			}
 		}
 
 		binding.recyclerView.setHasFixedSize(true);

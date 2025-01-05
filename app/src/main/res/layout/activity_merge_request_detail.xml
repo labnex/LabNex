@@ -9,6 +9,7 @@
         android:id="@+id/progress_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
         android:visibility="gone"
         android:indeterminate="true" />
 
@@ -16,6 +17,7 @@
         android:id="@+id/scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
         android:fillViewport="true">
 
         <LinearLayout
@@ -427,7 +429,7 @@
     <com.google.android.material.bottomappbar.BottomAppBar
         android:id="@+id/bottom_app_bar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dimen80dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         style="@style/Widget.Material3.BottomAppBar"
         app:backgroundTint="?attr/bottomNavigationColor"

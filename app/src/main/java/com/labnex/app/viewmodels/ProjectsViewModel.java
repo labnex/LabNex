@@ -56,6 +56,8 @@ public class ProjectsViewModel extends ViewModel {
 			call = RetrofitClient.getApiInterface(ctx).getGroupProjects(id, resultLimit, page);
 		} else if (source.equalsIgnoreCase("starred")) {
 			call = RetrofitClient.getApiInterface(ctx).getStarredProjects(id, resultLimit, page);
+		} else if (source.equalsIgnoreCase("forks")) {
+			call = RetrofitClient.getApiInterface(ctx).getProjectForks(id, resultLimit, page);
 		} else {
 			call = RetrofitClient.getApiInterface(ctx).getProjects(id, resultLimit, page);
 		}
@@ -117,6 +119,8 @@ public class ProjectsViewModel extends ViewModel {
 
 		if (source.equalsIgnoreCase("starred")) {
 			call = RetrofitClient.getApiInterface(ctx).getStarredProjects(id, resultLimit, page);
+		} else if (source.equalsIgnoreCase("forks")) {
+			call = RetrofitClient.getApiInterface(ctx).getProjectForks(id, resultLimit, page);
 		} else {
 			call = RetrofitClient.getApiInterface(ctx).getProjects(id, resultLimit, page);
 		}

@@ -10,145 +10,157 @@
         android:id="@+id/progress_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
         android:indeterminate="true" />
 
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        android:fillViewport="true">
 
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/info_frame"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="?attr/materialCardViewElevatedStyle"
-            android:visibility="gone"
-            android:layout_margin="@dimen/dimen16dp"
-            app:cardElevation="@dimen/dimen0dp">
+            android:orientation="vertical"
+            android:padding="@dimen/dimen10dp">
 
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/info_frame"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:foreground="?android:attr/selectableItemBackground"
-                android:padding="@dimen/dimen12dp"
-                android:orientation="vertical">
+                style="?attr/materialCardViewElevatedStyle"
+                android:visibility="gone"
+                android:layout_margin="@dimen/dimen6dp"
+                app:cardElevation="@dimen/dimen0dp">
 
                 <LinearLayout
-                    android:id="@+id/info_frame_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/group_avatar_frame"
-                        android:layout_height="@dimen/dimen40dp"
-                        android:layout_width="@dimen/dimen40dp"
-                        android:layout_marginEnd="@dimen/dimen12dp"
-                        app:strokeWidth="@dimen/dimen0dp"
-                        android:layout_gravity="center_vertical|center_horizontal"
-                        app:cardElevation="@dimen/dimen0dp">
-
-                        <ImageView
-                            android:id="@+id/group_avatar"
-                            android:layout_height="@dimen/dimen44dp"
-                            android:layout_width="@dimen/dimen44dp"
-                            android:scaleType="fitCenter"
-                            android:layout_gravity="center_vertical|center_horizontal"
-                            android:contentDescription="@string/groups"
-                            app:srcCompat="@drawable/ic_spinner" />
-
-                    </com.google.android.material.card.MaterialCardView>
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:padding="@dimen/dimen12dp"
+                    android:orientation="vertical">
 
                     <LinearLayout
-                        android:id="@+id/group_name_frame"
+                        android:id="@+id/info_frame_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical"
-                        android:orientation="vertical">
+                        android:orientation="horizontal">
 
-                        <TextView
-                            android:id="@+id/group_name"
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/group_avatar_frame"
+                            android:layout_height="@dimen/dimen40dp"
+                            android:layout_width="@dimen/dimen40dp"
+                            android:layout_marginEnd="@dimen/dimen12dp"
+                            app:strokeWidth="@dimen/dimen0dp"
+                            android:layout_gravity="center_vertical|center_horizontal"
+                            app:cardElevation="@dimen/dimen0dp">
+
+                            <ImageView
+                                android:id="@+id/group_avatar"
+                                android:layout_height="@dimen/dimen44dp"
+                                android:layout_width="@dimen/dimen44dp"
+                                android:scaleType="fitCenter"
+                                android:layout_gravity="center_vertical|center_horizontal"
+                                android:contentDescription="@string/groups"
+                                app:srcCompat="@drawable/ic_spinner" />
+
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <LinearLayout
+                            android:id="@+id/group_name_frame"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal|center_vertical"
-                            android:textSize="@dimen/dimen16sp" />
+                            android:gravity="center_vertical"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/group_name"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal|center_vertical"
+                                android:textSize="@dimen/dimen16sp" />
+
+                            <TextView
+                                android:id="@+id/group_path"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal|center_vertical"
+                                android:alpha=".7"
+                                android:textSize="@dimen/dimen14sp" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/group_description"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:layout_marginTop="@dimen/dimen8dp"
+                        android:textSize="@dimen/dimen14sp" />
+
+                    <LinearLayout
+                        android:id="@+id/visibility_frame"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="@dimen/dimen16dp"
+                        tools:ignore="UseCompoundDrawables">
+
+                        <ImageView
+                            android:layout_width="@dimen/dimen24dp"
+                            android:layout_height="@dimen/dimen24dp"
+                            android:contentDescription="@string/visibility"
+                            android:layout_marginEnd="12dp"
+                            android:layout_gravity="center_vertical|center_horizontal"
+                            android:src="@drawable/ic_view" />
 
                         <TextView
-                            android:id="@+id/group_path"
+                            android:id="@+id/group_visibility"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal|center_vertical"
-                            android:alpha=".7"
+                            android:layout_gravity="center_vertical|center_horizontal"
                             android:textSize="@dimen/dimen14sp" />
 
                     </LinearLayout>
 
                 </LinearLayout>
 
+            </com.google.android.material.card.MaterialCardView>
+
+            <LinearLayout
+                android:id="@+id/group_projects_frame"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:orientation="vertical">
+
                 <TextView
-                    android:id="@+id/group_description"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    android:layout_marginTop="@dimen/dimen8dp"
-                    android:textSize="@dimen/dimen14sp" />
-
-                <LinearLayout
-                    android:id="@+id/visibility_frame"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
+                    android:textSize="@dimen/dimen18sp"
                     android:layout_marginTop="@dimen/dimen16dp"
-                    tools:ignore="UseCompoundDrawables">
+                    android:layout_marginStart="@dimen/dimen4dp"
+                    android:layout_marginEnd="@dimen/dimen4dp"
+                    android:text="@string/projects" />
 
-                    <ImageView
-                        android:layout_width="@dimen/dimen24dp"
-                        android:layout_height="@dimen/dimen24dp"
-                        android:contentDescription="@string/visibility"
-                        android:layout_marginEnd="12dp"
-                        android:layout_gravity="center_vertical|center_horizontal"
-                        android:src="@drawable/ic_view" />
-
-                    <TextView
-                        android:id="@+id/group_visibility"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical|center_horizontal"
-                        android:textSize="@dimen/dimen14sp" />
-
-                </LinearLayout>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_view"
+                    android:layout_width="match_parent"
+                    android:paddingTop="@dimen/dimen12dp"
+                    android:paddingBottom="@dimen/dimen12dp"
+                    android:layout_marginBottom="@dimen/dimen70dp"
+                    android:layout_height="wrap_content" />
 
             </LinearLayout>
 
-        </com.google.android.material.card.MaterialCardView>
-
-        <LinearLayout
-            android:id="@+id/group_projects_frame"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/dimen18sp"
-                android:layout_marginStart="@dimen/dimen16dp"
-                android:layout_marginEnd="@dimen/dimen16dp"
-                android:text="@string/projects" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_view"
-                android:layout_width="match_parent"
-                android:layout_marginTop="@dimen/dimen10dp"
-                android:layout_marginStart="@dimen/dimen10dp"
-                android:layout_marginEnd="@dimen/dimen10dp"
-                android:layout_height="wrap_content" />
-
         </LinearLayout>
 
-    </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
     <com.google.android.material.bottomappbar.BottomAppBar
         android:id="@+id/bottom_app_bar"

@@ -216,6 +216,10 @@ public interface ApiInterface {
 	@POST("projects") // create new project
 	Call<Projects> createProject(@Body CrudeProject body);
 
+	@GET("projects/{id}/forks") // get a project forks
+	Call<List<Projects>> getProjectForks(
+			@Path("id") int id, @Query("per_page") int per_page, @Query("page") int page);
+
 	// Merge request endpoints
 	@GET("projects/{id}/merge_requests") // get project merge requests
 	Call<List<MergeRequests>> getProjectMergeRequests(

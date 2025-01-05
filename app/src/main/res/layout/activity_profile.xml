@@ -10,13 +10,13 @@
         android:id="@+id/main_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/dimen80dp"
-            android:fitsSystemWindows="true"
             android:orientation="vertical">
 
             <com.google.android.material.card.MaterialCardView

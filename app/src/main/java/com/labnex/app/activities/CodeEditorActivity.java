@@ -37,12 +37,6 @@ public class CodeEditorActivity extends BaseActivity {
 		binding = ActivityCodeEditorBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
-		binding.bottomAppBar.setNavigationOnClickListener(
-				bottomAppBar -> {
-					sendResults();
-					finish();
-				});
-
 		String fileContent = getIntent().getStringExtra("fileContent");
 		String fileExtension;
 		currentTheme = Theme.getDefaultTheme(this);

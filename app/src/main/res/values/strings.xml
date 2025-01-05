@@ -220,6 +220,7 @@
     <string name="star">Star</string>
     <string name="unstar">Unstar</string>
     <string name="fork">Fork</string>
+    <string name="forks">Forks</string>
     <string name="issues">Issues</string>
     <string name="notes">Notes</string>
     <string name="settings">Settings</string>
