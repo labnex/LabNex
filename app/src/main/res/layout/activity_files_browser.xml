@@ -8,8 +8,11 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="@dimen/dimen80dp"
-        android:layout_margin="@dimen/dimen16dp"
+        android:layout_marginBottom="@dimen/dimen96dp"
+        android:layout_marginTop="@dimen/dimen16dp"
+        android:layout_marginStart="@dimen/dimen16dp"
+        android:layout_marginEnd="@dimen/dimen16dp"
+        android:fitsSystemWindows="true"
         app:layout_behavior="@string/searchbar_scrolling_view_behavior">
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -46,6 +49,7 @@
         android:id="@+id/progress_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
         android:indeterminate="true" />
 
     <include
@@ -56,7 +60,7 @@
     <com.google.android.material.bottomappbar.BottomAppBar
         android:id="@+id/bottom_app_bar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dimen80dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         style="@style/Widget.Material3.BottomAppBar"
         app:backgroundTint="?attr/bottomNavigationColor"
@@ -71,7 +75,6 @@
                 android:id="@+id/bottom_bar_title_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimen24dp"
                 android:singleLine="true"
                 android:text="@string/files"
                 android:layout_alignParentStart="true"

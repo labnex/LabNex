@@ -1,43 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- non translatable strings -->
-    <string name="app_name" translatable="false">LabNex</string>
-    <string name="app_version_build" translatable="false">%s / %d</string>
-    <string name="support_link_patreon" translatable="false">https://www.patreon.com/mmarif</string>
-    <string name="crowd_in_link" translatable="false">https://crowdin.com/project/labnex</string>
-    <string name="app_website_link" translatable="false">https://labnex.app</string>
-    <string name="source_code_link" translatable="false">https://github.com/labnex/LabNex</string>
-    <string name="support_text_patreon" translatable="false">Patreon</string>
-    <string name="crowd_in_text" translatable="false">Crowdin</string>
-
-    <string name="gitlab" translatable="false">GitLab</string>
-    <string name="private_placeholder" translatable="false">Private</string>
-    <string name="internal_placeholder" translatable="false">Internal</string>
-    <string name="public_placeholder" translatable="false">Public</string>
-    <string name="gitlab_saas" translatable="false">GitLab SaaS</string>
-    <string name="data_concatenate" translatable="false">%s - %s</string>
-    <string name="single_string_conversion" translatable="false">%s</string>
-    <string name="hash" translatable="false">#</string>
-    <string name="username_with_at_sign" translatable="false">\@%s</string>
-    <string name="source_position" translatable="false">%1$d:%2$d</string>
-    <string name="discord_user_profile_link" translatable="false">https://discord.com/users/%s</string>
     <!-- non translatable strings -->
-
-    <string name="action_sign_in">Sign in</string>
-    <string name="hi_username">Hi %s 👋</string>
-    <string name="welcome_back">Welcome back</string>
-    <string name="login_failed">Login failed</string>
+    <string name="action_sign_in">Anmelden</string>
+    <string name="hi_username">Hallo %s 👋</string>
+    <string name="welcome_back">Willkommen zurück</string>
+    <string name="login_failed">Anmeldung fehlgeschlagen</string>
     <string name="all_good">You\'re all caught up</string>
-    <string name="most_visited">Most visited</string>
+    <string name="most_visited">Meist besucht</string>
     <string name="gitlab_link">GitLab URL</string>
-    <string name="gitlab_link_help">i.e., gitlab.com (do not add https, http is not supported by LabNex)</string>
-    <string name="personal_access_token">Personal access token</string>
-    <string name="personal_access_token_helper"><u>Where can I get a personal access token?</u></string>
-    <string name="personal_access_token_helper_link" translatable="false">https://gitlab.com/-/user_settings/personal_access_tokens</string>
-    <string name="add_new_account">Add account</string>
-    <string name="remove_all_accounts">Remove all accounts</string>
+    <string name="gitlab_link_help">z.B., gitlab.com (Füge https oder http nicht zur URL hinzu. Dies wird automatisch gemacht)</string>
+    <string name="personal_access_token">Persönlicher Access Token</string>
+    <string name="personal_access_token_helper"><u>Wo erstelle ich mir einen persönlichen Access Token?</u></string>
+    <string name="add_new_account">Account hinzufügen</string>
+    <string name="remove_all_accounts">Alle Accounts löschen</string>
     <string name="remove_all_accounts_from_app_message">This will remove all the accounts from the app only, including projects data, personal notes, etc.</string>
-    <string name="account_token_expires_at">Token expires on %s</string>
-    <string name="remove_account_from_app_title">Remove account</string>
+    <string name="account_token_expires_at">Token läuft am %s ab</string>
+    <string name="remove_account_from_app_title">Account entfernen</string>
     <string name="remove_account_from_app_message">Are you sure you want to remove this account from the app?\n\nThis will remove all data related to this account on the app only.</string>
     <string name="remove_account_from_app_success">Account removed successfully</string>
     <string name="api_scopes">Scopes: all api scopes are required</string>
@@ -163,7 +142,7 @@
     <string name="activity_created_project">Created project %s</string>
     <string name="activity_mr_approvals">Approvals: %d / %d</string>
     <string name="activity_mr_not_eligible">You can not approve this merge request</string>
-    <string name="mr_approve_failed">Approval failed. You are probably not authorized to approve this merge request.</string>
+    <string name="mr_approve_failed">Approving failed. You are probably not eligible to approve this merge request.</string>
     <string name="revoke_approval">Revoke approval</string>
     <string name="files_ref">Files - ref:%s</string>
     <string name="exclude_files_in_fileviewer">This file type/size is not supported by the file viewer. You can download it to your phone instead.</string>
@@ -187,7 +166,6 @@
     <string name="new_file_created">New file created successfully</string>
     <string name="home_screen">Home screen</string>
     <string name="home_screen_dialog_title">Select home screen</string>
-
     <!-- errors -->
     <string name="generic_error">Something went wrong</string>
     <string name="browserOpenFailed">No application found to open this link</string>
@@ -207,7 +185,6 @@
     <string name="access_forbidden_403">Access forbidden, the request isn’t allowed</string>
     <string name="no_description">No description provided</string>
     <!-- errors -->
-
     <!-- generic copy -->
     <string name="home">Home</string>
     <string name="activities">Activities</string>
@@ -220,7 +197,6 @@
     <string name="star">Star</string>
     <string name="unstar">Unstar</string>
     <string name="fork">Fork</string>
-    <string name="forks">Forks</string>
     <string name="issues">Issues</string>
     <string name="notes">Notes</string>
     <string name="settings">Settings</string>

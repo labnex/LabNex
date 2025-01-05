@@ -10,6 +10,7 @@
         android:id="@+id/main_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
         android:paddingBottom="@dimen/dimen70dp">
 
         <LinearLayout
@@ -88,7 +89,7 @@
     <com.google.android.material.bottomappbar.BottomAppBar
         android:id="@+id/bottom_app_bar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dimen80dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         style="@style/Widget.Material3.BottomAppBar"
         app:backgroundTint="?attr/bottomNavigationColor"
@@ -103,7 +104,6 @@
                 android:id="@+id/create_mr_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimen24dp"
                 android:text="@string/create_mr"
                 android:layout_alignParentStart="true"
                 android:textSize="@dimen/dimen20sp" />
