@@ -1,0 +1,17 @@
+3.0.0
+
+🎉 Features 🎉
+- Star/unstar a project
+- Project forks
+- Copy project ID, URL, HTTPS clone URL and SSH URL
+- Approve merge request or revoke the approval
+
+🚀 Improvements 🚀 
+- Support Android 15 edge to edge feature
+- Switch to password type for tokens
+- Support for German language
+
+🐛 Bug Fixes 🐛
+- Fix time format for other timezone
+
+Release Notes: https://github.com/labnex/LabNex/releases
