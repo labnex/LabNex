@@ -284,5 +284,6 @@
     <string name="closed">Closed</string>
     <string name="merged">Merged</string>
     <string name="approve">Approve</string>
+    <string name="refreshed">Refreshed</string>
     <!-- generic copy -->
 </resources>

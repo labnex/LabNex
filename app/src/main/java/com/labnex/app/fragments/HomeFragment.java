@@ -119,6 +119,22 @@ public class HomeFragment extends Fragment {
 		getUserInfo();
 		getMostVisitedProjects();
 
+		binding.userAvatar.setOnLongClickListener(
+				ref -> {
+					requireActivity()
+							.runOnUiThread(
+									() -> {
+										getBroadcastMessage();
+										getUserInfo();
+										getMostVisitedProjects();
+										Snackbar.info(
+												requireActivity(),
+												requireActivity().findViewById(R.id.nav_view),
+												getString(R.string.refreshed));
+									});
+					return true;
+				});
+
 		return root;
 	}
 
