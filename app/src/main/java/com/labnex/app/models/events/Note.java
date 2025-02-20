@@ -9,7 +9,7 @@ import java.io.Serializable;
 public class Note implements Serializable {
 
 	@SerializedName("noteable_id")
-	private int noteableId;
+	private long noteableId;
 
 	@SerializedName("internal")
 	private boolean internal;
@@ -33,7 +33,7 @@ public class Note implements Serializable {
 	private CommandsChanges commandsChanges;
 
 	@SerializedName("noteable_iid")
-	private int noteableIid;
+	private long noteableIid;
 
 	@SerializedName("system")
 	private boolean system;
@@ -45,7 +45,7 @@ public class Note implements Serializable {
 	private String updatedAt;
 
 	@SerializedName("project_id")
-	private int projectId;
+	private long projectId;
 
 	@SerializedName("resolvable")
 	private boolean resolvable;
@@ -57,12 +57,12 @@ public class Note implements Serializable {
 	private boolean imported;
 
 	@SerializedName("id")
-	private int id;
+	private long id;
 
 	@SerializedName("confidential")
 	private boolean confidential;
 
-	public int getNoteableId() {
+	public long getNoteableId() {
 		return noteableId;
 	}
 
@@ -94,7 +94,7 @@ public class Note implements Serializable {
 		return commandsChanges;
 	}
 
-	public int getNoteableIid() {
+	public long getNoteableIid() {
 		return noteableIid;
 	}
 
@@ -110,7 +110,7 @@ public class Note implements Serializable {
 		return updatedAt;
 	}
 
-	public int getProjectId() {
+	public long getProjectId() {
 		return projectId;
 	}
 
@@ -126,7 +126,7 @@ public class Note implements Serializable {
 		return imported;
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 

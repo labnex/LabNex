@@ -9,7 +9,7 @@ import java.io.Serializable;
 public class PushData implements Serializable {
 
 	@SerializedName("commit_count")
-	private int commitCount;
+	private long commitCount;
 
 	@SerializedName("ref")
 	private String ref;
@@ -32,7 +32,7 @@ public class PushData implements Serializable {
 	@SerializedName("commit_to")
 	private String commitTo;
 
-	public int getCommitCount() {
+	public long getCommitCount() {
 		return commitCount;
 	}
 

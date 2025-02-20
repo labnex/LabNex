@@ -111,7 +111,7 @@ public interface ApiInterface {
 
 	// Project endpoints
 	@GET("projects/{id}") // get a single project details
-	Call<Projects> getProjectInfo(@Path("id") int id);
+	Call<Projects> getProjectInfo(@Path("id") long id);
 
 	@GET("projects/{id}/approval_rules") // get project approval rules
 	Call<List<Rule>> getApprovalRules(@Path("id") int id);
