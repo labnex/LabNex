@@ -33,7 +33,7 @@ public class Events implements Serializable {
 	private String targetIid;
 
 	@SerializedName("project_id")
-	private int projectId;
+	private long projectId;
 
 	@SerializedName("action_name")
 	private String actionName;
@@ -85,7 +85,7 @@ public class Events implements Serializable {
 		return targetIid;
 	}
 
-	public int getProjectId() {
+	public long getProjectId() {
 		return projectId;
 	}
 
