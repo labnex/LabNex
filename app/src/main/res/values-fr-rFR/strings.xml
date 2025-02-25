@@ -3,7 +3,7 @@
     <!-- non translatable strings -->
     <!-- non translatable strings -->
     <string name="action_sign_in">Connexion</string>
-    <string name="hi_username">Bonjour %s 👋</string>
+    <string name="hi_username">Hi %1$s 👋</string>
     <string name="welcome_back">Contents de vous revoir</string>
     <string name="login_failed">Échec de la connexion</string>
     <string name="all_good">Vous êtes à jour</string>
@@ -15,7 +15,7 @@
     <string name="add_new_account">Ajouter un compte</string>
     <string name="remove_all_accounts">Supprimer tous les comptes</string>
     <string name="remove_all_accounts_from_app_message">Cela supprimera tous les comptes de l\'application, y compris les données des projets, notes personnelles, etc.</string>
-    <string name="account_token_expires_at">Le jeton expire le %s</string>
+    <string name="account_token_expires_at">Token expires on %1$s</string>
     <string name="remove_account_from_app_title">Supprimer le compte</string>
     <string name="remove_account_from_app_message">Êtes-vous certain de vouloir supprimer ce compte de l’application ?\n\nSeules les données concernant ce compte au sein de l’application seront supprimées.</string>
     <string name="remove_account_from_app_success">Compte supprimé avec succès</string>
@@ -31,8 +31,8 @@
     <string name="biometric_not_available">Les fonctionnalités biométriques ne sont actuellement pas disponibles</string>
     <string name="enroll_biometric">Faites l\'inscription biométrique depuis les paramètres de l\'appareil</string>
     <string name="nothing_found">Rien ici pour le moment</string>
-    <string name="created_with">%s créé</string>
-    <string name="updated_with">Mis à jour %s</string>
+    <string name="created_with">Created %1$s</string>
+    <string name="updated_with">Updated %1$s</string>
     <string name="merge_requests">Demandes de fusion</string>
     <plurals name="note_delete_message">
         <item quantity="one">Note supprimée avec succès</item>
@@ -51,12 +51,12 @@
     <string name="project_starred">The project has been starred successfully</string>
     <string name="project_unstarred">The project has been unstarred successfully</string>
     <plurals name="project_stars">
-        <item quantity="one">%s étoile</item>
-        <item quantity="other">%s étoiles</item>
+        <item quantity="one">%1$s star</item>
+        <item quantity="other">%1$s stars</item>
     </plurals>
     <plurals name="project_forks">
-        <item quantity="one">%s branche</item>
-        <item quantity="other">%s branches</item>
+        <item quantity="one">%1$s fork</item>
+        <item quantity="other">%1$s forks</item>
     </plurals>
     <string name="switch_branch">Changer de branche</string>
     <string name="create_new_label">Créer un nouveau label</string>
@@ -64,8 +64,8 @@
     <string name="label_title_empty">Titre de l\'étiquette requis</string>
     <string name="label_created">Étiquette créée avec succès</string>
     <string name="new_label">Nouvelle étiquette</string>
-    <string name="update_label">Mise à jour %s</string>
-    <string name="delete_dialog_title">Supprimer %s</string>
+    <string name="update_label">Update %1$s</string>
+    <string name="delete_dialog_title">Delete %1$s</string>
     <string name="delete_label_dialog_message">Souhaitez-vous vraiment supprimer ce label ?</string>
     <string name="label_deleted">Label supprimé avec succès</string>
     <string name="label_updated">Label mis à jour avec succès</string>
@@ -83,10 +83,10 @@
     <string name="title_required">Un titre est requis</string>
     <string name="content_required">Un contenu est requis</string>
     <string name="wiki_page_deleted">Page wiki supprimée avec succès</string>
-    <string name="published_by">Publié par %s %s</string>
+    <string name="published_by">Published by %1$s %2$s</string>
     <string name="release_deleted">Version supprimée avec succès</string>
     <string name="delete_release_message">Êtes-vous certain de vouloir supprimer cette version ? Supprimer une version ne supprime pas l\'étiquette associée.</string>
-    <string name="due_on">Échéance au %s</string>
+    <string name="due_on">Due on %1$s</string>
     <string name="open_in_browser">Ouvrir dans le navigateur</string>
     <string name="copy_url">Copier l\'URL</string>
     <string name="notes_and_activities">Notes et Activités</string>
@@ -96,7 +96,7 @@
     <string name="comment_is_empty">Did you forget to write something?</string>
     <string name="create_issue">Create issue</string>
     <string name="issue_created">Issue created successfully</string>
-    <string name="commit_author_info">%s authored and %s committed %s</string>
+    <string name="commit_author_info">%1$s authored and %2$s committed %3$s</string>
     <string name="diff_statistics">%1$s addition(s) and %2$s deletion(s)</string>
     <string name="broadcast_message">Broadcast message</string>
     <string name="merge_fail_text">Merge may fail if you are not authorized to merge this Merge Request.</string>
@@ -110,11 +110,11 @@
     <string name="source_target_branch_empty_error">Both the target and source branches are required</string>
     <string name="mr_branches_are_same">Target and source branches cannot be the same</string>
     <string name="mr_created">Merge request created successfully</string>
-    <string name="user_followers">Followers %s</string>
-    <string name="user_following">Following %s</string>
+    <string name="user_followers">Followers %1$s</string>
+    <string name="user_following">Following %1$s</string>
     <string name="remove_source_branch">Remove source branch</string>
     <string name="squash_commits">Squash all commits</string>
-    <string name="merge_info">%s wants to merge branch %s into %s</string>
+    <string name="merge_info">%1$s wants to merge branch %2$s into %3$s</string>
     <string name="mr_cannot_be_merged">This merge request cannot be merged at this time. Please check for merge conflicts and other issues.</string>
     <string name="close_issue">You are about to close this issue. Tap the Close button to proceed.</string>
     <string name="issue_closed">Issue was closed successfully</string>
@@ -125,34 +125,34 @@
     <string name="project_name_required">Le nom du projet est obligatoire</string>
     <string name="project_visibility">Visibilité du projet</string>
     <string name="project_created">Project created successfully</string>
-    <string name="activity_commented_on_issue">Commenté sur le ticket %s #%s</string>
-    <string name="activity_commented_on_mr">Commenté sur la demande de fusion %s !%s</string>
-    <string name="activity_opened_mr">Demande de fusion ouverte %s !%s</string>
-    <string name="activity_closed_mr">Demande de fusion fermée %s !%s</string>
-    <string name="activity_closed_issue">Ticket fermé %s #%s</string>
-    <string name="activity_opened_issue">Ticket ouvert %s #%s</string>
-    <string name="activity_pushed_to">Poussé vers la branche %s avec la validation %s %s</string>
-    <string name="activity_pushed_new_branch">Nouvelle branche poussée %s</string>
-    <string name="activity_deleted_branch">Branche supprimée %s</string>
-    <string name="activity_accepted_mr">Demande de fusion acceptée %s !%s</string>
-    <string name="activity_opened_milestone">Jalon ouvert %s</string>
-    <string name="activity_closed_milestone">Jalon fermé %s</string>
-    <string name="activity_created_wiki_page">Page wiki créée %s</string>
-    <string name="activity_updated_wiki_page">Page wiki mise à jour %s</string>
-    <string name="activity_created_project">Projet créé %s</string>
-    <string name="activity_mr_approvals">Approvals: %d / %d</string>
+    <string name="activity_pushed_to">\@%1$s pushed to branch</string>
+    <string name="activity_commented_on_issue">\@%1$s commented on issue</string>
+    <string name="activity_commented_on_mr">\@%1$s commented on merge request</string>
+    <string name="activity_opened_mr">\@%1$s opened merge request</string>
+    <string name="activity_opened_issue">\@%1$s opened issue</string>
+    <string name="activity_opened_milestone">\@%1$s opened milestone</string>
+    <string name="activity_closed_mr">\@%1$s closed merge request</string>
+    <string name="activity_closed_issue">\@%1$s closed issue</string>
+    <string name="activity_closed_milestone">\@%1$s closed milestone</string>
+    <string name="activity_pushed_new_branch">\@%1$s pushed new branch</string>
+    <string name="activity_deleted_branch">\@%1$s deleted branch</string>
+    <string name="activity_accepted_mr">\@%1$s accepted merge request</string>
+    <string name="activity_created_wiki_page">\@%1$s created wiki page</string>
+    <string name="activity_created_project">\@%1$s created project</string>
+    <string name="activity_updated_wiki_page">\@%1$s updated wiki page</string>
+    <string name="activity_mr_approvals">Approvals: %1$d / %2$d</string>
     <string name="activity_mr_not_eligible">You can not approve this merge request</string>
     <string name="mr_approve_failed">Approval failed. You are probably not authorized to approve this merge request.</string>
     <string name="revoke_approval">Revoke approval</string>
-    <string name="files_ref">Fichiers - réf:%s</string>
+    <string name="files_ref">Files - ref:%1$s</string>
     <string name="exclude_files_in_fileviewer">Ce type ou cette taille de fichiers ne sont pas supportés par la visionneuse de fichier. Vous pouvez toutefois le télécharger depuis le menu.</string>
     <string name="render_md">Rendu Markdown</string>
     <string name="file_viewer_notification_title_started">Téléchargement en cours</string>
-    <string name="file_viewer_notification_description_started">Téléchargement de %s</string>
+    <string name="file_viewer_notification_description_started">Downloading %1$s</string>
     <string name="file_viewer_notification_title_finished">Téléchargement réussi</string>
-    <string name="file_viewer_notification_description_finished">%s téléchargé</string>
+    <string name="file_viewer_notification_description_finished">Downloaded %1$s</string>
     <string name="file_viewer_notification_title_failed">Échec du téléchargement</string>
-    <string name="file_viewer_notification_description_failed">Impossible de télécharger %s</string>
+    <string name="file_viewer_notification_description_failed">Couldn\'t download %1$s</string>
     <string name="delete_all_most_visited_dialog_message">Cela supprimera tous les projets ajoutés à la liste Les Plus Visités. Appuyez sur Effacer pour les supprimer.</string>
     <string name="create_file">Créer un fichier</string>
     <string name="filename">Nom du fichier</string>
@@ -178,7 +178,7 @@
     <string name="version_alert_dialog_header">Unsupported version of GitLab</string>
     <string name="not_authorized">Not authorized. Check your credentials and try again</string>
     <string name="generic_server_response_error">We cannot reach the server at the moment. Please check again later</string>
-    <string name="generic_api_error">GitLab has returned an error. Code %d</string>
+    <string name="generic_api_error">GitLab has returned an error. Code %1$d</string>
     <string name="authorization_error">Authorization Error</string>
     <string name="authorization_error_message">It seems that your personal access token has been revoked or is no longer valid.\n\nYou can click the Update button to update your personal access token on the accounts screen.</string>
     <string name="group_name_required">Group name is required</string>
@@ -197,6 +197,7 @@
     <string name="star">Star</string>
     <string name="unstar">Unstar</string>
     <string name="fork">Fork</string>
+    <string name="forks">Forks</string>
     <string name="issues">Issues</string>
     <string name="notes">Notes</string>
     <string name="settings">Settings</string>
@@ -260,5 +261,6 @@
     <string name="closed">Closed</string>
     <string name="merged">Merged</string>
     <string name="approve">Approve</string>
+    <string name="refreshed">Refreshed</string>
     <!-- generic copy -->
 </resources>

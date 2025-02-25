@@ -195,10 +195,17 @@ public class ActivitiesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 					case "commented on":
 						if (events.getNote() != null
 								&& events.getNote().getNoteableType().equalsIgnoreCase("Issue")) {
-							content.setText(
+
+							authorUsername.setText(
 									context.getResources()
 											.getString(
 													R.string.activity_commented_on_issue,
+													events.getAuthor().getUsername()));
+
+							content.setText(
+									context.getResources()
+											.getString(
+													R.string.data_concatenate,
 													events.getTargetTitle(),
 													String.valueOf(
 															events.getNote().getNoteableIid())));
@@ -210,10 +217,17 @@ public class ActivitiesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 								&& events.getNote()
 										.getNoteableType()
 										.equalsIgnoreCase("MergeRequest")) {
-							content.setText(
+
+							authorUsername.setText(
 									context.getResources()
 											.getString(
 													R.string.activity_commented_on_mr,
+													events.getAuthor().getUsername()));
+
+							content.setText(
+									context.getResources()
+											.getString(
+													R.string.data_concatenate,
 													events.getTargetTitle(),
 													String.valueOf(
 															events.getNote().getNoteableIid())));
@@ -225,71 +239,119 @@ public class ActivitiesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 					case "opened":
 						if (events.getTargetType() != null
 								&& events.getTargetType().equalsIgnoreCase("MergeRequest")) {
-							content.setText(
+
+							authorUsername.setText(
 									context.getResources()
 											.getString(
 													R.string.activity_opened_mr,
+													events.getAuthor().getUsername()));
+
+							content.setText(
+									context.getResources()
+											.getString(
+													R.string.data_concatenate,
 													events.getTargetTitle(),
 													events.getTargetIid()));
 						}
 
 						if (events.getTargetType() != null
 								&& events.getTargetType().equalsIgnoreCase("Issue")) {
-							content.setText(
+
+							authorUsername.setText(
 									context.getResources()
 											.getString(
 													R.string.activity_opened_issue,
+													events.getAuthor().getUsername()));
+
+							content.setText(
+									context.getResources()
+											.getString(
+													R.string.data_concatenate,
 													events.getTargetTitle(),
 													events.getTargetIid()));
 						}
 
 						if (events.getTargetType() != null
 								&& events.getTargetType().equalsIgnoreCase("Milestone")) {
-							content.setText(
+
+							authorUsername.setText(
 									context.getResources()
 											.getString(
 													R.string.activity_opened_milestone,
+													events.getAuthor().getUsername()));
+
+							content.setText(
+									context.getResources()
+											.getString(
+													R.string.single_string_conversion,
 													events.getTargetTitle()));
 						}
 						break;
 					case "closed":
 						if (events.getTargetType() != null
 								&& events.getTargetType().equalsIgnoreCase("MergeRequest")) {
-							content.setText(
+
+							authorUsername.setText(
 									context.getResources()
 											.getString(
 													R.string.activity_closed_mr,
+													events.getAuthor().getUsername()));
+
+							content.setText(
+									context.getResources()
+											.getString(
+													R.string.data_concatenate,
 													events.getTargetTitle(),
 													events.getTargetIid()));
 						}
 
 						if (events.getTargetType() != null
 								&& events.getTargetType().equalsIgnoreCase("Issue")) {
-							content.setText(
+
+							authorUsername.setText(
 									context.getResources()
 											.getString(
 													R.string.activity_closed_issue,
+													events.getAuthor().getUsername()));
+
+							content.setText(
+									context.getResources()
+											.getString(
+													R.string.data_concatenate,
 													events.getTargetTitle(),
 													events.getTargetIid()));
 						}
 
 						if (events.getTargetType() != null
 								&& events.getTargetType().equalsIgnoreCase("Milestone")) {
-							content.setText(
+
+							authorUsername.setText(
 									context.getResources()
 											.getString(
 													R.string.activity_closed_milestone,
+													events.getAuthor().getUsername()));
+
+							content.setText(
+									context.getResources()
+											.getString(
+													R.string.single_string_conversion,
 													events.getTargetTitle()));
 						}
 						break;
 					case "pushed to":
 						if (events.getPushData() != null
 								&& events.getPushData().getAction().equalsIgnoreCase("pushed")) {
-							content.setText(
+
+							authorUsername.setText(
 									context.getResources()
 											.getString(
 													R.string.activity_pushed_to,
-													events.getPushData().getRef(),
+													events.getAuthor().getUsername()));
+
+							content.setText(
+									context.getResources()
+											.getString(
+													R.string.data_concatenate,
 													events.getPushData().getCommitTitle(),
 													events.getPushData()
 															.getCommitTo()
@@ -299,30 +361,51 @@ public class ActivitiesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 					case "pushed new":
 						if (events.getPushData() != null
 								&& events.getPushData().getAction().equalsIgnoreCase("created")) {
-							content.setText(
+
+							authorUsername.setText(
 									context.getResources()
 											.getString(
 													R.string.activity_pushed_new_branch,
+													events.getAuthor().getUsername()));
+
+							content.setText(
+									context.getResources()
+											.getString(
+													R.string.single_string_conversion,
 													events.getPushData().getRef()));
 						}
 						break;
 					case "deleted":
 						if (events.getPushData() != null
 								&& events.getPushData().getAction().equalsIgnoreCase("removed")) {
-							content.setText(
+
+							authorUsername.setText(
 									context.getResources()
 											.getString(
 													R.string.activity_deleted_branch,
+													events.getAuthor().getUsername()));
+
+							content.setText(
+									context.getResources()
+											.getString(
+													R.string.single_string_conversion,
 													events.getPushData().getRef()));
 						}
 						break;
 					case "accepted":
 						if (events.getTargetType() != null
 								&& events.getTargetType().equalsIgnoreCase("MergeRequest")) {
-							content.setText(
+
+							authorUsername.setText(
 									context.getResources()
 											.getString(
 													R.string.activity_accepted_mr,
+													events.getAuthor().getUsername()));
+
+							content.setText(
+									context.getResources()
+											.getString(
+													R.string.data_concatenate,
 													events.getTargetTitle(),
 													events.getTargetIid()));
 						}
@@ -330,26 +413,47 @@ public class ActivitiesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 					case "created":
 						if (events.getTargetType() != null
 								&& events.getTargetType().equalsIgnoreCase("WikiPage::Meta")) {
-							content.setText(
+
+							authorUsername.setText(
 									context.getResources()
 											.getString(
 													R.string.activity_created_wiki_page,
-													events.getTargetTitle()));
-						} else {
+													events.getAuthor().getUsername()));
+
 							content.setText(
 									context.getResources()
 											.getString(
+													R.string.single_string_conversion,
+													events.getTargetTitle()));
+						} else {
+
+							authorUsername.setText(
+									context.getResources()
+											.getString(
 													R.string.activity_created_project,
+													events.getAuthor().getUsername()));
+
+							content.setText(
+									context.getResources()
+											.getString(
+													R.string.single_string_conversion,
 													String.valueOf(events.getProjectId())));
 						}
 						break;
 					case "updated":
 						if (events.getTargetType() != null
 								&& events.getTargetType().equalsIgnoreCase("WikiPage::Meta")) {
-							content.setText(
+
+							authorUsername.setText(
 									context.getResources()
 											.getString(
 													R.string.activity_updated_wiki_page,
+													events.getAuthor().getUsername()));
+
+							content.setText(
+									context.getResources()
+											.getString(
+													R.string.single_string_conversion,
 													events.getTargetTitle()));
 						}
 						break;
