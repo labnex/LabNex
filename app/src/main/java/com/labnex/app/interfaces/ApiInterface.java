@@ -331,25 +331,25 @@ public interface ApiInterface {
 	@GET("events?sort=desc") // get all events
 	Call<List<Events>> getEvents(@Query("per_page") int per_page, @Query("page") int page);
 
-	@GET("search?scope=projects&sort=desc&order_by=created_at") // search for projects
+	@GET("search?scope=projects&sort=asc&order_by=created_at") // search for projects
 	Call<List<Projects>> searchProjects(
 			@Query("search") String search,
 			@Query("per_page") int per_page,
 			@Query("page") int page);
 
-	@GET("search?scope=issues&sort=desc&order_by=created_at") // search for issues
+	@GET("search?scope=issues&sort=asc&order_by=created_at") // search for issues
 	Call<List<Issues>> searchIssues(
 			@Query("search") String search,
 			@Query("per_page") int per_page,
 			@Query("page") int page);
 
-	@GET("search?scope=merge_requests&sort=desc&order_by=created_at") // search for mr
+	@GET("search?scope=merge_requests&sort=asc&order_by=created_at") // search for mr
 	Call<List<MergeRequests>> searchMergeRequests(
 			@Query("search") String search,
 			@Query("per_page") int per_page,
 			@Query("page") int page);
 
-	@GET("search?scope=users&sort=desc&order_by=created_at") // search for users
+	@GET("search?scope=users&sort=asc&order_by=created_at") // search for users
 	Call<List<User>> searchUsers(
 			@Query("search") String search,
 			@Query("per_page") int per_page,
