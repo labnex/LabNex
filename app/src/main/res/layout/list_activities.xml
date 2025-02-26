@@ -49,10 +49,10 @@
 
                 <LinearLayout
                     android:id="@+id/author_detail_frame"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal|center_vertical"
-                    android:orientation="horizontal">
+                    android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/author_name"
@@ -65,7 +65,6 @@
                         android:id="@+id/author_username"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/dimen8dp"
                         android:layout_gravity="center_horizontal|center_vertical"
                         android:alpha=".7"
                         android:textSize="@dimen/dimen14sp" />

@@ -2,9 +2,11 @@ package com.labnex.app.activities;
 
 import android.content.Intent;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.Menu;
 import android.view.View;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -64,36 +66,21 @@ public class IssuesActivity extends BaseActivity implements CreateIssueActivity.
 		binding.bottomAppBar.setOnMenuItemClickListener(
 				menuItem -> {
 					page = 1;
+					if (menuItem.getItemId() == R.id.open) {
+
+						updateIconColors(0);
+						binding.progressBar.setVisibility(View.VISIBLE);
+						filter = "opened";
+						fetchDataAsync(filter);
+					}
 					if (menuItem.getItemId() == R.id.closed) {
 
-						Objects.requireNonNull(binding.bottomAppBar.getMenu().getItem(1).getIcon())
-								.setColorFilter(
-										getResources()
-												.getColor(R.color.md_light_theme_text_color, null),
-										PorterDuff.Mode.SRC_IN);
-						Objects.requireNonNull(binding.bottomAppBar.getMenu().getItem(0).getIcon())
-								.clearColorFilter();
-
+						updateIconColors(1);
 						binding.progressBar.setVisibility(View.VISIBLE);
 						filter = "closed";
 						fetchDataAsync(filter);
 					}
-					if (menuItem.getItemId() == R.id.open) {
-
-						Objects.requireNonNull(binding.bottomAppBar.getMenu().getItem(0).getIcon())
-								.setColorFilter(
-										getResources()
-												.getColor(R.color.md_light_theme_text_color, null),
-										PorterDuff.Mode.SRC_IN);
-						Objects.requireNonNull(binding.bottomAppBar.getMenu().getItem(1).getIcon())
-								.clearColorFilter();
-
-						binding.progressBar.setVisibility(View.VISIBLE);
-						filter = "opened";
-						fetchDataAsync(filter);
-						;
-					}
-					return false;
+					return true;
 				});
 
 		Bundle bsBundle = new Bundle();
@@ -126,6 +113,7 @@ public class IssuesActivity extends BaseActivity implements CreateIssueActivity.
 										},
 										250));
 
+		updateIconColors(0);
 		fetchDataAsync(filter);
 	}
 
@@ -156,48 +144,67 @@ public class IssuesActivity extends BaseActivity implements CreateIssueActivity.
 				.observe(
 						IssuesActivity.this,
 						mainList -> {
-							adapter = new IssuesAdapter(IssuesActivity.this, mainList);
-							adapter.setLoadMoreListener(
-									new IssuesAdapter.OnLoadMoreListener() {
+							if (mainList != null) {
+								adapter = new IssuesAdapter(IssuesActivity.this, mainList);
+								adapter.setLoadMoreListener(
+										new IssuesAdapter.OnLoadMoreListener() {
+											@Override
+											public void onLoadMore() {
+												page += 1;
+												issuesViewModel.loadMore(
+														ctx,
+														source,
+														id,
+														scope,
+														filter,
+														resultLimit,
+														page,
+														adapter,
+														IssuesActivity.this,
+														binding.bottomAppBar);
+												binding.progressBar.setVisibility(View.VISIBLE);
+											}
 
-										@Override
-										public void onLoadMore() {
+											@Override
+											public void onLoadFinished() {
+												binding.progressBar.setVisibility(View.GONE);
+											}
+										});
 
-											page += 1;
-											issuesViewModel.loadMore(
-													ctx,
-													source,
-													id,
-													scope,
-													filter,
-													resultLimit,
-													page,
-													adapter,
-													IssuesActivity.this,
-													binding.bottomAppBar);
-											binding.progressBar.setVisibility(View.VISIBLE);
-										}
-
-										@Override
-										public void onLoadFinished() {
-
-											binding.progressBar.setVisibility(View.GONE);
-										}
-									});
-
-							if (adapter.getItemCount() > 0) {
-
-								binding.recyclerView.setAdapter(adapter);
-								binding.nothingFoundFrame.getRoot().setVisibility(View.GONE);
-							} else {
-
-								adapter.notifyDataChanged();
-								binding.recyclerView.setAdapter(adapter);
-								binding.nothingFoundFrame.getRoot().setVisibility(View.VISIBLE);
+								if (adapter.getItemCount() > 0) {
+									binding.recyclerView.setAdapter(adapter);
+									binding.nothingFoundFrame.getRoot().setVisibility(View.GONE);
+								} else {
+									adapter.notifyDataChanged();
+									binding.recyclerView.setAdapter(adapter);
+									binding.nothingFoundFrame.getRoot().setVisibility(View.VISIBLE);
+								}
 							}
-
 							binding.progressBar.setVisibility(View.GONE);
 						});
+	}
+
+	private void updateIconColors(int selectedIndex) {
+
+		Menu menu = binding.bottomAppBar.getMenu();
+		for (int i = 0; i < menu.size(); i++) {
+
+			Drawable icon = Objects.requireNonNull(menu.getItem(i).getIcon());
+			if (i == selectedIndex) {
+
+				icon.setColorFilter(
+						getResources().getColor(R.color.md_theme_primary_dark, null),
+						PorterDuff.Mode.SRC_IN);
+				int width = (int) (icon.getIntrinsicWidth() * 1.3);
+				int height = (int) (icon.getIntrinsicHeight() * 1.3);
+				icon.setBounds(0, 0, width, height);
+			} else {
+
+				icon.clearColorFilter();
+				icon.setBounds(0, 0, icon.getIntrinsicWidth(), icon.getIntrinsicHeight());
+			}
+			menu.getItem(i).setIcon(icon);
+		}
 	}
 
 	@Override

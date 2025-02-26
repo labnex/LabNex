@@ -34,6 +34,8 @@ public class MainActivity extends BaseActivity {
 	public static boolean refActivity = false;
 	public static boolean closeActivity = false;
 	public static boolean homeScreen = true;
+	private static final String LAST_FRAGMENT_KEY = "last_fragment_index";
+	private int lastFragmentIndex = -1;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -61,18 +63,28 @@ public class MainActivity extends BaseActivity {
 		binding.navView.setOnItemSelectedListener(
 				item -> {
 					if (R.id.navigation_home_menu == item.getItemId()) {
+						lastFragmentIndex = 0;
 						loadFragment(homeFragment);
 						return true;
 					} else if (R.id.navigation_activities_menu == item.getItemId()) {
+						lastFragmentIndex = 1;
 						loadFragment(activitiesFragment);
 						return true;
 					} else if (R.id.navigation_explore_menu == item.getItemId()) {
+						lastFragmentIndex = 2;
 						loadFragment(exploreFragment);
 						return true;
 					} else {
 						return false;
 					}
 				});
+
+		if (savedInstanceState != null) {
+			lastFragmentIndex = savedInstanceState.getInt(LAST_FRAGMENT_KEY, -1);
+			restoreLastFragment();
+		} else {
+			setDefaultFragment();
+		}
 	}
 
 	@Override
@@ -82,37 +94,31 @@ public class MainActivity extends BaseActivity {
 		if (closeActivity) {
 			finishAndRemoveTask();
 			closeActivity = false;
+			return;
 		}
 
 		if (refActivity) {
 			this.recreate();
 			this.overridePendingTransition(0, 0);
 			refActivity = false;
+			return;
 		}
 
-		if (homeScreen) {
-			switch (Integer.parseInt(
-					AppSettingsInit.getSettingsValue(ctx, AppSettingsInit.APP_HOME_SCREEN_KEY))) {
-				case 0:
-					binding.navView.getMenu().getItem(0).setChecked(true);
-					loadFragment(homeFragment);
-					break;
-				case 1:
-					binding.navView.getMenu().getItem(1).setChecked(true);
-					loadFragment(activitiesFragment);
-					break;
-				case 2:
-					binding.navView.getMenu().getItem(2).setChecked(true);
-					loadFragment(exploreFragment);
-					break;
-			}
-		} else {
-			homeScreen = true;
+		if (lastFragmentIndex != -1) {
+			restoreLastFragment();
+		} else if (homeScreen) {
+			setDefaultFragment();
+			homeScreen = false;
 		}
 	}
 
-	private void loadFragment(Fragment fragment) {
+	@Override
+	protected void onSaveInstanceState(@NonNull Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putInt(LAST_FRAGMENT_KEY, lastFragmentIndex);
+	}
 
+	private void loadFragment(Fragment fragment) {
 		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
 		if (fragment.isAdded()) {
@@ -128,6 +134,57 @@ public class MainActivity extends BaseActivity {
 		}
 
 		transaction.commit();
+
+		if (fragment == homeFragment) {
+			binding.navView.getMenu().getItem(0).setChecked(true);
+		} else if (fragment == activitiesFragment) {
+			binding.navView.getMenu().getItem(1).setChecked(true);
+		} else if (fragment == exploreFragment) {
+			binding.navView.getMenu().getItem(2).setChecked(true);
+		}
+	}
+
+	private void setDefaultFragment() {
+		int defaultScreen =
+				Integer.parseInt(
+						AppSettingsInit.getSettingsValue(ctx, AppSettingsInit.APP_HOME_SCREEN_KEY));
+		switch (defaultScreen) {
+			case 0:
+				lastFragmentIndex = 0;
+				binding.navView.getMenu().getItem(0).setChecked(true);
+				loadFragment(homeFragment);
+				break;
+			case 1:
+				lastFragmentIndex = 1;
+				binding.navView.getMenu().getItem(1).setChecked(true);
+				loadFragment(activitiesFragment);
+				break;
+			case 2:
+				lastFragmentIndex = 2;
+				binding.navView.getMenu().getItem(2).setChecked(true);
+				loadFragment(exploreFragment);
+				break;
+		}
+	}
+
+	private void restoreLastFragment() {
+		switch (lastFragmentIndex) {
+			case 0:
+				binding.navView.getMenu().getItem(0).setChecked(true);
+				loadFragment(homeFragment);
+				break;
+			case 1:
+				binding.navView.getMenu().getItem(1).setChecked(true);
+				loadFragment(activitiesFragment);
+				break;
+			case 2:
+				binding.navView.getMenu().getItem(2).setChecked(true);
+				loadFragment(exploreFragment);
+				break;
+			default:
+				setDefaultFragment();
+				break;
+		}
 	}
 
 	private void checkPersonalAccessToken() {
