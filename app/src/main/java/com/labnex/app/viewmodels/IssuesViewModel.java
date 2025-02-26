@@ -12,6 +12,7 @@ import com.labnex.app.adapters.IssuesAdapter;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.helpers.Snackbar;
 import com.labnex.app.models.issues.Issues;
+import java.util.ArrayList;
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -23,6 +24,7 @@ import retrofit2.Response;
 public class IssuesViewModel extends ViewModel {
 
 	private MutableLiveData<List<Issues>> mutableList;
+	private Call<List<Issues>> currentCall;
 
 	public LiveData<List<Issues>> getIssues(
 			Context ctx,
@@ -52,53 +54,52 @@ public class IssuesViewModel extends ViewModel {
 			Activity activity,
 			BottomAppBar bottomAppBar) {
 
-		Call<List<Issues>> call;
+		if (currentCall != null && !currentCall.isCanceled()) {
+			currentCall.cancel();
+		}
 
 		if (source.equalsIgnoreCase("project")) {
-			call =
+			currentCall =
 					RetrofitClient.getApiInterface(ctx)
 							.getProjectIssues(id, state, resultLimit, page);
 		} else {
-			call = RetrofitClient.getApiInterface(ctx).getIssues(scope, state, resultLimit, page);
+			currentCall =
+					RetrofitClient.getApiInterface(ctx).getIssues(scope, state, resultLimit, page);
 		}
 
-		call.enqueue(
+		currentCall.enqueue(
 				new Callback<>() {
-
 					@Override
 					public void onResponse(
 							@NonNull Call<List<Issues>> call,
 							@NonNull Response<List<Issues>> response) {
-
-						if (response.isSuccessful()) {
-							mutableList.postValue(response.body());
-						} else if (response.code() == 401) {
-
-							Snackbar.info(
-									ctx, activity.findViewById(android.R.id.content),
-									bottomAppBar, ctx.getString(R.string.not_authorized));
-						} else if (response.code() == 403) {
-
-							Snackbar.info(
-									ctx,
-									activity.findViewById(android.R.id.content),
-									bottomAppBar,
-									ctx.getString(R.string.access_forbidden_403));
-						} else {
-
-							Snackbar.info(
-									ctx, activity.findViewById(android.R.id.content),
-									bottomAppBar, ctx.getString(R.string.generic_error));
+						if (!call.isCanceled()) {
+							if (response.isSuccessful() && response.body() != null) {
+								mutableList.postValue(response.body());
+							} else if (response.code() == 401) {
+								Snackbar.info(
+										ctx, activity.findViewById(android.R.id.content),
+										bottomAppBar, ctx.getString(R.string.not_authorized));
+							} else if (response.code() == 403) {
+								Snackbar.info(
+										ctx, activity.findViewById(android.R.id.content),
+										bottomAppBar, ctx.getString(R.string.access_forbidden_403));
+							} else {
+								Snackbar.info(
+										ctx, activity.findViewById(android.R.id.content),
+										bottomAppBar, ctx.getString(R.string.generic_error));
+							}
 						}
 					}
 
 					@Override
 					public void onFailure(@NonNull Call<List<Issues>> call, @NonNull Throwable t) {
-						Snackbar.info(
-								ctx,
-								activity.findViewById(android.R.id.content),
-								bottomAppBar,
-								ctx.getString(R.string.generic_server_response_error));
+						if (!call.isCanceled()) {
+							Snackbar.info(
+									ctx, activity.findViewById(android.R.id.content),
+									bottomAppBar,
+											ctx.getString(R.string.generic_server_response_error));
+						}
 					}
 				});
 	}
@@ -115,54 +116,63 @@ public class IssuesViewModel extends ViewModel {
 			Activity activity,
 			BottomAppBar bottomAppBar) {
 
-		Call<List<Issues>> call;
+		if (currentCall != null && !currentCall.isCanceled()) {
+			currentCall.cancel();
+		}
 
 		if (source.equalsIgnoreCase("project")) {
-			call =
+			currentCall =
 					RetrofitClient.getApiInterface(ctx)
 							.getProjectIssues(id, state, resultLimit, page);
 		} else {
-			call = RetrofitClient.getApiInterface(ctx).getIssues(scope, state, resultLimit, page);
-			RetrofitClient.getApiInterface(ctx).getIssues(scope, state, resultLimit, page);
+			currentCall =
+					RetrofitClient.getApiInterface(ctx).getIssues(scope, state, resultLimit, page);
 		}
 
-		call.enqueue(
+		currentCall.enqueue(
 				new Callback<>() {
-
 					@Override
 					public void onResponse(
 							@NonNull Call<List<Issues>> call,
 							@NonNull Response<List<Issues>> response) {
-
-						if (response.isSuccessful()) {
-
-							List<Issues> list = mutableList.getValue();
-							assert list != null;
-							assert response.body() != null;
-
-							if (!response.body().isEmpty()) {
-								list.addAll(response.body());
-								adapter.updateList(list);
+						if (!call.isCanceled()) {
+							if (response.isSuccessful() && response.body() != null) {
+								List<Issues> currentList = mutableList.getValue();
+								if (currentList == null) {
+									currentList = new ArrayList<>();
+								}
+								if (!response.body().isEmpty()) {
+									currentList.addAll(response.body());
+									adapter.updateList(currentList);
+									mutableList.postValue(currentList);
+								} else {
+									adapter.setMoreDataAvailable(false);
+								}
 							} else {
-								adapter.setMoreDataAvailable(false);
+								Snackbar.info(
+										ctx, activity.findViewById(android.R.id.content),
+										bottomAppBar, ctx.getString(R.string.generic_error));
 							}
-						} else {
-							Snackbar.info(
-									ctx,
-									activity.findViewById(android.R.id.content),
-									bottomAppBar,
-									ctx.getString(R.string.generic_error));
 						}
 					}
 
 					@Override
 					public void onFailure(@NonNull Call<List<Issues>> call, @NonNull Throwable t) {
-						Snackbar.info(
-								ctx,
-								activity.findViewById(android.R.id.content),
-								bottomAppBar,
-								ctx.getString(R.string.generic_server_response_error));
+						if (!call.isCanceled()) {
+							Snackbar.info(
+									ctx, activity.findViewById(android.R.id.content),
+									bottomAppBar,
+											ctx.getString(R.string.generic_server_response_error));
+						}
 					}
 				});
+	}
+
+	@Override
+	protected void onCleared() {
+		if (currentCall != null && !currentCall.isCanceled()) {
+			currentCall.cancel();
+		}
+		super.onCleared();
 	}
 }
