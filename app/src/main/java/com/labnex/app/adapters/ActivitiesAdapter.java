@@ -236,6 +236,24 @@ public class ActivitiesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 						}
 
 						break;
+					case "approved":
+						if (events.getTargetType() != null
+								&& events.getTargetType().equalsIgnoreCase("MergeRequest")) {
+
+							authorUsername.setText(
+									context.getResources()
+											.getString(
+													R.string.activity_approved_mr,
+													events.getAuthor().getUsername()));
+
+							content.setText(
+									context.getResources()
+											.getString(
+													R.string.data_concatenate,
+													events.getTargetTitle(),
+													events.getTargetIid()));
+						}
+						break;
 					case "opened":
 						if (events.getTargetType() != null
 								&& events.getTargetType().equalsIgnoreCase("MergeRequest")) {

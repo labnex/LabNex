@@ -31,12 +31,21 @@ public class ActivitiesViewModel extends ViewModel {
 			String source,
 			int resultLimit,
 			int page,
+			String targetType,
 			FragmentActivitiesBinding binding,
 			Activity activity,
 			BottomNavigationView bottomNavigationView) {
 
 		events = new MutableLiveData<>();
-		loadInitialList(ctx, source, resultLimit, page, binding, activity, bottomNavigationView);
+		loadInitialList(
+				ctx,
+				source,
+				resultLimit,
+				page,
+				targetType,
+				binding,
+				activity,
+				bottomNavigationView);
 
 		return events;
 	}
@@ -46,11 +55,13 @@ public class ActivitiesViewModel extends ViewModel {
 			String source,
 			int resultLimit,
 			int page,
+			String targetType,
 			FragmentActivitiesBinding binding,
 			Activity activity,
 			BottomNavigationView bottomNavigationView) {
 
-		Call<List<Events>> call = RetrofitClient.getApiInterface(ctx).getEvents(resultLimit, page);
+		Call<List<Events>> call =
+				RetrofitClient.getApiInterface(ctx).getEvents(resultLimit, page, targetType);
 
 		call.enqueue(
 				new Callback<>() {
@@ -107,12 +118,14 @@ public class ActivitiesViewModel extends ViewModel {
 			String source,
 			int resultLimit,
 			int page,
+			String targetType,
 			ActivitiesAdapter adapter,
 			FragmentActivitiesBinding binding,
 			Activity activity,
 			BottomNavigationView bottomNavigationView) {
 
-		Call<List<Events>> call = RetrofitClient.getApiInterface(ctx).getEvents(resultLimit, page);
+		Call<List<Events>> call =
+				RetrofitClient.getApiInterface(ctx).getEvents(resultLimit, page, targetType);
 
 		call.enqueue(
 				new Callback<>() {

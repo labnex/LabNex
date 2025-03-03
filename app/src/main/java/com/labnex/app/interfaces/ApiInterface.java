@@ -331,7 +331,10 @@ public interface ApiInterface {
 
 	// Events, search and activities
 	@GET("events?sort=desc") // get all events
-	Call<List<Events>> getEvents(@Query("per_page") int per_page, @Query("page") int page);
+	Call<List<Events>> getEvents(
+			@Query("per_page") int per_page,
+			@Query("page") int page,
+			@Query("target_type") String targetType);
 
 	@GET("search?scope=projects&sort=asc&order_by=created_at") // search for projects
 	Call<List<Projects>> searchProjects(

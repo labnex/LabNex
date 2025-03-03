@@ -216,4 +216,18 @@
     </style>
     <!-- custom material button -->
 
+    <style name="CustomChip" parent="Widget.MaterialComponents.Chip.Choice">
+        <item name="chipBackgroundColor">@drawable/chip_background_selector</item>
+        <item name="android:textColor">@drawable/chip_text_color_selector</item>
+        <item name="chipStrokeColor">@color/md_theme_outline</item>
+        <item name="chipStrokeWidth">@dimen/dimen2dp</item>
+        <item name="chipCornerRadius">@dimen/dimen8dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.MaterialComponents.Body1</item>
+        <item name="chipStartPadding">@dimen/dimen8dp</item>
+        <item name="chipEndPadding">@dimen/dimen8dp</item>
+        <item name="android:paddingTop">@dimen/dimen4dp</item>
+        <item name="android:paddingBottom">@dimen/dimen4dp</item>
+        <item name="checkedIconEnabled">false</item>
+    </style>
+
 </resources>
