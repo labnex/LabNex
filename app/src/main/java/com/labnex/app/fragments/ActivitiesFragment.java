@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.chip.Chip;
 import com.labnex.app.R;
 import com.labnex.app.activities.BaseActivity;
 import com.labnex.app.activities.MainActivity;
@@ -32,6 +33,10 @@ public class ActivitiesFragment extends Fragment {
 	private int resultLimit;
 	private String source;
 	private BottomNavigationView bottomNavigationView;
+	private final String[] targetTypes = {
+		"None", "Issue", "Note", "Project", "Merge request", "Milestone", "Snippet", "Epic", "User"
+	};
+	private String selectedTargetType = "None";
 
 	public View onCreateView(
 			@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -58,12 +63,43 @@ public class ActivitiesFragment extends Fragment {
 										},
 										250));
 
+		setupTargetTypeChips();
 		fetchDataAsync();
 
 		return binding.getRoot();
 	}
 
+	private void setupTargetTypeChips() {
+
+		for (String targetType : targetTypes) {
+
+			Chip chip = new Chip(requireContext(), null, R.style.CustomChip);
+			chip.setText(targetType);
+			chip.setCheckable(true);
+			chip.setClickable(true);
+
+			if ("None".equals(targetType)) {
+				chip.setChecked(true);
+			}
+
+			chip.setOnClickListener(
+					v -> {
+						selectedTargetType = targetType;
+						page = 1;
+						fetchDataAsync();
+						binding.progressBar.setVisibility(View.VISIBLE);
+					});
+
+			binding.targetTypeChips.addView(chip);
+		}
+	}
+
 	private void fetchDataAsync() {
+
+		String targetType =
+				"None".equals(selectedTargetType)
+						? null
+						: selectedTargetType.toLowerCase().replace(" ", "_");
 
 		activitiesViewModel
 				.getEvents(
@@ -71,6 +107,7 @@ public class ActivitiesFragment extends Fragment {
 						source,
 						resultLimit,
 						page,
+						targetType,
 						binding,
 						requireActivity(),
 						bottomNavigationView)
@@ -90,6 +127,7 @@ public class ActivitiesFragment extends Fragment {
 													source,
 													resultLimit,
 													page,
+													targetType,
 													adapter,
 													binding,
 													requireActivity(),
