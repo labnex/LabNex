@@ -310,56 +310,13 @@
                     android:orientation="vertical">
 
                     <LinearLayout
-                        android:id="@+id/branch_main_frame"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="?android:attr/selectableItemBackground"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal"
-                        android:visibility="gone"
-                        android:padding="@dimen/dimen12dp">
-
-                        <ImageView
-                            android:layout_width="@dimen/dimen24dp"
-                            android:layout_height="@dimen/dimen24dp"
-                            android:contentDescription="@string/issues"
-                            android:layout_marginEnd="@dimen/dimen16dp"
-                            app:tint="?attr/iconsColor"
-                            app:srcCompat="@drawable/ic_branch" />
-
-                        <LinearLayout
-                            android:id="@+id/branch_frame"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            tools:ignore="UseCompoundDrawables">
-
-                            <TextView
-                                android:id="@+id/branch_title_"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="@string/branch"
-                                android:textSize="@dimen/dimen16sp" />
-
-                            <TextView
-                                android:id="@+id/switch_branch_"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/switch_branch"
-                                android:textSize="@dimen/dimen16sp" />
-
-                        </LinearLayout>
-
-                    </LinearLayout>
-
-                    <LinearLayout
                         android:id="@+id/files_main_frame"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="?android:attr/selectableItemBackground"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
+                        android:layout_marginTop="@dimen/dimen8dp"
                         android:padding="@dimen/dimen12dp">
 
                         <ImageView
@@ -511,7 +468,7 @@
                         <ImageView
                             android:layout_width="@dimen/dimen24dp"
                             android:layout_height="@dimen/dimen24dp"
-                            android:contentDescription="@string/milestones"
+                            android:contentDescription="@string/releases"
                             android:layout_marginEnd="@dimen/dimen16dp"
                             app:srcCompat="@drawable/ic_releases" />
 
@@ -526,6 +483,139 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/releases"
+                                android:textSize="@dimen/dimen16sp" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/labels_main_frame"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="@dimen/dimen12dp">
+
+                        <ImageView
+                            android:layout_width="@dimen/dimen24dp"
+                            android:layout_height="@dimen/dimen24dp"
+                            android:contentDescription="@string/labels"
+                            android:layout_marginEnd="@dimen/dimen16dp"
+                            app:srcCompat="@drawable/ic_labels" />
+
+                        <LinearLayout
+                            android:id="@+id/labels_frame"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/labels_title"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/labels"
+                                android:textSize="@dimen/dimen16sp" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/milestones_main_frame"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="@dimen/dimen12dp">
+
+                        <ImageView
+                            android:layout_width="@dimen/dimen24dp"
+                            android:layout_height="@dimen/dimen24dp"
+                            android:contentDescription="@string/milestones"
+                            android:layout_marginEnd="@dimen/dimen16dp"
+                            app:srcCompat="@drawable/ic_milestones" />
+
+                        <LinearLayout
+                            android:id="@+id/milestones_frame"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/milestones_title"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/milestones"
+                                android:textSize="@dimen/dimen16sp" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/members_main_frame"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="@dimen/dimen12dp">
+
+                        <ImageView
+                            android:layout_width="@dimen/dimen24dp"
+                            android:layout_height="@dimen/dimen24dp"
+                            android:contentDescription="@string/members"
+                            android:layout_marginEnd="@dimen/dimen16dp"
+                            app:srcCompat="@drawable/ic_users" />
+
+                        <LinearLayout
+                            android:id="@+id/members_frame"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/members_title"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/members"
+                                android:textSize="@dimen/dimen16sp" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/wiki_main_frame"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="@dimen/dimen8dp"
+                        android:padding="@dimen/dimen12dp">
+
+                        <ImageView
+                            android:layout_width="@dimen/dimen24dp"
+                            android:layout_height="@dimen/dimen24dp"
+                            android:contentDescription="@string/wiki"
+                            android:layout_marginEnd="@dimen/dimen16dp"
+                            app:srcCompat="@drawable/ic_wiki" />
+
+                        <LinearLayout
+                            android:id="@+id/wiki_frame"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/wiki_title"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/wiki"
                                 android:textSize="@dimen/dimen16sp" />
 
                         </LinearLayout>

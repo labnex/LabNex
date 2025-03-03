@@ -39,7 +39,7 @@ import retrofit2.Response;
 /**
  * @author mmarif
  */
-public class FileViewActivity extends BaseActivity {
+public class FileViewActivity extends BaseActivity implements CreateFileActivity.UpdateInterface {
 
 	private boolean renderMd = false;
 	private ActivityFileViewBinding binding;
@@ -48,6 +48,7 @@ public class FileViewActivity extends BaseActivity {
 	private int projectId;
 	public ProjectsContext projectsContext;
 	private boolean processable = false;
+	private String fileContent;
 
 	ActivityResultLauncher<Intent> activityResultLauncher =
 			registerForActivityResult(
@@ -180,11 +181,15 @@ public class FileViewActivity extends BaseActivity {
 
 		projectsContext = ProjectsContext.fromIntent(getIntent());
 
+		CreateFileActivity.setUpdateListener(FileViewActivity.this);
+
 		projectId = projectsContext.getProjectId();
 		tree = (Tree) getIntent().getSerializableExtra("tree");
 		ref = getIntent().getStringExtra("ref");
 
 		binding.bottomAppBar.setNavigationOnClickListener(bottomAppBar -> finish());
+
+		binding.bottomAppBar.getMenu().findItem(R.id.edit).setVisible(false);
 
 		if (!FilenameUtils.getExtension(tree.getName().toLowerCase()).equalsIgnoreCase("md")) {
 			binding.bottomAppBar.getMenu().removeItem(R.id.render_md);
@@ -216,11 +221,31 @@ public class FileViewActivity extends BaseActivity {
 
 							renderMd = false;
 						}
+					} else if (menuItem.getItemId() == R.id.edit) {
+						Intent intent = new Intent(this, CreateFileActivity.class);
+						intent.putExtra("mode", "edit");
+						intent.putExtra("projectId", projectId);
+						intent.putExtra("filename", tree.getName());
+						intent.putExtra("branch", ref);
+						intent.putExtra("fileContent", fileContent);
+						intent.putExtra("projectsContext", projectsContext);
+						startActivity(intent);
 					}
 					return false;
 				});
 
 		getFileContents();
+	}
+
+	@Override
+	public void createFileDataListener(String str, String branch) {
+
+		if (str.equalsIgnoreCase("updated")) {
+			Snackbar.info(
+					FileViewActivity.this,
+					binding.bottomAppBar,
+					getString(R.string.file_update, branch));
+		}
 	}
 
 	private void getFileContents() {
@@ -296,7 +321,7 @@ public class FileViewActivity extends BaseActivity {
 												}
 
 												processable = true;
-												String text =
+												fileContent =
 														Utils.decodeBase64(
 																responseBody.getContent());
 
@@ -306,13 +331,13 @@ public class FileViewActivity extends BaseActivity {
 																	View.GONE);
 
 															binding.contents.setContent(
-																	text, fileExtension);
+																	fileContent, fileExtension);
 
 															if (renderMd) {
 																Markdown.render(
 																		ctx,
 																		EmojiParser.parseToUnicode(
-																				text),
+																				fileContent),
 																		binding.markdown,
 																		projectsContext);
 
@@ -326,6 +351,10 @@ public class FileViewActivity extends BaseActivity {
 																binding.contents.setVisibility(
 																		View.VISIBLE);
 															}
+															binding.bottomAppBar
+																	.getMenu()
+																	.findItem(R.id.edit)
+																	.setVisible(true);
 														});
 												break;
 										}

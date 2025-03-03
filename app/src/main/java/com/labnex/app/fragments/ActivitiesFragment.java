@@ -34,9 +34,9 @@ public class ActivitiesFragment extends Fragment {
 	private String source;
 	private BottomNavigationView bottomNavigationView;
 	private final String[] targetTypes = {
-		"None", "Issue", "Note", "Project", "Merge request", "Milestone", "Snippet", "Epic", "User"
+		"All", "Issue", "Note", "Project", "Merge request", "Milestone", "Snippet", "Epic", "User"
 	};
-	private String selectedTargetType = "None";
+	private String selectedTargetType = "All";
 
 	public View onCreateView(
 			@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -78,7 +78,7 @@ public class ActivitiesFragment extends Fragment {
 			chip.setCheckable(true);
 			chip.setClickable(true);
 
-			if ("None".equals(targetType)) {
+			if ("All".equals(targetType)) {
 				chip.setChecked(true);
 			}
 
@@ -97,7 +97,7 @@ public class ActivitiesFragment extends Fragment {
 	private void fetchDataAsync() {
 
 		String targetType =
-				"None".equals(selectedTargetType)
+				"All".equals(selectedTargetType)
 						? null
 						: selectedTargetType.toLowerCase().replace(" ", "_");
 
