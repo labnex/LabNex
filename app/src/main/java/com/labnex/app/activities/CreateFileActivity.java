@@ -31,6 +31,9 @@ public class CreateFileActivity extends BaseActivity
 	public ProjectsContext projectsContext;
 	private int projectId;
 	private String type;
+	private String mode;
+	private String originalFilename;
+	private String originalBranch;
 
 	ActivityResultLauncher<Intent> codeEditorActivityResultLauncher =
 			registerForActivityResult(
@@ -61,13 +64,42 @@ public class CreateFileActivity extends BaseActivity
 		binding = ActivityCreateFileBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
+		mode = getIntent().getStringExtra("mode");
+		if (mode == null) mode = "create";
+
 		projectsContext = ProjectsContext.fromIntent(getIntent());
-		projectId = projectsContext.getProjectId();
+		if (projectsContext != null) {
+			projectId = projectsContext.getProjectId();
+		} else {
+			projectId = getIntent().getIntExtra("projectId", -1);
+			if (projectId == -1) {
+				finish();
+				return;
+			}
+		}
+
 		Bundle bsBundle = new Bundle();
 		BranchesBottomSheet.setCreateFileUpdateListener(CreateFileActivity.this);
 
+		mode = getIntent().getStringExtra("mode");
+		if (mode == null) mode = "create";
+
 		if (getIntent().getStringExtra("type") != null) {
 			type = getIntent().getStringExtra("type");
+		}
+
+		if ("edit".equals(mode)) {
+
+			originalFilename = getIntent().getStringExtra("filename");
+			originalBranch = getIntent().getStringExtra("branch");
+			String fileContent = getIntent().getStringExtra("fileContent");
+
+			binding.filename.setText(originalFilename);
+			binding.chooseBranch.setText(originalBranch);
+			binding.fileContent.setText(fileContent);
+			binding.create.setText(R.string.update);
+			binding.commitMessage.setText(
+					getString(R.string.edit_commit_message, originalFilename));
 		}
 
 		binding.bottomAppBar.setNavigationOnClickListener(bottomAppBar -> finish());
@@ -112,6 +144,7 @@ public class CreateFileActivity extends BaseActivity
 		binding.create.setOnClickListener(
 				create -> {
 					disableButton();
+
 					String filename = Objects.requireNonNull(binding.filename.getText()).toString();
 					String branch =
 							Objects.requireNonNull(binding.chooseBranch.getText()).toString();
@@ -120,29 +153,22 @@ public class CreateFileActivity extends BaseActivity
 					String fileContent =
 							Objects.requireNonNull(binding.fileContent.getText()).toString();
 
-					if (filename.isEmpty()
-							&& branch.isEmpty()
-							&& commitMessage.isEmpty()
-							&& fileContent.isEmpty()) {
+					if (filename.isEmpty() || commitMessage.isEmpty() || fileContent.isEmpty()) {
 
 						enableButton();
 						Snackbar.info(
-								CreateFileActivity.this,
+								this,
 								binding.bottomAppBar,
 								getString(R.string.all_fields_are_required));
 						return;
 					}
 
-					createNewFile(filename, branch, commitMessage, fileContent);
+					if ("edit".equals(mode)) {
+						updateFile(filename, branch, commitMessage, fileContent);
+					} else {
+						createNewFile(filename, branch, commitMessage, fileContent);
+					}
 				});
-	}
-
-	public void launchCodeEditorActivityForResult(String fileContent, String fileExtension) {
-
-		Intent intent = new Intent(this, CodeEditorActivity.class);
-		intent.putExtra("fileExtension", fileExtension);
-		intent.putExtra("fileContent", fileContent);
-		codeEditorActivityResultLauncher.launch(intent);
 	}
 
 	private void createNewFile(
@@ -158,43 +184,15 @@ public class CreateFileActivity extends BaseActivity
 
 		call.enqueue(
 				new Callback<>() {
-
 					@Override
 					public void onResponse(
 							@NonNull Call<FileContents> call,
 							@NonNull retrofit2.Response<FileContents> response) {
-
-						if (response.code() == 201) {
-
-							UpdateInterface.createFileDataListener("created", branch);
-							finish();
-						} else if (response.code() == 401) {
-
-							enableButton();
-							Snackbar.info(
-									CreateFileActivity.this,
-									binding.bottomAppBar,
-									getString(R.string.not_authorized));
-						} else if (response.code() == 403) {
-
-							enableButton();
-							Snackbar.info(
-									CreateFileActivity.this,
-									binding.bottomAppBar,
-									getString(R.string.access_forbidden_403));
-						} else {
-
-							enableButton();
-							Snackbar.info(
-									CreateFileActivity.this,
-									binding.bottomAppBar,
-									getString(R.string.generic_error));
-						}
+						handleResponse(response, branch);
 					}
 
 					@Override
 					public void onFailure(@NonNull Call<FileContents> call, @NonNull Throwable t) {
-
 						enableButton();
 						Snackbar.info(
 								CreateFileActivity.this,
@@ -202,6 +200,63 @@ public class CreateFileActivity extends BaseActivity
 								getString(R.string.generic_server_response_error));
 					}
 				});
+	}
+
+	private void updateFile(
+			String filename, String branch, String commitMessage, String fileContent) {
+
+		CrudeFile crudeFile = new CrudeFile();
+		crudeFile.setContent(fileContent);
+		crudeFile.setCommitMessage(commitMessage);
+		crudeFile.setBranch(branch);
+
+		Call<FileContents> call =
+				RetrofitClient.getApiInterface(ctx).updateFile(projectId, filename, crudeFile);
+
+		call.enqueue(
+				new Callback<>() {
+					@Override
+					public void onResponse(
+							@NonNull Call<FileContents> call,
+							@NonNull retrofit2.Response<FileContents> response) {
+						handleResponse(response, branch);
+					}
+
+					@Override
+					public void onFailure(@NonNull Call<FileContents> call, @NonNull Throwable t) {
+						enableButton();
+						Snackbar.info(
+								CreateFileActivity.this,
+								binding.bottomAppBar,
+								getString(R.string.generic_server_response_error));
+					}
+				});
+	}
+
+	private void handleResponse(retrofit2.Response<FileContents> response, String branch) {
+
+		if (response.code() == 201 || response.code() == 200) {
+			UpdateInterface.createFileDataListener(
+					"edit".equals(mode) ? "updated" : "created", branch);
+			finish();
+		} else if (response.code() == 401) {
+			enableButton();
+			Snackbar.info(this, binding.bottomAppBar, getString(R.string.not_authorized));
+		} else if (response.code() == 403) {
+			enableButton();
+			Snackbar.info(this, binding.bottomAppBar, getString(R.string.access_forbidden_403));
+		} else {
+			enableButton();
+			Snackbar.info(this, binding.bottomAppBar, getString(R.string.generic_error));
+		}
+	}
+
+	public void launchCodeEditorActivityForResult(String fileContent, String fileExtension) {
+
+		Intent intent = new Intent(this, CodeEditorActivity.class);
+		intent.putExtra("fileExtension", fileExtension);
+		intent.putExtra("fileContent", fileContent);
+		codeEditorActivityResultLauncher.launch(intent);
 	}
 
 	private void disableButton() {

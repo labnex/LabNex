@@ -1,15 +1,18 @@
 package com.labnex.app.activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
 import androidx.annotation.NonNull;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.gson.Gson;
 import com.labnex.app.R;
 import com.labnex.app.bottomsheets.BranchesBottomSheet;
 import com.labnex.app.bottomsheets.ProjectLabelsBottomSheet;
@@ -26,9 +29,12 @@ import com.labnex.app.helpers.TextDrawable.ColorGenerator;
 import com.labnex.app.helpers.TextDrawable.TextDrawable;
 import com.labnex.app.helpers.Utils;
 import com.labnex.app.interfaces.BottomSheetListener;
+import com.labnex.app.models.branches.Branches;
+import com.labnex.app.models.error.ErrorResponse;
 import com.labnex.app.models.projects.Projects;
 import com.labnex.app.models.repository.FileContents;
 import com.vdurmont.emoji.EmojiParser;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -124,37 +130,45 @@ public class ProjectDetailActivity extends BaseActivity
 					bottomSheet.show(getSupportFragmentManager(), "projectReleasesBottomSheet");
 				});
 
+		binding.labelsMainFrame.setOnClickListener(
+				labels -> {
+					bsBundle.putInt("projectId", projectId);
+					ProjectLabelsBottomSheet bottomSheet = new ProjectLabelsBottomSheet();
+					bottomSheet.setArguments(bsBundle);
+					bottomSheet.show(getSupportFragmentManager(), "projectLabelsBottomSheet");
+				});
+
+		binding.milestonesMainFrame.setOnClickListener(
+				milestones -> {
+					bsBundle.putInt("projectId", projectId);
+					ProjectMilestonesBottomSheet bottomSheet = new ProjectMilestonesBottomSheet();
+					bottomSheet.setArguments(bsBundle);
+					bottomSheet.show(getSupportFragmentManager(), "projectMilestonesBottomSheet");
+				});
+
+		binding.membersMainFrame.setOnClickListener(
+				members -> {
+					bsBundle.putInt("projectId", projectId);
+					bsBundle.putString("type", "members");
+					ProjectMembersBottomSheet bottomSheet = new ProjectMembersBottomSheet();
+					bottomSheet.setArguments(bsBundle);
+					bottomSheet.show(getSupportFragmentManager(), "projectMembersBottomSheet");
+				});
+
+		binding.wikiMainFrame.setOnClickListener(
+				wiki -> {
+					bsBundle.putInt("projectId", projectId);
+					ProjectWikisBottomSheet bottomSheet = new ProjectWikisBottomSheet();
+					bottomSheet.setArguments(bsBundle);
+					bottomSheet.show(getSupportFragmentManager(), "projectWikisBottomSheet");
+				});
+
 		binding.bottomAppBar.setNavigationOnClickListener(bottomAppBar -> finish());
 
 		binding.bottomAppBar.setOnMenuItemClickListener(
 				menuItem -> {
-					if (menuItem.getItemId() == R.id.project_members) {
-						bsBundle.putInt("projectId", projectId);
-						bsBundle.putString("type", "members");
-						ProjectMembersBottomSheet bottomSheet = new ProjectMembersBottomSheet();
-						bottomSheet.setArguments(bsBundle);
-						bottomSheet.show(getSupportFragmentManager(), "projectMembersBottomSheet");
-					}
-					if (menuItem.getItemId() == R.id.project_labels) {
-						bsBundle.putInt("projectId", projectId);
-						ProjectLabelsBottomSheet bottomSheet = new ProjectLabelsBottomSheet();
-						bottomSheet.setArguments(bsBundle);
-						bottomSheet.show(getSupportFragmentManager(), "projectLabelsBottomSheet");
-					}
-					if (menuItem.getItemId() == R.id.project_wiki) {
-						bsBundle.putInt("projectId", projectId);
-						ProjectWikisBottomSheet bottomSheet = new ProjectWikisBottomSheet();
-						bottomSheet.setArguments(bsBundle);
-						bottomSheet.show(getSupportFragmentManager(), "projectWikisBottomSheet");
-					}
-					if (menuItem.getItemId() == R.id.project_milestones) {
-						bsBundle.putInt("projectId", projectId);
-						ProjectMilestonesBottomSheet bottomSheet =
-								new ProjectMilestonesBottomSheet();
-						bottomSheet.setArguments(bsBundle);
-						bottomSheet.show(
-								getSupportFragmentManager(), "projectMilestonesBottomSheet");
-					}
+					if (menuItem.getItemId() == R.id.create_new_branch) {}
+					showCreateBranchDialog();
 					return false;
 				});
 
@@ -192,6 +206,106 @@ public class ProjectDetailActivity extends BaseActivity
 
 		branch = str;
 		binding.branchTitle.setText(str);
+	}
+
+	private void showCreateBranchDialog() {
+
+		View dialogView =
+				LayoutInflater.from(this).inflate(R.layout.custom_create_branch_dialog, null);
+		EditText newBranchInput = dialogView.findViewById(R.id.branch_name);
+		EditText refInput = dialogView.findViewById(R.id.branch_ref);
+
+		MaterialAlertDialogBuilder builder =
+				new MaterialAlertDialogBuilder(this)
+						.setTitle(R.string.create_branch)
+						.setView(dialogView)
+						.setPositiveButton(R.string.create, null)
+						.setNeutralButton(R.string.cancel, null);
+
+		final androidx.appcompat.app.AlertDialog dialog = builder.create();
+		dialog.show();
+
+		dialog.getButton(DialogInterface.BUTTON_POSITIVE)
+				.setOnClickListener(
+						v -> {
+							String newBranch = newBranchInput.getText().toString().trim();
+							String ref = refInput.getText().toString().trim();
+
+							if (newBranch.isEmpty() || ref.isEmpty()) {
+								Snackbar.info(
+										this,
+										binding.bottomAppBar,
+										getString(R.string.branch_ref_required));
+							} else {
+								createBranch(newBranch, ref, dialog);
+							}
+						});
+	}
+
+	private void createBranch(
+			String branch, String ref, androidx.appcompat.app.AlertDialog dialog) {
+
+		Call<Branches> call =
+				RetrofitClient.getApiInterface(this).createBranch(projectId, branch, ref);
+
+		call.enqueue(
+				new Callback<>() {
+					@Override
+					public void onResponse(
+							@NonNull Call<Branches> call, @NonNull Response<Branches> response) {
+
+						if (response.isSuccessful() && response.code() == 201) {
+
+							Snackbar.info(
+									ProjectDetailActivity.this,
+									findViewById(R.id.bottom_app_bar),
+									getString(R.string.branch_created, branch));
+							dialog.dismiss();
+						} else {
+
+							String errorMessage;
+							try (okhttp3.ResponseBody errorBody = response.errorBody()) {
+
+								if (errorBody != null) {
+
+									Gson gson = new Gson();
+									ErrorResponse errorResponse =
+											gson.fromJson(errorBody.string(), ErrorResponse.class);
+									errorMessage =
+											errorResponse.getMessage() != null
+													? errorResponse.getMessage()
+													: getString(R.string.generic_error);
+
+								} else if (response.code() == 401) {
+
+									errorMessage = getString(R.string.not_authorized);
+								} else if (response.code() == 403) {
+
+									errorMessage = getString(R.string.access_forbidden_403);
+								} else {
+
+									errorMessage = getString(R.string.generic_error);
+								}
+							} catch (IOException e) {
+								errorMessage = getString(R.string.generic_error);
+							}
+
+							Snackbar.info(
+									ProjectDetailActivity.this,
+									findViewById(R.id.bottom_app_bar),
+									errorMessage);
+						}
+					}
+
+					@Override
+					public void onFailure(@NonNull Call<Branches> call, @NonNull Throwable t) {
+
+						Snackbar.info(
+								ProjectDetailActivity.this,
+								findViewById(R.id.bottom_app_bar),
+								getString(R.string.generic_server_response_error));
+					}
+				});
 	}
 
 	private void getProjectInfo() {

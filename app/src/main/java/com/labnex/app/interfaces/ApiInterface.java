@@ -122,6 +122,10 @@ public interface ApiInterface {
 	Call<List<Branches>> getProjectBranches(
 			@Path("id") int id, @Query("per_page") int per_page, @Query("page") int page);
 
+	@POST("projects/{id}/repository/branches") // create a branch
+	Call<Branches> createBranch(
+			@Path("id") int id, @Query("branch") String branch, @Query("ref") String ref);
+
 	@GET("projects/{id}/members") // get a project members
 	Call<List<User>> getProjectMembers(
 			@Path("id") int id, @Query("per_page") int per_page, @Query("page") int page);
@@ -375,6 +379,10 @@ public interface ApiInterface {
 
 	@POST("projects/{id}/repository/files/{filename}") // create new file
 	Call<FileContents> createFile(
+			@Path("id") int id, @Path("filename") String filename, @Body CrudeFile body);
+
+	@PUT("projects/{id}/repository/files/{filename}") // edit a file
+	Call<FileContents> updateFile(
 			@Path("id") int id, @Path("filename") String filename, @Body CrudeFile body);
 
 	// Templates
