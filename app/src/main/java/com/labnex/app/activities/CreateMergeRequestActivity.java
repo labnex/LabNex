@@ -8,6 +8,7 @@ import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.contexts.ProjectsContext;
 import com.labnex.app.databinding.ActivityCreateMergeRequestBinding;
 import com.labnex.app.helpers.Snackbar;
+import com.labnex.app.helpers.api.TemplateFetcher;
 import com.labnex.app.interfaces.BottomSheetListener;
 import com.labnex.app.models.merge_requests.CrudeMergeRequest;
 import com.labnex.app.models.merge_requests.MergeRequests;
@@ -48,6 +49,16 @@ public class CreateMergeRequestActivity extends BaseActivity
 		projectId = projectsContext.getProjectId();
 
 		binding.bottomAppBar.setNavigationOnClickListener(bottomAppBar -> finish());
+
+		TemplateFetcher.fetchAndPopulateTemplates(
+				this,
+				projectId,
+				"merge_requests",
+				binding.templates,
+				binding.description,
+				binding.bottomAppBar,
+				this::disableButton,
+				this::enableButton);
 
 		binding.targetBranch.setOnClickListener(
 				target -> {

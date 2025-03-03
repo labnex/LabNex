@@ -27,6 +27,8 @@ import com.labnex.app.models.release.Releases;
 import com.labnex.app.models.repository.CrudeFile;
 import com.labnex.app.models.repository.FileContents;
 import com.labnex.app.models.repository.Tree;
+import com.labnex.app.models.templates.Template;
+import com.labnex.app.models.templates.Templates;
 import com.labnex.app.models.user.User;
 import com.labnex.app.models.users.Users;
 import com.labnex.app.models.wikis.CrudeWiki;
@@ -371,4 +373,12 @@ public interface ApiInterface {
 	@POST("projects/{id}/repository/files/{filename}") // create new file
 	Call<FileContents> createFile(
 			@Path("id") int id, @Path("filename") String filename, @Body CrudeFile body);
+
+	// Templates
+	@GET("projects/{id}/templates/{type}") // get all templates
+	Call<List<Templates>> getTemplates(@Path("id") int id, @Path("type") String type);
+
+	@GET("projects/{id}/templates/{type}/{name}") // get a template
+	Call<Template> getTemplate(
+			@Path("id") int id, @Path("type") String type, @Path("name") String name);
 }
