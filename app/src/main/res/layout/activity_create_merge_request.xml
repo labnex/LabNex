@@ -68,6 +68,21 @@
                 android:hint="@string/source_branch"
                 android:textSize="@dimen/dimen16sp" />
 
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/templates"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dimen54dp"
+                android:layout_marginBottom="@dimen/dimen8dp"
+                android:background="@drawable/shape_input"
+                android:hint="@string/select_template"
+                android:inputType="none"
+                android:focusable="true"
+                android:clickable="true"
+                android:singleLine="true"
+                android:focusableInTouchMode="true"
+                android:dropDownVerticalOffset="@dimen/dimen6sp"
+                android:textSize="@dimen/dimen16sp" />
+
             <EditText
                 android:id="@+id/description"
                 android:layout_width="match_parent"

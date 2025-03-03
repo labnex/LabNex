@@ -190,6 +190,8 @@
     <string name="home_screen">Home screen</string>
     <string name="home_screen_dialog_title">Select home screen</string>
 
+    <string name="select_template">Select a template</string>
+
     <!-- errors -->
     <string name="generic_error">Something went wrong</string>
     <string name="browserOpenFailed">No application found to open this link</string>

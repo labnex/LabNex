@@ -7,6 +7,7 @@ import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.contexts.ProjectsContext;
 import com.labnex.app.databinding.ActivityCreateIssueBinding;
 import com.labnex.app.helpers.Snackbar;
+import com.labnex.app.helpers.api.TemplateFetcher;
 import com.labnex.app.models.issues.CrudeIssue;
 import com.labnex.app.models.issues.Issues;
 import java.util.Objects;
@@ -20,7 +21,6 @@ public class CreateIssueActivity extends BaseActivity {
 
 	ActivityCreateIssueBinding binding;
 	private int projectId;
-
 	private static UpdateInterface UpdateInterface;
 
 	public interface UpdateInterface {
@@ -42,6 +42,16 @@ public class CreateIssueActivity extends BaseActivity {
 		projectId = projectsContext.getProjectId();
 
 		binding.bottomAppBar.setNavigationOnClickListener(bottomAppBar -> finish());
+
+		TemplateFetcher.fetchAndPopulateTemplates(
+				this,
+				projectId,
+				"issues",
+				binding.templates,
+				binding.description,
+				binding.bottomAppBar,
+				this::disableButton,
+				this::enableButton);
 
 		binding.create.setOnClickListener(
 				create -> {

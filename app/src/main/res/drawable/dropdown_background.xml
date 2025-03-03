@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="?attr/inputBsDividerColor" />
+    <corners android:radius="@dimen/dimen8dp" />
+    <padding
+        android:left="@dimen/dimen8dp"
+        android:right="@dimen/dimen8dp"
+        android:top="@dimen/dimen0dp"
+        android:bottom="@dimen/dimen0dp" />
+</shape>
