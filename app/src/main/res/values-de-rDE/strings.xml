@@ -107,12 +107,17 @@
     <string name="create_mr">Merge Request erstellen</string>
     <string name="source_branch">Quell Branch</string>
     <string name="target_branch">Ziel Branch</string>
+    <string name="branch_name">Branch name</string>
+    <string name="branch_ref_hint">Branch name or commit SHA to create branch from</string>
+    <string name="branch_ref_required">Branch name and ref are required</string>
+    <string name="branch_created">"Branch %1$s created successfully"</string>
     <string name="source_target_branch_empty_error">Sowohl Ziel als auch Quell Branch müssen angegeben werden</string>
     <string name="mr_branches_are_same">Ziel und Quell Branch müssen sich unterscheiden</string>
     <string name="mr_created">Merge Request erfolgreich erstellt</string>
     <string name="user_followers">Followers %1$s</string>
     <string name="user_following">Following %1$s</string>
     <string name="remove_source_branch">Quell Branch entfernen</string>
+    <string name="create_branch">Create branch</string>
     <string name="squash_commits">Alle Commits squashen</string>
     <string name="merge_info">%1$s wants to merge branch %2$s into %3$s</string>
     <string name="mr_cannot_be_merged">This merge request cannot be merged at this time. Please check for merge conflicts and other issues.</string>
@@ -140,6 +145,7 @@
     <string name="activity_created_wiki_page">\@%1$s created wiki page</string>
     <string name="activity_created_project">\@%1$s created project</string>
     <string name="activity_updated_wiki_page">\@%1$s updated wiki page</string>
+    <string name="activity_approved_mr">\@%1$s approved merge request</string>
     <string name="activity_mr_approvals">Approvals: %1$d / %2$d</string>
     <string name="activity_mr_not_eligible">You can not approve this merge request</string>
     <string name="mr_approve_failed">Approval failed. You are probably not authorized to approve this merge request.</string>
@@ -158,14 +164,17 @@
     <string name="filename">File name</string>
     <string name="filename_hint">with directory: app/config.json</string>
     <string name="commit_message">Commit message</string>
+    <string name="edit_commit_message">Update %1$s</string>
     <string name="file_content">File content</string>
     <string name="all_fields_are_required">All fields are required and must be filled out</string>
     <string name="open_ce">Open in Code Editor</string>
     <string name="ce_no_filename_filled">You haven\'t entered a filename in the File name field. To better utilize the code editor\'s capabilities, it is recommended to provide a filename with an extension.\n\nPress Ignore to continue or Cancel to exit.</string>
     <string name="code_editor">Code editor</string>
     <string name="new_file_created">New file created successfully</string>
+    <string name="file_update">The file has been sent for an update via %1$s branch</string>
     <string name="home_screen">Home screen</string>
     <string name="home_screen_dialog_title">Select home screen</string>
+    <string name="select_template">Select a template</string>
     <!-- errors -->
     <string name="generic_error">Something went wrong</string>
     <string name="browserOpenFailed">No application found to open this link</string>
@@ -262,5 +271,6 @@
     <string name="merged">Merged</string>
     <string name="approve">Approve</string>
     <string name="refreshed">Refreshed</string>
+    <string name="ref">Ref</string>
     <!-- generic copy -->
 </resources>

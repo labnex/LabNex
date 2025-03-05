@@ -1,0 +1,20 @@
+4.0.0
+
+🎉 Features 🎉
+- Long press avatar on home screen to reload the home screen
+- Support for issue and merge request templates
+- Filters for Activities
+- Edit a file
+- Create a branch
+
+🚀 Improvements 🚀 
+- Improve explore search results
+- Improve strings with identifiers
+- Support for Chinese simplified language
+- Translation updates
+
+🐛 Bug Fixes 🐛
+- Fix blank activities for some users
+- Remember the last used home screen
+
+Release Notes: https://github.com/labnex/LabNex/releases
