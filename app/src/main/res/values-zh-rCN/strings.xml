@@ -104,12 +104,17 @@
     <string name="create_mr">创建合并请求</string>
     <string name="source_branch">源分支</string>
     <string name="target_branch">目标分支</string>
+    <string name="branch_name">Branch name</string>
+    <string name="branch_ref_hint">Branch name or commit SHA to create branch from</string>
+    <string name="branch_ref_required">Branch name and ref are required</string>
+    <string name="branch_created">"Branch %1$s created successfully"</string>
     <string name="source_target_branch_empty_error">请选择源分支和目标分支</string>
     <string name="mr_branches_are_same">目标和源分支不能相同</string>
     <string name="mr_created">拉取请求创建成功</string>
     <string name="user_followers">Followers %1$s</string>
     <string name="user_following">Following %1$s</string>
     <string name="remove_source_branch">删除源分支</string>
+    <string name="create_branch">Create branch</string>
     <string name="squash_commits">将所有提交合并为一个</string>
     <string name="merge_info">%1$s wants to merge branch %2$s into %3$s</string>
     <string name="mr_cannot_be_merged">此合并请求目前无法合并。请检查合并冲突和其他问题</string>
@@ -137,6 +142,7 @@
     <string name="activity_created_wiki_page">\@%1$s created wiki page</string>
     <string name="activity_created_project">\@%1$s created project</string>
     <string name="activity_updated_wiki_page">\@%1$s updated wiki page</string>
+    <string name="activity_approved_mr">\@%1$s approved merge request</string>
     <string name="activity_mr_approvals">Approvals: %1$d / %2$d</string>
     <string name="activity_mr_not_eligible">您不能批准此合并请求</string>
     <string name="mr_approve_failed">审批失败。您可能没有被授权批准此合并请求。</string>
@@ -155,14 +161,17 @@
     <string name="filename">文件名称</string>
     <string name="filename_hint">目录：app/config.json</string>
     <string name="commit_message">提交消息</string>
+    <string name="edit_commit_message">Update %1$s</string>
     <string name="file_content">文件内容</string>
     <string name="all_fields_are_required">必须填写所有字段</string>
     <string name="open_ce">在代码编辑器中打开</string>
     <string name="ce_no_filename_filled">您还没有在文件名字段中输入文件名。 为了更好地利用代码编辑器的功能，建议提供一个扩展名的文件名。\n\n按忽略继续或取消退出。</string>
     <string name="code_editor">代码编辑器</string>
     <string name="new_file_created">成功创建新文件</string>
+    <string name="file_update">The file has been sent for an update via %1$s branch</string>
     <string name="home_screen">主屏幕</string>
     <string name="home_screen_dialog_title">选择主屏幕</string>
+    <string name="select_template">Select a template</string>
     <!-- errors -->
     <string name="generic_error">发生错误</string>
     <string name="browserOpenFailed">找不到应用程序打开此链接</string>
@@ -259,5 +268,6 @@
     <string name="merged">已合并</string>
     <string name="approve">同意</string>
     <string name="refreshed">Refreshed</string>
+    <string name="ref">Ref</string>
     <!-- generic copy -->
 </resources>
