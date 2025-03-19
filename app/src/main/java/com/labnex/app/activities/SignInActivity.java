@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Patterns;
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -96,34 +97,20 @@ public class SignInActivity extends BaseActivity {
 	}
 
 	private void checkUserInput() {
-
 		try {
-
-			String instanceUrl_ =
+			String instanceUrlRaw =
 					Objects.requireNonNull(binding.instanceUrl.getText())
 							.toString()
-							.replaceAll("[\\uFEFF]", "")
+							.replaceAll("[\\uFEFF]", "") // Remove BOM if present
 							.trim();
-
 			String loginToken =
 					Objects.requireNonNull(binding.personalToken.getText())
 							.toString()
 							.replaceAll("[\\uFEFF|#]", "")
 							.trim();
 
-			instanceUrl = URI.create(("https://" + instanceUrl_ + "/api/v4/"));
-
-			if (binding.instanceUrl.getText().toString().isEmpty()) {
-
+			if (instanceUrlRaw.isEmpty()) {
 				Snackbar.info(SignInActivity.this, getString(R.string.gitlab_url_empty_error));
-				enableSignInButton();
-				return;
-			} else if (binding.instanceUrl.getText().toString().contains("http")) {
-				Snackbar.info(SignInActivity.this, getString(R.string.gitlab_url_error));
-				enableSignInButton();
-				return;
-			} else if (!binding.instanceUrl.getText().toString().contains(".")) {
-				Snackbar.info(SignInActivity.this, getString(R.string.gitlab_url_error));
 				enableSignInButton();
 				return;
 			}
@@ -133,7 +120,45 @@ public class SignInActivity extends BaseActivity {
 				return;
 			}
 
+			if (instanceUrlRaw.contains(" ")) {
+				Snackbar.info(
+						SignInActivity.this, getString(R.string.gitlab_url_spaces_not_supported));
+				enableSignInButton();
+				return;
+			}
+
+			if (loginToken.contains(" ")) {
+				Snackbar.info(
+						SignInActivity.this, getString(R.string.gitlab_token_spaces_not_supported));
+				enableSignInButton();
+				return;
+			}
+
+			if (instanceUrlRaw.startsWith("http://") || instanceUrlRaw.startsWith("https://")) {
+				Snackbar.info(SignInActivity.this, getString(R.string.gitlab_url_no_http_allowed));
+				enableSignInButton();
+				return;
+			}
+
+			if (!instanceUrlRaw.contains(".")) {
+				Snackbar.info(SignInActivity.this, getString(R.string.gitlab_url_missing_dot));
+				enableSignInButton();
+				return;
+			}
+
+			if (!Patterns.WEB_URL.matcher(instanceUrlRaw).matches()) {
+				Snackbar.info(SignInActivity.this, getString(R.string.gitlab_url_invalid_format));
+				enableSignInButton();
+				return;
+			}
+
+			instanceUrl = URI.create("https://" + instanceUrlRaw + "/api/v4/");
+
 			versionCheck(loginToken);
+
+		} catch (IllegalArgumentException e) {
+			Snackbar.info(SignInActivity.this, getString(R.string.gitlab_url_invalid_format));
+			enableSignInButton();
 		} catch (Exception e) {
 			Snackbar.info(SignInActivity.this, getString(R.string.generic_error));
 			enableSignInButton();
