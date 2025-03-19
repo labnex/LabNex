@@ -201,11 +201,16 @@
     <string name="select_template">Select a template</string>
 
     <!-- errors -->
-    <string name="generic_error">Something went wrong</string>
+    <string name="generic_error">An unexpected error occurred</string>
     <string name="browserOpenFailed">No application found to open this link</string>
-    <string name="gitlab_url_empty_error">GitLab URL is required</string>
-    <string name="gitlab_token_empty_error">Personal access token is required</string>
     <string name="gitlab_url_error">The GitLab URL is not valid</string>
+    <string name="gitlab_url_empty_error">GitLab URL cannot be empty</string>
+    <string name="gitlab_token_empty_error">Personal token cannot be empty</string>
+    <string name="gitlab_url_spaces_not_supported">GitLab URL cannot contain spaces</string>
+    <string name="gitlab_token_spaces_not_supported">Personal token cannot contain spaces</string>
+    <string name="gitlab_url_no_http_allowed">Please enter the GitLab URL without http:// or https://</string>
+    <string name="gitlab_url_missing_dot">GitLab URL must contain a dot (e.g., gitlab.com)</string>
+    <string name="gitlab_url_invalid_format">Invalid GitLab URL format</string>
     <string name="version_unknown">An unknown GitLab version was detected!</string>
     <string name="version_unsupported_old">Unsupported old version (%1$s) of GitLab detected. Please update to the latest stable version. If you continue, some features may not work.</string>
     <string name="version_unsupported_new">New GitLab version detected! Please update LabNex!</string>
