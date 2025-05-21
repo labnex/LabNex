@@ -1,6 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
-    id "com.diffplug.spotless" version "6.25.0"
+    id "com.diffplug.spotless" version "7.0.3"
 }
 
 android {
@@ -29,7 +29,6 @@ android {
 
     dependenciesInfo {
         includeInApk = false
-        includeInBundle = false
     }
 
     buildTypes {
@@ -41,8 +40,8 @@ android {
     }
     compileOptions {
         coreLibraryDesugaringEnabled = true
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_21
     }
     buildFeatures {
         viewBinding true
@@ -116,7 +115,7 @@ spotless {
 
         removeUnusedImports()
         googleJavaFormat().aosp()
-        indentWithTabs()
+        leadingSpacesToTabs()
         formatAnnotations()
     }
 }

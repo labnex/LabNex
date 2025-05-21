@@ -22,6 +22,7 @@ import com.labnex.app.helpers.TimeUtils;
 import com.labnex.app.models.issues.Issues;
 import com.labnex.app.models.projects.Projects;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -35,13 +36,15 @@ public class IssuesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
 	private ProjectsContext projectsContext;
 	private final Context context;
-	private List<Issues> list;
+	private final List<Issues> list = new ArrayList<>();
 	private OnLoadMoreListener loadMoreListener;
 	private boolean isLoading = false, isMoreDataAvailable = true;
 
 	public IssuesAdapter(Context ctx, List<Issues> mainList) {
 		this.context = ctx;
-		this.list = mainList;
+		if (mainList != null) {
+			this.list.addAll(mainList);
+		}
 	}
 
 	@NonNull @Override
@@ -75,7 +78,7 @@ public class IssuesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
 	public void setMoreDataAvailable(boolean moreDataAvailable) {
 		isMoreDataAvailable = moreDataAvailable;
-		if (!isMoreDataAvailable) {
+		if (!isMoreDataAvailable && loadMoreListener != null) {
 			loadMoreListener.onLoadFinished();
 		}
 	}
@@ -84,7 +87,9 @@ public class IssuesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 	public void notifyDataChanged() {
 		notifyDataSetChanged();
 		isLoading = false;
-		loadMoreListener.onLoadFinished();
+		if (loadMoreListener != null) {
+			loadMoreListener.onLoadFinished();
+		}
 	}
 
 	public void setLoadMoreListener(OnLoadMoreListener loadMoreListener) {
@@ -92,7 +97,15 @@ public class IssuesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 	}
 
 	public void updateList(List<Issues> list_) {
-		list = list_;
+		list.clear();
+		if (list_ != null) {
+			list.addAll(list_);
+		}
+		notifyDataChanged();
+	}
+
+	public void clearAdapter() {
+		list.clear();
 		notifyDataChanged();
 	}
 
@@ -101,11 +114,6 @@ public class IssuesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 		protected abstract void onLoadMore();
 
 		public void onLoadFinished() {}
-	}
-
-	public void clearAdapter() {
-		list.clear();
-		notifyDataChanged();
 	}
 
 	public class IssuesHolder extends RecyclerView.ViewHolder {
@@ -118,7 +126,6 @@ public class IssuesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 		private Issues issues;
 
 		IssuesHolder(View itemView) {
-
 			super(itemView);
 
 			author = itemView.findViewById(R.id.avatar);
@@ -143,30 +150,24 @@ public class IssuesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
 						call.enqueue(
 								new Callback<>() {
-
 									@Override
 									public void onResponse(
 											@NonNull Call<Projects> call,
 											@NonNull retrofit2.Response<Projects> response) {
-
 										Projects projectDetails = response.body();
 
-										if (response.isSuccessful()) {
+										if (response.isSuccessful() && response.code() == 200) {
+											assert projectDetails != null;
+											projectsContext =
+													new ProjectsContext(projectDetails, context);
 
-											if (response.code() == 200) {
-												assert projectDetails != null;
-												projectsContext =
-														new ProjectsContext(
-																projectDetails, context);
-
-												Context context = v.getContext();
-												IssueContext issueContext =
-														new IssueContext(issues, projectsContext);
-												Intent intent =
-														issueContext.getIntent(
-																context, IssueDetailActivity.class);
-												context.startActivity(intent);
-											}
+											Context context = v.getContext();
+											IssueContext issueContext =
+													new IssueContext(issues, projectsContext);
+											Intent intent =
+													issueContext.getIntent(
+															context, IssueDetailActivity.class);
+											context.startActivity(intent);
 										}
 									}
 
@@ -178,7 +179,6 @@ public class IssuesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 		}
 
 		void bindData(Issues issues) {
-
 			this.issues = issues;
 			Locale locale = context.getResources().getConfiguration().getLocales().get(0);
 
@@ -190,7 +190,6 @@ public class IssuesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 			}
 
 			if (issues.getAuthor() != null && issues.getAuthor().getAvatarUrl() != null) {
-
 				Glide.with(itemView.getContext())
 						.load(issues.getAuthor().getAvatarUrl())
 						.diskCacheStrategy(DiskCacheStrategy.ALL)

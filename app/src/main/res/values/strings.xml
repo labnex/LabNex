@@ -1,7 +1,7 @@
 <resources>
     <!-- non translatable strings -->
     <string name="app_name" translatable="false">LabNex</string>
-    <string name="app_version_build" translatable="false">%s / %d</string>
+    <string name="app_version_build" translatable="false">%1$s / %2$d</string>
     <string name="support_link_patreon" translatable="false">https://www.patreon.com/mmarif</string>
     <string name="crowd_in_link" translatable="false">https://crowdin.com/project/labnex</string>
     <string name="app_website_link" translatable="false">https://labnex.app</string>
@@ -14,12 +14,13 @@
     <string name="internal_placeholder" translatable="false">Internal</string>
     <string name="public_placeholder" translatable="false">Public</string>
     <string name="gitlab_saas" translatable="false">GitLab SaaS</string>
-    <string name="data_concatenate" translatable="false">%s - %s</string>
-    <string name="single_string_conversion" translatable="false">%s</string>
+    <string name="data_concatenate" translatable="false">%1$s - %1$s</string>
+    <string name="single_string_conversion" translatable="false">%1$s</string>
+    <string name="username_with_domain" translatable="false">%1$s | %2$s</string>
     <string name="hash" translatable="false">#</string>
-    <string name="username_with_at_sign" translatable="false">\@%s</string>
+    <string name="username_with_at_sign" translatable="false">\@%1$s</string>
     <string name="source_position" translatable="false">%1$d:%2$d</string>
-    <string name="discord_user_profile_link" translatable="false">https://discord.com/users/%s</string>
+    <string name="discord_user_profile_link" translatable="false">https://discord.com/users/%1$s</string>
     <string name="personal_access_token_helper_link" translatable="false">https://gitlab.com/-/user_settings/personal_access_tokens</string>
     <!-- non translatable strings -->
 
@@ -303,5 +304,7 @@
     <string name="approve">Approve</string>
     <string name="refreshed">Refreshed</string>
     <string name="ref">Ref</string>
+    <string name="filter">Filter</string>
+    <string name="menu">Menu</string>
     <!-- generic copy -->
 </resources>

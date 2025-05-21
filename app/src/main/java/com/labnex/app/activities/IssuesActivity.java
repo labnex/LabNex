@@ -1,22 +1,23 @@
 package com.labnex.app.activities;
 
 import android.content.Intent;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.Menu;
+import android.view.LayoutInflater;
 import android.view.View;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.chip.ChipGroup;
 import com.labnex.app.R;
 import com.labnex.app.adapters.IssuesAdapter;
 import com.labnex.app.contexts.ProjectsContext;
 import com.labnex.app.databinding.ActivityIssuesBinding;
+import com.labnex.app.databinding.BottomSheetIssuesMenuBinding;
 import com.labnex.app.helpers.Snackbar;
 import com.labnex.app.viewmodels.IssuesViewModel;
-import java.util.Objects;
+import java.util.ArrayList;
 
 /**
  * @author mmarif
@@ -55,32 +56,18 @@ public class IssuesActivity extends BaseActivity implements CreateIssueActivity.
 
 		binding.recyclerView.setHasFixedSize(true);
 		binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
+		adapter = new IssuesAdapter(this, new ArrayList<>());
+		binding.recyclerView.setAdapter(adapter);
 
 		binding.bottomAppBar.setNavigationOnClickListener(bottomAppBar -> finish());
 
-		Objects.requireNonNull(binding.bottomAppBar.getMenu().getItem(0).getIcon())
-				.setColorFilter(
-						getResources().getColor(R.color.md_light_theme_text_color, null),
-						PorterDuff.Mode.SRC_IN);
-
 		binding.bottomAppBar.setOnMenuItemClickListener(
 				menuItem -> {
-					page = 1;
-					if (menuItem.getItemId() == R.id.open) {
-
-						updateIconColors(0);
-						binding.progressBar.setVisibility(View.VISIBLE);
-						filter = "opened";
-						fetchDataAsync(filter);
+					if (menuItem.getItemId() == R.id.menu) {
+						showFilterBottomSheet();
+						return true;
 					}
-					if (menuItem.getItemId() == R.id.closed) {
-
-						updateIconColors(1);
-						binding.progressBar.setVisibility(View.VISIBLE);
-						filter = "closed";
-						fetchDataAsync(filter);
-					}
-					return true;
+					return false;
 				});
 
 		Bundle bsBundle = new Bundle();
@@ -113,8 +100,37 @@ public class IssuesActivity extends BaseActivity implements CreateIssueActivity.
 										},
 										250));
 
-		updateIconColors(0);
 		fetchDataAsync(filter);
+	}
+
+	private void showFilterBottomSheet() {
+
+		BottomSheetIssuesMenuBinding sheetBinding =
+				BottomSheetIssuesMenuBinding.inflate(LayoutInflater.from(this), null, false);
+		BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
+		bottomSheetDialog.setContentView(sheetBinding.getRoot());
+
+		ChipGroup chipGroup = sheetBinding.issueFilterChips;
+		if ("opened".equals(filter)) {
+			sheetBinding.chipOpened.setChecked(true);
+		} else {
+			sheetBinding.chipClosed.setChecked(true);
+		}
+
+		chipGroup.setOnCheckedStateChangeListener(
+				(group, checkedIds) -> {
+					page = 1;
+					binding.progressBar.setVisibility(View.VISIBLE);
+					if (checkedIds.contains(R.id.chip_opened)) {
+						filter = "opened";
+					} else if (checkedIds.contains(R.id.chip_closed)) {
+						filter = "closed";
+					}
+					fetchDataAsync(filter);
+					bottomSheetDialog.dismiss();
+				});
+
+		bottomSheetDialog.show();
 	}
 
 	@Override
@@ -129,7 +145,6 @@ public class IssuesActivity extends BaseActivity implements CreateIssueActivity.
 	}
 
 	private void fetchDataAsync(String filter) {
-
 		issuesViewModel
 				.getIssues(
 						ctx,
@@ -145,7 +160,7 @@ public class IssuesActivity extends BaseActivity implements CreateIssueActivity.
 						IssuesActivity.this,
 						mainList -> {
 							if (mainList != null) {
-								adapter = new IssuesAdapter(IssuesActivity.this, mainList);
+								adapter.updateList(mainList);
 								adapter.setLoadMoreListener(
 										new IssuesAdapter.OnLoadMoreListener() {
 											@Override
@@ -172,11 +187,8 @@ public class IssuesActivity extends BaseActivity implements CreateIssueActivity.
 										});
 
 								if (adapter.getItemCount() > 0) {
-									binding.recyclerView.setAdapter(adapter);
 									binding.nothingFoundFrame.getRoot().setVisibility(View.GONE);
 								} else {
-									adapter.notifyDataChanged();
-									binding.recyclerView.setAdapter(adapter);
 									binding.nothingFoundFrame.getRoot().setVisibility(View.VISIBLE);
 								}
 							}
@@ -184,32 +196,8 @@ public class IssuesActivity extends BaseActivity implements CreateIssueActivity.
 						});
 	}
 
-	private void updateIconColors(int selectedIndex) {
-
-		Menu menu = binding.bottomAppBar.getMenu();
-		for (int i = 0; i < menu.size(); i++) {
-
-			Drawable icon = Objects.requireNonNull(menu.getItem(i).getIcon());
-			if (i == selectedIndex) {
-
-				icon.setColorFilter(
-						getResources().getColor(R.color.md_theme_primary_dark, null),
-						PorterDuff.Mode.SRC_IN);
-				int width = (int) (icon.getIntrinsicWidth() * 1.3);
-				int height = (int) (icon.getIntrinsicHeight() * 1.3);
-				icon.setBounds(0, 0, width, height);
-			} else {
-
-				icon.clearColorFilter();
-				icon.setBounds(0, 0, icon.getIntrinsicWidth(), icon.getIntrinsicHeight());
-			}
-			menu.getItem(i).setIcon(icon);
-		}
-	}
-
 	@Override
 	public void updateDataListener(String str) {
-
 		if (str.equalsIgnoreCase("created")) {
 			Snackbar.info(
 					ctx,

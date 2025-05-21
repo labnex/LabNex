@@ -1,22 +1,22 @@
 package com.labnex.app.activities;
 
 import android.content.Intent;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.Menu;
+import android.view.LayoutInflater;
 import android.view.View;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.chip.ChipGroup;
 import com.labnex.app.R;
 import com.labnex.app.adapters.MergeRequestsAdapter;
 import com.labnex.app.contexts.ProjectsContext;
 import com.labnex.app.databinding.ActivityMergeRequestsBinding;
+import com.labnex.app.databinding.BottomSheetMergeRequestsMenuBinding;
 import com.labnex.app.helpers.Snackbar;
 import com.labnex.app.viewmodels.MergeRequestsViewModel;
-import java.util.Objects;
 
 /**
  * @author mmarif
@@ -56,36 +56,16 @@ public class MergeRequestsActivity extends BaseActivity
 
 		binding.recyclerView.setHasFixedSize(true);
 		binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-		binding.bottomAppBar.setNavigationOnClickListener(bottomAppBar -> finish());
-		Objects.requireNonNull(binding.bottomAppBar.getMenu().getItem(0).getIcon())
-				.setColorFilter(
-						getResources().getColor(R.color.md_light_theme_text_color, null),
-						PorterDuff.Mode.SRC_IN);
+		adapter = new MergeRequestsAdapter(this, null, projectsContext);
+		binding.recyclerView.setAdapter(adapter);
 
 		binding.bottomAppBar.setOnMenuItemClickListener(
 				menuItem -> {
-					page = 1;
-					if (menuItem.getItemId() == R.id.open) {
-						updateIconColors(0);
-						binding.progressBar.setVisibility(View.VISIBLE);
-						filter = "opened";
-						fetchDataAsync(filter);
+					if (menuItem.getItemId() == R.id.menu) {
+						showFilterBottomSheet();
+						return true;
 					}
-					if (menuItem.getItemId() == R.id.merged) {
-						updateIconColors(1);
-						binding.progressBar.setVisibility(View.VISIBLE);
-						filter = "merged";
-						fetchDataAsync(filter);
-					}
-					if (menuItem.getItemId() == R.id.closed) {
-						updateIconColors(2);
-						binding.progressBar.setVisibility(View.VISIBLE);
-						filter = "closed";
-						fetchDataAsync(filter);
-					}
-
-					return true;
+					return false;
 				});
 
 		Bundle bsBundle = new Bundle();
@@ -119,7 +99,6 @@ public class MergeRequestsActivity extends BaseActivity
 										},
 										250));
 
-		updateIconColors(0);
 		fetchDataAsync(filter);
 	}
 
@@ -132,6 +111,40 @@ public class MergeRequestsActivity extends BaseActivity
 			fetchDataAsync(filter);
 			updateMergeRequestList = false;
 		}
+	}
+
+	private void showFilterBottomSheet() {
+
+		BottomSheetMergeRequestsMenuBinding sheetBinding =
+				BottomSheetMergeRequestsMenuBinding.inflate(LayoutInflater.from(this), null, false);
+		BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
+		bottomSheetDialog.setContentView(sheetBinding.getRoot());
+
+		ChipGroup chipGroup = sheetBinding.mergeRequestFilterChips;
+		if ("opened".equals(filter)) {
+			sheetBinding.chipOpened.setChecked(true);
+		} else if ("merged".equals(filter)) {
+			sheetBinding.chipMerged.setChecked(true);
+		} else {
+			sheetBinding.chipClosed.setChecked(true);
+		}
+
+		chipGroup.setOnCheckedStateChangeListener(
+				(group, checkedIds) -> {
+					page = 1;
+					binding.progressBar.setVisibility(View.VISIBLE);
+					if (checkedIds.contains(R.id.chip_opened)) {
+						filter = "opened";
+					} else if (checkedIds.contains(R.id.chip_merged)) {
+						filter = "merged";
+					} else if (checkedIds.contains(R.id.chip_closed)) {
+						filter = "closed";
+					}
+					fetchDataAsync(filter);
+					bottomSheetDialog.dismiss();
+				});
+
+		bottomSheetDialog.show();
 	}
 
 	private void fetchDataAsync(String filter) {
@@ -150,11 +163,7 @@ public class MergeRequestsActivity extends BaseActivity
 						MergeRequestsActivity.this,
 						mainList -> {
 							if (mainList != null) {
-								adapter =
-										new MergeRequestsAdapter(
-												MergeRequestsActivity.this,
-												mainList,
-												projectsContext);
+								adapter.updateList(mainList);
 								adapter.setLoadMoreListener(
 										new MergeRequestsAdapter.OnLoadMoreListener() {
 											@Override
@@ -181,39 +190,13 @@ public class MergeRequestsActivity extends BaseActivity
 										});
 
 								if (adapter.getItemCount() > 0) {
-									binding.recyclerView.setAdapter(adapter);
 									binding.nothingFoundFrame.getRoot().setVisibility(View.GONE);
 								} else {
-									adapter.notifyDataChanged();
-									binding.recyclerView.setAdapter(adapter);
 									binding.nothingFoundFrame.getRoot().setVisibility(View.VISIBLE);
 								}
 							}
 							binding.progressBar.setVisibility(View.GONE);
 						});
-	}
-
-	private void updateIconColors(int selectedIndex) {
-
-		Menu menu = binding.bottomAppBar.getMenu();
-		for (int i = 0; i < menu.size(); i++) {
-
-			Drawable icon = Objects.requireNonNull(menu.getItem(i).getIcon());
-			if (i == selectedIndex) {
-
-				icon.setColorFilter(
-						getResources().getColor(R.color.md_theme_primary_dark, null),
-						PorterDuff.Mode.SRC_IN);
-				int width = (int) (icon.getIntrinsicWidth() * 1.3);
-				int height = (int) (icon.getIntrinsicHeight() * 1.3);
-				icon.setBounds(0, 0, width, height);
-			} else {
-
-				icon.clearColorFilter();
-				icon.setBounds(0, 0, icon.getIntrinsicWidth(), icon.getIntrinsicHeight());
-			}
-			menu.getItem(i).setIcon(icon);
-		}
 	}
 
 	@Override
