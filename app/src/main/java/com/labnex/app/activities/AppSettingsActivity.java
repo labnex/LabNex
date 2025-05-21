@@ -19,6 +19,7 @@ import com.labnex.app.helpers.AppSettingsInit;
 import com.labnex.app.helpers.Snackbar;
 import com.labnex.app.helpers.Utils;
 import com.labnex.app.interfaces.BottomSheetListener;
+import io.mikael.urlbuilder.UrlBuilder;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 
@@ -62,7 +63,14 @@ public class AppSettingsActivity extends BaseActivity implements BottomSheetList
 
 			binding.accountsUserFullName.setText(getAccount().getUserInfo().getFullName());
 
-			binding.accountsUsername.setText(getAccount().getUserInfo().getUsername());
+			UrlBuilder urlBuilder =
+					UrlBuilder.fromString(getAccount().getAccount().getInstanceUrl());
+			String hostName = urlBuilder.hostName;
+			binding.accountsUsername.setText(
+					getString(
+							R.string.username_with_domain,
+							getAccount().getUserInfo().getUsername(),
+							hostName));
 		}
 
 		binding.appVersion.setText(Utils.getAppVersion(ctx));

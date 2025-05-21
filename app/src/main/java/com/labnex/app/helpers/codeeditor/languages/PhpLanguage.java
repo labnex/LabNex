@@ -65,7 +65,7 @@ public class PhpLanguage extends Language {
 			case TODO_COMMENT:
 				return PATTERN_TODO_COMMENT;
 			case ANNOTATION:
-				// TODO supported by PHP
+			// TODO supported by PHP
 			case GENERIC:
 			default:
 				return null;

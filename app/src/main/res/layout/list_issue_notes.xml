@@ -98,6 +98,7 @@
                 android:paddingEnd="@dimen/dimen12dp"
                 android:paddingBottom="@dimen/dimen12dp"
                 android:textIsSelectable="true"
+                android:contentDescription="@string/content"
                 android:textSize="@dimen/dimen14sp" />
             <!-- description section -->
 

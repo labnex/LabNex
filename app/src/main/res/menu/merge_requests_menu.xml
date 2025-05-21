@@ -3,24 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/open"
-        android:icon="@drawable/ic_check"
-        android:title="@string/open"
-        android:contentDescription="@string/open"
+        android:id="@+id/menu"
+        android:icon="@drawable/ic_menu"
+        android:title="@string/menu"
+        android:contentDescription="@string/menu"
         app:showAsAction="always" />
-
-    <item
-        android:id="@+id/merged"
-        android:icon="@drawable/ic_merge_request"
-        android:title="@string/merged"
-        android:contentDescription="@string/merged"
-        app:showAsAction="ifRoom" />
-
-    <item
-        android:id="@+id/closed"
-        android:icon="@drawable/ic_check_done"
-        android:title="@string/closed"
-        android:contentDescription="@string/closed"
-        app:showAsAction="ifRoom" />
 
 </menu>

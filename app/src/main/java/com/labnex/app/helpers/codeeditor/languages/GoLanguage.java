@@ -144,7 +144,7 @@ public class GoLanguage extends Language {
 				return PATTERN_TODO_COMMENT;
 
 			case GENERIC:
-				// TODO supported by Go 1.18
+			// TODO supported by Go 1.18
 			case ANNOTATION:
 			default:
 				return null;

@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/create_new_branch"
-        android:icon="@drawable/ic_branch_add"
-        android:title="@string/create_branch"
-        android:contentDescription="@string/create_branch"
+        android:id="@+id/project_menu"
+        android:icon="@drawable/ic_menu"
+        android:title="@string/menu"
+        android:contentDescription="@string/menu"
         app:showAsAction="ifRoom" />
 </menu>

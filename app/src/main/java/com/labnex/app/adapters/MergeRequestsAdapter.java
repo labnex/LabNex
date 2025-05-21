@@ -22,6 +22,7 @@ import com.labnex.app.helpers.TimeUtils;
 import com.labnex.app.models.merge_requests.MergeRequests;
 import com.labnex.app.models.projects.Projects;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -35,20 +36,24 @@ public class MergeRequestsAdapter extends RecyclerView.Adapter<RecyclerView.View
 
 	private ProjectsContext projectsContext;
 	private final Context context;
-	private List<MergeRequests> list;
+	private final List<MergeRequests> list = new ArrayList<>();
 	private OnLoadMoreListener loadMoreListener;
 	private boolean isLoading = false, isMoreDataAvailable = true;
 
 	public MergeRequestsAdapter(
 			Context ctx, List<MergeRequests> mainList, ProjectsContext projectsContext) {
 		this.context = ctx;
-		this.list = mainList;
 		this.projectsContext = projectsContext;
+		if (mainList != null) {
+			this.list.addAll(mainList);
+		}
 	}
 
 	public MergeRequestsAdapter(Context ctx, List<MergeRequests> mainList) {
 		this.context = ctx;
-		this.list = mainList;
+		if (mainList != null) {
+			this.list.addAll(mainList);
+		}
 	}
 
 	@NonNull @Override
@@ -83,7 +88,7 @@ public class MergeRequestsAdapter extends RecyclerView.Adapter<RecyclerView.View
 
 	public void setMoreDataAvailable(boolean moreDataAvailable) {
 		isMoreDataAvailable = moreDataAvailable;
-		if (!isMoreDataAvailable) {
+		if (!isMoreDataAvailable && loadMoreListener != null) {
 			loadMoreListener.onLoadFinished();
 		}
 	}
@@ -92,7 +97,9 @@ public class MergeRequestsAdapter extends RecyclerView.Adapter<RecyclerView.View
 	public void notifyDataChanged() {
 		notifyDataSetChanged();
 		isLoading = false;
-		loadMoreListener.onLoadFinished();
+		if (loadMoreListener != null) {
+			loadMoreListener.onLoadFinished();
+		}
 	}
 
 	public void setLoadMoreListener(OnLoadMoreListener loadMoreListener) {
@@ -100,7 +107,15 @@ public class MergeRequestsAdapter extends RecyclerView.Adapter<RecyclerView.View
 	}
 
 	public void updateList(List<MergeRequests> list_) {
-		list = list_;
+		list.clear();
+		if (list_ != null) {
+			list.addAll(list_);
+		}
+		notifyDataChanged();
+	}
+
+	public void clearAdapter() {
+		list.clear();
 		notifyDataChanged();
 	}
 
@@ -109,11 +124,6 @@ public class MergeRequestsAdapter extends RecyclerView.Adapter<RecyclerView.View
 		protected abstract void onLoadMore();
 
 		public void onLoadFinished() {}
-	}
-
-	public void clearAdapter() {
-		list.clear();
-		notifyDataChanged();
 	}
 
 	public class MergeRequestsHolder extends RecyclerView.ViewHolder {
@@ -126,7 +136,6 @@ public class MergeRequestsAdapter extends RecyclerView.Adapter<RecyclerView.View
 		private MergeRequests mergeRequests;
 
 		MergeRequestsHolder(View itemView) {
-
 			super(itemView);
 
 			author = itemView.findViewById(R.id.avatar);
@@ -145,46 +154,32 @@ public class MergeRequestsAdapter extends RecyclerView.Adapter<RecyclerView.View
 
 			itemView.setOnClickListener(
 					v -> {
-						/*Context context = v.getContext();
-						MergeRequestContext mergeRequestContext =
-								new MergeRequestContext(mergeRequests, projectsContext);
-						Intent intent =
-								mergeRequestContext.getIntent(
-										context, MergeRequestDetailActivity.class);
-						context.startActivity(intent);*/
-
 						Call<Projects> call =
 								RetrofitClient.getApiInterface(context)
 										.getProjectInfo(mergeRequests.getProjectId());
 
 						call.enqueue(
 								new Callback<>() {
-
 									@Override
 									public void onResponse(
 											@NonNull Call<Projects> call,
 											@NonNull retrofit2.Response<Projects> response) {
-
 										Projects projectDetails = response.body();
 
-										if (response.isSuccessful()) {
+										if (response.isSuccessful() && response.code() == 200) {
+											assert projectDetails != null;
+											projectsContext =
+													new ProjectsContext(projectDetails, context);
 
-											if (response.code() == 200) {
-												assert projectDetails != null;
-												projectsContext =
-														new ProjectsContext(
-																projectDetails, context);
-
-												Context context = v.getContext();
-												MergeRequestContext mergeRequestContext =
-														new MergeRequestContext(
-																mergeRequests, projectsContext);
-												Intent intent =
-														mergeRequestContext.getIntent(
-																context,
-																MergeRequestDetailActivity.class);
-												context.startActivity(intent);
-											}
+											Context context = v.getContext();
+											MergeRequestContext mergeRequestContext =
+													new MergeRequestContext(
+															mergeRequests, projectsContext);
+											Intent intent =
+													mergeRequestContext.getIntent(
+															context,
+															MergeRequestDetailActivity.class);
+											context.startActivity(intent);
 										}
 									}
 
@@ -196,7 +191,6 @@ public class MergeRequestsAdapter extends RecyclerView.Adapter<RecyclerView.View
 		}
 
 		void bindData(MergeRequests mergeRequests) {
-
 			this.mergeRequests = mergeRequests;
 			Locale locale = context.getResources().getConfiguration().getLocales().get(0);
 
@@ -205,7 +199,6 @@ public class MergeRequestsAdapter extends RecyclerView.Adapter<RecyclerView.View
 
 			if (mergeRequests.getAuthor() != null
 					&& mergeRequests.getAuthor().getAvatarUrl() != null) {
-
 				Glide.with(itemView.getContext())
 						.load(mergeRequests.getAuthor().getAvatarUrl())
 						.diskCacheStrategy(DiskCacheStrategy.ALL)

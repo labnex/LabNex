@@ -7,9 +7,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.gson.Gson;
@@ -23,6 +25,7 @@ import com.labnex.app.bottomsheets.ProjectWikisBottomSheet;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.contexts.ProjectsContext;
 import com.labnex.app.databinding.ActivityProjectDetailBinding;
+import com.labnex.app.databinding.BottomSheetProjectMenuBinding;
 import com.labnex.app.helpers.Markdown;
 import com.labnex.app.helpers.Snackbar;
 import com.labnex.app.helpers.TextDrawable.ColorGenerator;
@@ -167,8 +170,10 @@ public class ProjectDetailActivity extends BaseActivity
 
 		binding.bottomAppBar.setOnMenuItemClickListener(
 				menuItem -> {
-					if (menuItem.getItemId() == R.id.create_new_branch) {}
-					showCreateBranchDialog();
+					if (menuItem.getItemId() == R.id.project_menu) {
+						showProjectMenuBottomSheet();
+						return true;
+					}
 					return false;
 				});
 
@@ -206,6 +211,22 @@ public class ProjectDetailActivity extends BaseActivity
 
 		branch = str;
 		binding.branchTitle.setText(str);
+	}
+
+	private void showProjectMenuBottomSheet() {
+		BottomSheetProjectMenuBinding sheetBinding =
+				BottomSheetProjectMenuBinding.inflate(LayoutInflater.from(this), null, false);
+		BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
+		bottomSheetDialog.setContentView(sheetBinding.getRoot());
+
+		LinearLayout createBranchItem = sheetBinding.createBranchItem;
+		createBranchItem.setOnClickListener(
+				v -> {
+					showCreateBranchDialog();
+					bottomSheetDialog.dismiss();
+				});
+
+		bottomSheetDialog.show();
 	}
 
 	private void showCreateBranchDialog() {

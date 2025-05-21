@@ -59,9 +59,9 @@ public class MainGrammarLocator {
 			case "md":
 				return "markdown";
 
-				// case "xml":
-				// case "html":
-				// case "htm":
+			// case "xml":
+			// case "html":
+			// case "htm":
 			case "mathml":
 			case "svg":
 				return "markup";
