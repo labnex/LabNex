@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="@dimen/dimen6dp">
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="?attr/materialCardViewElevatedStyle"
+        app:cardElevation="@dimen/dimen0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:padding="@dimen/dimen12dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/author_frame"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/avatar_frame"
+                    android:layout_width="@dimen/dimen36dp"
+                    android:layout_height="@dimen/dimen36dp"
+                    android:layout_marginEnd="@dimen/dimen10dp"
+                    app:strokeWidth="@dimen/dimen0dp"
+                    android:layout_gravity="top|center_horizontal"
+                    app:cardElevation="@dimen/dimen0dp">
+
+                    <ImageView
+                        android:id="@+id/snippet_avatar"
+                        android:layout_width="@dimen/dimen40dp"
+                        android:layout_height="@dimen/dimen40dp"
+                        android:scaleType="fitCenter"
+                        android:layout_gravity="center_vertical|center_horizontal"
+                        android:contentDescription="@string/generic_img_copy"
+                        app:srcCompat="@drawable/ic_spinner" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        tools:ignore="UseCompoundDrawables">
+
+                        <ImageView
+                            android:id="@+id/snippet_lock_icon"
+                            android:layout_width="@dimen/dimen18dp"
+                            android:layout_height="@dimen/dimen18dp"
+                            android:layout_marginEnd="@dimen/dimen6dp"
+                            android:contentDescription="@string/generic_img_copy"
+                            android:src="@drawable/ic_lock"
+                            android:visibility="gone" />
+
+                        <TextView
+                            android:id="@+id/snippet_title"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:textSize="@dimen/dimen16sp"
+                            android:maxLines="2"
+                            android:ellipsize="end" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/snippet_author"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:alpha=".7"
+                        android:textSize="@dimen/dimen14sp"
+                        android:maxLines="2"
+                        android:ellipsize="end" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/snippet_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen12dp"
+                android:textSize="@dimen/dimen14sp"
+                android:maxLines="3"
+                android:ellipsize="end"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/file_count_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="@dimen/dimen8dp"
+                android:visibility="gone"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:id="@+id/file_icon"
+                    android:layout_width="@dimen/dimen18dp"
+                    android:layout_height="@dimen/dimen18dp"
+                    android:src="@drawable/ic_file"
+                    android:contentDescription="@string/file" />
+
+                <TextView
+                    android:id="@+id/file_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dimen4dp"
+                    android:textSize="@dimen/dimen14sp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</LinearLayout>

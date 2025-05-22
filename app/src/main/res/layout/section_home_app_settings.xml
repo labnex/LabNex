@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginTop="@dimen/dimen20dp"
+    android:paddingStart="@dimen/dimen16dp"
+    android:paddingEnd="@dimen/dimen16dp"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <TextView
+        android:id="@+id/app_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:text="@string/app"
+        android:textStyle="bold"
+        android:textSize="@dimen/dimen18sp" />
+
+    <RelativeLayout
+        android:id="@+id/notes_frame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dimen24dp">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/notes_view"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            app:strokeWidth="@dimen/dimen0dp"
+            android:backgroundTint="@color/cardview_dark_background"
+            app:cardElevation="@dimen/dimen0dp">
+
+            <ImageView
+                android:id="@+id/notes_icon"
+                android:layout_height="@dimen/dimen36dp"
+                android:layout_width="@dimen/dimen36dp"
+                android:contentDescription="@string/generic_img_copy"
+                android:src="@drawable/ic_notes_home" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:id="@+id/notes_text"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:paddingStart="@dimen/dimen12dp"
+            android:paddingEnd="0dp"
+            android:layout_toEndOf="@id/notes_view"
+            android:layout_centerVertical="true"
+            android:text="@string/notes"
+            android:textSize="@dimen/dimen16sp" />
+
+        <TextView
+            android:id="@+id/notes_badge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="@dimen/dimen24dp"
+            android:minWidth="@dimen/dimen24dp"
+            android:background="@drawable/shape_badge_background"
+            android:maxLength="3"
+            android:layout_marginStart="@dimen/dimen8dp"
+            android:layout_marginEnd="@dimen/dimen0dp"
+            android:paddingStart="@dimen/dimen4dp"
+            android:paddingEnd="@dimen/dimen4dp"
+            android:layout_centerVertical="true"
+            android:gravity="center_vertical|center_horizontal"
+            android:singleLine="true"
+            android:textSize="@dimen/dimen16sp"
+            android:layout_alignParentEnd="true"
+            android:textColor="?attr/textColor"
+            android:visibility="gone" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/settings_frame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dimen24dp">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/settings_view"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            app:strokeWidth="@dimen/dimen0dp"
+            android:backgroundTint="@color/cardview_dark_background"
+            app:cardElevation="@dimen/dimen0dp">
+
+            <ImageView
+                android:id="@+id/settings_icon"
+                android:layout_height="@dimen/dimen36dp"
+                android:layout_width="@dimen/dimen36dp"
+                android:contentDescription="@string/generic_img_copy"
+                android:src="@drawable/ic_settings_home" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:id="@+id/settings_text"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:paddingStart="@dimen/dimen12dp"
+            android:paddingEnd="0dp"
+            android:layout_toEndOf="@id/settings_view"
+            android:layout_centerVertical="true"
+            android:text="@string/settings"
+            android:textSize="@dimen/dimen16sp" />
+
+    </RelativeLayout>
+
+</LinearLayout>

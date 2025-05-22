@@ -198,7 +198,7 @@
     <string name="file_update">The file has been sent for an update via %1$s branch</string>
     <string name="home_screen">Home screen</string>
     <string name="home_screen_dialog_title">Select home screen</string>
-
+    <string name="created_by">Created by %1$s %2$s</string>
     <string name="select_template">Select a template</string>
 
     <!-- errors -->
@@ -306,5 +306,6 @@
     <string name="ref">Ref</string>
     <string name="filter">Filter</string>
     <string name="menu">Menu</string>
+    <string name="snippets">Snippets</string>
     <!-- generic copy -->
 </resources>

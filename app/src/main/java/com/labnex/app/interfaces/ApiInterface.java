@@ -27,6 +27,7 @@ import com.labnex.app.models.release.Releases;
 import com.labnex.app.models.repository.CrudeFile;
 import com.labnex.app.models.repository.FileContents;
 import com.labnex.app.models.repository.Tree;
+import com.labnex.app.models.snippets.SnippetsItem;
 import com.labnex.app.models.templates.Template;
 import com.labnex.app.models.templates.Templates;
 import com.labnex.app.models.user.User;
@@ -34,6 +35,7 @@ import com.labnex.app.models.users.Users;
 import com.labnex.app.models.wikis.CrudeWiki;
 import com.labnex.app.models.wikis.Wiki;
 import java.util.List;
+import okhttp3.Response;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
@@ -392,4 +394,14 @@ public interface ApiInterface {
 	@GET("projects/{id}/templates/{type}/{name}") // get a template
 	Call<Template> getTemplate(
 			@Path("id") int id, @Path("type") String type, @Path("name") String name);
+
+	// Snippets
+	@GET("snippets") // get all snippets
+	Call<List<SnippetsItem>> getSnippets(@Query("per_page") int per_page, @Query("page") int page);
+
+	@GET("snippets/{id}") // get a snippet
+	Call<SnippetsItem> getSnippet(@Path("id") int id);
+
+	@GET("snippets/{id}/raw") // get a snippet raw content
+	Call<Response> getSnippetContent(@Path("id") int id);
 }

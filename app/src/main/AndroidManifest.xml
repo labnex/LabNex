@@ -119,6 +119,11 @@
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustResize" />
         <activity
+            android:name=".activities.SnippetsActivity"
+            android:configChanges="orientation|screenSize|smallestScreenSize|density|screenLayout|keyboard|keyboardHidden|navigation"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
             android:name=".activities.CodeEditorActivity"
             android:configChanges="orientation|screenSize|smallestScreenSize|density|screenLayout|keyboard|keyboardHidden|navigation"
             android:theme="@style/AppTheme"
