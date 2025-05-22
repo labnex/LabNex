@@ -1,7 +1,9 @@
 package com.labnex.app.adapters;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,13 +14,23 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.android.material.bottomappbar.BottomAppBar;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.labnex.app.R;
+import com.labnex.app.activities.SnippetDetailActivity;
+import com.labnex.app.clients.RetrofitClient;
+import com.labnex.app.contexts.AccountContext;
+import com.labnex.app.database.models.UserAccount;
+import com.labnex.app.helpers.Snackbar;
 import com.labnex.app.helpers.TimeUtils;
 import com.labnex.app.models.snippets.SnippetsItem;
 import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * @author mmarif
@@ -26,12 +38,23 @@ import java.util.Locale;
 public class SnippetsAdapter extends RecyclerView.Adapter<SnippetsAdapter.SnippetsViewHolder> {
 
 	private final Context context;
+	private final Activity activity;
 	private final List<SnippetsItem> snippetsList;
 	private boolean moreDataAvailable = true;
+	private final AccountContext accountContext;
+	private final BottomAppBar bottomAppBar;
 
-	public SnippetsAdapter(Context context, List<SnippetsItem> snippetsList) {
+	public SnippetsAdapter(
+			Context context,
+			Activity activity,
+			List<SnippetsItem> snippetsList,
+			UserAccount userAccount,
+			BottomAppBar bottomAppBar) {
 		this.context = context;
+		this.activity = activity;
 		this.snippetsList = snippetsList;
+		this.accountContext = new AccountContext(userAccount);
+		this.bottomAppBar = bottomAppBar;
 	}
 
 	@NonNull @Override
@@ -44,6 +67,14 @@ public class SnippetsAdapter extends RecyclerView.Adapter<SnippetsAdapter.Snippe
 	public void onBindViewHolder(@NonNull SnippetsViewHolder holder, int position) {
 		SnippetsItem snippet = snippetsList.get(position);
 		Locale locale = context.getResources().getConfiguration().getLocales().get(0);
+
+		holder.itemView.setOnClickListener(
+				v -> {
+					Intent intent = new Intent(context, SnippetDetailActivity.class);
+					intent.putExtra("MODE", "VIEW");
+					intent.putExtra("SNIPPET_ID", snippet.getId());
+					context.startActivity(intent);
+				});
 
 		if (snippet.getAuthor() != null && snippet.getAuthor().getAvatarUrl() != null) {
 			Glide.with(context)
@@ -94,6 +125,61 @@ public class SnippetsAdapter extends RecyclerView.Adapter<SnippetsAdapter.Snippe
 		} else {
 			holder.fileCountContainer.setVisibility(View.GONE);
 		}
+
+		if (snippet.getAuthor() != null
+				&& snippet.getAuthor().getId() == accountContext.getAccount().getUserId()) {
+			holder.deleteSnippet.setVisibility(View.VISIBLE);
+			holder.deleteSnippet.setOnClickListener(
+					v -> showDeleteConfirmationDialog(snippet, position, holder));
+		} else {
+			holder.deleteSnippet.setVisibility(View.GONE);
+		}
+	}
+
+	private void showDeleteConfirmationDialog(
+			SnippetsItem snippet, int position, SnippetsViewHolder holder) {
+		new MaterialAlertDialogBuilder(context)
+				.setTitle(R.string.delete_snippet)
+				.setMessage(R.string.delete_snippet_confirmation)
+				.setNeutralButton(R.string.cancel, null)
+				.setPositiveButton(
+						R.string.delete,
+						(dialog, which) -> deleteSnippet(snippet, position, holder))
+				.show();
+	}
+
+	private void deleteSnippet(SnippetsItem snippet, int position, SnippetsViewHolder holder) {
+		RetrofitClient.getApiInterface(context)
+				.deleteSnippet(snippet.getId())
+				.enqueue(
+						new Callback<Void>() {
+							@Override
+							public void onResponse(
+									@NonNull Call<Void> call, @NonNull Response<Void> response) {
+								if (response.isSuccessful()) {
+									snippetsList.remove(position);
+									notifyItemRemoved(position);
+									notifyItemRangeChanged(position, snippetsList.size());
+									Snackbar.info(
+											activity,
+											bottomAppBar,
+											context.getString(R.string.snippet_deleted));
+								} else {
+									Snackbar.info(
+											activity,
+											bottomAppBar,
+											context.getString(R.string.delete_snippet_error));
+								}
+							}
+
+							@Override
+							public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+								Snackbar.info(
+										activity,
+										bottomAppBar,
+										context.getString(R.string.delete_snippet_error));
+							}
+						});
 	}
 
 	@Override
@@ -130,6 +216,7 @@ public class SnippetsAdapter extends RecyclerView.Adapter<SnippetsAdapter.Snippe
 		TextView description;
 		LinearLayout fileCountContainer;
 		TextView fileCount;
+		ImageView deleteSnippet;
 
 		SnippetsViewHolder(View itemView) {
 			super(itemView);
@@ -140,6 +227,7 @@ public class SnippetsAdapter extends RecyclerView.Adapter<SnippetsAdapter.Snippe
 			description = itemView.findViewById(R.id.snippet_description);
 			fileCountContainer = itemView.findViewById(R.id.file_count_container);
 			fileCount = itemView.findViewById(R.id.file_count);
+			deleteSnippet = itemView.findViewById(R.id.delete_snippet);
 		}
 	}
 }

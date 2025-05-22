@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.labnex.app.adapters.SnippetsAdapter;
 import com.labnex.app.contexts.ProjectsContext;
+import com.labnex.app.database.models.UserAccount;
 import com.labnex.app.databinding.ActivitySnippetsBinding;
 import com.labnex.app.viewmodels.SnippetsViewModel;
 import java.util.ArrayList;
@@ -41,7 +42,10 @@ public class SnippetsActivity extends BaseActivity {
 		binding.recyclerView.setHasFixedSize(true);
 		LinearLayoutManager layoutManager = new LinearLayoutManager(this);
 		binding.recyclerView.setLayoutManager(layoutManager);
-		adapter = new SnippetsAdapter(this, new ArrayList<>());
+		UserAccount userAccount = getAccount().getAccount();
+		adapter =
+				new SnippetsAdapter(
+						this, this, new ArrayList<>(), userAccount, binding.bottomAppBar);
 		binding.recyclerView.setAdapter(adapter);
 
 		binding.progressBar.setVisibility(View.VISIBLE);
