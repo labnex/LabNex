@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginTop="@dimen/dimen12dp"
+    android:paddingStart="@dimen/dimen16dp"
+    android:paddingEnd="@dimen/dimen16dp"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <TextView
+        android:id="@+id/text_work"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:text="@string/work"
+        android:textStyle="bold"
+        android:textSize="@dimen/dimen18sp" />
+
+    <RelativeLayout
+        android:id="@+id/groups_frame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dimen24dp">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/groups_view_layout"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            app:strokeWidth="@dimen/dimen0dp"
+            android:backgroundTint="@color/cardview_dark_background"
+            app:cardElevation="@dimen/dimen0dp">
+
+            <ImageView
+                android:id="@+id/groups_icon"
+                android:layout_height="@dimen/dimen36dp"
+                android:layout_width="@dimen/dimen36dp"
+                android:contentDescription="@string/generic_img_copy"
+                android:src="@drawable/ic_groups_home" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:id="@+id/groups_text"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:paddingStart="@dimen/dimen12dp"
+            android:paddingEnd="0dp"
+            android:layout_toEndOf="@id/groups_view_layout"
+            android:layout_centerVertical="true"
+            android:text="@string/groups"
+            android:textSize="@dimen/dimen16sp" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/projects_frame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dimen24dp">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/projects_view_layout"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            app:strokeWidth="@dimen/dimen0dp"
+            android:backgroundTint="@color/cardview_dark_background"
+            app:cardElevation="@dimen/dimen0dp">
+
+            <ImageView
+                android:id="@+id/projects_icon"
+                android:layout_height="@dimen/dimen36dp"
+                android:layout_width="@dimen/dimen36dp"
+                android:contentDescription="@string/generic_img_copy"
+                android:src="@drawable/ic_projects_home" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:id="@+id/projects_text"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:paddingStart="@dimen/dimen12dp"
+            android:paddingEnd="0dp"
+            android:layout_toEndOf="@id/projects_view_layout"
+            android:layout_centerVertical="true"
+            android:text="@string/projects"
+            android:textSize="@dimen/dimen16sp" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/starred_frame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dimen24dp">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/starred_view_layout"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            app:strokeWidth="@dimen/dimen0dp"
+            android:backgroundTint="@color/cardview_dark_background"
+            app:cardElevation="@dimen/dimen0dp">
+
+            <ImageView
+                android:id="@+id/starred_icon"
+                android:layout_height="@dimen/dimen36dp"
+                android:layout_width="@dimen/dimen36dp"
+                android:contentDescription="@string/generic_img_copy"
+                android:src="@drawable/ic_star_home" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:id="@+id/starred_text"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:paddingStart="@dimen/dimen12dp"
+            android:paddingEnd="0dp"
+            android:layout_toEndOf="@id/starred_view_layout"
+            android:layout_centerVertical="true"
+            android:text="@string/starred"
+            android:textSize="@dimen/dimen16sp" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/issues_frame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dimen24dp">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/issues_view_layout"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            app:strokeWidth="@dimen/dimen0dp"
+            android:backgroundTint="@color/cardview_dark_background"
+            app:cardElevation="@dimen/dimen0dp">
+
+            <ImageView
+                android:id="@+id/issues_icon"
+                android:layout_height="@dimen/dimen36dp"
+                android:layout_width="@dimen/dimen36dp"
+                android:contentDescription="@string/generic_img_copy"
+                android:src="@drawable/ic_issues_home" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:id="@+id/issues_text"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:paddingStart="@dimen/dimen12dp"
+            android:paddingEnd="0dp"
+            android:layout_toEndOf="@id/issues_view_layout"
+            android:layout_centerVertical="true"
+            android:text="@string/issues"
+            android:textSize="@dimen/dimen16sp" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/merge_requests_frame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dimen24dp">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/merge_request_view_layout"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            app:strokeWidth="@dimen/dimen0dp"
+            android:backgroundTint="@color/cardview_dark_background"
+            app:cardElevation="@dimen/dimen0dp">
+
+            <ImageView
+                android:id="@+id/merge_request_icon"
+                android:layout_height="@dimen/dimen36dp"
+                android:layout_width="@dimen/dimen36dp"
+                android:contentDescription="@string/generic_img_copy"
+                android:src="@drawable/ic_merge_request_home" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:id="@+id/merge_request_text"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:paddingStart="@dimen/dimen12dp"
+            android:paddingEnd="0dp"
+            android:layout_toEndOf="@id/merge_request_view_layout"
+            android:layout_centerVertical="true"
+            android:text="@string/merge_requests"
+            android:textSize="@dimen/dimen16sp" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/snippet_frame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dimen24dp">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/snippet_view_layout"
+            android:layout_height="@dimen/dimen36dp"
+            android:layout_width="@dimen/dimen36dp"
+            app:strokeWidth="@dimen/dimen0dp"
+            android:backgroundTint="@color/cardview_dark_background"
+            app:cardElevation="@dimen/dimen0dp">
+
+            <ImageView
+                android:id="@+id/snippet_icon"
+                android:layout_height="@dimen/dimen28dp"
+                android:layout_width="@dimen/dimen28dp"
+                android:contentDescription="@string/generic_img_copy"
+                android:layout_gravity="center_horizontal|center_vertical"
+                android:src="@drawable/ic_snippet_home" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:id="@+id/snippet_text"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:paddingStart="@dimen/dimen12dp"
+            android:paddingEnd="0dp"
+            android:layout_toEndOf="@id/snippet_view_layout"
+            android:layout_centerVertical="true"
+            android:text="@string/snippets"
+            android:textSize="@dimen/dimen16sp" />
+
+    </RelativeLayout>
+
+</LinearLayout>

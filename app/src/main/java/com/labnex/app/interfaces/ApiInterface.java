@@ -27,6 +27,8 @@ import com.labnex.app.models.release.Releases;
 import com.labnex.app.models.repository.CrudeFile;
 import com.labnex.app.models.repository.FileContents;
 import com.labnex.app.models.repository.Tree;
+import com.labnex.app.models.snippets.SnippetCreateModel;
+import com.labnex.app.models.snippets.SnippetsItem;
 import com.labnex.app.models.templates.Template;
 import com.labnex.app.models.templates.Templates;
 import com.labnex.app.models.user.User;
@@ -34,10 +36,12 @@ import com.labnex.app.models.users.Users;
 import com.labnex.app.models.wikis.CrudeWiki;
 import com.labnex.app.models.wikis.Wiki;
 import java.util.List;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
@@ -392,4 +396,24 @@ public interface ApiInterface {
 	@GET("projects/{id}/templates/{type}/{name}") // get a template
 	Call<Template> getTemplate(
 			@Path("id") int id, @Path("type") String type, @Path("name") String name);
+
+	// Snippets
+	@GET("snippets") // get all snippets
+	Call<List<SnippetsItem>> getSnippets(@Query("per_page") int per_page, @Query("page") int page);
+
+	@GET("snippets/{id}") // get a snippet
+	Call<SnippetsItem> getSnippet(@Path("id") int id);
+
+	@GET("snippets/{id}/files/{ref}/{file_path}/raw")
+	@Headers("Accept: text/plain")
+	Call<ResponseBody> getSnippetFileContent(
+			@Path("id") int id,
+			@Path(value = "ref", encoded = true) String ref,
+			@Path(value = "file_path", encoded = true) String filePath);
+
+	@DELETE("snippets/{id}")
+	Call<Void> deleteSnippet(@Path("id") int id);
+
+	@POST("snippets")
+	Call<SnippetsItem> createSnippet(@Body SnippetCreateModel model);
 }

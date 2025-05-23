@@ -21,6 +21,7 @@ import com.labnex.app.activities.MergeRequestsActivity;
 import com.labnex.app.activities.NotesActivity;
 import com.labnex.app.activities.ProfileActivity;
 import com.labnex.app.activities.ProjectsActivity;
+import com.labnex.app.activities.SnippetsActivity;
 import com.labnex.app.adapters.MostVisitedAdapter;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.database.api.BaseApi;
@@ -66,38 +67,46 @@ public class HomeFragment extends Fragment {
 		projectsList = new ArrayList<>();
 		mostVisitedAdapter = new MostVisitedAdapter(ctx, projectsList);
 
-		binding.recyclerViewMostVisited.setHasFixedSize(true);
-		binding.recyclerViewMostVisited.setLayoutManager(new LinearLayoutManager(requireContext()));
+		binding.sectionMostVisited.recyclerViewMostVisited.setHasFixedSize(true);
+		binding.sectionMostVisited.recyclerViewMostVisited.setLayoutManager(
+				new LinearLayoutManager(requireContext()));
 
 		// Snackbar.info(ctx, requireActivity().findViewById(android.R.id.content),
 		// requireActivity().findViewById(R.id.nav_view), "Hello world");
 
-		binding.groupsFrame.setOnClickListener(
+		binding.sectionWork.groupsFrame.setOnClickListener(
 				view -> startActivity(new Intent(ctx, GroupsActivity.class)));
 
-		binding.projectsFrame.setOnClickListener(
+		binding.sectionWork.projectsFrame.setOnClickListener(
 				view -> {
 					Intent intent = new Intent(requireContext(), ProjectsActivity.class);
 					intent.putExtra("source", "projects");
 					requireContext().startActivity(intent);
 				});
 
-		binding.starredFrame.setOnClickListener(
+		binding.sectionWork.starredFrame.setOnClickListener(
 				view -> {
 					Intent intent = new Intent(requireContext(), ProjectsActivity.class);
 					intent.putExtra("source", "starred");
 					requireContext().startActivity(intent);
 				});
 
+		binding.sectionWork.snippetFrame.setOnClickListener(
+				view -> {
+					Intent intent = new Intent(requireContext(), SnippetsActivity.class);
+					intent.putExtra("source", "snippets");
+					requireContext().startActivity(intent);
+				});
+
 		binding.settingsViewTop.setOnClickListener(
 				view -> startActivity(new Intent(ctx, AppSettingsActivity.class)));
-		binding.settingsFrame.setOnClickListener(
+		binding.sectionAppSettings.settingsFrame.setOnClickListener(
 				view -> startActivity(new Intent(ctx, AppSettingsActivity.class)));
 
-		binding.notesFrame.setOnClickListener(
+		binding.sectionAppSettings.notesFrame.setOnClickListener(
 				view -> startActivity(new Intent(ctx, NotesActivity.class)));
 
-		binding.issuesFrame.setOnClickListener(
+		binding.sectionWork.issuesFrame.setOnClickListener(
 				view -> {
 					Intent intent = new Intent(ctx, IssuesActivity.class);
 					intent.putExtra("source", "my_issues");
@@ -105,7 +114,7 @@ public class HomeFragment extends Fragment {
 					ctx.startActivity(intent);
 				});
 
-		binding.mergeRequestsFrame.setOnClickListener(
+		binding.sectionWork.mergeRequestsFrame.setOnClickListener(
 				view -> {
 					Intent intent = new Intent(ctx, MergeRequestsActivity.class);
 					intent.putExtra("source", "my_merge_requests");
@@ -113,7 +122,7 @@ public class HomeFragment extends Fragment {
 					ctx.startActivity(intent);
 				});
 
-		binding.clearMostVisited.setOnClickListener(view -> clearMostVisited());
+		binding.sectionMostVisited.clearMostVisited.setOnClickListener(view -> clearMostVisited());
 
 		getBroadcastMessage();
 		getUserInfo();
@@ -144,16 +153,17 @@ public class HomeFragment extends Fragment {
 		if (notesApi.getCount() > 0) {
 
 			if (notesApi.getCount() > 9) {
-				binding.notesBadge.setPadding(16, 0, 16, 0);
+				binding.sectionAppSettings.notesBadge.setPadding(16, 0, 16, 0);
 			}
-			binding.notesBadge.setVisibility(View.VISIBLE);
-			binding.notesBadge.setText(String.format(notesApi.getCount().toString()));
+			binding.sectionAppSettings.notesBadge.setVisibility(View.VISIBLE);
+			binding.sectionAppSettings.notesBadge.setText(
+					String.format(notesApi.getCount().toString()));
 		} else {
-			binding.notesBadge.setVisibility(View.GONE);
+			binding.sectionAppSettings.notesBadge.setVisibility(View.GONE);
 		}
 
 		if (projectsApi.getCount() > 0) {
-			binding.clearMostVisited.setVisibility(View.VISIBLE);
+			binding.sectionMostVisited.clearMostVisited.setVisibility(View.VISIBLE);
 		}
 
 		super.onResume();
@@ -211,13 +221,16 @@ public class HomeFragment extends Fragment {
 							if (!mostVisited.isEmpty()) {
 
 								projectsList.clear();
-								binding.nothingFoundFrame.setVisibility(View.GONE);
+								binding.sectionMostVisited.nothingFoundFrame.setVisibility(
+										View.GONE);
 								projectsList.addAll(mostVisited);
 								mostVisitedAdapter.notifyDataChanged();
-								binding.recyclerViewMostVisited.setAdapter(mostVisitedAdapter);
+								binding.sectionMostVisited.recyclerViewMostVisited.setAdapter(
+										mostVisitedAdapter);
 							} else {
 
-								binding.nothingFoundFrame.setVisibility(View.VISIBLE);
+								binding.sectionMostVisited.nothingFoundFrame.setVisibility(
+										View.VISIBLE);
 							}
 						});
 	}
@@ -292,7 +305,8 @@ public class HomeFragment extends Fragment {
 								projectsApi.deleteAllProjects();
 								projectsList.clear();
 								mostVisitedAdapter.notifyDataChanged();
-								binding.clearMostVisited.setVisibility(View.GONE);
+								binding.sectionMostVisited.clearMostVisited.setVisibility(
+										View.GONE);
 								dialog.dismiss();
 							})
 					.setNeutralButton(R.string.cancel, null)

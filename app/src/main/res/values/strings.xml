@@ -22,6 +22,9 @@
     <string name="source_position" translatable="false">%1$d:%2$d</string>
     <string name="discord_user_profile_link" translatable="false">https://discord.com/users/%1$s</string>
     <string name="personal_access_token_helper_link" translatable="false">https://gitlab.com/-/user_settings/personal_access_tokens</string>
+    <string name="visibility_internal" translatable="false">Internal</string>
+    <string name="visibility_private" translatable="false">Private</string>
+    <string name="visibility_public" translatable="false">Public</string>
     <!-- non translatable strings -->
 
     <string name="action_sign_in">Sign in</string>
@@ -198,8 +201,21 @@
     <string name="file_update">The file has been sent for an update via %1$s branch</string>
     <string name="home_screen">Home screen</string>
     <string name="home_screen_dialog_title">Select home screen</string>
-
+    <string name="created_by">Created by %1$s %2$s</string>
     <string name="select_template">Select a template</string>
+    <string name="delete_snippet">Delete Snippet</string>
+    <string name="delete_snippet_confirmation">Are you sure you want to delete this snippet? This action cannot be undone.</string>
+    <string name="snippet_deleted">Snippet deleted successfully</string>
+    <string name="delete_snippet_error">Failed to delete snippet</string>
+    <string name="create_snippet">Create snippet</string>
+    <string name="at_least_one_file">At least one file is required</string>
+    <string name="max_files_reached">Maximum 10 files reached</string>
+    <string name="delete_file">Delete File</string>
+    <string name="delete_file_confirmation">Are you sure you want to delete this file? This action cannot be undone.</string>
+    <string name="file_deleted">File deleted</string>
+    <string name="snippet_created">Snippet created successfully</string>
+    <string name="create_snippet_with_count">Create Snippet (%1$d/10 files)</string>
+    <string name="duplicate_file_name">Duplicate file names are not allowed</string>
 
     <!-- errors -->
     <string name="generic_error">An unexpected error occurred</string>
@@ -224,6 +240,9 @@
     <string name="group_name_required">Group name is required</string>
     <string name="access_forbidden_403">Access forbidden, the request isn’t allowed</string>
     <string name="no_description">No description provided</string>
+    <string name="no_files_snippet">No files found for this snippet</string>
+    <string name="file_content_error">Failed to load file content</string>
+    <string name="empty_file_content">File content cannot be empty</string>
     <!-- errors -->
 
     <!-- generic copy -->
@@ -306,5 +325,6 @@
     <string name="ref">Ref</string>
     <string name="filter">Filter</string>
     <string name="menu">Menu</string>
+    <string name="snippets">Snippets</string>
     <!-- generic copy -->
 </resources>
