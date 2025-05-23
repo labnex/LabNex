@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="@dimen/dimen8dp"
+    android:gravity="center"
+    tools:ignore="UseCompoundDrawables">
+
+    <TextView
+        android:id="@+id/tab_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+        android:textColor="?attr/colorOnSurface"
+        android:ellipsize="end"
+        android:maxWidth="120dp"
+        android:singleLine="true"
+        android:contentDescription="@string/file" />
+
+    <ImageView
+        android:id="@+id/tab_delete"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginStart="@dimen/dimen4dp"
+        android:src="@drawable/ic_close"
+        android:contentDescription="@string/delete" />
+
+</LinearLayout>

@@ -16,6 +16,16 @@
         android:text="@string/filter"
         android:textSize="@dimen/dimen20sp" />
 
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/title_underline"
+        android:layout_width="@dimen/dimen32dp"
+        android:layout_height="@dimen/dimen8dp"
+        android:layout_marginStart="@dimen/dimen8dp"
+        app:cardBackgroundColor="?attr/colorPrimary"
+        app:cardCornerRadius="@dimen/dimen4dp"
+        android:layout_marginBottom="@dimen/dimen16dp"
+        app:cardElevation="0dp" />
+
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/issue_filter_chips"
         android:layout_width="match_parent"

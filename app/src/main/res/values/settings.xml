@@ -49,6 +49,12 @@
         <item>@string/explore</item>
     </string-array>
 
+    <string-array name="snippet_visibility_options">
+        <item>Private</item>
+        <item>Internal</item>
+        <item>Public</item>
+    </string-array>
+
     <string-array name="licenses">
         <item>0BSD</item>
         <item>AAL</item>

@@ -72,11 +72,11 @@ Thanks to all the open-source libraries, contributors, and donors for your suppo
 
 ## Social
 
-[Follow me on Fediverse - mastodon.social/@mmarif](https://mastodon.social/@mmarif)
-
-*All trademarks and logos are the properties of their respective owners.*
-
+[Follow me on Fediverse - mastodon.social/@mmarif](https://mastodon.social/@mmarif)  
+[Follow me on Bluesky](https://bsky.app/profile/mmarif.bsky.social)
 
 ## Disclaimer
 
 LabNex is not associated with GitLab or any other entity in any way. It is a standalone, separate project.
+
+*All trademarks and logos are the properties of their respective owners.*

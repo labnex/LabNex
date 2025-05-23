@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="@dimen/dimen8dp">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/file_name_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/filename"
+        android:layout_marginBottom="@dimen/dimen8dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/file_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:maxLength="100"
+            android:singleLine="true"
+            android:textSize="@dimen/dimen16sp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/file_content_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/file_content"
+        android:layout_marginBottom="@dimen/dimen8dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/file_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine"
+            android:minLines="10"
+            android:maxLines="15"
+            android:scrollbars="vertical"
+            android:textSize="@dimen/dimen16sp"
+            android:gravity="top" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/open_code_editor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:text="@string/open_ce"
+        style="@style/CustomMaterialButton" />
+
+</LinearLayout>

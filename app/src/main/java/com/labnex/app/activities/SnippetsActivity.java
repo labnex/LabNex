@@ -1,9 +1,12 @@
 package com.labnex.app.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -27,6 +30,19 @@ public class SnippetsActivity extends BaseActivity {
 	private int resultLimit;
 	public ProjectsContext projectsContext;
 	private boolean isLoading = false;
+
+	private final ActivityResultLauncher<Intent> createSnippetLauncher =
+			registerForActivityResult(
+					new ActivityResultContracts.StartActivityForResult(),
+					result -> {
+						if (result.getResultCode() == RESULT_OK) {
+							page = 1;
+							adapter.clearAdapter();
+							binding.progressBar.setVisibility(View.VISIBLE);
+							binding.nothingFoundFrame.getRoot().setVisibility(View.GONE);
+							fetchSnippets();
+						}
+					});
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -53,10 +69,11 @@ public class SnippetsActivity extends BaseActivity {
 
 		binding.bottomAppBar.setNavigationOnClickListener(v -> finish());
 
-		// FAB (placeholder for future create snippet)
 		binding.newSnippet.setOnClickListener(
 				v -> {
-					// TODO: Implement create snippet
+					Intent intent = new Intent(ctx, SnippetDetailActivity.class);
+					intent.putExtra("MODE", "CREATE");
+					createSnippetLauncher.launch(intent);
 				});
 
 		binding.pullToRefresh.setOnRefreshListener(
@@ -96,7 +113,7 @@ public class SnippetsActivity extends BaseActivity {
 										page,
 										adapter,
 										SnippetsActivity.this,
-										binding.bottomAppBar);
+										binding);
 								binding.progressBar.setVisibility(View.VISIBLE);
 							}
 						}
@@ -108,7 +125,7 @@ public class SnippetsActivity extends BaseActivity {
 
 	private void fetchSnippets() {
 		snippetsViewModel
-				.getSnippets(this, resultLimit, page, this, binding.bottomAppBar)
+				.getSnippets(this, resultLimit, page, this, binding)
 				.observe(
 						this,
 						snippets -> {
@@ -120,7 +137,6 @@ public class SnippetsActivity extends BaseActivity {
 												snippets.isEmpty() ? View.VISIBLE : View.GONE);
 							}
 							isLoading = false;
-							binding.progressBar.setVisibility(View.GONE);
 						});
 	}
 }

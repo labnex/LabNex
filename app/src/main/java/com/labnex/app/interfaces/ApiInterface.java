@@ -27,6 +27,7 @@ import com.labnex.app.models.release.Releases;
 import com.labnex.app.models.repository.CrudeFile;
 import com.labnex.app.models.repository.FileContents;
 import com.labnex.app.models.repository.Tree;
+import com.labnex.app.models.snippets.SnippetCreateModel;
 import com.labnex.app.models.snippets.SnippetsItem;
 import com.labnex.app.models.templates.Template;
 import com.labnex.app.models.templates.Templates;
@@ -412,4 +413,7 @@ public interface ApiInterface {
 
 	@DELETE("snippets/{id}")
 	Call<Void> deleteSnippet(@Path("id") int id);
+
+	@POST("snippets")
+	Call<SnippetsItem> createSnippet(@Body SnippetCreateModel model);
 }

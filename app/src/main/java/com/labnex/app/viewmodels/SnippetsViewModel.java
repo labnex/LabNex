@@ -2,6 +2,7 @@ package com.labnex.app.viewmodels;
 
 import android.app.Activity;
 import android.content.Context;
+import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -10,6 +11,7 @@ import com.google.android.material.bottomappbar.BottomAppBar;
 import com.labnex.app.R;
 import com.labnex.app.adapters.SnippetsAdapter;
 import com.labnex.app.clients.RetrofitClient;
+import com.labnex.app.databinding.ActivitySnippetsBinding;
 import com.labnex.app.helpers.Snackbar;
 import com.labnex.app.models.snippets.SnippetsItem;
 import java.util.ArrayList;
@@ -27,15 +29,23 @@ public class SnippetsViewModel extends ViewModel {
 	private Call<List<SnippetsItem>> currentCall;
 
 	public LiveData<List<SnippetsItem>> getSnippets(
-			Context ctx, int resultLimit, int page, Activity activity, BottomAppBar bottomAppBar) {
+			Context ctx,
+			int resultLimit,
+			int page,
+			Activity activity,
+			ActivitySnippetsBinding binding) {
 
 		mutableList = new MutableLiveData<>(null);
-		loadInitialList(ctx, resultLimit, page, activity, bottomAppBar);
+		loadInitialList(ctx, resultLimit, page, activity, binding);
 		return mutableList;
 	}
 
 	private void loadInitialList(
-			Context ctx, int resultLimit, int page, Activity activity, BottomAppBar bottomAppBar) {
+			Context ctx,
+			int resultLimit,
+			int page,
+			Activity activity,
+			ActivitySnippetsBinding binding) {
 
 		if (currentCall != null && !currentCall.isCanceled()) {
 			currentCall.cancel();
@@ -55,9 +65,10 @@ public class SnippetsViewModel extends ViewModel {
 								mutableList.postValue(snippetsItems);
 							} else {
 								mutableList.postValue(new ArrayList<>());
-								handleError(ctx, response.code(), activity, bottomAppBar);
+								handleError(ctx, response.code(), activity, binding.bottomAppBar);
 							}
 						}
+						binding.progressBar.setVisibility(View.GONE);
 					}
 
 					@Override
@@ -68,9 +79,10 @@ public class SnippetsViewModel extends ViewModel {
 							Snackbar.info(
 									ctx,
 									activity.findViewById(android.R.id.content),
-									bottomAppBar,
+									binding.bottomAppBar,
 									ctx.getString(R.string.generic_server_response_error));
 						}
+						binding.progressBar.setVisibility(View.GONE);
 					}
 				});
 	}
@@ -81,7 +93,7 @@ public class SnippetsViewModel extends ViewModel {
 			int page,
 			SnippetsAdapter adapter,
 			Activity activity,
-			BottomAppBar bottomAppBar) {
+			ActivitySnippetsBinding binding) {
 
 		if (currentCall != null && !currentCall.isCanceled()) {
 			currentCall.cancel();
@@ -110,9 +122,10 @@ public class SnippetsViewModel extends ViewModel {
 									adapter.setMoreDataAvailable(false);
 								}
 							} else {
-								handleError(ctx, response.code(), activity, bottomAppBar);
+								handleError(ctx, response.code(), activity, binding.bottomAppBar);
 							}
 						}
+						binding.progressBar.setVisibility(View.GONE);
 					}
 
 					@Override
@@ -122,9 +135,10 @@ public class SnippetsViewModel extends ViewModel {
 							Snackbar.info(
 									ctx,
 									activity.findViewById(android.R.id.content),
-									bottomAppBar,
+									binding.bottomAppBar,
 									ctx.getString(R.string.generic_server_response_error));
 						}
+						binding.progressBar.setVisibility(View.GONE);
 					}
 				});
 	}
