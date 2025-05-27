@@ -192,6 +192,8 @@
     <string name="filename_hint">with directory: app/config.json</string>
     <string name="commit_message">Commit message</string>
     <string name="edit_commit_message">Update %1$s</string>
+    <string name="delete_commit_message">Delete %1$s</string>
+    <string name="delete_file_via_branch">The file has been sent for an deletion via %1$s branch</string>
     <string name="file_content">File content</string>
     <string name="all_fields_are_required">All fields are required and must be filled out</string>
     <string name="open_ce">Open in Code Editor</string>
@@ -243,6 +245,8 @@
     <string name="no_files_snippet">No files found for this snippet</string>
     <string name="file_content_error">Failed to load file content</string>
     <string name="empty_file_content">File content cannot be empty</string>
+    <string name="branch_check_failed">Failed to check branch: %1$s</string>
+    <string name="branch_creation_failed">Failed to create branch: %1$s</string>
     <!-- errors -->
 
     <!-- generic copy -->

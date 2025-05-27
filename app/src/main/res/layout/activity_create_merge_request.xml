@@ -10,13 +10,12 @@
         android:id="@+id/main_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fitsSystemWindows="true"
-        android:paddingBottom="@dimen/dimen70dp">
+        android:fitsSystemWindows="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/dimen8dp"
+            android:layout_marginBottom="@dimen/dimen96dp"
             android:padding="@dimen/dimen16dp"
             android:orientation="vertical">
 

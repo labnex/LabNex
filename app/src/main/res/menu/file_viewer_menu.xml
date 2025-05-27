@@ -3,17 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/edit"
-        android:icon="@drawable/ic_edit"
-        android:title="@string/edit"
-        android:contentDescription="@string/edit"
-        app:showAsAction="always" />
-
-    <item
-        android:id="@+id/download"
-        android:icon="@drawable/ic_download"
-        android:title="@string/download"
-        android:contentDescription="@string/download"
+        android:id="@+id/menu"
+        android:icon="@drawable/ic_menu"
+        android:title="@string/menu"
+        android:contentDescription="@string/menu"
         app:showAsAction="always" />
 
     <item

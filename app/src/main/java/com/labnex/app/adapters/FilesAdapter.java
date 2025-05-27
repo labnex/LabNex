@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.labnex.app.R;
 import com.labnex.app.contexts.ProjectsContext;
 import com.labnex.app.models.repository.Tree;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,8 +34,13 @@ public class FilesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
 	public FilesAdapter(Context ctx, List<Tree> mainList, FilesAdapterListener filesListener) {
 		this.context = ctx;
-		this.list = mainList;
+		this.list = mainList != null ? mainList : new ArrayList<>();
 		this.filesListener = filesListener;
+		this.loadMoreListener =
+				new OnLoadMoreListener() {
+					@Override
+					protected void onLoadMore() {}
+				};
 	}
 
 	@NonNull @Override
@@ -77,15 +83,22 @@ public class FilesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 	public void notifyDataChanged() {
 		notifyDataSetChanged();
 		isLoading = false;
-		loadMoreListener.onLoadFinished();
+	}
+
+	public void notifyLoadFinished() {
+		if (loadMoreListener != null) {
+			loadMoreListener.onLoadFinished();
+		}
 	}
 
 	public void setLoadMoreListener(OnLoadMoreListener loadMoreListener) {
-		this.loadMoreListener = loadMoreListener;
+		if (loadMoreListener != null) {
+			this.loadMoreListener = loadMoreListener;
+		}
 	}
 
 	public void updateList(List<Tree> list_) {
-		list = list_;
+		list = list_ != null ? list_ : new ArrayList<>();
 		notifyDataChanged();
 	}
 

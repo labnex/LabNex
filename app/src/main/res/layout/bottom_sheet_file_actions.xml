@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="@dimen/dimen16dp">
+
+    <TextView
+        android:id="@+id/bottom_sheet_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/menu"
+        android:textSize="@dimen/dimen18sp"
+        android:layout_marginStart="@dimen/dimen8dp"
+        android:layout_marginEnd="@dimen/dimen8dp"
+        android:layout_marginTop="@dimen/dimen16dp"
+        android:layout_marginBottom="@dimen/dimen8dp" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/title_underline"
+        android:layout_width="@dimen/dimen32dp"
+        android:layout_height="@dimen/dimen8dp"
+        android:layout_marginStart="@dimen/dimen8dp"
+        app:cardBackgroundColor="?attr/colorPrimary"
+        app:cardCornerRadius="@dimen/dimen4dp"
+        android:layout_marginBottom="@dimen/dimen16dp"
+        app:cardElevation="0dp" />
+
+    <!-- Edit Item -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/edit_item_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="@android:color/transparent"
+        app:cardCornerRadius="@dimen/dimen8dp"
+        app:strokeWidth="@dimen/dimen0dp"
+        android:layout_marginBottom="@dimen/dimen8dp"
+        app:cardElevation="0dp">
+
+        <LinearLayout
+            android:id="@+id/edit_item"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="@dimen/dimen8dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="@dimen/dimen24dp"
+                android:layout_height="@dimen/dimen24dp"
+                android:contentDescription="@string/edit"
+                android:src="@drawable/ic_edit"
+                android:layout_marginEnd="@dimen/dimen16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/edit"
+                android:textSize="@dimen/dimen16sp" />
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Delete Item -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/delete_item_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="@android:color/transparent"
+        app:cardCornerRadius="@dimen/dimen8dp"
+        app:strokeWidth="@dimen/dimen0dp"
+        android:layout_marginBottom="@dimen/dimen8dp"
+        app:cardElevation="0dp">
+
+        <LinearLayout
+            android:id="@+id/delete_item"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="@dimen/dimen8dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="@dimen/dimen24dp"
+                android:layout_height="@dimen/dimen24dp"
+                android:contentDescription="@string/delete"
+                android:src="@drawable/ic_trash"
+                android:layout_marginEnd="@dimen/dimen16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/delete"
+                android:textSize="@dimen/dimen16sp" />
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Download Item -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/download_item_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="@android:color/transparent"
+        app:cardCornerRadius="@dimen/dimen8dp"
+        app:strokeWidth="@dimen/dimen0dp"
+        android:layout_marginBottom="@dimen/dimen8dp"
+        app:cardElevation="0dp">
+
+        <LinearLayout
+            android:id="@+id/download_item"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="@dimen/dimen8dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="@dimen/dimen24dp"
+                android:layout_height="@dimen/dimen24dp"
+                android:contentDescription="@string/download"
+                android:src="@drawable/ic_download"
+                android:layout_marginEnd="@dimen/dimen16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/download"
+                android:textSize="@dimen/dimen16sp" />
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+</LinearLayout>

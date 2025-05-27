@@ -41,6 +41,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.HTTP;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
@@ -129,6 +130,9 @@ public interface ApiInterface {
 	@POST("projects/{id}/repository/branches") // create a branch
 	Call<Branches> createBranch(
 			@Path("id") int id, @Query("branch") String branch, @Query("ref") String ref);
+
+	@GET("projects/{id}/repository/branches/{branch}") // get a branch
+	Call<Branches> getBranch(@Path("id") int id, @Path("branch") String branch);
 
 	@GET("projects/{id}/members") // get a project members
 	Call<List<User>> getProjectMembers(
@@ -387,6 +391,13 @@ public interface ApiInterface {
 
 	@PUT("projects/{id}/repository/files/{filename}") // edit a file
 	Call<FileContents> updateFile(
+			@Path("id") int id, @Path("filename") String filename, @Body CrudeFile body);
+
+	@HTTP(
+			method = "DELETE",
+			path = "projects/{id}/repository/files/{filename}",
+			hasBody = true) // delete a file
+	Call<Void> deleteFile(
 			@Path("id") int id, @Path("filename") String filename, @Body CrudeFile body);
 
 	// Templates

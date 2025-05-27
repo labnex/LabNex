@@ -9,14 +9,17 @@ import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.app.NotificationCompat;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.labnex.app.R;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.contexts.ProjectsContext;
 import com.labnex.app.databinding.ActivityFileViewBinding;
+import com.labnex.app.databinding.BottomSheetFileActionsBinding;
 import com.labnex.app.helpers.Constants;
 import com.labnex.app.helpers.Markdown;
 import com.labnex.app.helpers.Snackbar;
@@ -189,19 +192,18 @@ public class FileViewActivity extends BaseActivity implements CreateFileActivity
 
 		binding.bottomAppBar.setNavigationOnClickListener(bottomAppBar -> finish());
 
-		binding.bottomAppBar.getMenu().findItem(R.id.edit).setVisible(false);
-
 		if (!FilenameUtils.getExtension(tree.getName().toLowerCase()).equalsIgnoreCase("md")) {
-			binding.bottomAppBar.getMenu().removeItem(R.id.render_md);
+			if (binding.bottomAppBar.getMenu().findItem(R.id.render_md) != null) {
+				binding.bottomAppBar.getMenu().removeItem(R.id.render_md);
+			}
 		}
 
 		binding.bottomAppBar.setOnMenuItemClickListener(
 				menuItem -> {
-					if (menuItem.getItemId() == R.id.download) {
-						requestFileDownload();
-					}
-					if (menuItem.getItemId() == R.id.render_md) {
-
+					if (menuItem.getItemId() == R.id.menu) {
+						showFileActionsBottomSheet();
+						return true;
+					} else if (menuItem.getItemId() == R.id.render_md) {
 						if (!renderMd) {
 							if (binding.markdown.getAdapter() == null) {
 								Markdown.render(
@@ -210,26 +212,15 @@ public class FileViewActivity extends BaseActivity implements CreateFileActivity
 										binding.markdown,
 										projectsContext);
 							}
-
 							binding.contents.setVisibility(View.GONE);
 							binding.markdownFrame.setVisibility(View.VISIBLE);
-
 							renderMd = true;
 						} else {
 							binding.markdownFrame.setVisibility(View.GONE);
 							binding.contents.setVisibility(View.VISIBLE);
-
 							renderMd = false;
 						}
-					} else if (menuItem.getItemId() == R.id.edit) {
-						Intent intent = new Intent(this, CreateFileActivity.class);
-						intent.putExtra("mode", "edit");
-						intent.putExtra("projectId", projectId);
-						intent.putExtra("filename", tree.getName());
-						intent.putExtra("branch", ref);
-						intent.putExtra("fileContent", fileContent);
-						intent.putExtra("projectsContext", projectsContext);
-						startActivity(intent);
+						return true;
 					}
 					return false;
 				});
@@ -245,41 +236,83 @@ public class FileViewActivity extends BaseActivity implements CreateFileActivity
 					FileViewActivity.this,
 					binding.bottomAppBar,
 					getString(R.string.file_update, branch));
+			getFileContents();
+		} else if (str.equalsIgnoreCase("deleted")) {
+			Snackbar.info(
+					FileViewActivity.this,
+					binding.bottomAppBar,
+					getString(R.string.delete_file_via_branch, branch));
 		}
 	}
 
-	private void getFileContents() {
+	private void showFileActionsBottomSheet() {
 
+		BottomSheetFileActionsBinding sheetBinding =
+				BottomSheetFileActionsBinding.inflate(LayoutInflater.from(this), null, false);
+		BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
+		bottomSheetDialog.setContentView(sheetBinding.getRoot());
+
+		sheetBinding.editItem.setOnClickListener(
+				v -> {
+					Intent intent = new Intent(this, CreateFileActivity.class);
+					intent.putExtra("mode", "edit");
+					intent.putExtra("projectId", projectId);
+					intent.putExtra("filename", tree.getName());
+					intent.putExtra("branch", ref);
+					intent.putExtra("fileContent", fileContent);
+					intent.putExtra("projectsContext", projectsContext);
+					startActivity(intent);
+					bottomSheetDialog.dismiss();
+				});
+
+		sheetBinding.deleteItem.setOnClickListener(
+				v -> {
+					Intent intent = new Intent(this, CreateFileActivity.class);
+					intent.putExtra("mode", "delete");
+					intent.putExtra("projectId", projectId);
+					intent.putExtra("filename", tree.getName());
+					intent.putExtra("branch", ref);
+					intent.putExtra("projectsContext", projectsContext);
+					startActivity(intent);
+					bottomSheetDialog.dismiss();
+				});
+
+		sheetBinding.downloadItem.setOnClickListener(
+				v -> {
+					requestFileDownload();
+					bottomSheetDialog.dismiss();
+				});
+
+		if (!processable) {
+			sheetBinding.editItemCard.setVisibility(View.GONE);
+		}
+
+		bottomSheetDialog.show();
+	}
+
+	private void getFileContents() {
 		Thread thread =
 				new Thread(
 						() -> {
 							Call<FileContents> call =
 									RetrofitClient.getApiInterface(ctx)
 											.getFileContents(projectId, tree.getPath(), ref);
-
 							try {
-
 								Response<FileContents> response = call.execute();
-
 								if (response.code() == 200) {
-
 									FileContents responseBody = response.body();
-
 									if (responseBody != null) {
-
 										runOnUiThread(
 												() -> binding.progressBar.setVisibility(View.GONE));
 										String fileExtension =
 												FilenameUtils.getExtension(
 														responseBody.getFileName());
-
 										switch (Utils.getFileType(fileExtension)) {
 											case IMAGE:
 												if (Arrays.asList(
 																"bmp", "gif", "jpg", "jpeg", "png",
 																"webp", "heic", "heif")
 														.contains(fileExtension.toLowerCase())) {
-
 													byte[] decodedImg =
 															Base64.getDecoder()
 																	.decode(
@@ -288,7 +321,6 @@ public class FileViewActivity extends BaseActivity implements CreateFileActivity
 																					.getBytes(
 																							StandardCharsets
 																									.UTF_8));
-
 													Bitmap image =
 															BitmapFactory.decodeByteArray(
 																	decodedImg,
@@ -303,7 +335,6 @@ public class FileViewActivity extends BaseActivity implements CreateFileActivity
 																	binding.markdownFrame
 																			.setVisibility(
 																					View.GONE);
-
 																	binding.photoView.setVisibility(
 																			View.VISIBLE);
 																	binding.photoView
@@ -312,27 +343,22 @@ public class FileViewActivity extends BaseActivity implements CreateFileActivity
 													}
 												}
 												break;
-
 											case UNKNOWN:
 											case TEXT:
 												if (responseBody.getSize()
 														> Constants.maximumFileViewerSize) {
 													break;
 												}
-
 												processable = true;
 												fileContent =
 														Utils.decodeBase64(
 																responseBody.getContent());
-
 												runOnUiThread(
 														() -> {
 															binding.photoView.setVisibility(
 																	View.GONE);
-
 															binding.contents.setContent(
 																	fileContent, fileExtension);
-
 															if (renderMd) {
 																Markdown.render(
 																		ctx,
@@ -340,7 +366,6 @@ public class FileViewActivity extends BaseActivity implements CreateFileActivity
 																				fileContent),
 																		binding.markdown,
 																		projectsContext);
-
 																binding.contents.setVisibility(
 																		View.GONE);
 																binding.markdownFrame.setVisibility(
@@ -351,20 +376,14 @@ public class FileViewActivity extends BaseActivity implements CreateFileActivity
 																binding.contents.setVisibility(
 																		View.VISIBLE);
 															}
-															binding.bottomAppBar
-																	.getMenu()
-																	.findItem(R.id.edit)
-																	.setVisible(true);
 														});
 												break;
 										}
-
 										if (!processable) {
 											runOnUiThread(
 													() -> {
 														binding.photoView.setVisibility(View.GONE);
 														binding.contents.setVisibility(View.GONE);
-
 														binding.markdownFrame.setVisibility(
 																View.VISIBLE);
 														binding.markdown.setVisibility(View.GONE);
@@ -381,7 +400,6 @@ public class FileViewActivity extends BaseActivity implements CreateFileActivity
 													});
 										}
 									} else {
-
 										runOnUiThread(
 												() -> {
 													binding.markdownTv.setText("");
@@ -389,31 +407,30 @@ public class FileViewActivity extends BaseActivity implements CreateFileActivity
 												});
 									}
 								} else {
-
-									if (response.code() == 401) {
-
-										Snackbar.info(
-												FileViewActivity.this,
-												binding.bottomAppBar,
-												getString(R.string.not_authorized));
-									} else if (response.code() == 403) {
-
-										Snackbar.info(
-												FileViewActivity.this,
-												binding.bottomAppBar,
-												getString(R.string.access_forbidden_403));
-									} else {
-
-										Snackbar.info(
-												FileViewActivity.this,
-												binding.bottomAppBar,
-												getString(R.string.generic_error));
-									}
+									runOnUiThread(
+											() -> {
+												binding.progressBar.setVisibility(View.GONE);
+												String errorMessage;
+												if (response.code() == 401) {
+													errorMessage =
+															getString(R.string.not_authorized);
+												} else if (response.code() == 403) {
+													errorMessage =
+															getString(
+																	R.string.access_forbidden_403);
+												} else {
+													errorMessage =
+															getString(R.string.generic_error);
+												}
+												Snackbar.info(
+														FileViewActivity.this,
+														binding.bottomAppBar,
+														errorMessage);
+											});
 								}
 							} catch (IOException ignored) {
 							}
 						});
-
 		thread.start();
 	}
 
