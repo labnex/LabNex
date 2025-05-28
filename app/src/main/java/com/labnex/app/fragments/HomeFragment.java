@@ -193,7 +193,7 @@ public class HomeFragment extends Fragment {
 
 							if (messages != null) {
 								for (Messages message : messages) {
-									if (!message.isActive()) {
+									if (message.isActive()) {
 										binding.broadcastMessage.setVisibility(View.VISIBLE);
 										binding.message.setText(message.getMessage());
 										break;
