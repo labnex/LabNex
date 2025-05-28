@@ -670,7 +670,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         style="@style/Widget.Material3.BottomAppBar"
-        app:menu="@menu/project_menu"
+        app:menu="@menu/generic_menu"
+        app:fabAlignmentMode="end"
         app:backgroundTint="?attr/bottomNavigationColor"
         app:navigationIcon="@drawable/ic_arrow_back"
         app:navigationIconTint="?attr/iconsColor">

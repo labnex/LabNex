@@ -178,7 +178,7 @@ public class ProjectDetailActivity extends BaseActivity
 
 		binding.bottomAppBar.setOnMenuItemClickListener(
 				menuItem -> {
-					if (menuItem.getItemId() == R.id.project_menu) {
+					if (menuItem.getItemId() == R.id.menu) {
 						showProjectMenuBottomSheet();
 						return true;
 					}

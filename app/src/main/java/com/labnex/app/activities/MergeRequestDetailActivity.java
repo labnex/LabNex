@@ -19,6 +19,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.labnex.app.R;
 import com.labnex.app.adapters.IssueNotesAdapter;
@@ -27,6 +28,7 @@ import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.contexts.MergeRequestContext;
 import com.labnex.app.contexts.ProjectsContext;
 import com.labnex.app.databinding.ActivityMergeRequestDetailBinding;
+import com.labnex.app.databinding.BottomSheetMergeRequestActionsBinding;
 import com.labnex.app.helpers.Markdown;
 import com.labnex.app.helpers.Snackbar;
 import com.labnex.app.helpers.TextDrawable.ColorGenerator;
@@ -68,6 +70,7 @@ public class MergeRequestDetailActivity extends BaseActivity
 	private final String type = "mr";
 	private int approvals = 0;
 	private int requiredApprovals = 0;
+	private BottomSheetMergeRequestActionsBinding sheetBinding;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -95,97 +98,11 @@ public class MergeRequestDetailActivity extends BaseActivity
 		activityMergeRequestDetailBinding.bottomAppBar.setNavigationOnClickListener(
 				bottomAppBar -> finish());
 
-		if (mergeRequestContext.getMergeRequest().isWorkInProgress()) {
-			activityMergeRequestDetailBinding.bottomAppBar.getMenu().removeItem(R.id.merge);
-		}
-
 		activityMergeRequestDetailBinding.bottomAppBar.setOnMenuItemClickListener(
 				menuItem -> {
-					if (menuItem.getItemId() == R.id.commits) {
-
-						ProjectsContext project =
-								new ProjectsContext(
-										mergeRequestContext.getProjects().getProject(), ctx);
-						Intent intent = project.getIntent(ctx, CommitsActivity.class);
-						intent.putExtra("source", "mr");
-						intent.putExtra(
-								"mergeRequestIid", mergeRequestContext.getMergeRequest().getIid());
-						intent.putExtra("projectId", projectId);
-						ctx.startActivity(intent);
-					}
-					if (menuItem.getItemId() == R.id.merge) {
-
-						MaterialAlertDialogBuilder materialAlertDialogBuilder =
-								new MaterialAlertDialogBuilder(ctx);
-
-						View customDialogView =
-								LayoutInflater.from(this)
-										.inflate(
-												R.layout.custom_merge_mr_dialog,
-												findViewById(android.R.id.content),
-												false);
-
-						if (mergeRequestContext
-								.getMergeRequest()
-								.getMergeStatus()
-								.equalsIgnoreCase("can_be_merged")) {
-							materialAlertDialogBuilder
-									.setView(customDialogView)
-									.setTitle(R.string.merge)
-									.setMessage(R.string.merge_fail_text)
-									.setPositiveButton(
-											R.string.merge,
-											(dialog, whichButton) -> {
-												CheckBox removeSourceBranchCheckbox =
-														customDialogView.findViewById(
-																R.id.remove_source_branch);
-												boolean removeSourceBranch =
-														removeSourceBranchCheckbox.isChecked();
-												CheckBox squashCheckbox =
-														customDialogView.findViewById(
-																R.id.squash_commits);
-												boolean squash = squashCheckbox.isChecked();
-
-												mergeMergeRequest(removeSourceBranch, squash);
-											})
-									.setNeutralButton(R.string.cancel, null)
-									.show();
-						} else {
-							materialAlertDialogBuilder
-									.setTitle(R.string.merge)
-									.setMessage(R.string.mr_cannot_be_merged)
-									.setNeutralButton(R.string.cancel, null)
-									.show();
-						}
-					}
-					if (menuItem.getItemId() == R.id.close) {
-
-						MaterialAlertDialogBuilder materialAlertDialogBuilder =
-								new MaterialAlertDialogBuilder(ctx);
-
-						materialAlertDialogBuilder
-								.setTitle(R.string.close)
-								.setMessage(R.string.close_mr)
-								.setPositiveButton(
-										R.string.close,
-										(dialog, whichButton) -> closeMergeRequest())
-								.setNeutralButton(R.string.cancel, null)
-								.show();
-					}
-					if (menuItem.getItemId() == R.id.url_copy) {
-
-						Utils.copyToClipboard(
-								ctx,
-								MergeRequestDetailActivity.this,
-								mergeRequestContext.getMergeRequest().getWebUrl(),
-								getString(R.string.copy_url_message));
-					}
-					if (menuItem.getItemId() == R.id.open_in_browser) {
-
-						Utils.openUrlInBrowser(
-								this,
-								MergeRequestDetailActivity.this,
-								mergeRequestContext.getMergeRequest().getWebUrl());
+					if (menuItem.getItemId() == R.id.menu) {
+						showMergeRequestActionsBottomSheet();
+						return true;
 					}
 					return false;
 				});
@@ -374,6 +291,122 @@ public class MergeRequestDetailActivity extends BaseActivity
 		fetchApprovals();
 	}
 
+	private void showMergeRequestActionsBottomSheet() {
+
+		sheetBinding =
+				BottomSheetMergeRequestActionsBinding.inflate(
+						LayoutInflater.from(this), null, false);
+		BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
+		bottomSheetDialog.setContentView(sheetBinding.getRoot());
+
+		if (mergeRequestContext.getMergeRequest().isWorkInProgress()
+				|| mergeRequestContext.getMergeRequest().isDraft()
+				|| mergeRequestContext.getMergeRequest().isBlockingDiscussionsResolved()
+				|| mergeRequestContext.getMergeRequest().isHasConflicts()) {
+			sheetBinding.mergeItemCard.setVisibility(View.GONE);
+		}
+		if (mergeRequestContext.getMergeRequest().getState().equalsIgnoreCase("closed")) {
+			sheetBinding.closeItemCard.setVisibility(View.GONE);
+		}
+
+		sheetBinding.commitsItem.setOnClickListener(
+				v -> {
+					ProjectsContext project =
+							new ProjectsContext(
+									mergeRequestContext.getProjects().getProject(), ctx);
+					Intent intent = project.getIntent(ctx, CommitsActivity.class);
+					intent.putExtra("source", "mr");
+					intent.putExtra(
+							"mergeRequestIid", mergeRequestContext.getMergeRequest().getIid());
+					intent.putExtra("projectId", projectId);
+					ctx.startActivity(intent);
+					bottomSheetDialog.dismiss();
+				});
+
+		sheetBinding.mergeItem.setOnClickListener(
+				v -> {
+					MaterialAlertDialogBuilder materialAlertDialogBuilder =
+							new MaterialAlertDialogBuilder(ctx);
+
+					View customDialogView =
+							LayoutInflater.from(this)
+									.inflate(
+											R.layout.custom_merge_mr_dialog,
+											findViewById(android.R.id.content),
+											false);
+
+					if (mergeRequestContext
+							.getMergeRequest()
+							.getMergeStatus()
+							.equalsIgnoreCase("can_be_merged")) {
+						materialAlertDialogBuilder
+								.setView(customDialogView)
+								.setTitle(R.string.merge)
+								.setMessage(R.string.merge_fail_text)
+								.setPositiveButton(
+										R.string.merge,
+										(dialog, whichButton) -> {
+											CheckBox removeSourceBranchCheckbox =
+													customDialogView.findViewById(
+															R.id.remove_source_branch);
+											boolean removeSourceBranch =
+													removeSourceBranchCheckbox.isChecked();
+											CheckBox squashCheckbox =
+													customDialogView.findViewById(
+															R.id.squash_commits);
+											boolean squash = squashCheckbox.isChecked();
+
+											mergeMergeRequest(removeSourceBranch, squash);
+										})
+								.setNeutralButton(R.string.cancel, null)
+								.show();
+					} else {
+						materialAlertDialogBuilder
+								.setTitle(R.string.merge)
+								.setMessage(R.string.mr_cannot_be_merged)
+								.setNeutralButton(R.string.cancel, null)
+								.show();
+					}
+					bottomSheetDialog.dismiss();
+				});
+
+		sheetBinding.closeItem.setOnClickListener(
+				v -> {
+					MaterialAlertDialogBuilder materialAlertDialogBuilder =
+							new MaterialAlertDialogBuilder(ctx);
+
+					materialAlertDialogBuilder
+							.setTitle(R.string.close)
+							.setMessage(R.string.close_mr)
+							.setPositiveButton(
+									R.string.close, (dialog, whichButton) -> closeMergeRequest())
+							.setNeutralButton(R.string.cancel, null)
+							.show();
+					bottomSheetDialog.dismiss();
+				});
+
+		sheetBinding.urlCopyItem.setOnClickListener(
+				v -> {
+					Utils.copyToClipboard(
+							ctx,
+							MergeRequestDetailActivity.this,
+							mergeRequestContext.getMergeRequest().getWebUrl(),
+							getString(R.string.copy_url_message));
+					bottomSheetDialog.dismiss();
+				});
+
+		sheetBinding.openInBrowserItem.setOnClickListener(
+				v -> {
+					Utils.openUrlInBrowser(
+							this,
+							MergeRequestDetailActivity.this,
+							mergeRequestContext.getMergeRequest().getWebUrl());
+					bottomSheetDialog.dismiss();
+				});
+
+		bottomSheetDialog.show();
+	}
+
 	@Override
 	public void updateDataListener(String str) {
 
@@ -422,10 +455,7 @@ public class MergeRequestDetailActivity extends BaseActivity
 
 						if (response.code() == 200) {
 
-							activityMergeRequestDetailBinding
-									.bottomAppBar
-									.getMenu()
-									.removeItem(R.id.close);
+							sheetBinding.closeItemCard.setVisibility(View.GONE);
 							MergeRequestsActivity.updateMergeRequestList = true;
 							Snackbar.info(
 									MergeRequestDetailActivity.this,

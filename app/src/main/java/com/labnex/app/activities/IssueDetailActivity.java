@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -17,6 +18,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.labnex.app.R;
 import com.labnex.app.adapters.IssueNotesAdapter;
@@ -24,6 +26,7 @@ import com.labnex.app.bottomsheets.CommentOnIssueBottomSheet;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.contexts.IssueContext;
 import com.labnex.app.databinding.ActivityIssueDetailBinding;
+import com.labnex.app.databinding.BottomSheetIssueActionsBinding;
 import com.labnex.app.helpers.Markdown;
 import com.labnex.app.helpers.Snackbar;
 import com.labnex.app.helpers.TextDrawable.ColorGenerator;
@@ -59,6 +62,7 @@ public class IssueDetailActivity extends BaseActivity
 	private int page = 1;
 	private int resultLimit;
 	private final String type = "issue";
+	private BottomSheetIssueActionsBinding sheetBinding;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -85,40 +89,11 @@ public class IssueDetailActivity extends BaseActivity
 		activityIssueDetailBinding.bottomAppBar.setNavigationOnClickListener(
 				bottomAppBar -> finish());
 
-		if (issue.getIssue().getState().equalsIgnoreCase("closed")) {
-			activityIssueDetailBinding.bottomAppBar.getMenu().removeItem(R.id.close);
-		}
-
 		activityIssueDetailBinding.bottomAppBar.setOnMenuItemClickListener(
-				menuItem -> {
-					if (menuItem.getItemId() == R.id.close) {
-
-						MaterialAlertDialogBuilder materialAlertDialogBuilder =
-								new MaterialAlertDialogBuilder(ctx);
-
-						materialAlertDialogBuilder
-								.setTitle(R.string.close)
-								.setMessage(R.string.close_issue)
-								.setPositiveButton(
-										R.string.close,
-										(dialog, whichButton) -> {
-											closeIssue();
-										})
-								.setNeutralButton(R.string.cancel, null)
-								.show();
-					}
-					if (menuItem.getItemId() == R.id.url_copy) {
-
-						Utils.copyToClipboard(
-								ctx,
-								IssueDetailActivity.this,
-								issue.getIssue().getWebUrl(),
-								getString(R.string.copy_url_message));
-					}
-					if (menuItem.getItemId() == R.id.open_in_browser) {
-
-						Utils.openUrlInBrowser(
-								this, IssueDetailActivity.this, issue.getIssue().getWebUrl());
+				item -> {
+					if (item.getItemId() == R.id.menu) {
+						showIssueActionsBottomSheet();
+						return true;
 					}
 					return false;
 				});
@@ -286,6 +261,54 @@ public class IssueDetailActivity extends BaseActivity
 		getIssueNotesData();
 	}
 
+	private void showIssueActionsBottomSheet() {
+
+		sheetBinding =
+				BottomSheetIssueActionsBinding.inflate(LayoutInflater.from(this), null, false);
+		BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
+		bottomSheetDialog.setContentView(sheetBinding.getRoot());
+
+		if (issue.getIssue().getState().equalsIgnoreCase("closed")) {
+			sheetBinding.closeItemCard.setVisibility(View.GONE);
+		}
+
+		sheetBinding.closeItem.setOnClickListener(
+				v -> {
+					MaterialAlertDialogBuilder materialAlertDialogBuilder =
+							new MaterialAlertDialogBuilder(ctx);
+					materialAlertDialogBuilder
+							.setTitle(R.string.close)
+							.setMessage(R.string.close_issue)
+							.setPositiveButton(
+									R.string.close,
+									(dialog, whichButton) -> {
+										closeIssue();
+									})
+							.setNeutralButton(R.string.cancel, null)
+							.show();
+					bottomSheetDialog.dismiss();
+				});
+
+		sheetBinding.urlCopyItem.setOnClickListener(
+				v -> {
+					Utils.copyToClipboard(
+							ctx,
+							IssueDetailActivity.this,
+							issue.getIssue().getWebUrl(),
+							getString(R.string.copy_url_message));
+					bottomSheetDialog.dismiss();
+				});
+
+		sheetBinding.openInBrowserItem.setOnClickListener(
+				v -> {
+					Utils.openUrlInBrowser(
+							this, IssueDetailActivity.this, issue.getIssue().getWebUrl());
+					bottomSheetDialog.dismiss();
+				});
+
+		bottomSheetDialog.show();
+	}
+
 	@Override
 	public void updateDataListener(String str) {
 
@@ -333,10 +356,7 @@ public class IssueDetailActivity extends BaseActivity
 
 						if (response.code() == 200) {
 
-							activityIssueDetailBinding
-									.bottomAppBar
-									.getMenu()
-									.removeItem(R.id.close);
+							sheetBinding.closeItemCard.setVisibility(View.GONE);
 							IssuesActivity.updateIssuesList = true;
 							Snackbar.info(
 									IssueDetailActivity.this,

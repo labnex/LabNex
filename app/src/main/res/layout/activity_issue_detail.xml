@@ -387,9 +387,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
+        app:fabAlignmentMode="end"
         style="@style/Widget.Material3.BottomAppBar"
         app:backgroundTint="?attr/bottomNavigationColor"
-        app:menu="@menu/issue_detail_menu"
+        app:menu="@menu/generic_menu"
         app:navigationIcon="@drawable/ic_arrow_back"
         app:navigationIconTint="?attr/iconsColor">
 

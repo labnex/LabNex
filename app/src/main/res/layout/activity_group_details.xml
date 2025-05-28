@@ -169,7 +169,7 @@
         android:layout_gravity="bottom"
         style="@style/Widget.Material3.BottomAppBar"
         app:backgroundTint="?attr/bottomNavigationColor"
-        app:menu="@menu/group_detail_menu"
+        app:menu="@menu/generic_menu"
         app:navigationIcon="@drawable/ic_arrow_back"
         app:navigationIconTint="?attr/iconsColor">
 

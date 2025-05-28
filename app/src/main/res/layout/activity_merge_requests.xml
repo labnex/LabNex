@@ -48,7 +48,8 @@
         app:backgroundTint="?attr/bottomNavigationColor"
         app:navigationIcon="@drawable/ic_arrow_back"
         app:navigationIconTint="?attr/iconsColor"
-        app:menu="@menu/merge_requests_menu">
+        app:fabAlignmentMode="end"
+        app:menu="@menu/generic_menu">
 
     </com.google.android.material.bottomappbar.BottomAppBar>
 

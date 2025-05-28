@@ -2,17 +2,20 @@ package com.labnex.app.activities;
 
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.labnex.app.R;
 import com.labnex.app.adapters.ProjectsAdapter;
 import com.labnex.app.bottomsheets.GroupDetailBottomSheet;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.databinding.ActivityGroupDetailsBinding;
+import com.labnex.app.databinding.BottomSheetGroupActionsBinding;
 import com.labnex.app.helpers.Snackbar;
 import com.labnex.app.helpers.TextDrawable.ColorGenerator;
 import com.labnex.app.helpers.TextDrawable.TextDrawable;
@@ -33,6 +36,7 @@ public class GroupDetailActivity extends BaseActivity implements BottomSheetList
 	private ProjectsAdapter projectsAdapter;
 	private int page = 1;
 	private int resultLimit;
+	private BottomSheetGroupActionsBinding sheetBinding;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -53,29 +57,47 @@ public class GroupDetailActivity extends BaseActivity implements BottomSheetList
 
 		binding.bottomAppBar.setOnMenuItemClickListener(
 				menuItem -> {
-					if (menuItem.getItemId() == R.id.group_labels) {
-
-						Bundle bsBundle = new Bundle();
-						bsBundle.putString("source", "labels");
-						bsBundle.putInt("groupId", groupId);
-						GroupDetailBottomSheet bottomSheet = new GroupDetailBottomSheet();
-						bottomSheet.setArguments(bsBundle);
-						bottomSheet.show(getSupportFragmentManager(), "groupDetailBottomSheet");
-					}
-					if (menuItem.getItemId() == R.id.group_members) {
-
-						Bundle bsBundle = new Bundle();
-						bsBundle.putString("source", "members");
-						bsBundle.putInt("groupId", groupId);
-						GroupDetailBottomSheet bottomSheet = new GroupDetailBottomSheet();
-						bottomSheet.setArguments(bsBundle);
-						bottomSheet.show(getSupportFragmentManager(), "groupDetailBottomSheet");
+					if (menuItem.getItemId() == R.id.menu) {
+						showGroupActionsBottomSheet();
+						return true;
 					}
 					return false;
 				});
 
 		getGroupDetails();
 		getGroupProjects();
+	}
+
+	private void showGroupActionsBottomSheet() {
+
+		sheetBinding =
+				BottomSheetGroupActionsBinding.inflate(LayoutInflater.from(this), null, false);
+		BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
+		bottomSheetDialog.setContentView(sheetBinding.getRoot());
+
+		sheetBinding.labelsItem.setOnClickListener(
+				v -> {
+					Bundle bsBundle = new Bundle();
+					bsBundle.putString("source", "labels");
+					bsBundle.putInt("groupId", groupId);
+					GroupDetailBottomSheet bottomSheet = new GroupDetailBottomSheet();
+					bottomSheet.setArguments(bsBundle);
+					bottomSheet.show(getSupportFragmentManager(), "groupDetailBottomSheet");
+					bottomSheetDialog.dismiss();
+				});
+
+		sheetBinding.membersItem.setOnClickListener(
+				v -> {
+					Bundle bsBundle = new Bundle();
+					bsBundle.putString("source", "members");
+					bsBundle.putInt("groupId", groupId);
+					GroupDetailBottomSheet bottomSheet = new GroupDetailBottomSheet();
+					bottomSheet.setArguments(bsBundle);
+					bottomSheet.show(getSupportFragmentManager(), "groupDetailBottomSheet");
+					bottomSheetDialog.dismiss();
+				});
+
+		bottomSheetDialog.show();
 	}
 
 	private void getGroupDetails() {
