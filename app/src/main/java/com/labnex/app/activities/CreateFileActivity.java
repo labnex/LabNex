@@ -12,6 +12,8 @@ import com.labnex.app.R;
 import com.labnex.app.bottomsheets.BranchesBottomSheet;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.contexts.ProjectsContext;
+import com.labnex.app.database.api.BaseApi;
+import com.labnex.app.database.api.ProjectsApi;
 import com.labnex.app.databinding.ActivityCreateFileBinding;
 import com.labnex.app.helpers.Snackbar;
 import com.labnex.app.interfaces.BottomSheetListener;
@@ -69,15 +71,27 @@ public class CreateFileActivity extends BaseActivity
 		if (mode == null) mode = "create";
 
 		projectsContext = ProjectsContext.fromIntent(getIntent());
-		if (projectsContext != null) {
-			projectId = projectsContext.getProjectId();
-		} else {
+		if (projectsContext == null) {
 			projectId = getIntent().getIntExtra("projectId", -1);
-			if (projectId == -1) {
-				finish();
-				return;
+			String projectName = getIntent().getStringExtra("projectName");
+			String path = getIntent().getStringExtra("path");
+			if (projectId == -1 || projectName == null || path == null) {
+				// Fetch from database if extras are missing
+				ProjectsApi projectsApi = BaseApi.getInstance(ctx, ProjectsApi.class);
+				assert projectsApi != null;
+				com.labnex.app.database.models.Projects dbProject =
+						projectsApi.fetchByProjectId(projectId);
+				if (dbProject != null) {
+					projectName = dbProject.getProjectName();
+					path = dbProject.getProjectPath();
+				} else {
+					finish();
+					return;
+				}
 			}
+			projectsContext = new ProjectsContext(projectName, path, projectId, ctx);
 		}
+		projectId = projectsContext.getProjectId();
 
 		Bundle bsBundle = new Bundle();
 		BranchesBottomSheet.setCreateFileUpdateListener(CreateFileActivity.this);
@@ -114,6 +128,8 @@ public class CreateFileActivity extends BaseActivity
 			binding.bottomBarTitleText.setText(R.string.create_file);
 			binding.branchEdit.setVisibility(View.GONE);
 		}
+
+		binding.createMergeRequest.setChecked(false);
 
 		binding.bottomAppBar.setNavigationOnClickListener(bottomAppBar -> finish());
 
@@ -176,6 +192,14 @@ public class CreateFileActivity extends BaseActivity
 									? ""
 									: Objects.requireNonNull(binding.fileContent.getText())
 											.toString();
+					boolean createMergeRequest = binding.createMergeRequest.isChecked();
+
+					String mrTitle =
+							switch (mode.toLowerCase()) {
+								case "edit" -> "Edit " + filename;
+								case "delete" -> "Delete " + filename;
+								default -> "Create " + filename;
+							};
 
 					if (filename.isEmpty()
 							|| branch.isEmpty()
@@ -190,17 +214,34 @@ public class CreateFileActivity extends BaseActivity
 					}
 
 					if ("edit".equalsIgnoreCase(mode)) {
-						updateFile(filename, branch, commitMessage, fileContentNew);
+						updateFile(
+								filename,
+								branch,
+								commitMessage,
+								fileContentNew,
+								createMergeRequest,
+								mrTitle);
 					} else if ("delete".equalsIgnoreCase(mode)) {
-						deleteFile(filename, branch, commitMessage);
+						deleteFile(filename, branch, commitMessage, createMergeRequest, mrTitle);
 					} else {
-						createNewFile(filename, branch, commitMessage, fileContentNew);
+						createNewFile(
+								filename,
+								branch,
+								commitMessage,
+								fileContentNew,
+								createMergeRequest,
+								mrTitle);
 					}
 				});
 	}
 
 	private void createNewFile(
-			String filename, String branch, String commitMessage, String fileContent) {
+			String filename,
+			String branch,
+			String commitMessage,
+			String fileContent,
+			boolean createMergeRequest,
+			String mrTitle) {
 
 		CrudeFile crudeFile = new CrudeFile();
 		crudeFile.setContent(fileContent);
@@ -216,7 +257,7 @@ public class CreateFileActivity extends BaseActivity
 					public void onResponse(
 							@NonNull Call<FileContents> call,
 							@NonNull retrofit2.Response<FileContents> response) {
-						handleResponse(response, branch);
+						handleResponse(response, branch, createMergeRequest, mrTitle);
 					}
 
 					@Override
@@ -231,7 +272,12 @@ public class CreateFileActivity extends BaseActivity
 	}
 
 	private void updateFile(
-			String filename, String branch, String commitMessage, String fileContent) {
+			String filename,
+			String branch,
+			String commitMessage,
+			String fileContent,
+			boolean createMergeRequest,
+			String mrTitle) {
 
 		CrudeFile crudeFile = new CrudeFile();
 		crudeFile.setContent(fileContent);
@@ -247,7 +293,7 @@ public class CreateFileActivity extends BaseActivity
 					public void onResponse(
 							@NonNull Call<FileContents> call,
 							@NonNull retrofit2.Response<FileContents> response) {
-						handleResponse(response, branch);
+						handleResponse(response, branch, createMergeRequest, mrTitle);
 					}
 
 					@Override
@@ -261,7 +307,12 @@ public class CreateFileActivity extends BaseActivity
 				});
 	}
 
-	private void deleteFile(String filename, String branch, String commitMessage) {
+	private void deleteFile(
+			String filename,
+			String branch,
+			String commitMessage,
+			boolean createMergeRequest,
+			String mrTitle) {
 
 		Call<Branches> branchCheckCall =
 				RetrofitClient.getApiInterface(ctx).getBranch(projectId, branch);
@@ -273,7 +324,8 @@ public class CreateFileActivity extends BaseActivity
 							@NonNull Call<Branches> call,
 							@NonNull retrofit2.Response<Branches> response) {
 						if (response.isSuccessful() && response.code() == 200) {
-							performFileDeletion(filename, branch, commitMessage);
+							performFileDeletion(
+									filename, branch, commitMessage, createMergeRequest, mrTitle);
 						} else if (response.code() == 404) {
 							Call<Branches> createBranchCall =
 									RetrofitClient.getApiInterface(ctx)
@@ -286,7 +338,11 @@ public class CreateFileActivity extends BaseActivity
 												@NonNull retrofit2.Response<Branches> response) {
 											if (response.isSuccessful() && response.code() == 201) {
 												performFileDeletion(
-														filename, branch, commitMessage);
+														filename,
+														branch,
+														commitMessage,
+														createMergeRequest,
+														mrTitle);
 											} else {
 												enableButton();
 												String errorMessage =
@@ -347,7 +403,12 @@ public class CreateFileActivity extends BaseActivity
 				});
 	}
 
-	private void performFileDeletion(String encodedFilename, String branch, String commitMessage) {
+	private void performFileDeletion(
+			String encodedFilename,
+			String branch,
+			String commitMessage,
+			boolean createMergeRequest,
+			String mrTitle) {
 
 		CrudeFile crudeFile = new CrudeFile();
 		crudeFile.setBranch(branch);
@@ -364,6 +425,17 @@ public class CreateFileActivity extends BaseActivity
 							@NonNull Call<Void> call, @NonNull retrofit2.Response<Void> response) {
 						if (response.code() == 204) {
 							UpdateInterface.createFileDataListener("deleted", branch);
+							if (createMergeRequest) {
+								Intent intent =
+										projectsContext.getIntent(
+												ctx, CreateMergeRequestActivity.class);
+								intent.putExtra("sourceBranch", branch);
+								intent.putExtra("mrTitle", mrTitle);
+								intent.putExtra("fromCreateFile", true);
+								intent.putExtra("projectName", projectsContext.getProjectName());
+								intent.putExtra("path", projectsContext.getPath());
+								startActivity(intent);
+							}
 							finish();
 						} else if (response.code() == 401) {
 							enableButton();
@@ -402,11 +474,24 @@ public class CreateFileActivity extends BaseActivity
 				});
 	}
 
-	private void handleResponse(retrofit2.Response<FileContents> response, String branch) {
+	private void handleResponse(
+			retrofit2.Response<FileContents> response,
+			String branch,
+			boolean createMergeRequest,
+			String mrTitle) {
 
 		if (response.code() == 201 || response.code() == 200) {
 			UpdateInterface.createFileDataListener(
 					"edit".equals(mode) ? "updated" : "created", branch);
+			if (createMergeRequest) {
+				Intent intent = projectsContext.getIntent(ctx, CreateMergeRequestActivity.class);
+				intent.putExtra("sourceBranch", branch);
+				intent.putExtra("mrTitle", mrTitle);
+				intent.putExtra("projectName", projectsContext.getProjectName());
+				intent.putExtra("path", projectsContext.getPath());
+				intent.putExtra("fromCreateFile", true);
+				startActivity(intent);
+			}
 			finish();
 		} else if (response.code() == 401) {
 			enableButton();

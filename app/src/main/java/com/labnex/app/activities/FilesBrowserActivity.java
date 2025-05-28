@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.labnex.app.R;
 import com.labnex.app.adapters.FilesAdapter;
 import com.labnex.app.contexts.ProjectsContext;
+import com.labnex.app.database.api.BaseApi;
+import com.labnex.app.database.api.ProjectsApi;
 import com.labnex.app.databinding.ActivityFilesBrowserBinding;
 import com.labnex.app.helpers.Snackbar;
 import com.labnex.app.models.repository.Tree;
@@ -48,10 +50,31 @@ public class FilesBrowserActivity extends BaseActivity
 		projectsContext = ProjectsContext.fromIntent(getIntent());
 		resultLimit = getAccount().getMaxPageLimit();
 
+		if (projectsContext == null) {
+			projectId = getIntent().getIntExtra("projectId", -1);
+			String projectName = getIntent().getStringExtra("projectName");
+			String path = getIntent().getStringExtra("path");
+			if (projectId == -1 || projectName == null || path == null) {
+				ProjectsApi projectsApi = BaseApi.getInstance(ctx, ProjectsApi.class);
+				assert projectsApi != null;
+				com.labnex.app.database.models.Projects dbProject =
+						projectsApi.fetchByProjectId(projectId);
+				if (dbProject != null) {
+					projectName = dbProject.getProjectName();
+					path = dbProject.getProjectPath();
+				} else {
+					finish();
+					return;
+				}
+			}
+			projectsContext = new ProjectsContext(projectName, path, projectId, ctx);
+		}
+		projectId = projectsContext.getProjectId();
+
 		if (getIntent().getStringExtra("source") != null) {
 			source = getIntent().getStringExtra("source");
 		}
-		projectId = getIntent().getIntExtra("projectId", 0);
+
 		if (getIntent().getStringExtra("branch") != null) {
 			branch = getIntent().getStringExtra("branch");
 		}

@@ -89,6 +89,8 @@ public class ProjectDetailActivity extends BaseActivity
 							new ProjectsContext(projectsContext.getProject(), ctx);
 					Intent intent = project.getIntent(ctx, FilesBrowserActivity.class);
 					intent.putExtra("source", "project");
+					intent.putExtra("projectName", projectsContext.getProjectName());
+					intent.putExtra("path", projectsContext.getPath());
 					intent.putExtra("projectId", projectId);
 					intent.putExtra("branch", branch);
 					ctx.startActivity(intent);
@@ -100,6 +102,8 @@ public class ProjectDetailActivity extends BaseActivity
 							new ProjectsContext(projectsContext.getProject(), ctx);
 					Intent intent = project.getIntent(ctx, CommitsActivity.class);
 					intent.putExtra("source", "project");
+					intent.putExtra("projectName", projectsContext.getProjectName());
+					intent.putExtra("path", projectsContext.getPath());
 					intent.putExtra("projectId", projectId);
 					intent.putExtra("branch", branch);
 					ctx.startActivity(intent);
@@ -111,6 +115,8 @@ public class ProjectDetailActivity extends BaseActivity
 							new ProjectsContext(projectsContext.getProject(), ctx);
 					Intent intent = project.getIntent(ctx, IssuesActivity.class);
 					intent.putExtra("source", "project");
+					intent.putExtra("projectName", projectsContext.getProjectName());
+					intent.putExtra("path", projectsContext.getPath());
 					intent.putExtra("id", projectId);
 					ctx.startActivity(intent);
 				});
@@ -122,6 +128,8 @@ public class ProjectDetailActivity extends BaseActivity
 					Intent intent = project.getIntent(ctx, MergeRequestsActivity.class);
 					intent.putExtra("source", "mr");
 					intent.putExtra("projectId", projectId);
+					intent.putExtra("projectName", projectsContext.getProjectName());
+					intent.putExtra("path", projectsContext.getPath());
 					ctx.startActivity(intent);
 				});
 

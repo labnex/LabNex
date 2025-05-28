@@ -2,6 +2,7 @@ package com.labnex.app.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,7 @@ import com.labnex.app.adapters.MergeRequestsAdapter;
 import com.labnex.app.adapters.ProjectsAdapter;
 import com.labnex.app.databinding.FragmentExploreBinding;
 import com.labnex.app.viewmodels.ExploreViewModel;
+import java.util.Objects;
 
 /**
  * @author mmarif
@@ -65,6 +67,7 @@ public class ExploreFragment extends Fragment {
 							scopes,
 							scopeSelection,
 							(dialog, which) -> {
+								page = 1;
 								if (scopes[which] == "Projects") {
 									scope = "projects";
 									scopeSelection = 0;
@@ -86,23 +89,42 @@ public class ExploreFragment extends Fragment {
 					materialAlertDialogBuilder.create().show();
 				});
 
+		binding.exploreLayout.setEndIconOnClickListener(
+				v -> {
+					page = 1;
+					String query = Objects.requireNonNull(binding.search.getText()).toString();
+					if (scope.equalsIgnoreCase("projects")) {
+						searchProjects(query);
+					} else if (scope.equalsIgnoreCase("issues")) {
+						searchIssues(query);
+					} else if (scope.equalsIgnoreCase("merge_requests")) {
+						searchMergeRequests(query);
+					} else if (scope.equalsIgnoreCase("users")) {
+						searchUsers(query);
+					}
+				});
+
 		binding.search.setOnEditorActionListener(
 				(v, actionId, event) -> {
 					if (scope.equalsIgnoreCase("projects")) {
 						if (actionId == EditorInfo.IME_ACTION_DONE) {
-							searchProjects(binding.search.getText().toString());
+							searchProjects(
+									Objects.requireNonNull(binding.search.getText()).toString());
 						}
 					} else if (scope.equalsIgnoreCase("issues")) {
 						if (actionId == EditorInfo.IME_ACTION_DONE) {
-							searchIssues(binding.search.getText().toString());
+							searchIssues(
+									Objects.requireNonNull(binding.search.getText()).toString());
 						}
 					} else if (scope.equalsIgnoreCase("merge_requests")) {
 						if (actionId == EditorInfo.IME_ACTION_DONE) {
-							searchMergeRequests(binding.search.getText().toString());
+							searchMergeRequests(
+									Objects.requireNonNull(binding.search.getText()).toString());
 						}
 					} else if (scope.equalsIgnoreCase("users")) {
 						if (actionId == EditorInfo.IME_ACTION_DONE) {
-							searchUsers(binding.search.getText().toString());
+							searchUsers(
+									Objects.requireNonNull(binding.search.getText()).toString());
 						}
 					}
 
@@ -115,6 +137,7 @@ public class ExploreFragment extends Fragment {
 	private void searchProjects(String search) {
 
 		binding.progressBar.setVisibility(View.VISIBLE);
+		clearAdapters();
 
 		exploreViewModel
 				.searchProjects(
@@ -175,6 +198,7 @@ public class ExploreFragment extends Fragment {
 	private void searchIssues(String search) {
 
 		binding.progressBar.setVisibility(View.VISIBLE);
+		clearAdapters();
 
 		exploreViewModel
 				.searchIssues(
@@ -235,6 +259,7 @@ public class ExploreFragment extends Fragment {
 	private void searchMergeRequests(String search) {
 
 		binding.progressBar.setVisibility(View.VISIBLE);
+		clearAdapters();
 
 		exploreViewModel
 				.searchMergeRequests(
@@ -295,7 +320,8 @@ public class ExploreFragment extends Fragment {
 	private void searchUsers(String search) {
 
 		binding.progressBar.setVisibility(View.VISIBLE);
-
+		Log.e("Explore-users", "Users api called");
+		clearAdapters();
 		exploreViewModel
 				.searchUsers(
 						ctx,
@@ -350,6 +376,25 @@ public class ExploreFragment extends Fragment {
 
 							binding.progressBar.setVisibility(View.GONE);
 						});
+	}
+
+	private void clearAdapters() {
+		if (projectsAdapter != null) {
+			projectsAdapter.clearAdapter();
+			projectsAdapter.notifyDataChanged();
+		}
+		if (issuesAdapter != null) {
+			issuesAdapter.clearAdapter();
+			issuesAdapter.notifyDataChanged();
+		}
+		if (mergeRequestsAdapter != null) {
+			mergeRequestsAdapter.clearAdapter();
+			mergeRequestsAdapter.notifyDataChanged();
+		}
+		if (membersAdapter != null) {
+			membersAdapter.clearAdapter();
+			membersAdapter.notifyDataChanged();
+		}
 	}
 
 	@Override

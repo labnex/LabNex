@@ -18,6 +18,8 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.labnex.app.R;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.contexts.ProjectsContext;
+import com.labnex.app.database.api.BaseApi;
+import com.labnex.app.database.api.ProjectsApi;
 import com.labnex.app.databinding.ActivityFileViewBinding;
 import com.labnex.app.databinding.BottomSheetFileActionsBinding;
 import com.labnex.app.helpers.Constants;
@@ -184,9 +186,29 @@ public class FileViewActivity extends BaseActivity implements CreateFileActivity
 
 		projectsContext = ProjectsContext.fromIntent(getIntent());
 
+		if (projectsContext == null) {
+			projectId = getIntent().getIntExtra("projectId", -1);
+			String projectName = getIntent().getStringExtra("projectName");
+			String path = getIntent().getStringExtra("path");
+			if (projectId == -1 || projectName == null || path == null) {
+				ProjectsApi projectsApi = BaseApi.getInstance(ctx, ProjectsApi.class);
+				assert projectsApi != null;
+				com.labnex.app.database.models.Projects dbProject =
+						projectsApi.fetchByProjectId(projectId);
+				if (dbProject != null) {
+					projectName = dbProject.getProjectName();
+					path = dbProject.getProjectPath();
+				} else {
+					finish();
+					return;
+				}
+			}
+			projectsContext = new ProjectsContext(projectName, path, projectId, ctx);
+		}
+		projectId = projectsContext.getProjectId();
+
 		CreateFileActivity.setUpdateListener(FileViewActivity.this);
 
-		projectId = projectsContext.getProjectId();
 		tree = (Tree) getIntent().getSerializableExtra("tree");
 		ref = getIntent().getStringExtra("ref");
 

@@ -335,8 +335,8 @@ public interface ApiInterface {
 			@Path("id") int id, @Path("issue_iid") int issue_iid, @Body CrudeIssue body);
 
 	// Instance meta
-	@GET("broadcast_messages") // get a broadcast message
-	Call<Messages> getBroadcastMessage();
+	@GET("broadcast_messages?page=1&per_page=10") // get broadcast messages
+	Call<List<Messages>> getBroadcastMessage();
 
 	@GET("metadata") // metadata / version API
 	Call<Metadata> getMetadata();

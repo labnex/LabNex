@@ -54,6 +54,8 @@ public class MergeRequestsActivity extends BaseActivity
 		}
 		projectId = getIntent().getIntExtra("projectId", 0);
 
+		binding.bottomAppBar.setNavigationOnClickListener(bottomAppBar -> finish());
+
 		binding.recyclerView.setHasFixedSize(true);
 		binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
 		adapter = new MergeRequestsAdapter(this, null, projectsContext);

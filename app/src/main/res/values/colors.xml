@@ -6,7 +6,7 @@
     <color name="dark_green">#0D532A</color>
     <color name="grey">#3A383F</color>
     <color name="votes_color">#FABF15</color>
-    <color name="cardview_dark_background">#FF424242</color>
+    <color name="cardview_dark_background">#EDE9E9</color>
     <color name="diff_removed_color">#4A2223</color>
     <color name="diff_added_color">#1E3622</color>
     <color name="material_alert_dialog_background">#ECE6F0</color>
