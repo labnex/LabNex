@@ -17,6 +17,12 @@ public class CrudeFile implements Serializable {
 	@SerializedName("content")
 	private String content;
 
+	@SerializedName("author_email")
+	private String authorEmail;
+
+	@SerializedName("author_name")
+	private String authorName;
+
 	public CrudeFile branch(String branch) {
 		this.branch = branch;
 		return this;
@@ -42,5 +48,23 @@ public class CrudeFile implements Serializable {
 
 	public void setContent(String content) {
 		this.content = content;
+	}
+
+	public CrudeFile authorEmail(String authorEmail) {
+		this.authorEmail = authorEmail;
+		return this;
+	}
+
+	public void setAuthorEmail(String authorEmail) {
+		this.authorEmail = authorEmail;
+	}
+
+	public CrudeFile authorName(String authorName) {
+		this.authorName = authorName;
+		return this;
+	}
+
+	public void setAuthorName(String authorName) {
+		this.authorName = authorName;
 	}
 }

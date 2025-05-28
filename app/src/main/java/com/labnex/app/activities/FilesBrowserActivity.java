@@ -12,10 +12,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.labnex.app.R;
 import com.labnex.app.adapters.FilesAdapter;
 import com.labnex.app.contexts.ProjectsContext;
+import com.labnex.app.database.api.BaseApi;
+import com.labnex.app.database.api.ProjectsApi;
 import com.labnex.app.databinding.ActivityFilesBrowserBinding;
 import com.labnex.app.helpers.Snackbar;
 import com.labnex.app.models.repository.Tree;
 import com.labnex.app.viewmodels.FilesViewModel;
+import java.util.ArrayList;
 
 /**
  * @author mmarif
@@ -47,10 +50,31 @@ public class FilesBrowserActivity extends BaseActivity
 		projectsContext = ProjectsContext.fromIntent(getIntent());
 		resultLimit = getAccount().getMaxPageLimit();
 
+		if (projectsContext == null) {
+			projectId = getIntent().getIntExtra("projectId", -1);
+			String projectName = getIntent().getStringExtra("projectName");
+			String path = getIntent().getStringExtra("path");
+			if (projectId == -1 || projectName == null || path == null) {
+				ProjectsApi projectsApi = BaseApi.getInstance(ctx, ProjectsApi.class);
+				assert projectsApi != null;
+				com.labnex.app.database.models.Projects dbProject =
+						projectsApi.fetchByProjectId(projectId);
+				if (dbProject != null) {
+					projectName = dbProject.getProjectName();
+					path = dbProject.getProjectPath();
+				} else {
+					finish();
+					return;
+				}
+			}
+			projectsContext = new ProjectsContext(projectName, path, projectId, ctx);
+		}
+		projectId = projectsContext.getProjectId();
+
 		if (getIntent().getStringExtra("source") != null) {
 			source = getIntent().getStringExtra("source");
 		}
-		projectId = getIntent().getIntExtra("projectId", 0);
+
 		if (getIntent().getStringExtra("branch") != null) {
 			branch = getIntent().getStringExtra("branch");
 		}
@@ -149,21 +173,21 @@ public class FilesBrowserActivity extends BaseActivity
 
 	private void fetchDataAsync() {
 
+		filesAdapter = new FilesAdapter(FilesBrowserActivity.this, new ArrayList<>(), this);
+		binding.recyclerView.setAdapter(filesAdapter);
+
 		filesViewModel
 				.getLink()
 				.observe(
 						FilesBrowserActivity.this,
 						next -> {
-							Uri uri = Uri.parse(next);
-							String pageToken = uri.getQueryParameter("page_token");
-
-							if (!next.isEmpty()) {
+							if (next != null && !next.isEmpty()) {
+								Uri uri = Uri.parse(next);
+								String pageToken = uri.getQueryParameter("page_token");
 								filesAdapter.setLoadMoreListener(
 										new FilesAdapter.OnLoadMoreListener() {
-
 											@Override
-											public void onLoadMore() {
-
+											protected void onLoadMore() {
 												filesViewModel.loadMore(
 														ctx,
 														projectId,
@@ -179,7 +203,6 @@ public class FilesBrowserActivity extends BaseActivity
 
 											@Override
 											public void onLoadFinished() {
-
 												binding.progressBar.setVisibility(View.GONE);
 											}
 										});
@@ -199,21 +222,17 @@ public class FilesBrowserActivity extends BaseActivity
 				.observe(
 						FilesBrowserActivity.this,
 						mainList -> {
-							filesAdapter =
-									new FilesAdapter(FilesBrowserActivity.this, mainList, this);
-
-							if (filesAdapter.getItemCount() > 0) {
-
-								binding.recyclerView.setAdapter(filesAdapter);
-								binding.nothingFoundFrame.getRoot().setVisibility(View.GONE);
-							} else {
-
-								filesAdapter.notifyDataChanged();
-								binding.recyclerView.setAdapter(filesAdapter);
+							if (mainList == null || mainList.isEmpty()) {
 								binding.nothingFoundFrame.getRoot().setVisibility(View.VISIBLE);
+								binding.recyclerView.setVisibility(View.GONE);
+								binding.progressBar.setVisibility(View.GONE);
+								filesAdapter.updateList(new ArrayList<>());
+							} else {
+								binding.nothingFoundFrame.getRoot().setVisibility(View.GONE);
+								binding.recyclerView.setVisibility(View.VISIBLE);
+								filesAdapter.updateList(mainList);
+								binding.progressBar.setVisibility(View.GONE);
 							}
-
-							binding.progressBar.setVisibility(View.GONE);
 						});
 	}
 }

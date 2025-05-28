@@ -12,6 +12,7 @@ import com.labnex.app.adapters.FilesAdapter;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.helpers.Snackbar;
 import com.labnex.app.models.repository.Tree;
+import java.util.ArrayList;
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -69,7 +70,8 @@ public class FilesViewModel extends ViewModel {
 							@NonNull Response<List<Tree>> response) {
 
 						if (response.code() == 200) {
-							mutableList.postValue(response.body());
+							List<Tree> files = response.body();
+							mutableList.postValue(files != null ? files : new ArrayList<>());
 							if (response.headers().get("Link") != null) {
 								next.postValue(response.headers().get("Link"));
 							}
@@ -78,6 +80,7 @@ public class FilesViewModel extends ViewModel {
 							Snackbar.info(
 									ctx, activity.findViewById(android.R.id.content),
 									bottomAppBar, ctx.getString(R.string.not_authorized));
+							mutableList.postValue(new ArrayList<>());
 						} else if (response.code() == 403) {
 
 							Snackbar.info(
@@ -85,11 +88,13 @@ public class FilesViewModel extends ViewModel {
 									activity.findViewById(android.R.id.content),
 									bottomAppBar,
 									ctx.getString(R.string.access_forbidden_403));
+							mutableList.postValue(new ArrayList<>());
 						} else {
 
 							Snackbar.info(
 									ctx, activity.findViewById(android.R.id.content),
 									bottomAppBar, ctx.getString(R.string.generic_error));
+							mutableList.postValue(new ArrayList<>());
 						}
 					}
 
@@ -100,6 +105,7 @@ public class FilesViewModel extends ViewModel {
 								activity.findViewById(android.R.id.content),
 								bottomAppBar,
 								ctx.getString(R.string.generic_server_response_error));
+						mutableList.postValue(new ArrayList<>());
 					}
 				});
 	}
@@ -126,31 +132,31 @@ public class FilesViewModel extends ViewModel {
 							@NonNull Call<List<Tree>> call,
 							@NonNull Response<List<Tree>> response) {
 
-						if (response.isSuccessful()) {
+						if (response.isSuccessful() && response.code() == 200) {
 
 							List<Tree> list = mutableList.getValue();
-							assert list != null;
-							assert response.body() != null;
-
-							if (!response.body().isEmpty()) {
-
-								list.addAll(response.body());
-								adapter.updateList(list);
-
-								if (response.headers().get("Link") != null) {
-									next.postValue(response.headers().get("Link"));
+							List<Tree> newFiles = response.body();
+							if (list != null) {
+								if (newFiles != null && !newFiles.isEmpty()) {
+									list.addAll(newFiles);
+									adapter.updateList(list);
+									if (response.headers().get("Link") != null) {
+										next.postValue(response.headers().get("Link"));
+									} else {
+										adapter.setMoreDataAvailable(false);
+									}
 								} else {
 									adapter.setMoreDataAvailable(false);
 								}
-							} else {
-								adapter.setMoreDataAvailable(false);
 							}
+							adapter.notifyLoadFinished();
 						} else {
 							Snackbar.info(
 									ctx,
 									activity.findViewById(android.R.id.content),
 									bottomAppBar,
 									ctx.getString(R.string.generic_error));
+							adapter.notifyLoadFinished();
 						}
 					}
 
@@ -161,6 +167,7 @@ public class FilesViewModel extends ViewModel {
 								activity.findViewById(android.R.id.content),
 								bottomAppBar,
 								ctx.getString(R.string.generic_server_response_error));
+						adapter.notifyLoadFinished();
 					}
 				});
 	}

@@ -12,34 +12,40 @@
         android:padding="@dimen/dimen16dp"
         android:orientation="horizontal">
 
-        <EditText
-            android:id="@+id/search"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/explore_layout"
             android:layout_width="0dp"
-            android:layout_height="@dimen/dimen48dp"
-            android:autofillHints="@string/explore"
-            android:background="@drawable/shape_input"
-            android:lineSpacingExtra="@dimen/dimen8sp"
-            android:layout_marginBottom="@dimen/dimen8dp"
-            android:gravity="start|center_vertical"
-            android:singleLine="true"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:inputType="text"
-            android:maxLength="100"
             android:hint="@string/explore"
-            android:imeOptions="actionDone"
-            android:textSize="@dimen/dimen14sp" />
+            app:endIconMode="custom"
+            app:endIconDrawable="@drawable/ic_search"
+            app:endIconContentDescription="@string/search"
+            app:endIconTint="?attr/iconsColor"
+            android:layout_gravity="center_vertical">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/search"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints="@string/explore"
+                android:inputType="text"
+                android:singleLine="true"
+                android:textSize="@dimen/dimen14sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <ImageView
             android:id="@+id/scope"
             android:layout_height="@dimen/dimen24dp"
             android:layout_width="@dimen/dimen24dp"
             android:scaleType="fitCenter"
-            android:layout_marginTop="@dimen/dimen12dp"
             android:layout_marginStart="@dimen/dimen12dp"
             android:contentDescription="@string/search"
-            android:gravity="center_horizontal|center_vertical"
+            android:layout_gravity="center_vertical"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_filter" />
+            android:src="@drawable/ic_filter"
+            app:tint="?attr/iconsColor" />
 
     </LinearLayout>
 

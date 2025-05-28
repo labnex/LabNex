@@ -58,7 +58,6 @@
     <string name="nothing_found">Nothing here at the moment</string>
     <string name="created_with">Created %1$s</string>
     <string name="updated_with">Updated %1$s</string>
-    <string name="merge_requests">Merge requests</string>
     <plurals name="note_delete_message">
         <item quantity="one">Note deleted successfully</item>
         <item quantity="other">Notes deleted successfully</item>
@@ -124,12 +123,6 @@
     <string name="commit_author_info">%1$s authored and %2$s committed %3$s</string>
     <string name="diff_statistics">%1$s addition(s) and %2$s deletion(s)</string>
     <string name="broadcast_message">Broadcast message</string>
-    <string name="merge_fail_text">Merge may fail if you are not authorized to merge this Merge Request.</string>
-    <string name="merge_error_405">Method not allowed</string>
-    <string name="merge_error_409">SHA does not match HEAD of source branch</string>
-    <string name="merge_error_422">Branch cannot be merged</string>
-    <string name="merge_request_merged_text">Merge request merged successfully</string>
-    <string name="create_mr">Create merge request</string>
     <string name="source_branch">Source branch</string>
     <string name="target_branch">Target branch</string>
     <string name="branch_name">Branch name</string>
@@ -137,45 +130,55 @@
     <string name="branch_ref_required">Branch name and ref are required</string>
     <string name="branch_created">"Branch %1$s created successfully"</string>
     <string name="source_target_branch_empty_error">Both the target and source branches are required</string>
-    <string name="mr_branches_are_same">Target and source branches cannot be the same</string>
-    <string name="mr_created">Merge request created successfully</string>
     <string name="user_followers">Followers %1$s</string>
     <string name="user_following">Following %1$s</string>
     <string name="remove_source_branch">Remove source branch</string>
     <string name="create_branch">Create branch</string>
     <string name="squash_commits">Squash all commits</string>
-    <string name="merge_info">%1$s wants to merge branch %2$s into %3$s</string>
-    <string name="mr_cannot_be_merged">This merge request cannot be merged at this time. Please check for merge conflicts and other issues.</string>
     <string name="close_issue">You are about to close this issue. Tap the Close button to proceed.</string>
     <string name="issue_closed">Issue was closed successfully</string>
-    <string name="close_mr">You are about to close this merge request. Tap the Close button to proceed.</string>
-    <string name="mr_closed">Merge request was closed successfully</string>
     <string name="initialize_with_readme">Initialize repository with a README</string>
     <string name="create_project">Create project</string>
     <string name="project_name_required">Project name is required</string>
     <string name="project_visibility">Project visibility</string>
     <string name="project_created">Project created successfully</string>
-
     <string name="activity_pushed_to">\@%1$s pushed to branch</string>
     <string name="activity_commented_on_issue">\@%1$s commented on issue</string>
-    <string name="activity_commented_on_mr">\@%1$s commented on merge request</string>
-    <string name="activity_opened_mr">\@%1$s opened merge request</string>
     <string name="activity_opened_issue">\@%1$s opened issue</string>
     <string name="activity_opened_milestone">\@%1$s opened milestone</string>
-    <string name="activity_closed_mr">\@%1$s closed merge request</string>
     <string name="activity_closed_issue">\@%1$s closed issue</string>
     <string name="activity_closed_milestone">\@%1$s closed milestone</string>
     <string name="activity_pushed_new_branch">\@%1$s pushed new branch</string>
     <string name="activity_deleted_branch">\@%1$s deleted branch</string>
-    <string name="activity_accepted_mr">\@%1$s accepted merge request</string>
     <string name="activity_created_wiki_page">\@%1$s created wiki page</string>
     <string name="activity_created_project">\@%1$s created project</string>
     <string name="activity_updated_wiki_page">\@%1$s updated wiki page</string>
-    <string name="activity_approved_mr">\@%1$s approved merge request</string>
 
+
+    <!-- merge requests -->
     <string name="activity_mr_approvals">Approvals: %1$d / %2$d</string>
     <string name="activity_mr_not_eligible">You can not approve this merge request</string>
     <string name="mr_approve_failed">Approval failed. You are probably not authorized to approve this merge request.</string>
+    <string name="activity_approved_mr">\@%1$s approved merge request</string>
+    <string name="activity_accepted_mr">\@%1$s accepted merge request</string>
+    <string name="activity_closed_mr">\@%1$s closed merge request</string>
+    <string name="activity_commented_on_mr">\@%1$s commented on merge request</string>
+    <string name="activity_opened_mr">\@%1$s opened merge request</string>
+    <string name="mr_closed">Merge request was closed successfully</string>
+    <string name="merge_request_exists">Another open merge request already exists for this source branch.</string>
+    <string name="merge_info">%1$s wants to merge branch %2$s into %3$s</string>
+    <string name="mr_cannot_be_merged">This merge request cannot be merged at this time. Please check for merge conflicts and other issues.</string>
+    <string name="close_mr">You are about to close this merge request. Tap the Close button to proceed.</string>
+    <string name="merge_fail_text">Merge may fail if you are not authorized to merge this Merge Request.</string>
+    <string name="merge_error_405">Method not allowed</string>
+    <string name="merge_error_409">SHA does not match HEAD of source branch</string>
+    <string name="merge_error_422">Branch cannot be merged</string>
+    <string name="merge_request_merged_text">Merge request merged successfully</string>
+    <string name="create_mr">Create merge request</string>
+    <string name="mr_created">Merge request created successfully</string>
+    <string name="merge_requests">Merge requests</string>
+    <string name="mr_branches_are_same">Target and source branches cannot be the same</string>
+
     <string name="revoke_approval">Revoke approval</string>
     <string name="files_ref">Files - ref:%1$s</string>
     <string name="exclude_files_in_fileviewer">This file type/size is not supported by the file viewer. You can download it to your phone instead.</string>
@@ -192,6 +195,8 @@
     <string name="filename_hint">with directory: app/config.json</string>
     <string name="commit_message">Commit message</string>
     <string name="edit_commit_message">Update %1$s</string>
+    <string name="delete_commit_message">Delete %1$s</string>
+    <string name="delete_file_via_branch">The file has been sent for an deletion via %1$s branch</string>
     <string name="file_content">File content</string>
     <string name="all_fields_are_required">All fields are required and must be filled out</string>
     <string name="open_ce">Open in Code Editor</string>
@@ -243,6 +248,8 @@
     <string name="no_files_snippet">No files found for this snippet</string>
     <string name="file_content_error">Failed to load file content</string>
     <string name="empty_file_content">File content cannot be empty</string>
+    <string name="branch_check_failed">Failed to check branch: %1$s</string>
+    <string name="branch_creation_failed">Failed to create branch: %1$s</string>
     <!-- errors -->
 
     <!-- generic copy -->
@@ -326,5 +333,6 @@
     <string name="filter">Filter</string>
     <string name="menu">Menu</string>
     <string name="snippets">Snippets</string>
+    <string name="refresh">Refresh</string>
     <!-- generic copy -->
 </resources>

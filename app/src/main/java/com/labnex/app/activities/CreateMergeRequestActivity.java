@@ -1,11 +1,14 @@
 package com.labnex.app.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import com.labnex.app.R;
 import com.labnex.app.bottomsheets.BranchesBottomSheet;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.contexts.ProjectsContext;
+import com.labnex.app.database.api.BaseApi;
+import com.labnex.app.database.api.ProjectsApi;
 import com.labnex.app.databinding.ActivityCreateMergeRequestBinding;
 import com.labnex.app.helpers.Snackbar;
 import com.labnex.app.helpers.api.TemplateFetcher;
@@ -24,8 +27,10 @@ public class CreateMergeRequestActivity extends BaseActivity
 
 	ActivityCreateMergeRequestBinding binding;
 	private int projectId;
-
+	private ProjectsContext projectsContext;
 	private static UpdateInterface UpdateInterface;
+	String sourceBranch;
+	boolean isFromCreateFile;
 
 	public interface UpdateInterface {
 		void updateDataListener(String str);
@@ -45,8 +50,38 @@ public class CreateMergeRequestActivity extends BaseActivity
 		BranchesBottomSheet.setMrUpdateListener(this);
 		Bundle bsBundle = new Bundle();
 
-		ProjectsContext projectsContext = ProjectsContext.fromIntent(getIntent());
+		projectsContext = ProjectsContext.fromIntent(getIntent());
+		if (projectsContext == null) {
+			projectId = getIntent().getIntExtra("projectId", -1);
+			String projectName = getIntent().getStringExtra("projectName");
+			String path = getIntent().getStringExtra("path");
+			if (projectId == -1 || projectName == null || path == null) {
+				ProjectsApi projectsApi = BaseApi.getInstance(ctx, ProjectsApi.class);
+				assert projectsApi != null;
+				com.labnex.app.database.models.Projects dbProject =
+						projectsApi.fetchByProjectId(projectId);
+				if (dbProject != null) {
+					projectName = dbProject.getProjectName();
+					path = dbProject.getProjectPath();
+				} else {
+					finish();
+					return;
+				}
+			}
+			projectsContext = new ProjectsContext(projectName, path, projectId, ctx);
+		}
 		projectId = projectsContext.getProjectId();
+
+		Intent intent = getIntent();
+		sourceBranch = intent.getStringExtra("sourceBranch");
+		String mrTitle = intent.getStringExtra("mrTitle");
+		isFromCreateFile = intent.getBooleanExtra("fromCreateFile", false);
+		if (sourceBranch != null) {
+			binding.sourceBranch.setText(sourceBranch);
+		}
+		if (mrTitle != null) {
+			binding.title.setText(mrTitle);
+		}
 
 		binding.bottomAppBar.setNavigationOnClickListener(bottomAppBar -> finish());
 
@@ -87,7 +122,7 @@ public class CreateMergeRequestActivity extends BaseActivity
 							Objects.requireNonNull(binding.description.getText()).toString();
 					String targetBranch =
 							Objects.requireNonNull(binding.targetBranch.getText()).toString();
-					String sourceBranch =
+					sourceBranch =
 							Objects.requireNonNull(binding.sourceBranch.getText()).toString();
 
 					if (title.isEmpty()) {
@@ -154,7 +189,15 @@ public class CreateMergeRequestActivity extends BaseActivity
 
 						if (response.code() == 201) {
 
-							UpdateInterface.updateDataListener("created");
+							if (isFromCreateFile) {
+								Intent intent =
+										projectsContext.getIntent(ctx, MergeRequestsActivity.class);
+								intent.putExtra("projectName", projectsContext.getProjectName());
+								intent.putExtra("path", projectsContext.getPath());
+								startActivity(intent);
+							} else {
+								UpdateInterface.updateDataListener("created");
+							}
 							finish();
 						} else if (response.code() == 401) {
 
@@ -170,6 +213,13 @@ public class CreateMergeRequestActivity extends BaseActivity
 									CreateMergeRequestActivity.this,
 									binding.bottomAppBar,
 									getString(R.string.access_forbidden_403));
+						} else if (response.code() == 409) {
+
+							enableButton();
+							Snackbar.info(
+									CreateMergeRequestActivity.this,
+									binding.bottomAppBar,
+									getString(R.string.merge_request_exists));
 						} else {
 
 							enableButton();

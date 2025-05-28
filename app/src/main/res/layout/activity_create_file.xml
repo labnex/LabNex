@@ -11,23 +11,39 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
-        android:paddingBottom="@dimen/dimen70dp">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/dimen8dp"
+            android:layout_marginBottom="@dimen/dimen96dp"
             android:padding="@dimen/dimen16dp"
             android:orientation="vertical">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/create"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/dimen16dp"
-                android:layout_gravity="end|center_vertical"
-                android:text="@string/create"
-                style="@style/CustomMaterialButton" />
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:id="@+id/create_merge_request"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/create_mr"
+                    android:checked="false"
+                    android:layout_weight="1"
+                    android:textSize="@dimen/dimen14sp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/create"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/dimen16dp"
+                    android:text="@string/create"
+                    style="@style/CustomMaterialButton" />
+
+            </LinearLayout>
 
             <EditText
                 android:id="@+id/filename"
@@ -65,6 +81,21 @@
                 android:layout_marginBottom="@dimen/dimen12dp"
                 android:hint="@string/branch"
                 android:textSize="@dimen/dimen16sp" />
+
+            <EditText
+                android:id="@+id/branch_edit"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dimen54dp"
+                android:autofillHints="@string/branch"
+                android:background="@drawable/shape_input"
+                android:lineSpacingExtra="@dimen/dimen8sp"
+                android:layout_marginBottom="@dimen/dimen12dp"
+                android:gravity="start|center_vertical"
+                android:singleLine="true"
+                android:inputType="text"
+                android:hint="@string/branch"
+                android:textSize="@dimen/dimen16sp"
+                android:visibility="gone" />
 
             <EditText
                 android:id="@+id/commit_message"

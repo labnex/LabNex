@@ -4,13 +4,14 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
-import androidx.core.content.res.ResourcesCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import com.labnex.app.R;
 import com.labnex.app.activities.ProjectDetailActivity;
@@ -79,21 +80,25 @@ public class MostVisitedAdapter
 		Projects currentItem = mostVisitedList.get(position);
 		holder.projects = currentItem;
 
-		int color =
-				ResourcesCompat.getColor(
-						ctx.getResources(), R.color.cardview_dark_background, null);
-		String firstCharacter = String.valueOf(currentItem.getProjectName().charAt(0));
+		int backgroundColor = ContextCompat.getColor(ctx, R.color.cardview_dark_background);
+		int textColor = getColorFromAttr(ctx, R.attr.iconsColor);
+
+		String firstCharacter = "P";
+		if (currentItem.getProjectName() != null && !currentItem.getProjectName().isEmpty()) {
+			firstCharacter = String.valueOf(currentItem.getProjectName().charAt(0));
+		}
 
 		TextDrawable drawable =
 				TextDrawable.builder()
 						.beginConfig()
 						.useFont(Typeface.DEFAULT)
+						.textColor(textColor)
 						.fontSize(16)
 						.toUpperCase()
 						.width(26)
 						.height(26)
 						.endConfig()
-						.buildRoundRect(firstCharacter, color, 9);
+						.buildRoundRect(firstCharacter, backgroundColor, 9);
 
 		holder.avatar.setImageDrawable(drawable);
 		holder.projectName.setText(currentItem.getProjectName());
@@ -108,5 +113,11 @@ public class MostVisitedAdapter
 	@SuppressLint("NotifyDataSetChanged")
 	public void notifyDataChanged() {
 		notifyDataSetChanged();
+	}
+
+	private int getColorFromAttr(Context context, int attr) {
+		TypedValue typedValue = new TypedValue();
+		context.getTheme().resolveAttribute(attr, typedValue, true);
+		return typedValue.data;
 	}
 }

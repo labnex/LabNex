@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -50,6 +51,8 @@ public class HomeFragment extends Fragment {
 	private ProjectsApi projectsApi;
 	private List<Projects> projectsList;
 	private MostVisitedAdapter mostVisitedAdapter;
+	private int refreshSuccessCounter;
+	private boolean isUserRefresh;
 
 	public View onCreateView(
 			@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -128,20 +131,17 @@ public class HomeFragment extends Fragment {
 		getUserInfo();
 		getMostVisitedProjects();
 
-		binding.userAvatar.setOnLongClickListener(
+		binding.refreshHomeScreen.setOnClickListener(
 				ref -> {
 					requireActivity()
 							.runOnUiThread(
 									() -> {
+										refreshSuccessCounter = 0;
+										isUserRefresh = true;
 										getBroadcastMessage();
 										getUserInfo();
 										getMostVisitedProjects();
-										Snackbar.info(
-												requireActivity(),
-												requireActivity().findViewById(R.id.nav_view),
-												getString(R.string.refreshed));
 									});
-					return true;
 				});
 
 		return root;
@@ -177,62 +177,64 @@ public class HomeFragment extends Fragment {
 
 	private void getBroadcastMessage() {
 
-		Call<Messages> call = RetrofitClient.getApiInterface(ctx).getBroadcastMessage();
+		Call<List<Messages>> call = RetrofitClient.getApiInterface(ctx).getBroadcastMessage();
 
 		call.enqueue(
 				new Callback<>() {
-
 					@Override
 					public void onResponse(
-							@NonNull Call<Messages> call,
-							@NonNull retrofit2.Response<Messages> response) {
+							@NonNull Call<List<Messages>> call,
+							@NonNull retrofit2.Response<List<Messages>> response) {
 
-						Messages messageDetails = response.body();
+						if (response.code() == 200 && isAdded() && ctx != null) {
 
-						if (response.code() == 200) {
+							List<Messages> messages = response.body();
+							binding.broadcastMessage.setVisibility(View.GONE);
 
-							assert messageDetails != null;
-
-							if (isAdded() && ctx != null) {
-
-								if (messageDetails.isActive()) {
-									binding.broadcastMessage.setVisibility(View.VISIBLE);
-									binding.message.setText(messageDetails.getMessage());
-								} else {
-									binding.broadcastMessage.setVisibility(View.GONE);
+							if (messages != null) {
+								for (Messages message : messages) {
+									if (message.isActive()) {
+										binding.broadcastMessage.setVisibility(View.VISIBLE);
+										binding.message.setText(message.getMessage());
+										break;
+									}
 								}
 							}
+							refreshSuccessCounter++;
+							checkRefreshComplete();
 						}
 					}
 
 					@Override
-					public void onFailure(@NonNull Call<Messages> call, @NonNull Throwable t) {}
+					public void onFailure(
+							@NonNull Call<List<Messages>> call, @NonNull Throwable t) {}
 				});
 	}
 
 	private void getMostVisitedProjects() {
 
-		projectsApi
-				.fetchMostVisitedWithLimit(currentActiveAccountId, 5)
-				.observe(
-						requireActivity(),
-						mostVisited -> {
-							assert mostVisited != null;
-							if (!mostVisited.isEmpty()) {
-
-								projectsList.clear();
-								binding.sectionMostVisited.nothingFoundFrame.setVisibility(
-										View.GONE);
-								projectsList.addAll(mostVisited);
-								mostVisitedAdapter.notifyDataChanged();
-								binding.sectionMostVisited.recyclerViewMostVisited.setAdapter(
-										mostVisitedAdapter);
-							} else {
-
-								binding.sectionMostVisited.nothingFoundFrame.setVisibility(
-										View.VISIBLE);
-							}
-						});
+		LiveData<List<Projects>> liveData =
+				projectsApi.fetchMostVisitedWithLimit(currentActiveAccountId, 5);
+		liveData.observe(
+				requireActivity(),
+				mostVisited -> {
+					if (mostVisited != null) {
+						projectsList.clear();
+						if (!mostVisited.isEmpty()) {
+							binding.sectionMostVisited.nothingFoundFrame.setVisibility(View.GONE);
+							projectsList.addAll(mostVisited);
+							mostVisitedAdapter.notifyDataChanged();
+							binding.sectionMostVisited.recyclerViewMostVisited.setAdapter(
+									mostVisitedAdapter);
+						} else {
+							binding.sectionMostVisited.nothingFoundFrame.setVisibility(
+									View.VISIBLE);
+						}
+					}
+					refreshSuccessCounter++;
+					checkRefreshComplete();
+					liveData.removeObservers(requireActivity());
+				});
 	}
 
 	private void getUserInfo() {
@@ -280,6 +282,8 @@ public class HomeFragment extends Fragment {
 												ctx.startActivity(intent);
 											});
 								}
+								refreshSuccessCounter++;
+								checkRefreshComplete();
 							}
 						}
 					}
@@ -292,6 +296,17 @@ public class HomeFragment extends Fragment {
 								getString(R.string.generic_server_response_error));
 					}
 				});
+	}
+
+	private void checkRefreshComplete() {
+		if (refreshSuccessCounter == 3 && isUserRefresh) {
+			Snackbar.info(
+					requireActivity(),
+					requireActivity().findViewById(R.id.nav_view),
+					getString(R.string.refreshed));
+			isUserRefresh = false;
+			refreshSuccessCounter = 0;
+		}
 	}
 
 	private void clearMostVisited() {
