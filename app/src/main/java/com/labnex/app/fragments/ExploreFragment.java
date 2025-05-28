@@ -2,7 +2,6 @@ package com.labnex.app.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -320,8 +319,8 @@ public class ExploreFragment extends Fragment {
 	private void searchUsers(String search) {
 
 		binding.progressBar.setVisibility(View.VISIBLE);
-		Log.e("Explore-users", "Users api called");
 		clearAdapters();
+
 		exploreViewModel
 				.searchUsers(
 						ctx,
