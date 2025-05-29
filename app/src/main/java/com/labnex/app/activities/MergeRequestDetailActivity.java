@@ -301,7 +301,7 @@ public class MergeRequestDetailActivity extends BaseActivity
 
 		if (mergeRequestContext.getMergeRequest().isWorkInProgress()
 				|| mergeRequestContext.getMergeRequest().isDraft()
-				|| mergeRequestContext.getMergeRequest().isBlockingDiscussionsResolved()
+				|| !mergeRequestContext.getMergeRequest().isBlockingDiscussionsResolved()
 				|| mergeRequestContext.getMergeRequest().isHasConflicts()) {
 			sheetBinding.mergeItemCard.setVisibility(View.GONE);
 		}

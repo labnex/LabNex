@@ -333,5 +333,6 @@
     <string name="menu">Menu</string>
     <string name="snippets">Snippets</string>
     <string name="refresh">Refresh</string>
+    <string name="tags">Tags</string>
     <!-- generic copy -->
 </resources>
