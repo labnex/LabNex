@@ -21,6 +21,7 @@ import com.labnex.app.bottomsheets.ProjectLabelsBottomSheet;
 import com.labnex.app.bottomsheets.ProjectMembersBottomSheet;
 import com.labnex.app.bottomsheets.ProjectMilestonesBottomSheet;
 import com.labnex.app.bottomsheets.ProjectReleasesBottomSheet;
+import com.labnex.app.bottomsheets.ProjectTagsBottomSheet;
 import com.labnex.app.bottomsheets.ProjectWikisBottomSheet;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.contexts.ProjectsContext;
@@ -139,6 +140,14 @@ public class ProjectDetailActivity extends BaseActivity
 					ProjectReleasesBottomSheet bottomSheet = new ProjectReleasesBottomSheet();
 					bottomSheet.setArguments(bsBundle);
 					bottomSheet.show(getSupportFragmentManager(), "projectReleasesBottomSheet");
+				});
+
+		binding.tagsMainFrame.setOnClickListener(
+				tags -> {
+					bsBundle.putInt("projectId", projectId);
+					ProjectTagsBottomSheet bottomSheet = new ProjectTagsBottomSheet();
+					bottomSheet.setArguments(bsBundle);
+					bottomSheet.show(getSupportFragmentManager(), "projectTagsBottomSheet");
 				});
 
 		binding.labelsMainFrame.setOnClickListener(

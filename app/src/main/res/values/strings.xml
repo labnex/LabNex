@@ -225,6 +225,11 @@
     <string name="account_not_found_error">Account not found. Please sign in again.</string>
     <string name="token_expiry_warning_title">Token Expiring Soon</string>
     <string name="token_expiry_warning_message">Your access token will expire soon. Update it now to avoid interruptions.</string>
+    <string name="no_commit">No commit</string>
+    <string name="author_committer_info">Authored by %1$s, committed by %2$s, %3$s</string>
+    <string name="author_committer_info_no_commit">Created at %1$s</string>
+    <string name="copy_commit_id">Copy commit ID</string>
+    <string name="commit_id_copied">Commit ID copied to clipboard</string>
 
     <!-- errors -->
     <string name="generic_error">An unexpected error occurred</string>
@@ -339,5 +344,6 @@
     <string name="snippets">Snippets</string>
     <string name="refresh">Refresh</string>
     <string name="tags">Tags</string>
+    <string name="unknown">Unknown</string>
     <!-- generic copy -->
 </resources>
