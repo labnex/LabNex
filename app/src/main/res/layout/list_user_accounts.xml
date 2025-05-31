@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layout_frame"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -44,7 +45,7 @@
 
                     <TextView
                         android:id="@+id/user_id"
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:textSize="@dimen/dimen16sp"
@@ -54,7 +55,6 @@
                         android:id="@+id/active_account"
                         android:layout_width="@dimen/dimen20dp"
                         android:layout_height="@dimen/dimen20dp"
-                        android:layout_weight="0"
                         android:contentDescription="@string/active"
                         android:src="@drawable/ic_check"
                         android:visibility="gone" />
@@ -63,7 +63,7 @@
                         android:id="@+id/delete_account"
                         android:layout_width="@dimen/dimen20dp"
                         android:layout_height="@dimen/dimen20dp"
-                        android:layout_weight="0"
+                        android:background="?attr/selectableItemBackgroundBorderless"
                         android:contentDescription="@string/delete"
                         android:src="@drawable/ic_trash"
                         android:visibility="gone" />
@@ -82,25 +82,26 @@
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:visibility="visible">
+                    android:visibility="visible"
+                    tools:ignore="UseCompoundDrawables">
 
                     <TextView
                         android:id="@+id/token_expires_at"
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/account_token_expires_at"
+                        android:layout_gravity="center_vertical"
                         android:textSize="@dimen/dimen12sp" />
 
                     <ImageView
                         android:id="@+id/edit_account"
                         android:layout_width="@dimen/dimen20dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0"
-                        android:contentDescription="@string/edit"
+                        android:layout_height="@dimen/dimen20dp"
+                        android:contentDescription="@string/update_token"
                         android:background="?attr/selectableItemBackgroundBorderless"
-                        android:src="@drawable/ic_rotate_clockwise"
-                        android:visibility="gone" />
+                        android:src="@drawable/ic_edit"
+                        android:layout_gravity="center_vertical" />
 
                 </LinearLayout>
 

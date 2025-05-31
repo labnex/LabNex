@@ -220,6 +220,11 @@
     <string name="snippet_created">Snippet created successfully</string>
     <string name="create_snippet_with_count">Create Snippet (%1$d/10 files)</string>
     <string name="duplicate_file_name">Duplicate file names are not allowed</string>
+    <string name="update_token">Update Token</string>
+    <string name="token_empty_error">Token cannot be empty</string>
+    <string name="account_not_found_error">Account not found. Please sign in again.</string>
+    <string name="token_expiry_warning_title">Token Expiring Soon</string>
+    <string name="token_expiry_warning_message">Your access token will expire soon. Update it now to avoid interruptions.</string>
 
     <!-- errors -->
     <string name="generic_error">An unexpected error occurred</string>
@@ -240,7 +245,7 @@
     <string name="generic_server_response_error">We cannot reach the server at the moment. Please check again later</string>
     <string name="generic_api_error">GitLab has returned an error. Code %1$d</string>
     <string name="authorization_error">Authorization Error</string>
-    <string name="authorization_error_message">It seems that your personal access token has been revoked or is no longer valid.\n\nYou can click the Update button to update your personal access token on the accounts screen.</string>
+    <string name="authorization_error_message">It seems that your personal access token has been revoked or is no longer valid.\n\nYou can click the Update button to update your personal access token.</string>
     <string name="group_name_required">Group name is required</string>
     <string name="access_forbidden_403">Access forbidden, the request isn’t allowed</string>
     <string name="no_description">No description provided</string>

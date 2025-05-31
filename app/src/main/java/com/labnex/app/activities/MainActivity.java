@@ -16,6 +16,7 @@ import com.labnex.app.fragments.ActivitiesFragment;
 import com.labnex.app.fragments.ExploreFragment;
 import com.labnex.app.fragments.HomeFragment;
 import com.labnex.app.helpers.AppSettingsInit;
+import com.labnex.app.helpers.CheckAuthorizationStatus;
 import com.labnex.app.models.metadata.Metadata;
 import com.labnex.app.models.personal_access_tokens.PersonalAccessTokens;
 import java.util.Objects;
@@ -54,6 +55,7 @@ public class MainActivity extends BaseActivity {
 			return;
 		}
 
+		CheckAuthorizationStatus.checkTokenExpiryWarning(this);
 		checkPersonalAccessToken();
 		gitlabVersion();
 		homeFragment = new HomeFragment();

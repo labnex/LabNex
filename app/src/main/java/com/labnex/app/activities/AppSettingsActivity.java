@@ -14,8 +14,12 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.labnex.app.R;
 import com.labnex.app.bottomsheets.AppSettingsBottomSheet;
+import com.labnex.app.database.api.BaseApi;
+import com.labnex.app.database.api.UserAccountsApi;
+import com.labnex.app.database.models.UserAccount;
 import com.labnex.app.databinding.ActivityAppSettingsBinding;
 import com.labnex.app.helpers.AppSettingsInit;
+import com.labnex.app.helpers.SharedPrefDB;
 import com.labnex.app.helpers.Snackbar;
 import com.labnex.app.helpers.Utils;
 import com.labnex.app.interfaces.BottomSheetListener;
@@ -44,33 +48,46 @@ public class AppSettingsActivity extends BaseActivity implements BottomSheetList
 
 		binding.bottomAppBar.setNavigationOnClickListener(topBar -> finish());
 
-		if (getAccount().getUserInfo() != null) {
+		int accountId = SharedPrefDB.getInstance(ctx).getInt("currentActiveAccountId");
+		UserAccountsApi userAccountsApi = BaseApi.getInstance(ctx, UserAccountsApi.class);
+		UserAccount account =
+				userAccountsApi != null ? userAccountsApi.getAccountById(accountId) : null;
 
-			Glide.with(ctx)
-					.load(getAccount().getUserInfo().getAvatarUrl())
-					.diskCacheStrategy(DiskCacheStrategy.ALL)
-					.placeholder(R.drawable.ic_spinner)
-					.centerCrop()
-					.into(binding.userAvatar);
+		if (account != null) {
 
-			binding.userAvatar.setOnClickListener(
-					profile -> {
-						Intent intent = new Intent(AppSettingsActivity.this, ProfileActivity.class);
-						intent.putExtra("source", "app_settings");
-						intent.putExtra("userId", getAccount().getUserInfo().getId());
-						AppSettingsActivity.this.startActivity(intent);
-					});
+			binding.accountsUserFullName.setText(account.getUserName());
 
-			binding.accountsUserFullName.setText(getAccount().getUserInfo().getFullName());
+			String accountName = account.getAccountName();
+			if (accountName != null && accountName.contains("@")) {
+				String username = accountName.split("@")[0];
+				String instanceUrl = accountName.split("@")[1];
 
-			UrlBuilder urlBuilder =
-					UrlBuilder.fromString(getAccount().getAccount().getInstanceUrl());
-			String hostName = urlBuilder.hostName;
-			binding.accountsUsername.setText(
-					getString(
-							R.string.username_with_domain,
-							getAccount().getUserInfo().getUsername(),
-							hostName));
+				UrlBuilder urlBuilder = UrlBuilder.fromString(instanceUrl);
+				String hostName = urlBuilder.hostName;
+
+				binding.accountsUsername.setText(
+						getString(R.string.username_with_domain, username, hostName));
+			} else {
+				binding.accountsUsername.setText("");
+			}
+
+			if (getAccount().getUserInfo() != null) {
+				Glide.with(ctx)
+						.load(getAccount().getUserInfo().getAvatarUrl())
+						.diskCacheStrategy(DiskCacheStrategy.ALL)
+						.placeholder(R.drawable.ic_spinner)
+						.centerCrop()
+						.into(binding.userAvatar);
+
+				binding.userAvatar.setOnClickListener(
+						profile -> {
+							Intent intent =
+									new Intent(AppSettingsActivity.this, ProfileActivity.class);
+							intent.putExtra("source", "app_settings");
+							intent.putExtra("userId", getAccount().getUserInfo().getId());
+							AppSettingsActivity.this.startActivity(intent);
+						});
+			}
 		}
 
 		binding.appVersion.setText(Utils.getAppVersion(ctx));
