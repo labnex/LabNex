@@ -137,20 +137,30 @@ public class ProjectTagsAdapter extends RecyclerView.Adapter<ProjectTagsAdapter.
 						tag.getCommit().getCommitterName() != null
 								? tag.getCommit().getCommitterName()
 								: context.getString(R.string.unknown);
-				String modifiedTime =
-						TimeUtils.formatTime(
-								Date.from(OffsetDateTime.parse(tag.getCreatedAt()).toInstant()),
-								locale);
+				String modifiedTime;
+				if (tag.getCommit().getCreatedAt() != null) {
+					modifiedTime =
+							TimeUtils.formatTime(
+									Date.from(
+											OffsetDateTime.parse(tag.getCommit().getCreatedAt())
+													.toInstant()),
+									locale);
+				} else {
+					modifiedTime = "";
+				}
 				authorCommitterInfo =
 						context.getString(
 								R.string.author_committer_info,
 								authorName,
 								committerName,
 								modifiedTime);
+
 			} else {
 				String modifiedTime =
 						TimeUtils.formatTime(
-								Date.from(OffsetDateTime.parse(tag.getCreatedAt()).toInstant()),
+								Date.from(
+										OffsetDateTime.parse(tag.getCommit().getCreatedAt())
+												.toInstant()),
 								locale);
 				authorCommitterInfo =
 						context.getString(R.string.author_committer_info_no_commit, modifiedTime);

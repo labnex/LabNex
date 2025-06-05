@@ -433,4 +433,11 @@ public interface ApiInterface {
 	@GET("projects/{id}/repository/tags")
 	Call<List<TagsItem>> getProjectTags(
 			@Path("id") int id, @Query("per_page") int perPage, @Query("page") int page);
+
+	@POST("projects/{id}/repository/tags")
+	Call<TagsItem> createProjectTag(
+			@Path("id") int projectId,
+			@Query("tag_name") String tagName,
+			@Query("ref") String ref,
+			@Query("message") String message);
 }

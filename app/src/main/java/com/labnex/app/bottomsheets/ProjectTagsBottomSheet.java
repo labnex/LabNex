@@ -17,12 +17,14 @@ import com.labnex.app.R;
 import com.labnex.app.activities.BaseActivity;
 import com.labnex.app.adapters.ProjectTagsAdapter;
 import com.labnex.app.databinding.BottomSheetProjectTagsBinding;
+import com.labnex.app.helpers.Snackbar;
 import com.labnex.app.viewmodels.TagsViewModel;
 
 /**
  * @author mmarif
  */
-public class ProjectTagsBottomSheet extends BottomSheetDialogFragment {
+public class ProjectTagsBottomSheet extends BottomSheetDialogFragment
+		implements TagActionsBottomSheet.UpdateInterface {
 
 	private BottomSheetProjectTagsBinding binding;
 	private TagsViewModel tagsViewModel;
@@ -42,6 +44,8 @@ public class ProjectTagsBottomSheet extends BottomSheetDialogFragment {
 		projectId = requireArguments().getInt("projectId", 0);
 		resultLimit = ((BaseActivity) requireContext()).getAccount().getMaxPageLimit();
 
+		TagActionsBottomSheet.setUpdateListener(this);
+
 		binding.closeBs.setOnClickListener(close -> dismiss());
 
 		binding.getRoot().setVisibility(View.VISIBLE);
@@ -50,7 +54,26 @@ public class ProjectTagsBottomSheet extends BottomSheetDialogFragment {
 		binding.tagsList.setLayoutManager(new LinearLayoutManager(getContext()));
 		fetchProjectTags();
 
+		binding.createNew.setOnClickListener(
+				v -> {
+					Bundle bsBundle = new Bundle();
+					bsBundle.putInt("projectId", projectId);
+					TagActionsBottomSheet bottomSheet = new TagActionsBottomSheet();
+					bottomSheet.setArguments(bsBundle);
+					bottomSheet.show(getParentFragmentManager(), "tagActionsBottomSheet");
+				});
+
 		return binding.getRoot();
+	}
+
+	@Override
+	public void updateDataListener(String str) {
+		if (str.equalsIgnoreCase("created")) {
+			Snackbar.info(requireContext(), binding.tagsLayout, getString(R.string.tag_created));
+		}
+		adapter.clearAdapter();
+		page = 1;
+		fetchProjectTags();
 	}
 
 	public void fetchProjectTags() {

@@ -230,6 +230,16 @@
     <string name="author_committer_info_no_commit">Created at %1$s</string>
     <string name="copy_commit_id">Copy commit ID</string>
     <string name="commit_id_copied">Commit ID copied to clipboard</string>
+    <string name="new_tag">New Tag</string>
+    <string name="create_new_tag">Create New Tag</string>
+    <string name="tag_name">Tag Name</string>
+    <string name="message_optional">Message (optional)</string>
+    <string name="tag_created">Tag created</string>
+    <string name="tag_name_empty">Tag name is required</string>
+    <string name="ref_empty">Ref is required</string>
+    <string name="tag_already_exists">Tag already exists</string>
+    <string name="tag_ref_hint">Commit SHA, another tag name, or branch name</string>
+    <string name="tag_ref_invalid">Target ref is invalid</string>
 
     <!-- errors -->
     <string name="generic_error">An unexpected error occurred</string>
