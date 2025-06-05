@@ -7,9 +7,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.labnex.app.R;
+import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.databinding.BottomSheetProjectTagsBinding;
 import com.labnex.app.databinding.ListTagsBinding;
+import com.labnex.app.helpers.Snackbar;
 import com.labnex.app.helpers.TimeUtils;
 import com.labnex.app.helpers.Utils;
 import com.labnex.app.models.tags.TagsItem;
@@ -17,6 +20,8 @@ import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import retrofit2.Call;
+import retrofit2.Callback;
 
 /**
  * @author mmarif
@@ -113,7 +118,6 @@ public class ProjectTagsAdapter extends RecyclerView.Adapter<ProjectTagsAdapter.
 	public class TagsHolder extends RecyclerView.ViewHolder {
 
 		private final ListTagsBinding binding;
-		private TagsItem tag;
 
 		TagsHolder(ListTagsBinding binding) {
 			super(binding.getRoot());
@@ -122,7 +126,6 @@ public class ProjectTagsAdapter extends RecyclerView.Adapter<ProjectTagsAdapter.
 
 		void bindData(TagsItem tag) {
 
-			this.tag = tag;
 			Locale locale = context.getResources().getConfiguration().getLocales().get(0);
 
 			binding.tagName.setText(tag.getName());
@@ -138,15 +141,18 @@ public class ProjectTagsAdapter extends RecyclerView.Adapter<ProjectTagsAdapter.
 								? tag.getCommit().getCommitterName()
 								: context.getString(R.string.unknown);
 				String modifiedTime;
-				if (tag.getCommit().getCreatedAt() != null) {
+				if (tag.getCreatedAt() != null) {
+					modifiedTime =
+							TimeUtils.formatTime(
+									Date.from(OffsetDateTime.parse(tag.getCreatedAt()).toInstant()),
+									locale);
+				} else {
 					modifiedTime =
 							TimeUtils.formatTime(
 									Date.from(
 											OffsetDateTime.parse(tag.getCommit().getCreatedAt())
 													.toInstant()),
 									locale);
-				} else {
-					modifiedTime = "";
 				}
 				authorCommitterInfo =
 						context.getString(
@@ -181,6 +187,72 @@ public class ProjectTagsAdapter extends RecyclerView.Adapter<ProjectTagsAdapter.
 				binding.commitId.setText(context.getString(R.string.no_commit));
 				binding.copyCommitId.setVisibility(View.GONE);
 			}
+
+			binding.deleteTag.setOnClickListener(
+					v -> {
+						new MaterialAlertDialogBuilder(context)
+								.setTitle(R.string.delete_tag)
+								.setMessage(
+										context.getString(
+												R.string.delete_tag_confirmation, tag.getName()))
+								.setPositiveButton(
+										R.string.delete,
+										(dialog, which) ->
+												deleteTag(
+														getBindingAdapterPosition(), tag.getName()))
+								.setNegativeButton(R.string.cancel, null)
+								.show();
+					});
 		}
+	}
+
+	private void deleteTag(int position, String tagName) {
+
+		Call<Void> call =
+				RetrofitClient.getApiInterface(context).deleteProjectTag(projectId, tagName);
+
+		call.enqueue(
+				new Callback<>() {
+					@Override
+					public void onResponse(
+							@NonNull Call<Void> call, @NonNull retrofit2.Response<Void> response) {
+						if (response.code() == 204) {
+							list.remove(position);
+							notifyItemRemoved(position);
+							Snackbar.info(
+									context,
+									bottomSheetBinding.tagsLayout,
+									context.getString(R.string.tag_deleted));
+						} else if (response.code() == 400) {
+							Snackbar.info(
+									context,
+									bottomSheetBinding.tagsLayout,
+									context.getString(R.string.tag_ref_invalid));
+						} else if (response.code() == 401) {
+							Snackbar.info(
+									context,
+									bottomSheetBinding.tagsLayout,
+									context.getString(R.string.not_authorized));
+						} else if (response.code() == 403) {
+							Snackbar.info(
+									context,
+									bottomSheetBinding.tagsLayout,
+									context.getString(R.string.access_forbidden_403));
+						} else {
+							Snackbar.info(
+									context,
+									bottomSheetBinding.tagsLayout,
+									context.getString(R.string.generic_error));
+						}
+					}
+
+					@Override
+					public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+						Snackbar.info(
+								context,
+								bottomSheetBinding.tagsLayout,
+								context.getString(R.string.generic_server_response_error));
+					}
+				});
 	}
 }

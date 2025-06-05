@@ -440,4 +440,7 @@ public interface ApiInterface {
 			@Query("tag_name") String tagName,
 			@Query("ref") String ref,
 			@Query("message") String message);
+
+	@DELETE("projects/{id}/repository/tags/{tag_name}")
+	Call<Void> deleteProjectTag(@Path("id") int projectId, @Path("tag_name") String tagName);
 }

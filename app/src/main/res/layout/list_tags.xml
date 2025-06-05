@@ -38,27 +38,43 @@
                 android:textSize="@dimen/dimen14sp" />
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dimen8dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
                 tools:ignore="UseCompoundDrawables">
 
-                <TextView
-                    android:id="@+id/commit_id"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/dimen14sp" />
+                    android:orientation="horizontal"
+                    android:layout_weight="1" >
+
+                    <TextView
+                        android:id="@+id/commit_id"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/dimen14sp" />
+
+                    <ImageView
+                        android:id="@+id/copy_commit_id"
+                        android:layout_width="@dimen/dimen18dp"
+                        android:layout_height="@dimen/dimen18dp"
+                        android:layout_marginStart="@dimen/dimen8dp"
+                        android:contentDescription="@string/copy"
+                        android:src="@drawable/ic_copy"
+                        android:visibility="gone" />
+
+                </LinearLayout>
 
                 <ImageView
-                    android:id="@+id/copy_commit_id"
+                    android:id="@+id/delete_tag"
                     android:layout_width="@dimen/dimen18dp"
                     android:layout_height="@dimen/dimen18dp"
                     android:layout_marginStart="@dimen/dimen8dp"
-                    android:contentDescription="@string/copy"
-                    android:src="@drawable/ic_copy"
-                    android:visibility="gone" />
+                    android:contentDescription="@string/delete_tag"
+                    android:src="@drawable/ic_trash" />
 
             </LinearLayout>
 

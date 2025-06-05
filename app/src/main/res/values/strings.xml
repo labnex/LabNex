@@ -240,6 +240,9 @@
     <string name="tag_already_exists">Tag already exists</string>
     <string name="tag_ref_hint">Commit SHA, another tag name, or branch name</string>
     <string name="tag_ref_invalid">Target ref is invalid</string>
+    <string name="delete_tag">Delete Tag</string>
+    <string name="delete_tag_confirmation">Are you sure you want to delete tag %1$s?</string>
+    <string name="tag_deleted">Tag deleted</string>
 
     <!-- errors -->
     <string name="generic_error">An unexpected error occurred</string>
