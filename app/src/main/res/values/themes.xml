@@ -230,4 +230,20 @@
         <item name="checkedIconEnabled">false</item>
     </style>
 
+    <!-- card top corners rounded -->
+    <style name="ShapeAppearance.Card.TopRounded" parent="ShapeAppearance.Material3.SmallComponent">
+        <item name="cornerSizeTopLeft">@dimen/dimen16dp</item>
+        <item name="cornerSizeTopRight">@dimen/dimen16dp</item>
+        <item name="cornerSizeBottomLeft">@dimen/dimen4dp</item>
+        <item name="cornerSizeBottomRight">@dimen/dimen4dp</item>
+    </style>
+
+    <!-- card bottom corners rounded -->
+    <style name="ShapeAppearance.Card.BottomRounded" parent="ShapeAppearance.Material3.SmallComponent">
+        <item name="cornerSizeTopLeft">@dimen/dimen4dp</item>
+        <item name="cornerSizeTopRight">@dimen/dimen4dp</item>
+        <item name="cornerSizeBottomLeft">@dimen/dimen16dp</item>
+        <item name="cornerSizeBottomRight">@dimen/dimen16dp</item>
+    </style>
+
 </resources>

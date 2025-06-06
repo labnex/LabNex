@@ -25,6 +25,10 @@
     <string name="visibility_internal" translatable="false">Internal</string>
     <string name="visibility_private" translatable="false">Private</string>
     <string name="visibility_public" translatable="false">Public</string>
+    <string name="dark" translatable="false">Dark</string>
+    <string name="light" translatable="false">Light</string>
+    <string name="dynamic" translatable="false">Dynamic</string>
+    <string name="theme_system" translatable="false">System</string>
     <!-- non translatable strings -->
 
     <string name="action_sign_in">Sign in</string>
@@ -243,6 +247,7 @@
     <string name="delete_tag">Delete Tag</string>
     <string name="delete_tag_confirmation">Are you sure you want to delete tag %1$s?</string>
     <string name="tag_deleted">Tag deleted</string>
+    <string name="switch_account">Switch Account</string>
 
     <!-- errors -->
     <string name="generic_error">An unexpected error occurred</string>

@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_margin="@dimen/dimen16dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/dimen20sp"
+        android:layout_marginBottom="@dimen/dimen16dp"
+        android:text="@string/appearance" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/dimen16dp"
+        android:orientation="horizontal">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/theme_dark"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            app:strokeWidth="@dimen/dimen0dp"
+            app:strokeColor="?attr/colorPrimary"
+            style="?attr/materialCardViewElevatedStyle"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="@dimen/dimen4dp"
+            app:cardElevation="@dimen/dimen0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="vertical"
+                android:padding="@dimen/dimen18dp"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:layout_width="@dimen/dimen24dp"
+                    android:layout_height="@dimen/dimen24dp"
+                    android:contentDescription="@string/dark"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="@dimen/dimen16dp"
+                    app:srcCompat="@drawable/ic_theme_dark" />
+
+                <TextView
+                    android:id="@+id/theme_dark_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/dark"
+                    android:layout_gravity="center"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="@dimen/dimen14sp" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/theme_light"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            app:strokeWidth="@dimen/dimen0dp"
+            app:strokeColor="?attr/colorPrimary"
+            style="?attr/materialCardViewElevatedStyle"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="@dimen/dimen4dp"
+            app:cardElevation="@dimen/dimen0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="vertical"
+                android:padding="@dimen/dimen18dp"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:layout_width="@dimen/dimen24dp"
+                    android:layout_height="@dimen/dimen24dp"
+                    android:contentDescription="@string/light"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="@dimen/dimen16dp"
+                    app:srcCompat="@drawable/ic_theme_light" />
+
+                <TextView
+                    android:id="@+id/theme_light_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/light"
+                    android:layout_gravity="center"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="@dimen/dimen14sp" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/theme_system"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            app:strokeWidth="@dimen/dimen0dp"
+            app:strokeColor="?attr/colorPrimary"
+            style="?attr/materialCardViewElevatedStyle"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="@dimen/dimen4dp"
+            app:cardElevation="@dimen/dimen0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="vertical"
+                android:padding="@dimen/dimen18dp"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:layout_width="@dimen/dimen24dp"
+                    android:layout_height="@dimen/dimen24dp"
+                    android:contentDescription="@string/theme_system"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="@dimen/dimen16dp"
+                    app:srcCompat="@drawable/ic_phone" />
+
+                <TextView
+                    android:id="@+id/theme_system_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/theme_system"
+                    android:layout_gravity="center"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="@dimen/dimen14sp" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/theme_dynamic"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            app:strokeWidth="@dimen/dimen0dp"
+            app:strokeColor="?attr/colorPrimary"
+            style="?attr/materialCardViewElevatedStyle"
+            android:layout_gravity="center_vertical"
+            app:cardElevation="@dimen/dimen0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="vertical"
+                android:padding="@dimen/dimen18dp"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:layout_width="@dimen/dimen24dp"
+                    android:layout_height="@dimen/dimen24dp"
+                    android:contentDescription="@string/dynamic"
+                    android:layout_marginBottom="@dimen/dimen16dp"
+                    android:layout_gravity="center"
+                    app:srcCompat="@drawable/ic_themes" />
+
+                <TextView
+                    android:id="@+id/theme_dynamic_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/dynamic"
+                    android:layout_gravity="center"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="@dimen/dimen14sp" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/language_screen_card"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        app:strokeWidth="@dimen/dimen0dp"
+        style="?attr/materialCardViewElevatedStyle"
+        android:layout_gravity="center_vertical"
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.Card.TopRounded"
+        app:cardElevation="@dimen/dimen0dp">
+
+        <LinearLayout
+            android:id="@+id/language_selection_frame"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:padding="@dimen/dimen16dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="@dimen/dimen24dp"
+                android:layout_height="@dimen/dimen24dp"
+                android:contentDescription="@string/language"
+                android:layout_marginEnd="@dimen/dimen16dp"
+                app:srcCompat="@drawable/ic_language" />
+
+            <LinearLayout
+                android:id="@+id/language_selection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/language_header_selector"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/language"
+                    android:textSize="@dimen/dimen16sp" />
+
+                <TextView
+                    android:id="@+id/language_selected"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/language"
+                    android:textSize="@dimen/dimen14sp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/home_selection_screen_card"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        app:strokeWidth="@dimen/dimen0dp"
+        style="?attr/materialCardViewElevatedStyle"
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="@dimen/dimen2dp"
+        app:cardElevation="@dimen/dimen0dp"
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.Card.BottomRounded">
+
+        <LinearLayout
+            android:id="@+id/home_screen_selection_frame"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:padding="@dimen/dimen16dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="@dimen/dimen24dp"
+                android:layout_height="@dimen/dimen24dp"
+                android:contentDescription="@string/home_screen"
+                android:layout_marginEnd="@dimen/dimen16dp"
+                app:srcCompat="@drawable/ic_phone" />
+
+            <LinearLayout
+                android:id="@+id/home_screen_selection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/home_screen_header_selector"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/home_screen"
+                    android:textSize="@dimen/dimen16sp" />
+
+                <TextView
+                    android:id="@+id/home_screen_selected"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/home_screen"
+                    android:textSize="@dimen/dimen14sp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</LinearLayout>

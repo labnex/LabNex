@@ -57,7 +57,8 @@
                         android:layout_height="@dimen/dimen20dp"
                         android:contentDescription="@string/active"
                         android:src="@drawable/ic_check"
-                        android:visibility="gone" />
+                        android:visibility="gone"
+                        app:tint="@color/green" />
 
                     <ImageView
                         android:id="@+id/delete_account"

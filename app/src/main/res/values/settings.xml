@@ -9,8 +9,8 @@
     <string-array name="themes">
         <item>Dark</item>
         <item>Light</item>
-        <item>Follow system</item>
-        <item>Dynamic colors (Follow system)</item>
+        <item>System</item>
+        <item>Dynamic</item>
     </string-array>
 
     <string-array name="themes_older_versions">

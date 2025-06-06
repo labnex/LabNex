@@ -4,6 +4,7 @@
     <color name="snackbar_on_container">#FFFFFF</color>
     <color name="label_default_color">#FF0000</color>
     <color name="dark_green">#0D532A</color>
+    <color name="green">#0CCC5D</color>
     <color name="grey">#3A383F</color>
     <color name="votes_color">#FABF15</color>
     <color name="cardview_dark_background">#EDE9E9</color>

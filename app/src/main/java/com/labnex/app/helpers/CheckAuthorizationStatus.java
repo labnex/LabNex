@@ -11,6 +11,7 @@ import androidx.appcompat.app.AlertDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputLayout;
 import com.labnex.app.R;
+import com.labnex.app.activities.AppSettingsActivity;
 import com.labnex.app.activities.MainActivity;
 import com.labnex.app.activities.SignInActivity;
 import com.labnex.app.clients.RetrofitClient;
@@ -32,6 +33,14 @@ public class CheckAuthorizationStatus {
 
 	public static void authorizationErrorDialog(final Context context) {
 
+		if (!(context instanceof Activity)) {
+			return;
+		}
+
+		UserAccountsApi userAccountsApi = BaseApi.getInstance(context, UserAccountsApi.class);
+		assert userAccountsApi != null;
+		boolean hasMultipleAccounts = userAccountsApi.getCount() > 1;
+
 		MaterialAlertDialogBuilder materialAlertDialogBuilder =
 				new MaterialAlertDialogBuilder(
 						context,
@@ -41,10 +50,21 @@ public class CheckAuthorizationStatus {
 				.setTitle(R.string.authorization_error)
 				.setMessage(R.string.authorization_error_message)
 				.setCancelable(false)
-				.setNeutralButton(R.string.cancel, null)
 				.setPositiveButton(
-						R.string.update, (dialog, which) -> showUpdateTokenDialog(context, null))
-				.show();
+						R.string.update, (dialog, which) -> showUpdateTokenDialog(context, null));
+
+		if (hasMultipleAccounts) {
+			materialAlertDialogBuilder.setNeutralButton(
+					R.string.switch_account,
+					(dialog, which) -> {
+						Intent intent = new Intent(context, AppSettingsActivity.class);
+						intent.putExtra("openAccountsBottomSheet", true);
+						context.startActivity(intent);
+						dialog.dismiss();
+					});
+		}
+
+		materialAlertDialogBuilder.show();
 	}
 
 	public static void checkTokenExpiryWarning(final Context context) {
@@ -71,13 +91,15 @@ public class CheckAuthorizationStatus {
 			return;
 		}
 
+		boolean hasMultipleAccounts = userAccountsApi.getCount() > 1;
+
 		try {
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 			LocalDate expiryDate = LocalDate.parse(tokenExpiry, formatter);
 			LocalDate today = LocalDate.now();
 			LocalDate sevenDaysFromNow = today.plusDays(7);
 
-			if (!expiryDate.isAfter(sevenDaysFromNow)) {
+			if (expiryDate.isAfter(today) && !expiryDate.isAfter(sevenDaysFromNow)) {
 				MaterialAlertDialogBuilder builder =
 						new MaterialAlertDialogBuilder(
 								activity,
@@ -89,14 +111,20 @@ public class CheckAuthorizationStatus {
 						.setCancelable(false)
 						.setPositiveButton(
 								R.string.update,
-								(dialog, which) -> showUpdateTokenDialog(context, accountId))
-						.setNeutralButton(
-								R.string.cancel,
-								(dialog, which) -> {
-									SharedPrefDB.getInstance(context).putBoolean(warningKey, true);
-									dialog.dismiss();
-								})
-						.show();
+								(dialog, which) -> showUpdateTokenDialog(context, accountId));
+
+				if (hasMultipleAccounts) {
+					builder.setNeutralButton(
+							R.string.switch_account,
+							(dialog, which) -> {
+								Intent intent = new Intent(context, AppSettingsActivity.class);
+								intent.putExtra("openAccountsBottomSheet", true);
+								context.startActivity(intent);
+								dialog.dismiss();
+							});
+				}
+
+				builder.show();
 			}
 		} catch (DateTimeParseException e) {
 			// Invalid date format, skip warning
@@ -126,8 +154,7 @@ public class CheckAuthorizationStatus {
 		builder.setTitle(R.string.update_token)
 				.setCancelable(false)
 				.setView(view)
-				.setPositiveButton(R.string.update, null)
-				.setNeutralButton(R.string.cancel, null);
+				.setPositiveButton(R.string.update, null);
 
 		AlertDialog dialog = builder.create();
 		dialog.show();
@@ -178,7 +205,6 @@ public class CheckAuthorizationStatus {
 			UserAccountsApi userAccountsApi,
 			int accountId,
 			AlertDialog dialog) {
-
 		Call<PersonalAccessTokens> call =
 				RetrofitClient.getApiInterface(activity, instanceUrl, "Bearer " + token)
 						.getPersonalAccessTokenInfo();
@@ -189,9 +215,7 @@ public class CheckAuthorizationStatus {
 					public void onResponse(
 							@NonNull Call<PersonalAccessTokens> call,
 							@NonNull retrofit2.Response<PersonalAccessTokens> response) {
-
 						if (response.code() == 200 && response.body() != null) {
-
 							String tokenExpiry = (String) response.body().getExpiresAt();
 							userAccountsApi.updateToken(accountId, token);
 							userAccountsApi.updateTokenExpiry(
