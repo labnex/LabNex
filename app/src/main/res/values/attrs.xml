@@ -7,6 +7,7 @@
     <attr name="textColor" format="reference"/>
     <attr name="bottomNavigationColor" format="reference"/>
     <attr name="snackbarContainer" format="reference"/>
+    <attr name="homeIconsBackgroundColor" format="reference" />
     <attr name="snackbarOnContainer" format="reference"/>
     <attr name="divider" format="reference"/>
     <attr name="inputBsDividerColor" format="reference"/>

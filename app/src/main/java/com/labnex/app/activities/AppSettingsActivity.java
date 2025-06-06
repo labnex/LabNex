@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
 import androidx.biometric.BiometricManager;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -145,6 +146,7 @@ public class AppSettingsActivity extends BaseActivity implements BottomSheetList
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S || "S".equals(Build.VERSION.CODENAME)) {
 			themeList = getResources().getStringArray(R.array.themes);
 		} else {
+			binding.sectionAppearance.themeDynamic.setVisibility(View.GONE);
 			themeList = getResources().getStringArray(R.array.themes_older_versions);
 		}
 		themeSelectedChoice =

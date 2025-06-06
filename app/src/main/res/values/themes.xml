@@ -52,13 +52,15 @@
         <item name="colorSurfaceContainerHighest">@color/md_theme_surfaceContainerHighest</item>
 
         <item name="iconsColor">@color/md_system_default_icons_color</item>
-        <item name="textColor">@color/md_system_default_text_color</item>
+        <item name="textColor">@color/md_system_default_icons_color</item>
         <item name="inputBackgroundColor">@color/md_system_default_input_background_color</item>
         <item name="bottomNavigationColor">@color/md_theme_inverseOnSurface</item>
         <item name="snackbarContainer">@color/snackbar_on_container</item>
         <item name="snackbarOnContainer">@color/snackbar_container</item>
         <item name="divider">@color/md_system_input_divider_color</item>
         <item name="inputBsDividerColor">@color/md_system_input_divider_color</item>
+        <item name="chipStyle">@style/CustomChipFilter</item>
+        <item name="homeIconsBackgroundColor">@color/md_theme_inverseOnSurface_light</item>
     </style>
     <!-- System default - light -->
 
@@ -116,13 +118,15 @@
 
         <item name="isDark">0</item>
         <item name="iconsColor">@color/md_light_theme_icons_color</item>
-        <item name="textColor">@color/md_light_theme_text_color</item>
+        <item name="textColor">@color/md_light_theme_icons_color</item>
         <item name="inputBackgroundColor">@color/md_light_input_background_color</item>
         <item name="bottomNavigationColor">@color/md_theme_inverseOnSurface_light</item>
         <item name="snackbarContainer">@color/snackbar_on_container</item>
         <item name="snackbarOnContainer">@color/snackbar_container</item>
         <item name="divider">@color/md_light_input_divider_color</item>
         <item name="inputBsDividerColor">@color/md_light_input_divider_color</item>
+        <item name="chipStyle">@style/CustomChipFilter</item>
+        <item name="homeIconsBackgroundColor">@color/md_theme_inverseOnSurface_light</item>
     </style>
     <!-- Light theme -->
 
@@ -180,13 +184,15 @@
 
         <item name="isDark">1</item>
         <item name="iconsColor">@color/md_dark_theme_icons_color</item>
-        <item name="textColor">@color/md_dark_theme_text_color</item>
+        <item name="textColor">@color/md_dark_theme_icons_color</item>
         <item name="inputBackgroundColor">@color/md_dark_input_background_color</item>
         <item name="bottomNavigationColor">@color/md_theme_inverseOnSurface_dark</item>
         <item name="snackbarContainer">@color/snackbar_container</item>
         <item name="snackbarOnContainer">@color/snackbar_on_container</item>
         <item name="divider">@color/md_dark_input_divider_color</item>
         <item name="inputBsDividerColor">@color/md_dark_input_divider_color</item>
+        <item name="chipStyle">@style/CustomChipFilterDark</item>
+        <item name="homeIconsBackgroundColor">@color/md_theme_inverseOnSurface_dark</item>
     </style>
     <!-- Dark theme -->
 
@@ -216,20 +222,6 @@
     </style>
     <!-- custom material button -->
 
-    <style name="CustomChip" parent="Widget.MaterialComponents.Chip.Choice">
-        <item name="chipBackgroundColor">@drawable/chip_background_selector</item>
-        <item name="android:textColor">@drawable/chip_text_color_selector</item>
-        <item name="chipStrokeColor">@color/md_theme_outline</item>
-        <item name="chipStrokeWidth">@dimen/dimen2dp</item>
-        <item name="chipCornerRadius">@dimen/dimen8dp</item>
-        <item name="android:textAppearance">@style/TextAppearance.MaterialComponents.Body1</item>
-        <item name="chipStartPadding">@dimen/dimen8dp</item>
-        <item name="chipEndPadding">@dimen/dimen8dp</item>
-        <item name="android:paddingTop">@dimen/dimen4dp</item>
-        <item name="android:paddingBottom">@dimen/dimen4dp</item>
-        <item name="checkedIconEnabled">false</item>
-    </style>
-
     <!-- card top corners rounded -->
     <style name="ShapeAppearance.Card.TopRounded" parent="ShapeAppearance.Material3.SmallComponent">
         <item name="cornerSizeTopLeft">@dimen/dimen16dp</item>
@@ -244,6 +236,24 @@
         <item name="cornerSizeTopRight">@dimen/dimen4dp</item>
         <item name="cornerSizeBottomLeft">@dimen/dimen16dp</item>
         <item name="cornerSizeBottomRight">@dimen/dimen16dp</item>
+    </style>
+
+    <style name="CustomChipFilter" parent="Widget.Material3.Chip.Filter">
+        <item name="chipBackgroundColor">@color/md_theme_outlineVariant_light</item>
+        <item name="chipStrokeWidth">0dp</item>
+        <item name="chipStrokeColor">@android:color/transparent</item>
+        <item name="android:textColor">?attr/textColor</item>
+        <item name="rippleColor">@android:color/transparent</item>
+        <item name="checkedIconTint">?attr/textColor</item>
+    </style>
+
+    <style name="CustomChipFilterDark" parent="Widget.Material3.Chip.Filter">
+        <item name="chipBackgroundColor">@color/md_theme_inverseOnSurface_dark</item>
+        <item name="chipStrokeWidth">0dp</item>
+        <item name="chipStrokeColor">@android:color/transparent</item>
+        <item name="android:textColor">?attr/textColor</item>
+        <item name="rippleColor">@android:color/transparent</item>
+        <item name="checkedIconTint">?attr/textColor</item>
     </style>
 
 </resources>
