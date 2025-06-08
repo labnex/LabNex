@@ -1,0 +1,21 @@
+5.0.0
+
+🎉 Features 🎉
+- View all snippets
+- Create/view/delete a snippet
+- Delete a file
+- Create merge request for file creation/edit/deletion
+- View project tags
+- Create/delete a tag
+- Update instance token
+
+🚀 Improvements 🚀 
+- Show instance URL with username in settings
+- Add search icon to explore input field
+- Themes improvements
+
+🐛 Bug Fixes 🐛
+- Use specific errors on invalid logins
+- Fix explore results for scopes
+
+Release Notes: https://github.com/labnex/LabNex/releases
