@@ -4,19 +4,22 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.labnex.app.R;
+import com.labnex.app.activities.AppSettingsActivity;
 import com.labnex.app.database.api.BaseApi;
 import com.labnex.app.database.api.UserAccountsApi;
 import com.labnex.app.database.models.UserAccount;
+import com.labnex.app.helpers.CheckAuthorizationStatus;
 import com.labnex.app.helpers.SharedPrefDB;
 import com.labnex.app.helpers.Snackbar;
 import com.labnex.app.helpers.Utils;
@@ -100,10 +103,7 @@ public class UserAccountsAdapter
 		private final TextView userId;
 		private final ImageView activeAccount;
 		private final ImageView deleteAccount;
-		private final ImageView editAccount;
-		private final ImageView repoAvatar;
 		private final TextView tokenExpiresAt;
-		private final LinearLayout tokenFrame;
 		private int accountId;
 		private String accountName;
 
@@ -116,15 +116,28 @@ public class UserAccountsAdapter
 			userId = itemView.findViewById(R.id.user_id);
 			activeAccount = itemView.findViewById(R.id.active_account);
 			deleteAccount = itemView.findViewById(R.id.delete_account);
-			editAccount = itemView.findViewById(R.id.edit_account);
+			ImageView editAccount = itemView.findViewById(R.id.edit_account);
 			tokenExpiresAt = itemView.findViewById(R.id.token_expires_at);
-			tokenFrame = itemView.findViewById(R.id.token_frame_edit);
-			repoAvatar = itemView.findViewById(R.id.repo_avatar);
 
-			/*editAccount.setOnClickListener(
-			edit -> {
-
-			});*/
+			editAccount.setOnClickListener(
+					edit -> {
+						BottomSheetDialogFragment bottomSheet =
+								(BottomSheetDialogFragment)
+										((AppSettingsActivity) context)
+												.getSupportFragmentManager()
+												.findFragmentByTag("accountsBottomSheet");
+						if (bottomSheet != null) {
+							bottomSheet.dismiss();
+							new Handler(Looper.getMainLooper())
+									.postDelayed(
+											() ->
+													CheckAuthorizationStatus.showUpdateTokenDialog(
+															context, accountId),
+											300);
+						} else {
+							CheckAuthorizationStatus.showUpdateTokenDialog(context, accountId);
+						}
+					});
 
 			deleteAccount.setOnClickListener(
 					itemDelete -> {

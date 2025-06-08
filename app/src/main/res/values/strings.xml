@@ -25,6 +25,10 @@
     <string name="visibility_internal" translatable="false">Internal</string>
     <string name="visibility_private" translatable="false">Private</string>
     <string name="visibility_public" translatable="false">Public</string>
+    <string name="dark" translatable="false">Dark</string>
+    <string name="light" translatable="false">Light</string>
+    <string name="dynamic" translatable="false">Dynamic</string>
+    <string name="theme_system" translatable="false">System</string>
     <!-- non translatable strings -->
 
     <string name="action_sign_in">Sign in</string>
@@ -154,7 +158,6 @@
     <string name="activity_created_project">\@%1$s created project</string>
     <string name="activity_updated_wiki_page">\@%1$s updated wiki page</string>
 
-
     <!-- merge requests -->
     <string name="activity_mr_approvals">Approvals: %1$d / %2$d</string>
     <string name="activity_mr_not_eligible">You can not approve this merge request</string>
@@ -196,14 +199,14 @@
     <string name="commit_message">Commit message</string>
     <string name="edit_commit_message">Update %1$s</string>
     <string name="delete_commit_message">Delete %1$s</string>
-    <string name="delete_file_via_branch">The file has been sent for an deletion via %1$s branch</string>
+    <string name="delete_file_via_branch">The file has been sent for deletion via the %1$s branch</string>
     <string name="file_content">File content</string>
     <string name="all_fields_are_required">All fields are required and must be filled out</string>
     <string name="open_ce">Open in Code Editor</string>
     <string name="ce_no_filename_filled">You haven\'t entered a filename in the File name field. To better utilize the code editor\'s capabilities, it is recommended to provide a filename with an extension.\n\nPress Ignore to continue or Cancel to exit.</string>
     <string name="code_editor">Code editor</string>
     <string name="new_file_created">New file created successfully</string>
-    <string name="file_update">The file has been sent for an update via %1$s branch</string>
+    <string name="file_update">The file has been sent for an update via the %1$s branch</string>
     <string name="home_screen">Home screen</string>
     <string name="home_screen_dialog_title">Select home screen</string>
     <string name="created_by">Created by %1$s %2$s</string>
@@ -221,6 +224,30 @@
     <string name="snippet_created">Snippet created successfully</string>
     <string name="create_snippet_with_count">Create Snippet (%1$d/10 files)</string>
     <string name="duplicate_file_name">Duplicate file names are not allowed</string>
+    <string name="update_token">Update Token</string>
+    <string name="token_empty_error">Token cannot be empty</string>
+    <string name="account_not_found_error">Account not found. Please sign in again.</string>
+    <string name="token_expiry_warning_title">Token Expiring Soon</string>
+    <string name="token_expiry_warning_message">Your access token will expire soon. Update it now to avoid interruptions.</string>
+    <string name="no_commit">No commit</string>
+    <string name="author_committer_info">Authored by %1$s, committed by %2$s, %3$s</string>
+    <string name="author_committer_info_no_commit">Created at %1$s</string>
+    <string name="copy_commit_id">Copy commit ID</string>
+    <string name="commit_id_copied">Commit ID copied to clipboard</string>
+    <string name="new_tag">New Tag</string>
+    <string name="create_new_tag">Create New Tag</string>
+    <string name="tag_name">Tag Name</string>
+    <string name="message_optional">Message (optional)</string>
+    <string name="tag_created">Tag created</string>
+    <string name="tag_name_empty">Tag name is required</string>
+    <string name="ref_empty">Ref is required</string>
+    <string name="tag_already_exists">Tag already exists</string>
+    <string name="tag_ref_hint">Commit SHA, another tag name, or branch name</string>
+    <string name="tag_ref_invalid">Target ref is invalid</string>
+    <string name="delete_tag">Delete Tag</string>
+    <string name="delete_tag_confirmation">Are you sure you want to delete tag %1$s?</string>
+    <string name="tag_deleted">Tag deleted</string>
+    <string name="switch_account">Switch Account</string>
 
     <!-- errors -->
     <string name="generic_error">An unexpected error occurred</string>
@@ -241,7 +268,7 @@
     <string name="generic_server_response_error">We cannot reach the server at the moment. Please check again later</string>
     <string name="generic_api_error">GitLab has returned an error. Code %1$d</string>
     <string name="authorization_error">Authorization Error</string>
-    <string name="authorization_error_message">It seems that your personal access token has been revoked or is no longer valid.\n\nYou can click the Update button to update your personal access token on the accounts screen.</string>
+    <string name="authorization_error_message">It seems that your personal access token has been revoked or is no longer valid.\n\nYou can click the Update button to update your personal access token.</string>
     <string name="group_name_required">Group name is required</string>
     <string name="access_forbidden_403">Access forbidden, the request isn’t allowed</string>
     <string name="no_description">No description provided</string>
@@ -334,5 +361,7 @@
     <string name="menu">Menu</string>
     <string name="snippets">Snippets</string>
     <string name="refresh">Refresh</string>
+    <string name="tags">Tags</string>
+    <string name="unknown">Unknown</string>
     <!-- generic copy -->
 </resources>

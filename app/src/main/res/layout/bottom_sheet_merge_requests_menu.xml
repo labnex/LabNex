@@ -38,7 +38,6 @@
 
         <com.google.android.material.chip.Chip
             android:id="@+id/chip_opened"
-            style="@style/Widget.Material3.Chip.Filter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/open"
@@ -46,14 +45,12 @@
 
         <com.google.android.material.chip.Chip
             android:id="@+id/chip_merged"
-            style="@style/Widget.Material3.Chip.Filter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/merged" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/chip_closed"
-            style="@style/Widget.Material3.Chip.Filter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/closed" />

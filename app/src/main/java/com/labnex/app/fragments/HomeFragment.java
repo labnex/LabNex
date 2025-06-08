@@ -28,7 +28,9 @@ import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.database.api.BaseApi;
 import com.labnex.app.database.api.NotesApi;
 import com.labnex.app.database.api.ProjectsApi;
+import com.labnex.app.database.api.UserAccountsApi;
 import com.labnex.app.database.models.Projects;
+import com.labnex.app.database.models.UserAccount;
 import com.labnex.app.databinding.FragmentHomeBinding;
 import com.labnex.app.helpers.SharedPrefDB;
 import com.labnex.app.helpers.Snackbar;
@@ -63,6 +65,16 @@ public class HomeFragment extends Fragment {
 
 		currentActiveAccountId =
 				SharedPrefDB.getInstance(requireContext()).getInt("currentActiveAccountId");
+
+		UserAccountsApi userAccountsApi = BaseApi.getInstance(ctx, UserAccountsApi.class);
+		UserAccount account =
+				userAccountsApi != null
+						? userAccountsApi.getAccountById(currentActiveAccountId)
+						: null;
+		if (account != null) {
+			binding.welcomeTextHi.setText(
+					String.format(getString(R.string.hi_username), account.getUserName()));
+		}
 
 		notesApi = BaseApi.getInstance(ctx, NotesApi.class);
 		projectsApi = BaseApi.getInstance(ctx, ProjectsApi.class);
@@ -260,11 +272,6 @@ public class HomeFragment extends Fragment {
 									((BaseActivity) requireActivity())
 											.getAccount()
 											.setUserInfo(userDetails);
-
-									binding.welcomeTextHi.setText(
-											String.format(
-													getString(R.string.hi_username),
-													userDetails.getFullName()));
 
 									Glide.with(requireContext())
 											.load(userDetails.getAvatarUrl())

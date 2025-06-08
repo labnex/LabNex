@@ -70,10 +70,11 @@ public class ActivitiesFragment extends Fragment {
 	}
 
 	private void setupTargetTypeChips() {
+		LayoutInflater inflater = LayoutInflater.from(ctx);
 
 		for (String targetType : targetTypes) {
 
-			Chip chip = new Chip(requireContext(), null, R.style.CustomChip);
+			Chip chip = (Chip) inflater.inflate(R.layout.chip_item, binding.targetTypeChips, false);
 			chip.setText(targetType);
 			chip.setCheckable(true);
 			chip.setClickable(true);

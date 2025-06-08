@@ -8,18 +8,25 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
 import androidx.biometric.BiometricManager;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.labnex.app.R;
 import com.labnex.app.bottomsheets.AppSettingsBottomSheet;
+import com.labnex.app.database.api.BaseApi;
+import com.labnex.app.database.api.UserAccountsApi;
+import com.labnex.app.database.models.UserAccount;
 import com.labnex.app.databinding.ActivityAppSettingsBinding;
 import com.labnex.app.helpers.AppSettingsInit;
+import com.labnex.app.helpers.SharedPrefDB;
 import com.labnex.app.helpers.Snackbar;
 import com.labnex.app.helpers.Utils;
 import com.labnex.app.interfaces.BottomSheetListener;
 import io.mikael.urlbuilder.UrlBuilder;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 
@@ -28,6 +35,7 @@ import java.util.Locale;
  */
 public class AppSettingsActivity extends BaseActivity implements BottomSheetListener {
 
+	private ActivityAppSettingsBinding binding;
 	private static String[] themeList;
 	private static int themeSelectedChoice;
 	private static int langSelectedChoice;
@@ -38,63 +46,75 @@ public class AppSettingsActivity extends BaseActivity implements BottomSheetList
 	public void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
-		ActivityAppSettingsBinding binding =
-				ActivityAppSettingsBinding.inflate(getLayoutInflater());
+		binding = ActivityAppSettingsBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
 		binding.bottomAppBar.setNavigationOnClickListener(topBar -> finish());
 
-		if (getAccount().getUserInfo() != null) {
+		int accountId = SharedPrefDB.getInstance(ctx).getInt("currentActiveAccountId");
+		UserAccountsApi userAccountsApi = BaseApi.getInstance(ctx, UserAccountsApi.class);
+		UserAccount account =
+				userAccountsApi != null ? userAccountsApi.getAccountById(accountId) : null;
 
-			Glide.with(ctx)
-					.load(getAccount().getUserInfo().getAvatarUrl())
-					.diskCacheStrategy(DiskCacheStrategy.ALL)
-					.placeholder(R.drawable.ic_spinner)
-					.centerCrop()
-					.into(binding.userAvatar);
+		if (account != null) {
 
-			binding.userAvatar.setOnClickListener(
-					profile -> {
-						Intent intent = new Intent(AppSettingsActivity.this, ProfileActivity.class);
-						intent.putExtra("source", "app_settings");
-						intent.putExtra("userId", getAccount().getUserInfo().getId());
-						AppSettingsActivity.this.startActivity(intent);
-					});
+			binding.accountsUserFullName.setText(account.getUserName());
 
-			binding.accountsUserFullName.setText(getAccount().getUserInfo().getFullName());
+			String accountName = account.getAccountName();
+			if (accountName != null && accountName.contains("@")) {
+				String username = accountName.split("@")[0];
+				String instanceUrl = accountName.split("@")[1];
 
-			UrlBuilder urlBuilder =
-					UrlBuilder.fromString(getAccount().getAccount().getInstanceUrl());
-			String hostName = urlBuilder.hostName;
-			binding.accountsUsername.setText(
-					getString(
-							R.string.username_with_domain,
-							getAccount().getUserInfo().getUsername(),
-							hostName));
+				UrlBuilder urlBuilder = UrlBuilder.fromString(instanceUrl);
+				String hostName = urlBuilder.hostName;
+
+				binding.accountsUsername.setText(
+						getString(R.string.username_with_domain, username, hostName));
+			} else {
+				binding.accountsUsername.setText("");
+			}
+
+			if (getAccount().getUserInfo() != null) {
+				Glide.with(ctx)
+						.load(getAccount().getUserInfo().getAvatarUrl())
+						.diskCacheStrategy(DiskCacheStrategy.ALL)
+						.placeholder(R.drawable.ic_spinner)
+						.centerCrop()
+						.into(binding.userAvatar);
+
+				binding.userAvatar.setOnClickListener(
+						profile -> {
+							Intent intent =
+									new Intent(AppSettingsActivity.this, ProfileActivity.class);
+							intent.putExtra("source", "app_settings");
+							intent.putExtra("userId", getAccount().getUserInfo().getId());
+							AppSettingsActivity.this.startActivity(intent);
+						});
+			}
 		}
 
-		binding.appVersion.setText(Utils.getAppVersion(ctx));
-		binding.gitlabVersion.setText(getAccount().getServerVersion().toString());
+		binding.sectionAbout.appVersion.setText(Utils.getAppVersion(ctx));
+		binding.sectionAbout.gitlabVersion.setText(getAccount().getServerVersion().toString());
 
-		binding.supportPatreonFrame.setOnClickListener(
+		binding.sectionLinks.supportPatreonFrame.setOnClickListener(
 				v11 ->
 						Utils.openUrlInBrowser(
 								this,
 								AppSettingsActivity.this,
 								getResources().getString(R.string.support_link_patreon)));
-		binding.crowdinFrame.setOnClickListener(
+		binding.sectionLinks.crowdinFrame.setOnClickListener(
 				v13 ->
 						Utils.openUrlInBrowser(
 								this,
 								AppSettingsActivity.this,
 								getResources().getString(R.string.crowd_in_link)));
-		binding.websiteFrame.setOnClickListener(
+		binding.sectionLinks.websiteFrame.setOnClickListener(
 				v14 ->
 						Utils.openUrlInBrowser(
 								this,
 								AppSettingsActivity.this,
 								getResources().getString(R.string.app_website_link)));
-		binding.sourceCodeFrame.setOnClickListener(
+		binding.sectionLinks.sourceCodeFrame.setOnClickListener(
 				v15 ->
 						Utils.openUrlInBrowser(
 								this,
@@ -115,46 +135,35 @@ public class AppSettingsActivity extends BaseActivity implements BottomSheetList
 					bottomSheet.show(getSupportFragmentManager(), "accountsBottomSheet");
 				});
 
-		// theme selection dialog
+		if (getIntent().getBooleanExtra("openAccountsBottomSheet", false)) {
+			bsBundle.putString("source", "accounts");
+			AppSettingsBottomSheet bottomSheet = new AppSettingsBottomSheet();
+			bottomSheet.setArguments(bsBundle);
+			bottomSheet.show(getSupportFragmentManager(), "accountsBottomSheet");
+		}
+
+		// theme selection cards
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S || "S".equals(Build.VERSION.CODENAME)) {
 			themeList = getResources().getStringArray(R.array.themes);
 		} else {
+			binding.sectionAppearance.themeDynamic.setVisibility(View.GONE);
 			themeList = getResources().getStringArray(R.array.themes_older_versions);
 		}
 		themeSelectedChoice =
 				Integer.parseInt(
 						AppSettingsInit.getSettingsValue(ctx, AppSettingsInit.APP_THEME_KEY));
-		binding.themeSelected.setText(themeList[themeSelectedChoice]);
 
-		binding.themeSelectionFrame.setOnClickListener(
-				view -> {
-					MaterialAlertDialogBuilder materialAlertDialogBuilder =
-							new MaterialAlertDialogBuilder(AppSettingsActivity.this)
-									.setTitle(R.string.theme_selector_dialog_title)
-									.setSingleChoiceItems(
-											themeList,
-											themeSelectedChoice,
-											(dialogInterfaceTheme, i) -> {
-												themeSelectedChoice = i;
-												binding.themeSelected.setText(themeList[i]);
-												AppSettingsInit.updateSettingsValue(
-														ctx,
-														String.valueOf(i),
-														AppSettingsInit.APP_THEME_KEY);
+		updateThemeCardBorders(themeSelectedChoice);
 
-												MainActivity.refActivity = true;
-												this.recreate();
-												this.overridePendingTransition(0, 0);
-												dialogInterfaceTheme.dismiss();
-												Snackbar.info(
-														AppSettingsActivity.this,
-														findViewById(R.id.bottom_app_bar),
-														getString(R.string.settings_saved));
-											});
-
-					materialAlertDialogBuilder.create().show();
-				});
-		// theme selection dialog
+		binding.sectionAppearance.themeDark.setOnClickListener(
+				v -> selectTheme(getString(R.string.dark)));
+		binding.sectionAppearance.themeLight.setOnClickListener(
+				v -> selectTheme(getString(R.string.light)));
+		binding.sectionAppearance.themeSystem.setOnClickListener(
+				v -> selectTheme(getString(R.string.theme_system)));
+		binding.sectionAppearance.themeDynamic.setOnClickListener(
+				v -> selectTheme(getString(R.string.dynamic)));
+		// theme selection cards
 
 		// language selection dialog
 		LinkedHashMap<String, String> lang = new LinkedHashMap<>();
@@ -166,10 +175,10 @@ public class AppSettingsActivity extends BaseActivity implements BottomSheetList
 		String[] locale =
 				AppSettingsInit.getSettingsValue(ctx, AppSettingsInit.APP_LOCALE_KEY).split("\\|");
 		langSelectedChoice = Integer.parseInt(locale[0]);
-		binding.languageSelected.setText(
+		binding.sectionAppearance.languageSelected.setText(
 				lang.get(lang.keySet().toArray(new String[0])[langSelectedChoice]));
 
-		binding.languageSelectionFrame.setOnClickListener(
+		binding.sectionAppearance.languageSelectionFrame.setOnClickListener(
 				view -> {
 					MaterialAlertDialogBuilder materialAlertDialogBuilder =
 							new MaterialAlertDialogBuilder(AppSettingsActivity.this)
@@ -209,9 +218,10 @@ public class AppSettingsActivity extends BaseActivity implements BottomSheetList
 		homeScreenSelectedChoice =
 				Integer.parseInt(
 						AppSettingsInit.getSettingsValue(ctx, AppSettingsInit.APP_HOME_SCREEN_KEY));
-		binding.homeScreenSelected.setText(homeScreenList[homeScreenSelectedChoice]);
+		binding.sectionAppearance.homeScreenSelected.setText(
+				homeScreenList[homeScreenSelectedChoice]);
 
-		binding.homeScreenSelectionFrame.setOnClickListener(
+		binding.sectionAppearance.homeScreenSelectionFrame.setOnClickListener(
 				view -> {
 					MaterialAlertDialogBuilder materialAlertDialogBuilder =
 							new MaterialAlertDialogBuilder(AppSettingsActivity.this)
@@ -221,8 +231,8 @@ public class AppSettingsActivity extends BaseActivity implements BottomSheetList
 											homeScreenSelectedChoice,
 											(dialogInterfaceTheme, i) -> {
 												homeScreenSelectedChoice = i;
-												binding.homeScreenSelected.setText(
-														homeScreenList[i]);
+												binding.sectionAppearance.homeScreenSelected
+														.setText(homeScreenList[i]);
 												AppSettingsInit.updateSettingsValue(
 														ctx,
 														String.valueOf(i),
@@ -240,11 +250,11 @@ public class AppSettingsActivity extends BaseActivity implements BottomSheetList
 		// home screen selection dialog
 
 		// biometric switcher
-		binding.switchBiometric.setChecked(
+		binding.sectionSecurity.switchBiometric.setChecked(
 				Boolean.parseBoolean(
 						AppSettingsInit.getSettingsValue(ctx, AppSettingsInit.APP_BIOMETRIC_KEY)));
 
-		binding.switchBiometric.setOnCheckedChangeListener(
+		binding.sectionSecurity.switchBiometric.setOnCheckedChangeListener(
 				(buttonView, isChecked) -> {
 					if (isChecked) {
 
@@ -270,7 +280,7 @@ public class AppSettingsActivity extends BaseActivity implements BottomSheetList
 								case BiometricManager.BIOMETRIC_STATUS_UNKNOWN:
 									AppSettingsInit.updateSettingsValue(
 											ctx, "false", AppSettingsInit.APP_BIOMETRIC_KEY);
-									binding.switchBiometric.setChecked(false);
+									binding.sectionSecurity.switchBiometric.setChecked(false);
 									Snackbar.info(
 											AppSettingsActivity.this,
 											findViewById(R.id.bottom_app_bar),
@@ -279,7 +289,7 @@ public class AppSettingsActivity extends BaseActivity implements BottomSheetList
 								case BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE:
 									AppSettingsInit.updateSettingsValue(
 											ctx, "false", AppSettingsInit.APP_BIOMETRIC_KEY);
-									binding.switchBiometric.setChecked(false);
+									binding.sectionSecurity.switchBiometric.setChecked(false);
 									Snackbar.info(
 											AppSettingsActivity.this,
 											findViewById(R.id.bottom_app_bar),
@@ -288,7 +298,7 @@ public class AppSettingsActivity extends BaseActivity implements BottomSheetList
 								case BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED:
 									AppSettingsInit.updateSettingsValue(
 											ctx, "false", AppSettingsInit.APP_BIOMETRIC_KEY);
-									binding.switchBiometric.setChecked(false);
+									binding.sectionSecurity.switchBiometric.setChecked(false);
 									Snackbar.info(
 											AppSettingsActivity.this,
 											findViewById(R.id.bottom_app_bar),
@@ -315,9 +325,58 @@ public class AppSettingsActivity extends BaseActivity implements BottomSheetList
 					}
 				});
 
-		binding.biometricFrame.setOnClickListener(
-				v -> binding.switchBiometric.setChecked(!binding.switchBiometric.isChecked()));
+		binding.sectionSecurity.biometricFrameCard.setOnClickListener(
+				v ->
+						binding.sectionSecurity.switchBiometric.setChecked(
+								!binding.sectionSecurity.switchBiometric.isChecked()));
 		// biometric switcher
+	}
+
+	private void selectTheme(String themeName) {
+
+		int themeIndex = Arrays.asList(themeList).indexOf(themeName);
+		if (themeIndex == -1 || themeSelectedChoice == themeIndex) {
+			return;
+		}
+
+		themeSelectedChoice = themeIndex;
+		AppSettingsInit.updateSettingsValue(
+				ctx, String.valueOf(themeIndex), AppSettingsInit.APP_THEME_KEY);
+
+		updateThemeCardBorders(themeIndex);
+
+		MainActivity.refActivity = true;
+		this.recreate();
+		this.overridePendingTransition(0, 0);
+		Snackbar.info(
+				AppSettingsActivity.this,
+				findViewById(R.id.bottom_app_bar),
+				getString(R.string.settings_saved));
+	}
+
+	private void updateThemeCardBorders(int selectedIndex) {
+
+		MaterialCardView[] themeCards = {
+			binding.sectionAppearance.themeDark,
+			binding.sectionAppearance.themeLight,
+			binding.sectionAppearance.themeSystem,
+			binding.sectionAppearance.themeDynamic
+		};
+		String[] themeNames = {
+			getString(R.string.dark),
+			getString(R.string.light),
+			getString(R.string.theme_system),
+			getString(R.string.dynamic)
+		};
+
+		for (int i = 0; i < themeCards.length; i++) {
+			if (i < themeList.length && themeNames[i].equals(themeList[selectedIndex])) {
+				themeCards[i].setStrokeWidth(
+						getResources().getDimensionPixelSize(R.dimen.dimen2dp));
+			} else {
+				themeCards[i].setStrokeWidth(0);
+			}
+		}
 	}
 
 	private static String getLanguageDisplayName(String langCode) {

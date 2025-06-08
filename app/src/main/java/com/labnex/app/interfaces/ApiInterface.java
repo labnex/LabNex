@@ -29,6 +29,7 @@ import com.labnex.app.models.repository.FileContents;
 import com.labnex.app.models.repository.Tree;
 import com.labnex.app.models.snippets.SnippetCreateModel;
 import com.labnex.app.models.snippets.SnippetsItem;
+import com.labnex.app.models.tags.TagsItem;
 import com.labnex.app.models.templates.Template;
 import com.labnex.app.models.templates.Templates;
 import com.labnex.app.models.user.User;
@@ -427,4 +428,19 @@ public interface ApiInterface {
 
 	@POST("snippets")
 	Call<SnippetsItem> createSnippet(@Body SnippetCreateModel model);
+
+	// Tags
+	@GET("projects/{id}/repository/tags")
+	Call<List<TagsItem>> getProjectTags(
+			@Path("id") int id, @Query("per_page") int perPage, @Query("page") int page);
+
+	@POST("projects/{id}/repository/tags")
+	Call<TagsItem> createProjectTag(
+			@Path("id") int projectId,
+			@Query("tag_name") String tagName,
+			@Query("ref") String ref,
+			@Query("message") String message);
+
+	@DELETE("projects/{id}/repository/tags/{tag_name}")
+	Call<Void> deleteProjectTag(@Path("id") int projectId, @Path("tag_name") String tagName);
 }

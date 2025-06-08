@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_margin="@dimen/dimen16dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/dimen20sp"
+        android:layout_marginBottom="@dimen/dimen16dp"
+        android:text="@string/about" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/about_selection_card"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        app:strokeWidth="@dimen/dimen0dp"
+        style="?attr/materialCardViewElevatedStyle"
+        android:layout_gravity="center_vertical"
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.Card.TopRounded"
+        app:cardElevation="@dimen/dimen0dp">
+
+        <LinearLayout
+            android:id="@+id/about_selection_frame"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:padding="@dimen/dimen16dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="@dimen/dimen24dp"
+                android:layout_height="@dimen/dimen24dp"
+                android:contentDescription="@string/app_name"
+                android:layout_marginEnd="@dimen/dimen16dp"
+                app:tint="?attr/iconsColor"
+                app:srcCompat="@drawable/ic_letter_v" />
+
+            <LinearLayout
+                android:id="@+id/about_version_selection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/about_version_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/version"
+                    android:textSize="@dimen/dimen16sp" />
+
+                <TextView
+                    android:id="@+id/app_version"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/version"
+                    android:textSize="@dimen/dimen14sp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/gitlab_version_card"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        app:strokeWidth="@dimen/dimen0dp"
+        style="?attr/materialCardViewElevatedStyle"
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="@dimen/dimen2dp"
+        app:cardElevation="@dimen/dimen0dp"
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.Card.BottomRounded">
+
+        <LinearLayout
+            android:id="@+id/gitlab_version_frame"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:padding="@dimen/dimen16dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="@dimen/dimen24dp"
+                android:layout_height="@dimen/dimen24dp"
+                android:contentDescription="@string/gitlab"
+                android:layout_marginEnd="@dimen/dimen16dp"
+                app:srcCompat="@drawable/ic_gitlab" />
+
+            <LinearLayout
+                android:id="@+id/gitlab_version_selection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/gitlab_version_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/gitlab_version"
+                    android:textSize="@dimen/dimen16sp" />
+
+                <TextView
+                    android:id="@+id/gitlab_version"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/gitlab_version"
+                    android:textSize="@dimen/dimen14sp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</LinearLayout>

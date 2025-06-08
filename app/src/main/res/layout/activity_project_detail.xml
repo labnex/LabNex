@@ -490,7 +490,7 @@
                     </LinearLayout>
 
                     <LinearLayout
-                        android:id="@+id/labels_main_frame"
+                        android:id="@+id/tags_main_frame"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="?android:attr/selectableItemBackground"
@@ -501,21 +501,21 @@
                         <ImageView
                             android:layout_width="@dimen/dimen24dp"
                             android:layout_height="@dimen/dimen24dp"
-                            android:contentDescription="@string/labels"
+                            android:contentDescription="@string/tags"
                             android:layout_marginEnd="@dimen/dimen16dp"
-                            app:srcCompat="@drawable/ic_labels" />
+                            app:srcCompat="@drawable/ic_tags" />
 
                         <LinearLayout
-                            android:id="@+id/labels_frame"
+                            android:id="@+id/tags_frame"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal">
 
                             <TextView
-                                android:id="@+id/labels_title"
+                                android:id="@+id/tags_title"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/labels"
+                                android:text="@string/tags"
                                 android:textSize="@dimen/dimen16sp" />
 
                         </LinearLayout>
@@ -549,6 +549,39 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/milestones"
+                                android:textSize="@dimen/dimen16sp" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/labels_main_frame"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="@dimen/dimen12dp">
+
+                        <ImageView
+                            android:layout_width="@dimen/dimen24dp"
+                            android:layout_height="@dimen/dimen24dp"
+                            android:contentDescription="@string/labels"
+                            android:layout_marginEnd="@dimen/dimen16dp"
+                            app:srcCompat="@drawable/ic_labels" />
+
+                        <LinearLayout
+                            android:id="@+id/labels_frame"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/labels_title"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/labels"
                                 android:textSize="@dimen/dimen16sp" />
 
                         </LinearLayout>
@@ -670,7 +703,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         style="@style/Widget.Material3.BottomAppBar"
-        app:menu="@menu/project_menu"
+        app:menu="@menu/generic_menu"
+        app:fabAlignmentMode="end"
         app:backgroundTint="?attr/bottomNavigationColor"
         app:navigationIcon="@drawable/ic_arrow_back"
         app:navigationIconTint="?attr/iconsColor">

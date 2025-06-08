@@ -51,13 +51,15 @@
         <item name="colorSurfaceContainerHighest">@color/md_theme_surfaceContainerHighest</item>
 
         <item name="iconsColor">@color/md_system_default_icons_color</item>
-        <item name="textColor">@color/md_system_default_text_color</item>
+        <item name="textColor">@color/md_system_default_icons_color</item>
         <item name="inputBackgroundColor">@color/md_system_default_input_background_color</item>
         <item name="bottomNavigationColor">@color/md_theme_inverseOnSurface</item>
         <item name="snackbarContainer">@color/snackbar_container</item>
         <item name="snackbarOnContainer">@color/snackbar_on_container</item>
         <item name="divider">@color/md_system_input_divider_color</item>
         <item name="inputBsDividerColor">@color/md_system_input_divider_color</item>
+        <item name="chipStyle">@style/CustomChipFilterDark</item>
+        <item name="homeIconsBackgroundColor">@color/md_theme_inverseOnSurface_dark</item>
     </style>
     <!-- System default - dark -->
 </resources>

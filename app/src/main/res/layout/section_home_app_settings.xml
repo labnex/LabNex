@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             app:strokeWidth="@dimen/dimen0dp"
-            android:backgroundTint="@color/cardview_dark_background"
+            android:backgroundTint="?attr/homeIconsBackgroundColor"
             app:cardElevation="@dimen/dimen0dp">
 
             <ImageView
@@ -84,7 +84,7 @@
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             app:strokeWidth="@dimen/dimen0dp"
-            android:backgroundTint="@color/cardview_dark_background"
+            android:backgroundTint="?attr/homeIconsBackgroundColor"
             app:cardElevation="@dimen/dimen0dp">
 
             <ImageView

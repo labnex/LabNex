@@ -10,8 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import com.labnex.app.R;
 import com.labnex.app.activities.ProjectDetailActivity;
@@ -80,7 +80,9 @@ public class MostVisitedAdapter
 		Projects currentItem = mostVisitedList.get(position);
 		holder.projects = currentItem;
 
-		int backgroundColor = ContextCompat.getColor(ctx, R.color.cardview_dark_background);
+		TypedValue typedValue = new TypedValue();
+		ctx.getTheme().resolveAttribute(R.attr.homeIconsBackgroundColor, typedValue, true);
+		@ColorInt int backgroundColor = typedValue.data;
 		int textColor = getColorFromAttr(ctx, R.attr.iconsColor);
 
 		String firstCharacter = "P";
