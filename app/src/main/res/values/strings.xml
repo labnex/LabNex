@@ -199,14 +199,14 @@
     <string name="commit_message">Commit message</string>
     <string name="edit_commit_message">Update %1$s</string>
     <string name="delete_commit_message">Delete %1$s</string>
-    <string name="delete_file_via_branch">The file has been sent for an deletion via %1$s branch</string>
+    <string name="delete_file_via_branch">The file has been sent for deletion via the %1$s branch</string>
     <string name="file_content">File content</string>
     <string name="all_fields_are_required">All fields are required and must be filled out</string>
     <string name="open_ce">Open in Code Editor</string>
     <string name="ce_no_filename_filled">You haven\'t entered a filename in the File name field. To better utilize the code editor\'s capabilities, it is recommended to provide a filename with an extension.\n\nPress Ignore to continue or Cancel to exit.</string>
     <string name="code_editor">Code editor</string>
     <string name="new_file_created">New file created successfully</string>
-    <string name="file_update">The file has been sent for an update via %1$s branch</string>
+    <string name="file_update">The file has been sent for an update via the %1$s branch</string>
     <string name="home_screen">Home screen</string>
     <string name="home_screen_dialog_title">Select home screen</string>
     <string name="created_by">Created by %1$s %2$s</string>
