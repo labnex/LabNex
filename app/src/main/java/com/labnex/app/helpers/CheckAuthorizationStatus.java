@@ -31,15 +31,19 @@ import retrofit2.Callback;
  */
 public class CheckAuthorizationStatus {
 
+	public static int getAccountCount(Context context) {
+		UserAccountsApi userAccountsApi = BaseApi.getInstance(context, UserAccountsApi.class);
+		assert userAccountsApi != null;
+		return userAccountsApi.getCount();
+	}
+
 	public static void authorizationErrorDialog(final Context context) {
 
 		if (!(context instanceof Activity)) {
 			return;
 		}
 
-		UserAccountsApi userAccountsApi = BaseApi.getInstance(context, UserAccountsApi.class);
-		assert userAccountsApi != null;
-		boolean hasMultipleAccounts = userAccountsApi.getCount() > 1;
+		boolean hasMultipleAccounts = getAccountCount(context) > 1;
 
 		MaterialAlertDialogBuilder materialAlertDialogBuilder =
 				new MaterialAlertDialogBuilder(
@@ -51,7 +55,8 @@ public class CheckAuthorizationStatus {
 				.setMessage(R.string.authorization_error_message)
 				.setCancelable(false)
 				.setPositiveButton(
-						R.string.update, (dialog, which) -> showUpdateTokenDialog(context, null));
+						R.string.update,
+						(dialog, which) -> showUpdateTokenDialog(context, null, false, true));
 
 		if (hasMultipleAccounts) {
 			materialAlertDialogBuilder.setNeutralButton(
@@ -60,6 +65,15 @@ public class CheckAuthorizationStatus {
 						Intent intent = new Intent(context, AppSettingsActivity.class);
 						intent.putExtra("openAccountsBottomSheet", true);
 						context.startActivity(intent);
+						dialog.dismiss();
+					});
+		} else {
+			materialAlertDialogBuilder.setNeutralButton(
+					R.string.close,
+					(dialog, which) -> {
+						if (context instanceof MainActivity) {
+							((MainActivity) context).finish();
+						}
 						dialog.dismiss();
 					});
 		}
@@ -91,7 +105,7 @@ public class CheckAuthorizationStatus {
 			return;
 		}
 
-		boolean hasMultipleAccounts = userAccountsApi.getCount() > 1;
+		boolean hasMultipleAccounts = getAccountCount(context) == 1;
 
 		try {
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -111,7 +125,8 @@ public class CheckAuthorizationStatus {
 						.setCancelable(false)
 						.setPositiveButton(
 								R.string.update,
-								(dialog, which) -> showUpdateTokenDialog(context, accountId));
+								(dialog, which) ->
+										showUpdateTokenDialog(context, accountId, false, false));
 
 				if (hasMultipleAccounts) {
 					builder.setNeutralButton(
@@ -120,6 +135,15 @@ public class CheckAuthorizationStatus {
 								Intent intent = new Intent(context, AppSettingsActivity.class);
 								intent.putExtra("openAccountsBottomSheet", true);
 								context.startActivity(intent);
+								dialog.dismiss();
+							});
+				} else {
+					builder.setNeutralButton(
+							R.string.close,
+							(dialog, which) -> {
+								if (context instanceof MainActivity) {
+									((MainActivity) context).finish();
+								}
 								dialog.dismiss();
 							});
 				}
@@ -131,11 +155,17 @@ public class CheckAuthorizationStatus {
 		}
 	}
 
-	public static void showUpdateTokenDialog(final Context context, Integer accountId) {
-
+	public static void showUpdateTokenDialog(
+			final Context context,
+			Integer accountId,
+			boolean fromAccountBs,
+			boolean singleAccountClose) {
 		if (!(context instanceof Activity activity)) {
 			return;
 		}
+
+		boolean isSingleAccount = getAccountCount(context) == 1;
+		boolean hasMultipleAccounts = getAccountCount(context) > 1;
 
 		int targetAccountId =
 				(accountId != null)
@@ -152,9 +182,33 @@ public class CheckAuthorizationStatus {
 		EditText tokenInput = view.findViewById(R.id.token_input);
 
 		builder.setTitle(R.string.update_token)
-				.setCancelable(false)
+				.setCancelable(fromAccountBs)
 				.setView(view)
 				.setPositiveButton(R.string.update, null);
+
+		if (fromAccountBs) {
+			builder.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss());
+		} else if (hasMultipleAccounts) {
+			builder.setNeutralButton(
+					R.string.switch_account,
+					(dialog, which) -> {
+						Intent intent = new Intent(context, AppSettingsActivity.class);
+						intent.putExtra("openAccountsBottomSheet", true);
+						context.startActivity(intent);
+						dialog.dismiss();
+					});
+		}
+
+		if (singleAccountClose && isSingleAccount) {
+			builder.setNeutralButton(
+					R.string.close,
+					(dialog, which) -> {
+						if (context instanceof MainActivity) {
+							((MainActivity) context).finish();
+						}
+						dialog.dismiss();
+					});
+		}
 
 		AlertDialog dialog = builder.create();
 		dialog.show();

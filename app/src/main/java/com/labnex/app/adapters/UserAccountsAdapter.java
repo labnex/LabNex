@@ -132,10 +132,11 @@ public class UserAccountsAdapter
 									.postDelayed(
 											() ->
 													CheckAuthorizationStatus.showUpdateTokenDialog(
-															context, accountId),
+															context, accountId, true, false),
 											300);
 						} else {
-							CheckAuthorizationStatus.showUpdateTokenDialog(context, accountId);
+							CheckAuthorizationStatus.showUpdateTokenDialog(
+									context, accountId, true, false);
 						}
 					});
 
