@@ -99,16 +99,10 @@ public class ProfileActivity extends BaseActivity {
 									}
 								}
 
-								if (!user.getSkype().isEmpty()
-										|| !user.getDiscord().isEmpty()
+								if (!user.getDiscord().isEmpty()
 										|| !user.getLinkedin().isEmpty()
 										|| !user.getTwitter().isEmpty()) {
 									binding.socialInfo.setVisibility(View.VISIBLE);
-
-									if (!user.getSkype().isEmpty()) {
-										binding.skype.setVisibility(View.VISIBLE);
-										binding.skype.setText(user.getSkype());
-									}
 
 									if (!user.getDiscord().isEmpty()) {
 										binding.discord.setVisibility(View.VISIBLE);

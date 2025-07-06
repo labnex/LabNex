@@ -57,8 +57,6 @@ import org.commonmark.parser.InlineParserFactory;
 import org.commonmark.parser.Parser;
 import org.commonmark.parser.PostProcessor;
 import stormpot.Allocator;
-import stormpot.BlazePool;
-import stormpot.Config;
 import stormpot.Pool;
 import stormpot.Poolable;
 import stormpot.Slot;
@@ -87,44 +85,37 @@ public class Markdown {
 	private static final Pool<RecyclerViewRenderer> rvRendererPool;
 
 	static {
-		Config<Renderer> config = new Config<>();
+		rendererPool =
+				Pool.from(
+								new Allocator<Renderer>() {
+									@Override
+									public Renderer allocate(Slot slot) {
+										return new Renderer(slot);
+									}
 
-		config.setBackgroundExpirationEnabled(true);
-		config.setPreciseLeakDetectionEnabled(true);
-		config.setSize(MAX_OBJECT_POOL_SIZE);
-		config.setAllocator(
-				new Allocator<Renderer>() {
+									@Override
+									public void deallocate(Renderer poolable) {}
+								})
+						.setSize(MAX_OBJECT_POOL_SIZE)
+						.setBackgroundExpirationEnabled(true)
+						.setPreciseLeakDetectionEnabled(true)
+						.build();
 
-					@Override
-					public Renderer allocate(Slot slot) {
-						return new Renderer(slot);
-					}
+		rvRendererPool =
+				Pool.from(
+								new Allocator<RecyclerViewRenderer>() {
+									@Override
+									public RecyclerViewRenderer allocate(Slot slot) {
+										return new RecyclerViewRenderer(slot);
+									}
 
-					@Override
-					public void deallocate(Renderer poolable) {}
-				});
-
-		rendererPool = new BlazePool<>(config);
-
-		Config<RecyclerViewRenderer> configRv = new Config<>();
-
-		configRv.setBackgroundExpirationEnabled(true);
-		configRv.setPreciseLeakDetectionEnabled(true);
-		configRv.setSize(MAX_OBJECT_POOL_SIZE);
-		configRv.setAllocator(
-				new Allocator<RecyclerViewRenderer>() {
-
-					@Override
-					public RecyclerViewRenderer allocate(Slot slot) {
-
-						return new RecyclerViewRenderer(slot);
-					}
-
-					@Override
-					public void deallocate(RecyclerViewRenderer poolable) {}
-				});
-
-		rvRendererPool = new BlazePool<>(configRv);
+									@Override
+									public void deallocate(RecyclerViewRenderer poolable) {}
+								})
+						.setSize(MAX_OBJECT_POOL_SIZE)
+						.setBackgroundExpirationEnabled(true)
+						.setPreciseLeakDetectionEnabled(true)
+						.build();
 	}
 
 	public static void render(Context context, String markdown, TextView textView) {

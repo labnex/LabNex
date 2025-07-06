@@ -1,18 +1,18 @@
 plugins {
     alias(libs.plugins.android.application)
-    id "com.diffplug.spotless" version "7.0.3"
+    id "com.diffplug.spotless" version "7.0.4"
 }
 
 android {
     namespace 'com.labnex.app'
-    compileSdk 35
+    compileSdk 36
 
     defaultConfig {
         applicationId "com.labnex.app"
-        minSdk 24
-        targetSdk 35
-        versionCode 500
-        versionName "5.0.0"
+        minSdk 26
+        targetSdk 36
+        versionCode 595
+        versionName "6.0.0-dev"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

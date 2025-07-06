@@ -2,7 +2,7 @@
 <resources>
     <!-- dynamic colors - dark -->
     <style name="AppThemeDynamicColors" parent="Theme.Material3.Dark.NoActionBar">
-        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">@android:color/system_neutral1_900</item>
         <item name="colorAccent">@android:color/system_neutral1_800</item>
         <item name="android:textColorSecondary">@android:color/system_accent1_0</item>
         <item name="android:textColorPrimary">@android:color/system_accent1_0</item>
