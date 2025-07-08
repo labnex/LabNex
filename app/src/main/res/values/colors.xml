@@ -13,6 +13,14 @@
     <color name="material_alert_dialog_background">#ECE6F0</color>
     <!-- generic colors -->
 
+    <!-- alert colors -->
+    <color name="alert_note_border">#4C78A8</color>
+    <color name="alert_tip_border">#2EA44F</color>
+    <color name="alert_important_border">#6F42C1</color>
+    <color name="alert_warning_border">#DAA038</color>
+    <color name="alert_caution_border">#D73A49</color>
+    <color name="alert_text">#24292E</color>
+
     <!-- System default - light -->
     <color name="md_theme_primary">#4B2100</color>
     <color name="md_theme_onPrimary">#FFFFFF</color>

@@ -16,6 +16,7 @@ import com.labnex.app.contexts.ProjectsContext;
 import com.labnex.app.core.MainGrammarLocator;
 import com.labnex.app.helpers.codeeditor.markwon.MarkwonHighlighter;
 import com.labnex.app.helpers.codeeditor.theme.Theme;
+import com.labnex.app.helpers.markdown.AlertPlugin;
 import io.noties.markwon.AbstractMarkwonPlugin;
 import io.noties.markwon.Markwon;
 import io.noties.markwon.MarkwonConfiguration;
@@ -165,6 +166,7 @@ public class Markdown {
 
 			Markwon.Builder builder =
 					Markwon.builder(context)
+							.usePlugin(AlertPlugin.create(context))
 							.usePlugin(CorePlugin.create())
 							.usePlugin(HtmlPlugin.create())
 							.usePlugin(LinkifyPlugin.create(true))
@@ -302,6 +304,7 @@ public class Markdown {
 
 			Markwon.Builder builder =
 					Markwon.builder(context)
+							.usePlugin(AlertPlugin.create(context))
 							.usePlugin(CorePlugin.create())
 							.usePlugin(HtmlPlugin.create())
 							.usePlugin(LinkifyPlugin.create(true))
@@ -481,6 +484,11 @@ public class Markdown {
 									SimpleEntry.create(
 											R.layout.custom_markdown_code_block,
 											R.id.textCodeBlock))
+							.include(
+									AlertPlugin.AlertBlock.class,
+									SimpleEntry.create(
+											R.layout.custom_markdown_alert_block,
+											R.id.textAlertBlock))
 							.build();
 		}
 
