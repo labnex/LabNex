@@ -18,13 +18,15 @@ import com.labnex.app.R;
 import com.labnex.app.activities.BaseActivity;
 import com.labnex.app.adapters.ProjectMilestonesAdapter;
 import com.labnex.app.databinding.BottomSheetProjectMilestonesBinding;
+import com.labnex.app.helpers.Snackbar;
 import com.labnex.app.interfaces.BottomSheetListener;
 import com.labnex.app.viewmodels.MilestonesViewModel;
 
 /**
  * @author mmarif
  */
-public class ProjectMilestonesBottomSheet extends BottomSheetDialogFragment {
+public class ProjectMilestonesBottomSheet extends BottomSheetDialogFragment
+		implements MilestoneActionsBottomSheet.UpdateInterface {
 
 	private BottomSheetProjectMilestonesBinding bottomSheetProjectMilestonesBinding;
 	private MilestonesViewModel milestonesViewModel;
@@ -44,8 +46,21 @@ public class ProjectMilestonesBottomSheet extends BottomSheetDialogFragment {
 
 		milestonesViewModel = new ViewModelProvider(this).get(MilestonesViewModel.class);
 
+		MilestoneActionsBottomSheet.setUpdateListener(this);
+
 		projectId = requireArguments().getInt("projectId", 0);
 		resultLimit = ((BaseActivity) requireContext()).getAccount().getMaxPageLimit();
+
+		bottomSheetProjectMilestonesBinding.createNewMilestone.setOnClickListener(
+				v1 -> {
+					Bundle bsBundle = new Bundle();
+					bsBundle.putString("type", "project");
+					bsBundle.putString("source", "milestones");
+					bsBundle.putInt("projectId", projectId);
+					MilestoneActionsBottomSheet bottomSheet = new MilestoneActionsBottomSheet();
+					bottomSheet.setArguments(bsBundle);
+					bottomSheet.show(getParentFragmentManager(), "milestoneActionsBottomSheet");
+				});
 
 		bottomSheetProjectMilestonesBinding.closeBs.setOnClickListener(close -> dismiss());
 		bottomSheetProjectMilestonesBinding.closeBs.setOnClickListener(close -> dismiss());
@@ -56,6 +71,21 @@ public class ProjectMilestonesBottomSheet extends BottomSheetDialogFragment {
 		fetchProjectMilestones();
 
 		return bottomSheetProjectMilestonesBinding.getRoot();
+	}
+
+	@Override
+	public void updateDataListener(String str) {
+
+		if (str.equalsIgnoreCase("created")) {
+			Snackbar.info(
+					requireContext(),
+					bottomSheetProjectMilestonesBinding.mainLayout,
+					getString(R.string.milestone_created));
+		}
+
+		adapter.clearAdapter();
+		page = 1;
+		fetchProjectMilestones();
 	}
 
 	public void fetchProjectMilestones() {

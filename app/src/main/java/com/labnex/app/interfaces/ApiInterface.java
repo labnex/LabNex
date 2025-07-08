@@ -16,6 +16,7 @@ import com.labnex.app.models.labels.Labels;
 import com.labnex.app.models.merge_requests.CrudeMergeRequest;
 import com.labnex.app.models.merge_requests.MergeRequests;
 import com.labnex.app.models.metadata.Metadata;
+import com.labnex.app.models.milestone.CrudeMilestone;
 import com.labnex.app.models.milestone.Milestones;
 import com.labnex.app.models.notes.CreateNote;
 import com.labnex.app.models.notes.Notes;
@@ -210,6 +211,9 @@ public interface ApiInterface {
 			@Query("state") String state,
 			@Query("per_page") int per_page,
 			@Query("page") int page);
+
+	@POST("projects/{id}/milestones") // create a project milestone
+	Call<Milestones> createProjectMilestone(@Path("id") int id, @Body CrudeMilestone body);
 
 	@DELETE("projects/{id}/milestones/{milestone_id}") // delete a milestone
 	Call<Void> deleteProjectMilestone(@Path("id") int id, @Path("milestone_id") int milestone_id);

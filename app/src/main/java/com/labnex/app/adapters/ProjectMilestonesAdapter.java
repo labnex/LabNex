@@ -8,14 +8,16 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.card.MaterialCardView;
 import com.labnex.app.R;
 import com.labnex.app.databinding.BottomSheetProjectMilestonesBinding;
 import com.labnex.app.helpers.TimeUtils;
 import com.labnex.app.models.milestone.Milestones;
-import java.time.Instant;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 /**
@@ -154,27 +156,29 @@ public class ProjectMilestonesAdapter extends RecyclerView.Adapter<RecyclerView.
 
 			title.setText(milestones.getTitle());
 
-			int currentTime = (int) Instant.now().getEpochSecond();
-			int startDate = 0;
+			LocalDate currentDate = LocalDate.now(ZoneId.systemDefault());
 
+			LocalDate startDate = null;
 			if (milestones.getStartDate() != null) {
-				Instant startDate_ =
-						OffsetDateTime.parse(milestones.getStartDate() + "T23:59:59Z").toInstant();
-				startDate = (int) startDate_.getEpochSecond();
+				try {
+					OffsetDateTime startDateTime =
+							OffsetDateTime.parse(milestones.getStartDate() + "T23:59:59Z");
+					startDate = startDateTime.toLocalDate();
+				} catch (Exception ignored) {
+				}
 			}
 
-			if (startDate > currentTime) {
-				status.setText(context.getResources().getString(R.string.upcoming));
-				statusCard.setCardBackgroundColor(
-						context.getResources().getColor(R.color.grey, null));
+			if (startDate != null && startDate.isAfter(currentDate)) {
+				status.setText(R.string.upcoming);
+				statusCard.setCardBackgroundColor(ContextCompat.getColor(context, R.color.grey));
 				status.setTextColor(
-						context.getResources().getColor(R.color.md_dark_theme_icons_color, null));
+						ContextCompat.getColor(context, R.color.md_dark_theme_icons_color));
 			} else {
-				status.setText(context.getResources().getString(R.string.open));
+				status.setText(R.string.open);
 				statusCard.setCardBackgroundColor(
-						context.getResources().getColor(R.color.dark_green, null));
+						ContextCompat.getColor(context, R.color.dark_green));
 				status.setTextColor(
-						context.getResources().getColor(R.color.md_dark_theme_icons_color, null));
+						ContextCompat.getColor(context, R.color.md_dark_theme_icons_color));
 			}
 
 			if (milestones.getStartDate() != null && milestones.getDueDate() != null) {

@@ -74,6 +74,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/dimen16dp"
                     android:contentDescription="@string/delete"
+                    android:visibility="gone"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:src="@drawable/ic_trash" />
 
