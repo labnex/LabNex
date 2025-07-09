@@ -138,6 +138,31 @@
                         android:visibility="gone"
                         android:textSize="@dimen/dimen16sp" />
 
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/language_stats_card"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dimen12dp"
+                        style="?attr/materialCardViewElevatedStyle"
+                        android:visibility="gone"
+                        app:cardElevation="@dimen/dimen0dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:id="@+id/language_bar_container"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:background="?android:attr/selectableItemBackground" />
+
+                        </LinearLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+
                     <!-- stars/forks frame -->
                     <LinearLayout
                         android:layout_width="match_parent"

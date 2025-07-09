@@ -38,6 +38,7 @@ import com.labnex.app.models.users.Users;
 import com.labnex.app.models.wikis.CrudeWiki;
 import com.labnex.app.models.wikis.Wiki;
 import java.util.List;
+import java.util.Map;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -217,6 +218,9 @@ public interface ApiInterface {
 
 	@DELETE("projects/{id}/milestones/{milestone_id}") // delete a milestone
 	Call<Void> deleteProjectMilestone(@Path("id") int id, @Path("milestone_id") int milestone_id);
+
+	@GET("projects/{id}/languages") // get project lang stats
+	Call<Map<String, Float>> getProjectLanguages(@Path("id") int id);
 
 	@GET("projects/{id}/repository/commits") // get a project commits
 	Call<List<Commits>> getProjectCommits(

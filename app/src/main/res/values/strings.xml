@@ -369,5 +369,6 @@
     <string name="refresh">Refresh</string>
     <string name="tags">Tags</string>
     <string name="unknown">Unknown</string>
+    <string name="languages">Languages</string>
     <!-- generic copy -->
 </resources>
