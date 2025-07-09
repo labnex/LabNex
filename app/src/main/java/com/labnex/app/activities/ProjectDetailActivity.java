@@ -1,18 +1,24 @@
 package com.labnex.app.activities;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.chip.Chip;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.gson.Gson;
 import com.labnex.app.R;
@@ -40,7 +46,10 @@ import com.labnex.app.models.repository.FileContents;
 import com.vdurmont.emoji.EmojiParser;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -59,6 +68,7 @@ public class ProjectDetailActivity extends BaseActivity
 	private String README;
 	private String source;
 	private Bundle bsBundle;
+	private Map<String, Integer> languageColors;
 
 	public void onCreate(Bundle savedInstanceState) {
 
@@ -70,6 +80,8 @@ public class ProjectDetailActivity extends BaseActivity
 
 		projectsContext = ProjectsContext.fromIntent(getIntent());
 		projectId = projectsContext.getProjectId();
+
+		loadLanguageColors();
 
 		bsBundle = new Bundle();
 
@@ -517,6 +529,7 @@ public class ProjectDetailActivity extends BaseActivity
 																					.copy_url_message)));
 										});
 
+								setupLanguageStats();
 								if (projectDetails.getReadmeUrl() != null) {
 									README =
 											projectDetails
@@ -732,6 +745,176 @@ public class ProjectDetailActivity extends BaseActivity
 								getString(R.string.generic_server_response_error));
 					}
 				});
+	}
+
+	private void loadLanguageColors() {
+		languageColors = new HashMap<>();
+		String[] names = getResources().getStringArray(R.array.language_names);
+		String[] hexColors = getResources().getStringArray(R.array.language_colors);
+		if (names.length == hexColors.length) {
+			for (int i = 0; i < names.length; i++) {
+				languageColors.put(names[i], Color.parseColor(hexColors[i]));
+			}
+		}
+	}
+
+	private void setupLanguageStats() {
+
+		Call<Map<String, Float>> call =
+				RetrofitClient.getApiInterface(this).getProjectLanguages(projectId);
+
+		call.enqueue(
+				new Callback<>() {
+					@Override
+					public void onResponse(
+							@NonNull Call<Map<String, Float>> call,
+							@NonNull Response<Map<String, Float>> response) {
+						if (response.isSuccessful() && response.code() == 200) {
+							Map<String, Float> languages = response.body();
+							if (languages != null && !languages.isEmpty()) {
+								binding.languageStatsCard.setVisibility(View.VISIBLE);
+								displayLanguageBar(languages);
+							}
+						}
+					}
+
+					@Override
+					public void onFailure(
+							@NonNull Call<Map<String, Float>> call, @NonNull Throwable t) {}
+				});
+	}
+
+	private void displayLanguageBar(Map<String, Float> languages) {
+
+		LinearLayout container = binding.languageBarContainer;
+		container.removeAllViews();
+
+		List<Map.Entry<String, Float>> sortedLanguages = new ArrayList<>(languages.entrySet());
+		sortedLanguages.sort((e1, e2) -> Float.compare(e2.getValue(), e1.getValue()));
+		int maxDisplay = Math.min(3, sortedLanguages.size());
+
+		float totalPercent = 0;
+		for (int i = 0; i < maxDisplay; i++) {
+			totalPercent += sortedLanguages.get(i).getValue();
+		}
+
+		float finalTotalPercent = totalPercent;
+		container.post(
+				() -> {
+					int totalWidth = container.getWidth();
+					if (totalWidth == 0)
+						totalWidth = getResources().getDisplayMetrics().widthPixels - 64;
+					for (int i = 0; i < maxDisplay; i++) {
+						Map.Entry<String, Float> entry = sortedLanguages.get(i);
+						String lang = entry.getKey();
+						float percent = (entry.getValue() / finalTotalPercent) * 100;
+						int sectionWidth = (int) ((totalWidth * percent) / 100);
+
+						View section = new View(this);
+						section.setLayoutParams(
+								new LinearLayout.LayoutParams(
+										sectionWidth,
+										getResources().getDimensionPixelSize(R.dimen.dimen12dp)));
+						int color = getLanguageColor(lang);
+						section.setBackgroundColor(color);
+						container.addView(section);
+					}
+
+					binding.languageStatsCard.setOnClickListener(v -> showLanguageDialog());
+				});
+	}
+
+	private int getLanguageColor(String lang) {
+		String normalizedLang = lang.toLowerCase().replace(" ", "_").replace("-", "_");
+		Integer color = languageColors.get(normalizedLang);
+		if (color == null) {
+			color = languageColors.get("default");
+		}
+		return color != null ? color : Color.parseColor("#49da39");
+	}
+
+	private void showLanguageDialog() {
+
+		Call<Map<String, Float>> call =
+				RetrofitClient.getApiInterface(this).getProjectLanguages(projectId);
+
+		call.enqueue(
+				new Callback<>() {
+					@Override
+					public void onResponse(
+							@NonNull Call<Map<String, Float>> call,
+							@NonNull Response<Map<String, Float>> response) {
+						if (response.isSuccessful() && response.code() == 200) {
+							Map<String, Float> languages = response.body();
+							if (languages != null && !languages.isEmpty()) {
+								showLanguageDialogInternal(languages);
+							}
+						}
+					}
+
+					@Override
+					public void onFailure(
+							@NonNull Call<Map<String, Float>> call, @NonNull Throwable t) {}
+				});
+	}
+
+	private void showLanguageDialogInternal(Map<String, Float> languages) {
+
+		LinearLayout dialogLayout = new LinearLayout(this);
+		dialogLayout.setOrientation(LinearLayout.VERTICAL);
+		dialogLayout.setPadding(16, 32, 16, 16);
+
+		for (Map.Entry<String, Float> entry : languages.entrySet()) {
+			String lang = entry.getKey();
+			float percent = entry.getValue();
+
+			Chip chip = new Chip(this);
+			chip.setText(String.format(Locale.US, "%s (%.1f%%)", lang, percent));
+			chip.setChipBackgroundColor(
+					ContextCompat.getColorStateList(this, R.color.alert_tip_border));
+			int color = getLanguageColor(lang);
+			chip.setChipBackgroundColor(ColorStateList.valueOf(color));
+			chip.setTextColor(isDarkColor(color) ? Color.WHITE : Color.BLACK);
+			chip.setChipMinHeight(getResources().getDimensionPixelSize(R.dimen.dimen28dp));
+			float cornerRadius = dpToPx(this);
+			chip.setShapeAppearanceModel(
+					chip.getShapeAppearanceModel().toBuilder()
+							.setAllCornerSizes(cornerRadius)
+							.build());
+			chip.setPadding(12, 8, 12, 8);
+			chip.setClickable(false);
+			chip.setEnsureMinTouchTargetSize(false);
+
+			LinearLayout.LayoutParams params =
+					new LinearLayout.LayoutParams(
+							LinearLayout.LayoutParams.WRAP_CONTENT,
+							LinearLayout.LayoutParams.WRAP_CONTENT);
+			params.setMargins(36, 12, 36, 12);
+			chip.setLayoutParams(params);
+
+			dialogLayout.addView(chip);
+		}
+
+		new MaterialAlertDialogBuilder(this)
+				.setTitle(R.string.languages)
+				.setView(dialogLayout)
+				.setPositiveButton(R.string.close, null)
+				.show();
+	}
+
+	private boolean isDarkColor(int color) {
+		double darkness =
+				1
+						- (0.299 * Color.red(color)
+										+ 0.587 * Color.green(color)
+										+ 0.114 * Color.blue(color))
+								/ 255;
+		return darkness >= 0.5;
+	}
+
+	private float dpToPx(Context context) {
+		DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+		return 32 * (metrics.densityDpi / 160f);
 	}
 
 	@Override
