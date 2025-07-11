@@ -16,7 +16,7 @@ public abstract class BaseApi {
 
 	protected static final ExecutorService executorService = Executors.newCachedThreadPool();
 	private static final Map<Class<? extends BaseApi>, Object> instances = new HashMap<>();
-	protected final LabNexDatabase labnexDatabase;
+	protected static LabNexDatabase labnexDatabase;
 
 	protected BaseApi(Context context) {
 		labnexDatabase = LabNexDatabase.getDatabaseInstance(context);
@@ -50,5 +50,12 @@ public abstract class BaseApi {
 		}
 
 		return null;
+	}
+
+	public static void clearInstance() {
+		if (labnexDatabase != null && labnexDatabase.isOpen()) {
+			labnexDatabase.close();
+		}
+		labnexDatabase = null;
 	}
 }

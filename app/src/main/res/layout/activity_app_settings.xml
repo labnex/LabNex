@@ -121,6 +121,12 @@
                 layout="@layout/section_app_settings_security" />
             <!-- security section -->
 
+            <!-- backup section -->
+            <include
+                android:id="@+id/section_backup"
+                layout="@layout/section_app_settings_backup" />
+            <!-- backup section -->
+
             <!-- about section -->
             <include
                 android:id="@+id/section_about"

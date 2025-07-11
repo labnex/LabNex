@@ -140,15 +140,36 @@
                         android:textSize="@dimen/dimen14sp"
                         android:text="@string/personal_access_token_helper" />
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/sign_in"
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/dimen32dp"
-                        android:text="@string/action_sign_in"
-                        android:imeOptions="actionDone"
-                        style="@style/CustomMaterialButton"
-                        android:layout_gravity="end" />
+                        android:orientation="horizontal"
+                        android:gravity="start">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/restore"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/import_button"
+                            style="@style/CustomMaterialButton"
+                            android:layout_gravity="start" />
+
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_weight="1" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/sign_in"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/action_sign_in"
+                            android:imeOptions="actionDone"
+                            style="@style/CustomMaterialButton"
+                            android:layout_gravity="end" />
+
+                    </LinearLayout>
 
                 </LinearLayout>
 

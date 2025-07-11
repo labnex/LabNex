@@ -63,6 +63,21 @@ public class HomeFragment extends Fragment {
 		View root = binding.getRoot();
 		ctx = requireContext();
 
+		binding.progressBar.setVisibility(View.VISIBLE);
+		binding.userAvatar.setEnabled(false);
+		binding.sectionMostVisited.recyclerViewMostVisited.setEnabled(false);
+		binding.sectionWork.groupsFrame.setEnabled(false);
+		binding.sectionWork.projectsFrame.setEnabled(false);
+		binding.sectionWork.starredFrame.setEnabled(false);
+		binding.sectionWork.snippetFrame.setEnabled(false);
+		binding.sectionWork.issuesFrame.setEnabled(false);
+		binding.sectionWork.mergeRequestsFrame.setEnabled(false);
+		binding.sectionAppSettings.notesFrame.setEnabled(false);
+		binding.sectionAppSettings.settingsFrame.setEnabled(false);
+		binding.settingsViewTop.setEnabled(false);
+		binding.sectionMostVisited.clearMostVisited.setEnabled(false);
+		binding.refreshHomeScreen.setEnabled(false);
+
 		currentActiveAccountId =
 				SharedPrefDB.getInstance(requireContext()).getInt("currentActiveAccountId");
 
@@ -85,9 +100,42 @@ public class HomeFragment extends Fragment {
 		binding.sectionMostVisited.recyclerViewMostVisited.setHasFixedSize(true);
 		binding.sectionMostVisited.recyclerViewMostVisited.setLayoutManager(
 				new LinearLayoutManager(requireContext()));
+		binding.sectionMostVisited.recyclerViewMostVisited.setAdapter(mostVisitedAdapter);
 
-		// Snackbar.info(ctx, requireActivity().findViewById(android.R.id.content),
-		// requireActivity().findViewById(R.id.nav_view), "Hello world");
+		getBroadcastMessage();
+		getUserInfo();
+		getMostVisitedProjects();
+
+		binding.refreshHomeScreen.setOnClickListener(
+				ref -> {
+					requireActivity()
+							.runOnUiThread(
+									() -> {
+										refreshSuccessCounter = 0;
+										isUserRefresh = true;
+										binding.progressBar.setVisibility(View.VISIBLE);
+										binding.userAvatar.setEnabled(false);
+										binding.sectionMostVisited.recyclerViewMostVisited
+												.setEnabled(false);
+										binding.sectionWork.groupsFrame.setEnabled(false);
+										binding.sectionWork.projectsFrame.setEnabled(false);
+										binding.sectionWork.starredFrame.setEnabled(false);
+										binding.sectionWork.snippetFrame.setEnabled(false);
+										binding.sectionWork.issuesFrame.setEnabled(false);
+										binding.sectionWork.mergeRequestsFrame.setEnabled(false);
+										binding.sectionAppSettings.notesFrame.setEnabled(false);
+										binding.sectionAppSettings.settingsFrame.setEnabled(false);
+										binding.settingsViewTop.setEnabled(false);
+										binding.sectionMostVisited.clearMostVisited.setEnabled(
+												false);
+										binding.refreshHomeScreen.setEnabled(false);
+										projectsList.clear();
+										mostVisitedAdapter.notifyDataChanged();
+										getBroadcastMessage();
+										getUserInfo();
+										getMostVisitedProjects();
+									});
+				});
 
 		binding.sectionWork.groupsFrame.setOnClickListener(
 				view -> startActivity(new Intent(ctx, GroupsActivity.class)));
@@ -115,6 +163,7 @@ public class HomeFragment extends Fragment {
 
 		binding.settingsViewTop.setOnClickListener(
 				view -> startActivity(new Intent(ctx, AppSettingsActivity.class)));
+
 		binding.sectionAppSettings.settingsFrame.setOnClickListener(
 				view -> startActivity(new Intent(ctx, AppSettingsActivity.class)));
 
@@ -138,23 +187,6 @@ public class HomeFragment extends Fragment {
 				});
 
 		binding.sectionMostVisited.clearMostVisited.setOnClickListener(view -> clearMostVisited());
-
-		getBroadcastMessage();
-		getUserInfo();
-		getMostVisitedProjects();
-
-		binding.refreshHomeScreen.setOnClickListener(
-				ref -> {
-					requireActivity()
-							.runOnUiThread(
-									() -> {
-										refreshSuccessCounter = 0;
-										isUserRefresh = true;
-										getBroadcastMessage();
-										getUserInfo();
-										getMostVisitedProjects();
-									});
-				});
 
 		return root;
 	}
@@ -219,7 +251,10 @@ public class HomeFragment extends Fragment {
 
 					@Override
 					public void onFailure(
-							@NonNull Call<List<Messages>> call, @NonNull Throwable t) {}
+							@NonNull Call<List<Messages>> call, @NonNull Throwable t) {
+						refreshSuccessCounter++;
+						checkRefreshComplete();
+					}
 				});
 	}
 
@@ -231,17 +266,8 @@ public class HomeFragment extends Fragment {
 				requireActivity(),
 				mostVisited -> {
 					if (mostVisited != null) {
+						binding.sectionMostVisited.nothingFoundFrame.setVisibility(View.GONE);
 						projectsList.clear();
-						if (!mostVisited.isEmpty()) {
-							binding.sectionMostVisited.nothingFoundFrame.setVisibility(View.GONE);
-							projectsList.addAll(mostVisited);
-							mostVisitedAdapter.notifyDataChanged();
-							binding.sectionMostVisited.recyclerViewMostVisited.setAdapter(
-									mostVisitedAdapter);
-						} else {
-							binding.sectionMostVisited.nothingFoundFrame.setVisibility(
-									View.VISIBLE);
-						}
 					}
 					refreshSuccessCounter++;
 					checkRefreshComplete();
@@ -261,38 +287,37 @@ public class HomeFragment extends Fragment {
 							@NonNull Call<User> call, @NonNull retrofit2.Response<User> response) {
 
 						User userDetails = response.body();
+						if (response.isSuccessful() && response.code() == 200) {
 
-						if (response.isSuccessful()) {
+							assert userDetails != null;
 
-							if (response.code() == 200) {
-
-								assert userDetails != null;
-
-								if (isAdded() && ctx != null) {
-									((BaseActivity) requireActivity())
-											.getAccount()
-											.setUserInfo(userDetails);
-
-									Glide.with(requireContext())
-											.load(userDetails.getAvatarUrl())
-											.diskCacheStrategy(DiskCacheStrategy.ALL)
-											.placeholder(R.drawable.ic_spinner)
-											.centerCrop()
-											.into(binding.userAvatar);
-
-									binding.userAvatar.setOnClickListener(
-											profile -> {
-												Intent intent =
-														new Intent(ctx, ProfileActivity.class);
-												intent.putExtra("source", "home");
-												intent.putExtra("userId", userDetails.getId());
-												ctx.startActivity(intent);
-											});
-								}
-								refreshSuccessCounter++;
-								checkRefreshComplete();
+							if (isAdded() && ctx != null) {
+								((BaseActivity) requireActivity())
+										.getAccount()
+										.setUserInfo(userDetails);
+								Glide.with(requireContext())
+										.load(userDetails.getAvatarUrl())
+										.diskCacheStrategy(DiskCacheStrategy.ALL)
+										.placeholder(R.drawable.ic_spinner)
+										.centerCrop()
+										.into(binding.userAvatar);
+								binding.userAvatar.setOnClickListener(
+										profile -> {
+											Intent intent = new Intent(ctx, ProfileActivity.class);
+											intent.putExtra("source", "home");
+											intent.putExtra("userId", userDetails.getId());
+											ctx.startActivity(intent);
+										});
+								binding.userAvatar.setEnabled(true);
 							}
+						} else {
+							Snackbar.info(
+									requireActivity(),
+									requireActivity().findViewById(R.id.nav_view),
+									getString(R.string.generic_server_response_error));
 						}
+						refreshSuccessCounter++;
+						checkRefreshComplete();
 					}
 
 					@Override
@@ -301,17 +326,56 @@ public class HomeFragment extends Fragment {
 								requireActivity(),
 								requireActivity().findViewById(R.id.nav_view),
 								getString(R.string.generic_server_response_error));
+						refreshSuccessCounter++;
+						checkRefreshComplete();
 					}
 				});
 	}
 
 	private void checkRefreshComplete() {
-		if (refreshSuccessCounter == 3 && isUserRefresh) {
-			Snackbar.info(
+		if (refreshSuccessCounter == 3 && isAdded()) {
+			binding.progressBar.setVisibility(View.GONE);
+			binding.userAvatar.setEnabled(true);
+			binding.sectionMostVisited.recyclerViewMostVisited.setEnabled(true);
+			binding.sectionWork.groupsFrame.setEnabled(true);
+			binding.sectionWork.projectsFrame.setEnabled(true);
+			binding.sectionWork.starredFrame.setEnabled(true);
+			binding.sectionWork.snippetFrame.setEnabled(true);
+			binding.sectionWork.issuesFrame.setEnabled(true);
+			binding.sectionWork.mergeRequestsFrame.setEnabled(true);
+			binding.sectionAppSettings.notesFrame.setEnabled(true);
+			binding.sectionAppSettings.settingsFrame.setEnabled(true);
+			binding.settingsViewTop.setEnabled(true);
+			binding.sectionMostVisited.clearMostVisited.setEnabled(true);
+			binding.refreshHomeScreen.setEnabled(true);
+
+			LiveData<List<Projects>> liveData =
+					projectsApi.fetchMostVisitedWithLimit(currentActiveAccountId, 5);
+			liveData.observe(
 					requireActivity(),
-					requireActivity().findViewById(R.id.nav_view),
-					getString(R.string.refreshed));
-			isUserRefresh = false;
+					mostVisited -> {
+						if (mostVisited != null) {
+							projectsList.clear();
+							if (!mostVisited.isEmpty()) {
+								binding.sectionMostVisited.nothingFoundFrame.setVisibility(
+										View.GONE);
+								projectsList.addAll(mostVisited);
+								mostVisitedAdapter.notifyDataChanged();
+							} else {
+								binding.sectionMostVisited.nothingFoundFrame.setVisibility(
+										View.VISIBLE);
+							}
+						}
+						liveData.removeObservers(requireActivity());
+					});
+
+			if (isUserRefresh) {
+				Snackbar.info(
+						requireActivity(),
+						requireActivity().findViewById(R.id.nav_view),
+						getString(R.string.refreshed));
+				isUserRefresh = false;
+			}
 			refreshSuccessCounter = 0;
 		}
 	}

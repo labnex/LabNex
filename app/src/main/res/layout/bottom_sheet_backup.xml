@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="@dimen/dimen16dp">
+
+    <TextView
+        android:id="@+id/bottom_sheet_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/import_export_database"
+        android:textSize="@dimen/dimen18sp"
+        android:layout_marginStart="@dimen/dimen8dp"
+        android:layout_marginEnd="@dimen/dimen8dp"
+        android:layout_marginTop="@dimen/dimen16dp"
+        android:layout_marginBottom="@dimen/dimen8dp" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/title_underline"
+        android:layout_width="@dimen/dimen32dp"
+        android:layout_height="@dimen/dimen8dp"
+        android:layout_marginStart="@dimen/dimen8dp"
+        app:cardBackgroundColor="?attr/colorPrimary"
+        app:cardCornerRadius="@dimen/dimen4dp"
+        android:layout_marginBottom="@dimen/dimen16dp"
+        app:cardElevation="0dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/export_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/dimen8dp"
+        android:text="@string/export_button"
+        style="@style/CustomMaterialButton" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/import_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/dimen8dp"
+        android:text="@string/import_button"
+        style="@style/CustomMaterialButton" />
+
+</LinearLayout>
