@@ -1,27 +1,43 @@
 package com.labnex.app.activities;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
+import android.database.sqlite.SQLiteException;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.ParcelFileDescriptor;
 import android.text.InputType;
 import android.util.Patterns;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.labnex.app.R;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.database.api.BaseApi;
 import com.labnex.app.database.api.UserAccountsApi;
+import com.labnex.app.database.db.LabNexDatabase;
 import com.labnex.app.database.models.UserAccount;
 import com.labnex.app.databinding.ActivitySignInBinding;
+import com.labnex.app.helpers.SharedPrefDB;
 import com.labnex.app.helpers.Snackbar;
 import com.labnex.app.helpers.Utils;
 import com.labnex.app.helpers.Version;
 import com.labnex.app.models.metadata.Metadata;
 import com.labnex.app.models.personal_access_tokens.PersonalAccessTokens;
 import com.labnex.app.models.user.User;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URI;
+import java.nio.channels.FileChannel;
+import java.util.List;
 import java.util.Objects;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -37,6 +53,7 @@ public class SignInActivity extends BaseActivity {
 	private final int maxResponseItems = 50;
 	private final int defaultPagingNumber = 25;
 	private String tokenExpiry;
+	private ActivityResultLauncher<Intent> importFileLauncher;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -45,8 +62,30 @@ public class SignInActivity extends BaseActivity {
 		binding = ActivitySignInBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
-		Context context = getApplicationContext();
 		Intent intent = getIntent();
+
+		importFileLauncher =
+				registerForActivityResult(
+						new ActivityResultContracts.StartActivityForResult(),
+						result -> {
+							if (result.getResultCode() == Activity.RESULT_OK
+									&& result.getData() != null) {
+								Uri uri = result.getData().getData();
+								if (uri != null) {
+									processImport(uri);
+								} else {
+									Snackbar.info(
+											this,
+											findViewById(R.id.bottom_app_bar),
+											getString(R.string.import_failed));
+								}
+							} else {
+								Snackbar.info(
+										this,
+										findViewById(R.id.bottom_app_bar),
+										getString(R.string.import_failed));
+							}
+						});
 
 		if (intent.hasExtra("source")) {
 			if (Objects.requireNonNull(intent.getStringExtra("source"))
@@ -71,6 +110,8 @@ public class SignInActivity extends BaseActivity {
 					checkUserInput();
 				});
 
+		binding.restore.setOnClickListener(checkUser -> launchImportFilePicker());
+
 		binding.personalTokenVisibilityIcon.setOnClickListener(
 				switchTokenVisibility -> {
 					int selectionIndex = binding.personalToken.getSelectionStart();
@@ -94,6 +135,74 @@ public class SignInActivity extends BaseActivity {
 					binding.personalToken.setTypeface(Typeface.DEFAULT);
 					binding.personalToken.setSelection(selectionIndex);
 				});
+	}
+
+	public void launchImportFilePicker() {
+		Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+		intent.addCategory(Intent.CATEGORY_OPENABLE);
+		intent.setType("application/octet-stream");
+		importFileLauncher.launch(intent);
+	}
+
+	private void processImport(Uri uri) {
+		try {
+			File dbFile = getDatabasePath("labnex");
+
+			LabNexDatabase db = LabNexDatabase.getDatabaseInstance(this);
+			if (db != null && db.isOpen()) {
+				db.close();
+			}
+			BaseApi.clearInstance();
+
+			try (ParcelFileDescriptor pfd = getContentResolver().openFileDescriptor(uri, "r")) {
+				if (pfd == null) {
+					throw new IOException("Failed to open file descriptor for URI: " + uri);
+				}
+				try (FileInputStream fis = new FileInputStream(pfd.getFileDescriptor());
+						FileChannel src = fis.getChannel();
+						FileOutputStream fos = new FileOutputStream(dbFile);
+						FileChannel dst = fos.getChannel()) {
+					dst.transferFrom(src, 0, src.size());
+				}
+			}
+
+			db = LabNexDatabase.getDatabaseInstance(this);
+			SupportSQLiteDatabase writableDb = db.getOpenHelper().getWritableDatabase();
+			if (!writableDb.isOpen()) {
+				throw new SQLiteException("Database not opened after restore");
+			}
+
+			Snackbar.info(
+					this, findViewById(R.id.bottom_app_bar), getString(R.string.import_success));
+
+			UserAccountsApi userAccountsApi = BaseApi.getInstance(ctx, UserAccountsApi.class);
+			assert userAccountsApi != null;
+			List<UserAccount> accounts = userAccountsApi.usersAccounts();
+
+			if (!accounts.isEmpty()) {
+				UserAccount account = accounts.get(0);
+				Utils.switchToAccount(ctx, account);
+				new Handler(Looper.getMainLooper()).postDelayed(this::restartApp, 1500);
+			} else {
+				LabNexDatabase.getDatabaseInstance(this);
+				SharedPrefDB.getInstance(this).putInt("currentActiveAccountId", -1);
+				Snackbar.info(
+						this, findViewById(R.id.bottom_app_bar), getString(R.string.import_failed));
+			}
+		} catch (IOException | SQLiteException e) {
+			Snackbar.info(
+					this, findViewById(R.id.bottom_app_bar), getString(R.string.import_failed));
+			LabNexDatabase.getDatabaseInstance(this);
+		}
+	}
+
+	private void restartApp() {
+		Intent intent = getPackageManager().getLaunchIntentForPackage(getPackageName());
+		if (intent != null) {
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+			finish();
+			startActivity(intent);
+		}
 	}
 
 	private void checkUserInput() {
