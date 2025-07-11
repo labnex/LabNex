@@ -33,6 +33,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/title"
+                app:endIconMode="clear_text"
+                app:endIconTint="?attr/iconsColor"
                 android:layout_marginBottom="@dimen/dimen8dp">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -53,6 +55,8 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/description"
                 android:layout_marginTop="@dimen/dimen8dp"
+                app:endIconMode="clear_text"
+                app:endIconTint="?attr/iconsColor"
                 android:layout_marginBottom="@dimen/dimen8dp">
 
                 <com.google.android.material.textfield.TextInputEditText

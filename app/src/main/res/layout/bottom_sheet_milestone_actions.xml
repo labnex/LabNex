@@ -65,7 +65,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/title"
-                android:layout_marginBottom="@dimen/dimen8dp">
+                app:endIconMode="clear_text"
+                app:endIconTint="?attr/iconsColor">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/title"
@@ -84,7 +85,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/description"
-                android:layout_marginBottom="@dimen/dimen12dp">
+                app:endIconMode="clear_text"
+                app:endIconTint="?attr/iconsColor"
+                android:layout_marginTop="@dimen/dimen16dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/description"
@@ -103,7 +106,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/start_date"
-                android:layout_marginBottom="@dimen/dimen14dp">
+                android:layout_marginTop="@dimen/dimen16dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/start_date"
@@ -122,6 +125,7 @@
                 android:id="@+id/due_date_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen16dp"
                 android:hint="@string/due_date">
 
                 <com.google.android.material.textfield.TextInputEditText

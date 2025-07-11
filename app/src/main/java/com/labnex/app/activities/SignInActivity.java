@@ -3,18 +3,15 @@ package com.labnex.app.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.sqlite.SQLiteException;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.ParcelFileDescriptor;
-import android.text.InputType;
 import android.util.Patterns;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.labnex.app.R;
@@ -111,30 +108,6 @@ public class SignInActivity extends BaseActivity {
 				});
 
 		binding.restore.setOnClickListener(checkUser -> launchImportFilePicker());
-
-		binding.personalTokenVisibilityIcon.setOnClickListener(
-				switchTokenVisibility -> {
-					int selectionIndex = binding.personalToken.getSelectionStart();
-
-					if (binding.personalToken.getInputType()
-							== InputType.TYPE_TEXT_VARIATION_PASSWORD + InputType.TYPE_CLASS_TEXT) {
-						binding.personalTokenVisibilityIcon.setImageDrawable(
-								AppCompatResources.getDrawable(ctx, R.drawable.ic_eye_closed));
-						binding.personalToken.setInputType(
-								InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
-										+ InputType.TYPE_CLASS_TEXT);
-					} else if (binding.personalToken.getInputType()
-							== InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
-									+ InputType.TYPE_CLASS_TEXT) {
-						binding.personalTokenVisibilityIcon.setImageDrawable(
-								AppCompatResources.getDrawable(ctx, R.drawable.ic_eye_open));
-						binding.personalToken.setInputType(
-								InputType.TYPE_TEXT_VARIATION_PASSWORD + InputType.TYPE_CLASS_TEXT);
-					}
-
-					binding.personalToken.setTypeface(Typeface.DEFAULT);
-					binding.personalToken.setSelection(selectionIndex);
-				});
 	}
 
 	public void launchImportFilePicker() {
@@ -482,10 +455,14 @@ public class SignInActivity extends BaseActivity {
 	private void disableSignInButton() {
 		binding.signIn.setEnabled(false);
 		binding.signIn.setAlpha(.5F);
+		binding.restore.setEnabled(false);
+		binding.restore.setAlpha(.5F);
 	}
 
 	private void enableSignInButton() {
 		binding.signIn.setEnabled(true);
 		binding.signIn.setAlpha(1F);
+		binding.restore.setEnabled(true);
+		binding.restore.setAlpha(1F);
 	}
 }

@@ -28,73 +28,107 @@
                 android:text="@string/create"
                 style="@style/CustomMaterialButton" />
 
-            <EditText
-                android:id="@+id/title"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/title_layout"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/dimen54dp"
-                android:autofillHints="@string/title"
-                android:background="@drawable/shape_input"
-                android:lineSpacingExtra="@dimen/dimen8sp"
-                android:layout_marginBottom="@dimen/dimen8dp"
-                android:gravity="start|center_vertical"
-                android:singleLine="true"
-                android:inputType="text|textCapSentences"
-                android:maxLength="500"
+                android:layout_height="wrap_content"
                 android:hint="@string/title"
-                android:textSize="@dimen/dimen16sp" />
+                app:endIconMode="clear_text"
+                app:endIconTint="?attr/iconsColor">
 
-            <TextView
-                android:id="@+id/target_branch"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:autofillHints="@string/title"
+                    android:inputType="text"
+                    android:singleLine="true"
+                    android:maxLength="500"
+                    android:textSize="@dimen/dimen16sp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/target_branch_layout"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/dimen54dp"
-                android:autofillHints="@string/target_branch"
-                android:background="@drawable/shape_input"
-                android:lineSpacingExtra="@dimen/dimen8sp"
-                android:layout_marginBottom="@dimen/dimen8dp"
-                android:gravity="start|center_vertical"
+                android:layout_height="wrap_content"
                 android:hint="@string/target_branch"
-                android:textSize="@dimen/dimen16sp" />
+                android:layout_marginTop="@dimen/dimen16dp">
 
-            <TextView
-                android:id="@+id/source_branch"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/target_branch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:autofillHints="@string/target_branch"
+                    android:textSize="@dimen/dimen16sp"
+                    android:textColor="?android:textColorPrimary"
+                    android:enabled="true"
+                    android:focusable="false"
+                    android:longClickable="false" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/source_branch_layout"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/dimen54dp"
-                android:autofillHints="@string/source_branch"
-                android:background="@drawable/shape_input"
-                android:lineSpacingExtra="@dimen/dimen8sp"
-                android:layout_marginBottom="@dimen/dimen8dp"
-                android:gravity="start|center_vertical"
+                android:layout_height="wrap_content"
                 android:hint="@string/source_branch"
-                android:textSize="@dimen/dimen16sp" />
+                android:layout_marginTop="@dimen/dimen16dp">
 
-            <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                android:id="@+id/templates"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/source_branch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:autofillHints="@string/source_branch"
+                    android:textSize="@dimen/dimen16sp"
+                    android:textColor="?android:textColorPrimary"
+                    android:enabled="true"
+                    android:focusable="false"
+                    android:longClickable="false" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/templates_layout"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/dimen54dp"
-                android:layout_marginBottom="@dimen/dimen8dp"
-                android:background="@drawable/shape_input"
+                android:layout_height="wrap_content"
                 android:hint="@string/select_template"
-                android:inputType="none"
-                android:focusable="true"
-                android:clickable="true"
-                android:singleLine="true"
-                android:focusableInTouchMode="true"
-                android:dropDownVerticalOffset="@dimen/dimen6sp"
-                android:textSize="@dimen/dimen16sp" />
+                android:layout_marginTop="@dimen/dimen16dp"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
 
-            <EditText
-                android:id="@+id/description"
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/templates"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none"
+                    android:focusable="true"
+                    android:clickable="true"
+                    android:singleLine="true"
+                    android:focusableInTouchMode="true"
+                    android:dropDownVerticalOffset="@dimen/dimen6sp"
+                    android:textSize="@dimen/dimen16sp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/description_layout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:minHeight="@dimen/dimen340dp"
-                android:autofillHints="@string/description"
+                android:layout_height="@dimen/dimen240dp"
                 android:hint="@string/description"
-                android:background="@drawable/shape_input"
-                android:lineSpacingExtra="@dimen/dimen8sp"
-                android:gravity="top"
-                android:inputType="textMultiLine|textImeMultiLine|textCapSentences"
-                android:labelFor="@+id/description"
-                android:textSize="@dimen/dimen16sp" />
+                android:layout_marginTop="@dimen/dimen16dp"
+                app:endIconMode="clear_text"
+                app:endIconTint="?attr/iconsColor">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/description"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:autofillHints="@string/description"
+                    android:inputType="textMultiLine|textImeMultiLine|textCapSentences"
+                    android:gravity="top"
+                    android:textSize="@dimen/dimen16sp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
 

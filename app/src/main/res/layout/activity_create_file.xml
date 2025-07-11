@@ -45,85 +45,108 @@
 
             </LinearLayout>
 
-            <EditText
-                android:id="@+id/filename"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/dimen54dp"
-                android:autofillHints="@string/filename"
-                android:background="@drawable/shape_input"
-                android:lineSpacingExtra="@dimen/dimen8sp"
-                android:layout_marginBottom="@dimen/dimen4dp"
-                android:gravity="start|center_vertical"
-                android:singleLine="true"
-                android:inputType="text"
-                android:maxLength="200"
-                android:hint="@string/filename"
-                android:textSize="@dimen/dimen16sp" />
-
-            <TextView
-                android:id="@+id/filename_hint"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/filename_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="start|center_vertical"
-                android:layout_marginStart="@dimen/dimen4dp"
-                android:layout_marginEnd="@dimen/dimen4dp"
-                android:layout_marginBottom="@dimen/dimen12dp"
-                android:text="@string/filename_hint"
-                android:textSize="@dimen/dimen12sp" />
+                android:hint="@string/filename"
+                app:helperText="@string/filename_hint"
+                app:endIconMode="clear_text"
+                app:endIconTint="?attr/iconsColor">
 
-            <TextView
-                android:id="@+id/choose_branch"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/filename"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:autofillHints="@string/filename"
+                    android:inputType="text"
+                    android:singleLine="true"
+                    android:maxLength="200"
+                    android:textSize="@dimen/dimen16sp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/choose_branch_layout"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/dimen54dp"
-                android:autofillHints="@string/branch"
-                android:background="@drawable/shape_input"
-                android:gravity="start|center_vertical"
-                android:layout_marginBottom="@dimen/dimen12dp"
+                android:layout_height="wrap_content"
                 android:hint="@string/branch"
-                android:textSize="@dimen/dimen16sp" />
+                android:layout_marginTop="@dimen/dimen16dp">
 
-            <EditText
-                android:id="@+id/branch_edit"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/choose_branch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:autofillHints="@string/branch"
+                    android:textSize="@dimen/dimen16sp"
+                    android:textColor="?android:textColorPrimary"
+                    android:enabled="true"
+                    android:focusable="false"
+                    android:longClickable="false" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/branch_edit_layout"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/dimen54dp"
-                android:autofillHints="@string/branch"
-                android:background="@drawable/shape_input"
-                android:lineSpacingExtra="@dimen/dimen8sp"
-                android:layout_marginBottom="@dimen/dimen12dp"
-                android:gravity="start|center_vertical"
-                android:singleLine="true"
-                android:inputType="text"
+                android:layout_height="wrap_content"
                 android:hint="@string/branch"
-                android:textSize="@dimen/dimen16sp"
-                android:visibility="gone" />
+                android:layout_marginTop="@dimen/dimen16dp"
+                android:visibility="gone"
+                app:endIconMode="clear_text"
+                app:endIconTint="?attr/iconsColor">
 
-            <EditText
-                android:id="@+id/commit_message"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/branch_edit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:autofillHints="@string/branch"
+                    android:inputType="text"
+                    android:singleLine="true"
+                    android:textSize="@dimen/dimen16sp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/commit_message_layout"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/dimen54dp"
-                android:autofillHints="@string/commit_message"
+                android:layout_height="wrap_content"
                 android:hint="@string/commit_message"
-                android:background="@drawable/shape_input"
-                android:lineSpacingExtra="@dimen/dimen8sp"
-                android:layout_marginBottom="@dimen/dimen12dp"
-                android:singleLine="true"
-                android:inputType="textCapSentences"
-                android:labelFor="@+id/commit_message"
-                android:textSize="@dimen/dimen16sp" />
+                android:layout_marginTop="@dimen/dimen16dp"
+                app:helperText="@string/filename_hint"
+                app:endIconMode="clear_text"
+                app:endIconTint="?attr/iconsColor">
 
-            <EditText
-                android:id="@+id/file_content"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/commit_message"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:autofillHints="@string/commit_message"
+                    android:inputType="text"
+                    android:singleLine="true"
+                    android:textSize="@dimen/dimen16sp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/file_content_layout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:minHeight="@dimen/dimen280dp"
-                android:autofillHints="@string/file_content"
+                android:layout_height="@dimen/dimen240dp"
                 android:hint="@string/file_content"
-                android:background="@drawable/shape_input"
-                android:lineSpacingExtra="@dimen/dimen8sp"
-                android:gravity="top"
-                android:inputType="textMultiLine|textImeMultiLine"
-                android:labelFor="@+id/file_content"
-                android:textSize="@dimen/dimen16sp" />
+                android:layout_marginTop="@dimen/dimen16dp"
+                app:endIconMode="clear_text"
+                app:endIconTint="?attr/iconsColor">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/file_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:autofillHints="@string/file_content"
+                    android:inputType="textMultiLine|textImeMultiLine|textCapSentences"
+                    android:gravity="top"
+                    android:textSize="@dimen/dimen16sp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
                 android:id="@+id/open_ce"
