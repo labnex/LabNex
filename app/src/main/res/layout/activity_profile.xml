@@ -115,6 +115,27 @@
                 </com.google.android.material.button.MaterialButtonToggleGroup>
 
                 <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/user_bio_info"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    style="?attr/materialCardViewElevatedStyle"
+                    app:strokeWidth="@dimen/dimen0dp"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:layout_marginTop="@dimen/dimen12dp"
+                    android:visibility="gone"
+                    app:cardElevation="@dimen/dimen0dp">
+
+                    <TextView
+                        android:id="@+id/user_bio"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/dimen12dp"
+                        android:autoLink="all"
+                        android:textSize="@dimen/dimen14sp" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
                     android:id="@+id/location_info"
                     android:layout_height="wrap_content"
                     android:layout_width="match_parent"
@@ -218,27 +239,6 @@
                             app:drawableStartCompat="@drawable/ic_x" />
 
                     </LinearLayout>
-
-                </com.google.android.material.card.MaterialCardView>
-
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/user_bio_info"
-                    android:layout_height="wrap_content"
-                    android:layout_width="match_parent"
-                    style="?attr/materialCardViewElevatedStyle"
-                    app:strokeWidth="@dimen/dimen0dp"
-                    android:layout_gravity="center_vertical|center_horizontal"
-                    android:layout_marginTop="@dimen/dimen12dp"
-                    android:visibility="gone"
-                    app:cardElevation="@dimen/dimen0dp">
-
-                    <TextView
-                        android:id="@+id/user_bio"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:padding="@dimen/dimen12dp"
-                        android:autoLink="all"
-                        android:textSize="@dimen/dimen14sp" />
 
                 </com.google.android.material.card.MaterialCardView>
 

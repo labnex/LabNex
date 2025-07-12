@@ -68,68 +68,50 @@
                     android:orientation="vertical"
                     android:padding="@dimen/dimen20dp">
 
-                    <EditText
-                        android:id="@+id/instance_url"
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/instance_url_layout"
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/dimen54dp"
-                        android:autofillHints="@string/gitlab_link"
-                        android:background="@drawable/shape_input"
-                        android:lineSpacingExtra="@dimen/dimen8sp"
-                        android:layout_marginBottom="@dimen/dimen2dp"
-                        android:gravity="start|center_vertical"
-                        android:singleLine="true"
-                        android:inputType="textUri"
-                        android:maxLength="120"
+                        android:layout_height="wrap_content"
                         android:hint="@string/gitlab_link"
-                        android:textSize="@dimen/dimen16sp" />
+                        app:helperText="@string/gitlab_link_help"
+                        app:endIconMode="clear_text"
+                        app:endIconTint="?attr/iconsColor"
+                        android:layout_marginBottom="@dimen/dimen8dp">
 
-                    <com.google.android.material.textview.MaterialTextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingStart="@dimen/dimen8dp"
-                        android:paddingEnd="@dimen/dimen8dp"
-                        android:textSize="@dimen/dimen12sp"
-                        android:text="@string/gitlab_link_help" />
-
-                    <FrameLayout
-                        android:id="@+id/access_token_frame"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/dimen16dp">
-
-                        <EditText
-                            android:id="@+id/personal_token"
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/instance_url"
                             android:layout_width="match_parent"
-                            android:layout_height="@dimen/dimen54dp"
-                            android:layout_marginBottom="@dimen/dimen2dp"
-                            android:autofillHints="@string/personal_access_token"
-                            android:background="@drawable/shape_input"
-                            android:gravity="start|center_vertical"
-                            android:hint="@string/personal_access_token"
-                            android:inputType="textPassword"
-                            android:lineSpacingExtra="@dimen/dimen8sp"
+                            android:layout_height="wrap_content"
+                            android:autofillHints="@string/gitlab_link"
+                            android:inputType="text"
                             android:maxLength="120"
                             android:singleLine="true"
                             android:textSize="@dimen/dimen16sp" />
 
-                        <ImageView
-                            android:id="@+id/personal_token_visibility_icon"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:layout_gravity="center_vertical|end"
-                            android:layout_marginEnd="10dp"
-                            android:contentDescription="@string/generic_img_copy"
-                            app:srcCompat="@drawable/ic_eye_open" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                    </FrameLayout>
-
-                    <com.google.android.material.textview.MaterialTextView
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/access_token_frame"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:paddingStart="@dimen/dimen8dp"
-                        android:paddingEnd="@dimen/dimen8dp"
-                        android:textSize="@dimen/dimen12sp"
-                        android:text="@string/api_scopes" />
+                        android:hint="@string/personal_access_token"
+                        android:layout_marginTop="@dimen/dimen12dp"
+                        app:helperText="@string/api_scopes"
+                        app:endIconMode="clear_text"
+                        app:endIconTint="?attr/iconsColor"
+                        android:layout_marginBottom="@dimen/dimen8dp">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/personal_token"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:autofillHints="@string/personal_access_token"
+                            android:inputType="text"
+                            android:maxLength="120"
+                            android:singleLine="true"
+                            android:textSize="@dimen/dimen16sp" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/personal_token_helper"
@@ -137,7 +119,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/dimen16dp"
                         android:layout_gravity="center_horizontal"
-                        android:textSize="@dimen/dimen14sp"
+                        android:textSize="@dimen/dimen16sp"
                         android:text="@string/personal_access_token_helper" />
 
                     <LinearLayout

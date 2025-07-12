@@ -43,35 +43,46 @@
         android:layout_marginBottom="@dimen/dimen6dp"
         android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/group_name"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/group_name_layout"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dimen54dp"
-            android:autofillHints="@string/title"
-            android:background="@drawable/shape_input"
-            android:lineSpacingExtra="@dimen/dimen8sp"
-            android:layout_marginBottom="@dimen/dimen8dp"
-            android:gravity="top"
-            android:singleLine="true"
-            android:maxLength="60"
-            android:inputType="textCapSentences"
-            android:hint="@string/group_name"
-            android:textSize="@dimen/dimen16sp" />
+            android:layout_height="wrap_content"
+            android:hint="@string/title"
+            app:endIconMode="clear_text"
+            app:endIconTint="?attr/iconsColor">
 
-        <EditText
-            android:id="@+id/group_description"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/group_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints="@string/title"
+                android:inputType="text|textCapSentences"
+                android:singleLine="true"
+                android:maxLength="60"
+                android:textSize="@dimen/dimen16sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/group_description_layout"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dimen54dp"
-            android:autofillHints="@string/title"
-            android:background="@drawable/shape_input"
-            android:lineSpacingExtra="@dimen/dimen8sp"
-            android:layout_marginBottom="@dimen/dimen8dp"
-            android:gravity="top"
-            android:singleLine="true"
-            android:maxLength="250"
-            android:inputType="textCapSentences"
+            android:layout_height="wrap_content"
             android:hint="@string/description"
-            android:textSize="@dimen/dimen16sp" />
+            android:layout_marginTop="@dimen/dimen12dp"
+            app:endIconMode="clear_text"
+            app:endIconTint="?attr/iconsColor">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/group_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints="@string/description"
+                android:inputType="textCapSentences"
+                android:singleLine="true"
+                android:maxLength="250"
+                android:textSize="@dimen/dimen16sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
             android:layout_width="wrap_content"
@@ -96,6 +107,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:insetRight="@dimen/dimen2dp"
+                android:paddingStart="@dimen/dimen20dp"
+                android:paddingEnd="@dimen/dimen16dp"
                 android:text="@string/private_placeholder" />
 
             <com.google.android.material.button.MaterialButton
@@ -106,6 +119,8 @@
                 android:layout_gravity="center"
                 android:insetRight="@dimen/dimen2dp"
                 android:insetLeft="@dimen/dimen2dp"
+                android:paddingStart="@dimen/dimen16dp"
+                android:paddingEnd="@dimen/dimen16dp"
                 android:text="@string/internal_placeholder" />
 
             <com.google.android.material.button.MaterialButton
@@ -115,6 +130,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:insetLeft="@dimen/dimen2dp"
+                android:paddingStart="@dimen/dimen16dp"
+                android:paddingEnd="@dimen/dimen20dp"
                 android:text="@string/public_placeholder" />
 
         </com.google.android.material.button.MaterialButtonToggleGroup>

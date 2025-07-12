@@ -60,34 +60,46 @@
             android:layout_marginBottom="@dimen/dimen8dp"
             android:orientation="vertical">
 
-            <EditText
-                android:id="@+id/title"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/title_layout"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/dimen54dp"
-                android:autofillHints="@string/title"
-                android:background="@drawable/shape_input"
-                android:lineSpacingExtra="@dimen/dimen8sp"
-                android:layout_marginBottom="@dimen/dimen8dp"
-                android:gravity="start|center_vertical"
-                android:singleLine="true"
-                android:inputType="text"
-                android:maxLength="60"
+                android:layout_height="wrap_content"
                 android:hint="@string/title"
-                android:textSize="@dimen/dimen16sp" />
+                app:endIconMode="clear_text"
+                app:endIconTint="?attr/iconsColor">
 
-            <EditText
-                android:id="@+id/description"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:autofillHints="@string/title"
+                    android:inputType="text"
+                    android:singleLine="true"
+                    android:maxLength="60"
+                    android:textSize="@dimen/dimen16sp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/description_layout"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/dimen54dp"
-                android:autofillHints="@string/description"
-                android:background="@drawable/shape_input"
-                android:lineSpacingExtra="@dimen/dimen8sp"
-                android:gravity="start|center_vertical"
-                android:singleLine="true"
-                android:inputType="textCapSentences"
-                android:maxLength="250"
+                android:layout_height="wrap_content"
                 android:hint="@string/description"
-                android:textSize="@dimen/dimen16sp" />
+                android:layout_marginTop="@dimen/dimen16dp"
+                app:endIconMode="clear_text"
+                app:endIconTint="?attr/iconsColor">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:autofillHints="@string/description"
+                    android:inputType="text"
+                    android:singleLine="true"
+                    android:maxLength="250"
+                    android:textSize="@dimen/dimen16sp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"

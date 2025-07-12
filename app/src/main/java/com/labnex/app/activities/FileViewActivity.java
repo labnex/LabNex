@@ -54,6 +54,7 @@ public class FileViewActivity extends BaseActivity implements CreateFileActivity
 	public ProjectsContext projectsContext;
 	private boolean processable = false;
 	private String fileContent;
+	private BottomSheetFileActionsBinding sheetBinding;
 
 	ActivityResultLauncher<Intent> activityResultLauncher =
 			registerForActivityResult(
@@ -186,6 +187,9 @@ public class FileViewActivity extends BaseActivity implements CreateFileActivity
 
 		projectsContext = ProjectsContext.fromIntent(getIntent());
 
+		sheetBinding =
+				BottomSheetFileActionsBinding.inflate(LayoutInflater.from(this), null, false);
+
 		if (projectsContext == null) {
 			projectId = getIntent().getIntExtra("projectId", -1);
 			String projectName = getIntent().getStringExtra("projectName");
@@ -269,8 +273,8 @@ public class FileViewActivity extends BaseActivity implements CreateFileActivity
 
 	private void showFileActionsBottomSheet() {
 
-		BottomSheetFileActionsBinding sheetBinding =
-				BottomSheetFileActionsBinding.inflate(LayoutInflater.from(this), null, false);
+		/*BottomSheetFileActionsBinding sheetBinding =
+		BottomSheetFileActionsBinding.inflate(LayoutInflater.from(this), null, false);*/
 		BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
 		bottomSheetDialog.setContentView(sheetBinding.getRoot());
 
@@ -335,6 +339,7 @@ public class FileViewActivity extends BaseActivity implements CreateFileActivity
 																"bmp", "gif", "jpg", "jpeg", "png",
 																"webp", "heic", "heif")
 														.contains(fileExtension.toLowerCase())) {
+													sheetBinding.editItem.setVisibility(View.GONE);
 													byte[] decodedImg =
 															Base64.getDecoder()
 																	.decode(

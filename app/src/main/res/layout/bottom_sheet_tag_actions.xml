@@ -64,7 +64,9 @@
                 android:id="@+id/tag_name_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/tag_name">
+                android:hint="@string/tag_name"
+                app:endIconMode="clear_text"
+                app:endIconTint="?attr/iconsColor">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/tag_name"
@@ -82,9 +84,11 @@
                 android:id="@+id/ref_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimen12dp"
+                android:layout_marginTop="@dimen/dimen16dp"
                 app:helperText="@string/tag_ref_hint"
-                android:hint="@string/ref">
+                android:hint="@string/ref"
+                app:endIconMode="clear_text"
+                app:endIconTint="?attr/iconsColor">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/ref"
@@ -102,8 +106,10 @@
                 android:id="@+id/message_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimen12dp"
-                android:hint="@string/message_optional">
+                android:layout_marginTop="@dimen/dimen16dp"
+                android:hint="@string/message_optional"
+                app:endIconMode="clear_text"
+                app:endIconTint="?attr/iconsColor">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/message"

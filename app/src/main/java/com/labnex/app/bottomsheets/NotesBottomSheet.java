@@ -25,6 +25,7 @@ import com.labnex.app.helpers.Markdown;
 import com.labnex.app.interfaces.BottomSheetListener;
 import com.vdurmont.emoji.EmojiParser;
 import java.time.Instant;
+import java.util.Objects;
 
 /**
  * @author mmarif
@@ -61,7 +62,7 @@ public class NotesBottomSheet extends BottomSheetDialogFragment {
 
 		bottomSheetNotesBinding.view.setOnClickListener(
 				view -> {
-					bottomSheetNotesBinding.contents.setVisibility(View.GONE);
+					bottomSheetNotesBinding.contentsLayout.setVisibility(View.GONE);
 					bottomSheetNotesBinding.renderContents.setVisibility(View.VISIBLE);
 
 					bottomSheetNotesBinding.view.setVisibility(View.GONE);
@@ -70,13 +71,15 @@ public class NotesBottomSheet extends BottomSheetDialogFragment {
 					Markdown.render(
 							requireContext(),
 							EmojiParser.parseToUnicode(
-									bottomSheetNotesBinding.contents.getText().toString()),
+									Objects.requireNonNull(
+													bottomSheetNotesBinding.contents.getText())
+											.toString()),
 							bottomSheetNotesBinding.renderContents);
 				});
 
 		bottomSheetNotesBinding.edit.setOnClickListener(
 				edit -> {
-					bottomSheetNotesBinding.contents.setVisibility(View.VISIBLE);
+					bottomSheetNotesBinding.contentsLayout.setVisibility(View.VISIBLE);
 					bottomSheetNotesBinding.renderContents.setVisibility(View.GONE);
 
 					bottomSheetNotesBinding.view.setVisibility(View.VISIBLE);
@@ -98,7 +101,10 @@ public class NotesBottomSheet extends BottomSheetDialogFragment {
 						@Override
 						public void afterTextChanged(Editable s) {
 
-							String text = bottomSheetNotesBinding.contents.getText().toString();
+							String text =
+									Objects.requireNonNull(
+													bottomSheetNotesBinding.contents.getText())
+											.toString();
 
 							if (!text.isEmpty()) {
 
@@ -122,7 +128,10 @@ public class NotesBottomSheet extends BottomSheetDialogFragment {
 						@Override
 						public void afterTextChanged(Editable s) {
 
-							String text = bottomSheetNotesBinding.contents.getText().toString();
+							String text =
+									Objects.requireNonNull(
+													bottomSheetNotesBinding.contents.getText())
+											.toString();
 
 							if (!text.isEmpty() && text.length() > 4) {
 

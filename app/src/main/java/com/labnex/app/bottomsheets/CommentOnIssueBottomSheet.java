@@ -66,7 +66,7 @@ public class CommentOnIssueBottomSheet extends BottomSheetDialogFragment {
 
 		bottomSheetCommentOnIssueBinding.view.setOnClickListener(
 				view -> {
-					bottomSheetCommentOnIssueBinding.commentText.setVisibility(View.GONE);
+					bottomSheetCommentOnIssueBinding.commentTextLayout.setVisibility(View.GONE);
 					bottomSheetCommentOnIssueBinding.renderContents.setVisibility(View.VISIBLE);
 
 					bottomSheetCommentOnIssueBinding.view.setVisibility(View.GONE);
@@ -75,16 +75,16 @@ public class CommentOnIssueBottomSheet extends BottomSheetDialogFragment {
 					Markdown.render(
 							requireContext(),
 							EmojiParser.parseToUnicode(
-									bottomSheetCommentOnIssueBinding
-											.commentText
-											.getText()
+									Objects.requireNonNull(
+													bottomSheetCommentOnIssueBinding.commentText
+															.getText())
 											.toString()),
 							bottomSheetCommentOnIssueBinding.renderContents);
 				});
 
 		bottomSheetCommentOnIssueBinding.edit.setOnClickListener(
 				edit -> {
-					bottomSheetCommentOnIssueBinding.commentText.setVisibility(View.VISIBLE);
+					bottomSheetCommentOnIssueBinding.commentTextLayout.setVisibility(View.VISIBLE);
 					bottomSheetCommentOnIssueBinding.renderContents.setVisibility(View.GONE);
 
 					bottomSheetCommentOnIssueBinding.view.setVisibility(View.VISIBLE);
@@ -103,9 +103,8 @@ public class CommentOnIssueBottomSheet extends BottomSheetDialogFragment {
 
 				bottomSheetCommentOnIssueBinding.comment.setOnClickListener(
 						comment -> {
-							if (!bottomSheetCommentOnIssueBinding
-									.commentText
-									.getText()
+							if (!Objects.requireNonNull(
+											bottomSheetCommentOnIssueBinding.commentText.getText())
 									.toString()
 									.isEmpty()) {
 								disableButton();
@@ -129,9 +128,8 @@ public class CommentOnIssueBottomSheet extends BottomSheetDialogFragment {
 
 				bottomSheetCommentOnIssueBinding.comment.setOnClickListener(
 						mr_comment -> {
-							if (!bottomSheetCommentOnIssueBinding
-									.commentText
-									.getText()
+							if (!Objects.requireNonNull(
+											bottomSheetCommentOnIssueBinding.commentText.getText())
 									.toString()
 									.isEmpty()) {
 								disableButton();

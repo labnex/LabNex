@@ -18,6 +18,7 @@ import com.labnex.app.databinding.BottomSheetIssuesMenuBinding;
 import com.labnex.app.helpers.Snackbar;
 import com.labnex.app.viewmodels.IssuesViewModel;
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * @author mmarif
@@ -35,6 +36,7 @@ public class IssuesActivity extends BaseActivity implements CreateIssueActivity.
 	public ProjectsContext projectsContext;
 	public static boolean updateIssuesList = false;
 	private String filter = "opened";
+	private String searchQuery = "";
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -95,12 +97,12 @@ public class IssuesActivity extends BaseActivity implements CreateIssueActivity.
 										() -> {
 											page = 1;
 											binding.pullToRefresh.setRefreshing(false);
-											fetchDataAsync(filter);
+											fetchDataAsync(filter, searchQuery);
 											binding.progressBar.setVisibility(View.VISIBLE);
 										},
 										250));
 
-		fetchDataAsync(filter);
+		fetchDataAsync(filter, searchQuery);
 	}
 
 	private void showFilterBottomSheet() {
@@ -109,6 +111,8 @@ public class IssuesActivity extends BaseActivity implements CreateIssueActivity.
 				BottomSheetIssuesMenuBinding.inflate(LayoutInflater.from(this), null, false);
 		BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
 		bottomSheetDialog.setContentView(sheetBinding.getRoot());
+
+		sheetBinding.search.setText(searchQuery);
 
 		ChipGroup chipGroup = sheetBinding.issueFilterChips;
 		if ("opened".equals(filter)) {
@@ -126,7 +130,19 @@ public class IssuesActivity extends BaseActivity implements CreateIssueActivity.
 					} else if (checkedIds.contains(R.id.chip_closed)) {
 						filter = "closed";
 					}
-					fetchDataAsync(filter);
+					searchQuery =
+							Objects.requireNonNull(sheetBinding.search.getText()).toString().trim();
+					fetchDataAsync(filter, searchQuery);
+					bottomSheetDialog.dismiss();
+				});
+
+		sheetBinding.searchLayout.setEndIconOnClickListener(
+				v -> {
+					page = 1;
+					binding.progressBar.setVisibility(View.VISIBLE);
+					searchQuery =
+							Objects.requireNonNull(sheetBinding.search.getText()).toString().trim();
+					fetchDataAsync(filter, searchQuery);
 					bottomSheetDialog.dismiss();
 				});
 
@@ -139,12 +155,12 @@ public class IssuesActivity extends BaseActivity implements CreateIssueActivity.
 
 		if (updateIssuesList) {
 			page = 1;
-			fetchDataAsync(filter);
+			fetchDataAsync(filter, searchQuery);
 			updateIssuesList = false;
 		}
 	}
 
-	private void fetchDataAsync(String filter) {
+	private void fetchDataAsync(String filter, String searchQuery) {
 		issuesViewModel
 				.getIssues(
 						ctx,
@@ -152,6 +168,7 @@ public class IssuesActivity extends BaseActivity implements CreateIssueActivity.
 						id,
 						scope,
 						filter,
+						searchQuery,
 						resultLimit,
 						page,
 						IssuesActivity.this,
@@ -172,6 +189,7 @@ public class IssuesActivity extends BaseActivity implements CreateIssueActivity.
 														id,
 														scope,
 														filter,
+														searchQuery,
 														resultLimit,
 														page,
 														adapter,
@@ -208,6 +226,6 @@ public class IssuesActivity extends BaseActivity implements CreateIssueActivity.
 
 		adapter.clearAdapter();
 		page = 1;
-		fetchDataAsync(filter);
+		fetchDataAsync(filter, searchQuery);
 	}
 }

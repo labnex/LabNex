@@ -69,7 +69,7 @@ public class WikiActionsBottomSheet extends BottomSheetDialogFragment {
 
 		bottomSheetWikiActionsBinding.view.setOnClickListener(
 				view -> {
-					bottomSheetWikiActionsBinding.content.setVisibility(View.GONE);
+					bottomSheetWikiActionsBinding.contentLayout.setVisibility(View.GONE);
 					bottomSheetWikiActionsBinding.renderContent.setVisibility(View.VISIBLE);
 
 					bottomSheetWikiActionsBinding.edit.setVisibility(View.VISIBLE);
@@ -78,13 +78,15 @@ public class WikiActionsBottomSheet extends BottomSheetDialogFragment {
 					Markdown.render(
 							requireContext(),
 							EmojiParser.parseToUnicode(
-									bottomSheetWikiActionsBinding.content.getText().toString()),
+									Objects.requireNonNull(
+													bottomSheetWikiActionsBinding.content.getText())
+											.toString()),
 							bottomSheetWikiActionsBinding.renderContent);
 				});
 
 		bottomSheetWikiActionsBinding.edit.setOnClickListener(
 				edit -> {
-					bottomSheetWikiActionsBinding.content.setVisibility(View.VISIBLE);
+					bottomSheetWikiActionsBinding.contentLayout.setVisibility(View.VISIBLE);
 					bottomSheetWikiActionsBinding.renderContent.setVisibility(View.GONE);
 
 					bottomSheetWikiActionsBinding.edit.setVisibility(View.GONE);

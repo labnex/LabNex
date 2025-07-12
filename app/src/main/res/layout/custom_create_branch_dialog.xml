@@ -1,47 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="@dimen/dimen16dp">
 
-    <EditText
-        android:id="@+id/branch_name"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/dimen54dp"
-        android:layout_marginTop="@dimen/dimen12dp"
-        android:autofillHints="@string/branch_name"
-        android:background="@drawable/shape_input"
-        android:lineSpacingExtra="@dimen/dimen8sp"
-        android:layout_marginBottom="@dimen/dimen12dp"
-        android:gravity="start|center_vertical"
-        android:singleLine="true"
-        android:inputType="text"
-        android:maxLength="100"
-        android:hint="@string/branch_name"
-        android:textSize="@dimen/dimen16sp" />
-
-    <EditText
-        android:id="@+id/branch_ref"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/dimen54dp"
-        android:autofillHints="@string/ref"
-        android:background="@drawable/shape_input"
-        android:lineSpacingExtra="@dimen/dimen8sp"
-        android:layout_marginBottom="@dimen/dimen4dp"
-        android:gravity="start|center_vertical"
-        android:singleLine="true"
-        android:inputType="text"
-        android:maxLength="100"
-        android:hint="@string/ref"
-        android:textSize="@dimen/dimen16sp" />
-
-    <TextView
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/branch_name_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/dimen12sp"
-        android:layout_marginStart="@dimen/dimen4dp"
-        android:layout_marginEnd="@dimen/dimen4dp"
-        android:text="@string/branch_ref_hint" />
+        android:hint="@string/branch_name"
+        app:endIconMode="clear_text"
+        app:endIconTint="?attr/iconsColor">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/branch_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints="@string/branch_name"
+            android:inputType="text"
+            android:singleLine="true"
+            android:maxLength="100"
+            android:textSize="@dimen/dimen16sp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/branch_ref_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/ref"
+        android:layout_marginTop="@dimen/dimen12dp"
+        app:helperText="@string/branch_ref_hint"
+        app:endIconMode="clear_text"
+        app:endIconTint="?attr/iconsColor">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/branch_ref"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints="@string/ref"
+            android:inputType="text"
+            android:singleLine="true"
+            android:maxLength="100"
+            android:textSize="@dimen/dimen16sp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
 </LinearLayout>

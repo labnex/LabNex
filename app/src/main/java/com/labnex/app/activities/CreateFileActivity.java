@@ -105,7 +105,7 @@ public class CreateFileActivity extends BaseActivity
 					getString(R.string.edit_commit_message, originalFilename));
 			binding.filename.setText(originalFilename);
 			binding.chooseBranch.setText(originalBranch);
-			binding.branchEdit.setVisibility(View.GONE);
+			binding.branchEditLayout.setVisibility(View.GONE);
 			binding.fileContent.setText(fileContent);
 			binding.create.setText(R.string.update);
 			binding.commitMessage.setText(
@@ -115,8 +115,8 @@ public class CreateFileActivity extends BaseActivity
 					getString(R.string.delete_commit_message, originalFilename));
 			binding.filename.setText(originalFilename);
 			binding.filename.setEnabled(false);
-			binding.chooseBranch.setVisibility(View.GONE);
-			binding.branchEdit.setVisibility(View.VISIBLE);
+			binding.chooseBranchLayout.setVisibility(View.GONE);
+			binding.branchEditLayout.setVisibility(View.VISIBLE);
 			binding.branchEdit.setText(originalBranch);
 			binding.fileContent.setText("");
 			binding.fileContent.setVisibility(View.GONE);
@@ -126,7 +126,7 @@ public class CreateFileActivity extends BaseActivity
 					getString(R.string.delete_commit_message, originalFilename));
 		} else {
 			binding.bottomBarTitleText.setText(R.string.create_file);
-			binding.branchEdit.setVisibility(View.GONE);
+			binding.branchEditLayout.setVisibility(View.GONE);
 		}
 
 		binding.createMergeRequest.setChecked(false);
