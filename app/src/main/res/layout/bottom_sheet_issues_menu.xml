@@ -13,6 +13,50 @@
         android:layout_marginEnd="@dimen/dimen8dp"
         android:layout_marginTop="@dimen/dimen16dp"
         android:layout_marginBottom="@dimen/dimen8dp"
+        android:text="@string/search"
+        android:textSize="@dimen/dimen20sp" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/title_underline_search"
+        android:layout_width="@dimen/dimen32dp"
+        android:layout_height="@dimen/dimen8dp"
+        android:layout_marginStart="@dimen/dimen8dp"
+        app:cardBackgroundColor="?attr/colorPrimary"
+        app:cardCornerRadius="@dimen/dimen4dp"
+        android:layout_marginBottom="@dimen/dimen16dp"
+        app:cardElevation="0dp" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/search_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/search"
+        app:endIconMode="custom"
+        app:endIconDrawable="@drawable/ic_search"
+        app:endIconContentDescription="@string/search"
+        android:layout_marginStart="@dimen/dimen8dp"
+        android:layout_marginEnd="@dimen/dimen8dp"
+        app:endIconTint="?attr/iconsColor"
+        android:layout_gravity="center_vertical">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints="@string/search"
+            android:inputType="text"
+            android:singleLine="true"
+            android:textSize="@dimen/dimen14sp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dimen8dp"
+        android:layout_marginEnd="@dimen/dimen8dp"
+        android:layout_marginTop="@dimen/dimen32dp"
+        android:layout_marginBottom="@dimen/dimen8dp"
         android:text="@string/filter"
         android:textSize="@dimen/dimen20sp" />
 

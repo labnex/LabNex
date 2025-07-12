@@ -315,6 +315,7 @@ public interface ApiInterface {
 	Call<List<Issues>> getProjectIssues(
 			@Path("id") int id,
 			@Query("state") String state,
+			@Query("search") String search,
 			@Query("per_page") int per_page,
 			@Query("page") int page);
 
@@ -322,6 +323,7 @@ public interface ApiInterface {
 	Call<List<Issues>> getIssues(
 			@Query("scope") String scope,
 			@Query("state") String state,
+			@Query("search") String search,
 			@Query("per_page") int per_page,
 			@Query("page") int page);
 

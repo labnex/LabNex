@@ -32,13 +32,24 @@ public class IssuesViewModel extends ViewModel {
 			int id,
 			String scope,
 			String state,
+			String searchQuery,
 			int resultLimit,
 			int page,
 			Activity activity,
 			BottomAppBar bottomAppBar) {
 
 		mutableList = new MutableLiveData<>();
-		loadInitialList(ctx, source, id, scope, state, resultLimit, page, activity, bottomAppBar);
+		loadInitialList(
+				ctx,
+				source,
+				id,
+				scope,
+				state,
+				searchQuery,
+				resultLimit,
+				page,
+				activity,
+				bottomAppBar);
 
 		return mutableList;
 	}
@@ -49,6 +60,7 @@ public class IssuesViewModel extends ViewModel {
 			int id,
 			String scope,
 			String state,
+			String searchQuery,
 			int resultLimit,
 			int page,
 			Activity activity,
@@ -61,10 +73,11 @@ public class IssuesViewModel extends ViewModel {
 		if (source.equalsIgnoreCase("project")) {
 			currentCall =
 					RetrofitClient.getApiInterface(ctx)
-							.getProjectIssues(id, state, resultLimit, page);
+							.getProjectIssues(id, state, searchQuery, resultLimit, page);
 		} else {
 			currentCall =
-					RetrofitClient.getApiInterface(ctx).getIssues(scope, state, resultLimit, page);
+					RetrofitClient.getApiInterface(ctx)
+							.getIssues(scope, state, searchQuery, resultLimit, page);
 		}
 
 		currentCall.enqueue(
@@ -110,6 +123,7 @@ public class IssuesViewModel extends ViewModel {
 			int id,
 			String scope,
 			String state,
+			String searchQuery,
 			int resultLimit,
 			int page,
 			IssuesAdapter adapter,
@@ -123,10 +137,11 @@ public class IssuesViewModel extends ViewModel {
 		if (source.equalsIgnoreCase("project")) {
 			currentCall =
 					RetrofitClient.getApiInterface(ctx)
-							.getProjectIssues(id, state, resultLimit, page);
+							.getProjectIssues(id, state, searchQuery, resultLimit, page);
 		} else {
 			currentCall =
-					RetrofitClient.getApiInterface(ctx).getIssues(scope, state, resultLimit, page);
+					RetrofitClient.getApiInterface(ctx)
+							.getIssues(scope, state, searchQuery, resultLimit, page);
 		}
 
 		currentCall.enqueue(
