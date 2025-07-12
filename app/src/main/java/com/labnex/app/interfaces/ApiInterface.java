@@ -248,6 +248,7 @@ public interface ApiInterface {
 	Call<List<MergeRequests>> getProjectMergeRequests(
 			@Path("id") int id,
 			@Query("state") String state,
+			@Query("search") String search,
 			@Query("per_page") int per_page,
 			@Query("page") int page);
 
@@ -284,6 +285,7 @@ public interface ApiInterface {
 	Call<List<MergeRequests>> getMergeRequests(
 			@Query("scope") String scope,
 			@Query("state") String state,
+			@Query("search") String search,
 			@Query("per_page") int per_page,
 			@Query("page") int page);
 

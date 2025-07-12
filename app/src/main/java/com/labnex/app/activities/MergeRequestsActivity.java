@@ -17,6 +17,7 @@ import com.labnex.app.databinding.ActivityMergeRequestsBinding;
 import com.labnex.app.databinding.BottomSheetMergeRequestsMenuBinding;
 import com.labnex.app.helpers.Snackbar;
 import com.labnex.app.viewmodels.MergeRequestsViewModel;
+import java.util.Objects;
 
 /**
  * @author mmarif
@@ -35,6 +36,7 @@ public class MergeRequestsActivity extends BaseActivity
 	public ProjectsContext projectsContext;
 	public static boolean updateMergeRequestList = false;
 	private String filter = "opened";
+	private String searchQuery = "";
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -96,12 +98,12 @@ public class MergeRequestsActivity extends BaseActivity
 										() -> {
 											page = 1;
 											binding.pullToRefresh.setRefreshing(false);
-											fetchDataAsync(filter);
+											fetchDataAsync(filter, searchQuery);
 											binding.progressBar.setVisibility(View.VISIBLE);
 										},
 										250));
 
-		fetchDataAsync(filter);
+		fetchDataAsync(filter, searchQuery);
 	}
 
 	@Override
@@ -110,7 +112,7 @@ public class MergeRequestsActivity extends BaseActivity
 
 		if (updateMergeRequestList) {
 			page = 1;
-			fetchDataAsync(filter);
+			fetchDataAsync(filter, searchQuery);
 			updateMergeRequestList = false;
 		}
 	}
@@ -121,6 +123,8 @@ public class MergeRequestsActivity extends BaseActivity
 				BottomSheetMergeRequestsMenuBinding.inflate(LayoutInflater.from(this), null, false);
 		BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
 		bottomSheetDialog.setContentView(sheetBinding.getRoot());
+
+		sheetBinding.search.setText(searchQuery);
 
 		ChipGroup chipGroup = sheetBinding.mergeRequestFilterChips;
 		if ("opened".equals(filter)) {
@@ -142,14 +146,26 @@ public class MergeRequestsActivity extends BaseActivity
 					} else if (checkedIds.contains(R.id.chip_closed)) {
 						filter = "closed";
 					}
-					fetchDataAsync(filter);
+					searchQuery =
+							Objects.requireNonNull(sheetBinding.search.getText()).toString().trim();
+					fetchDataAsync(filter, searchQuery);
+					bottomSheetDialog.dismiss();
+				});
+
+		sheetBinding.searchLayout.setEndIconOnClickListener(
+				v -> {
+					page = 1;
+					binding.progressBar.setVisibility(View.VISIBLE);
+					searchQuery =
+							Objects.requireNonNull(sheetBinding.search.getText()).toString().trim();
+					fetchDataAsync(filter, searchQuery);
 					bottomSheetDialog.dismiss();
 				});
 
 		bottomSheetDialog.show();
 	}
 
-	private void fetchDataAsync(String filter) {
+	private void fetchDataAsync(String filter, String searchQuery) {
 		mergeRequestsViewModel
 				.getMergeRequests(
 						ctx,
@@ -157,6 +173,7 @@ public class MergeRequestsActivity extends BaseActivity
 						projectId,
 						scope,
 						filter,
+						searchQuery,
 						resultLimit,
 						page,
 						MergeRequestsActivity.this,
@@ -177,6 +194,7 @@ public class MergeRequestsActivity extends BaseActivity
 														projectId,
 														scope,
 														filter,
+														searchQuery,
 														resultLimit,
 														page,
 														adapter,
@@ -214,6 +232,6 @@ public class MergeRequestsActivity extends BaseActivity
 
 		adapter.clearAdapter();
 		page = 1;
-		fetchDataAsync(filter);
+		fetchDataAsync(filter, searchQuery);
 	}
 }

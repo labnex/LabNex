@@ -214,7 +214,7 @@
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/star_a_project"
-                            android:layout_width="@dimen/dimen120dp"
+                            android:layout_width="@dimen/dimen132dp"
                             android:layout_height="@dimen/dimen36dp"
                             android:insetBottom="0dp"
                             android:insetTop="0dp"
@@ -225,7 +225,7 @@
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/unstar_a_project"
-                            android:layout_width="@dimen/dimen120dp"
+                            android:layout_width="@dimen/dimen132dp"
                             android:layout_height="@dimen/dimen36dp"
                             android:insetBottom="0dp"
                             android:insetTop="0dp"

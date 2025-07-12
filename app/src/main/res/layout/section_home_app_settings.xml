@@ -57,7 +57,6 @@
             android:layout_height="wrap_content"
             android:minHeight="@dimen/dimen24dp"
             android:minWidth="@dimen/dimen24dp"
-            android:background="@drawable/shape_badge_background"
             android:maxLength="3"
             android:layout_marginStart="@dimen/dimen8dp"
             android:layout_marginEnd="@dimen/dimen0dp"

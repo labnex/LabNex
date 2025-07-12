@@ -18,12 +18,12 @@
         android:layout_marginBottom="@dimen/dimen8dp" />
 
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/title_underline"
         android:layout_width="@dimen/dimen32dp"
-        android:layout_height="@dimen/dimen8dp"
+        android:layout_height="@dimen/dimen4dp"
         android:layout_marginStart="@dimen/dimen8dp"
         app:cardBackgroundColor="?attr/colorPrimary"
         app:cardCornerRadius="@dimen/dimen4dp"
+        app:strokeWidth="@dimen/dimen0dp"
         android:layout_marginBottom="@dimen/dimen16dp"
         app:cardElevation="0dp" />
 

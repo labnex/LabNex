@@ -32,13 +32,24 @@ public class MergeRequestsViewModel extends ViewModel {
 			int id,
 			String scope,
 			String state,
+			String searchQuery,
 			int resultLimit,
 			int page,
 			Activity activity,
 			BottomAppBar bottomAppBar) {
 
 		mutableList = new MutableLiveData<>();
-		loadInitialList(ctx, source, id, scope, state, resultLimit, page, activity, bottomAppBar);
+		loadInitialList(
+				ctx,
+				source,
+				id,
+				scope,
+				state,
+				searchQuery,
+				resultLimit,
+				page,
+				activity,
+				bottomAppBar);
 
 		return mutableList;
 	}
@@ -49,6 +60,7 @@ public class MergeRequestsViewModel extends ViewModel {
 			int id,
 			String scope,
 			String state,
+			String searchQuery,
 			int resultLimit,
 			int page,
 			Activity activity,
@@ -61,11 +73,11 @@ public class MergeRequestsViewModel extends ViewModel {
 		if (source.equalsIgnoreCase("mr")) {
 			currentCall =
 					RetrofitClient.getApiInterface(ctx)
-							.getProjectMergeRequests(id, state, resultLimit, page);
+							.getProjectMergeRequests(id, state, searchQuery, resultLimit, page);
 		} else {
 			currentCall =
 					RetrofitClient.getApiInterface(ctx)
-							.getMergeRequests(scope, state, resultLimit, page);
+							.getMergeRequests(scope, state, searchQuery, resultLimit, page);
 		}
 
 		currentCall.enqueue(
@@ -112,6 +124,7 @@ public class MergeRequestsViewModel extends ViewModel {
 			int id,
 			String scope,
 			String state,
+			String searchQuery,
 			int resultLimit,
 			int page,
 			MergeRequestsAdapter adapter,
@@ -125,11 +138,11 @@ public class MergeRequestsViewModel extends ViewModel {
 		if (source.equalsIgnoreCase("mr")) {
 			currentCall =
 					RetrofitClient.getApiInterface(ctx)
-							.getProjectMergeRequests(id, state, resultLimit, page);
+							.getProjectMergeRequests(id, state, searchQuery, resultLimit, page);
 		} else {
 			currentCall =
 					RetrofitClient.getApiInterface(ctx)
-							.getMergeRequests(scope, state, resultLimit, page);
+							.getMergeRequests(scope, state, searchQuery, resultLimit, page);
 		}
 
 		currentCall.enqueue(
