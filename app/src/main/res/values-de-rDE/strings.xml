@@ -217,6 +217,24 @@
     <string name="delete_tag_confirmation">Are you sure you want to delete tag %1$s?</string>
     <string name="tag_deleted">Tag deleted</string>
     <string name="switch_account">Switch Account</string>
+    <string name="create_milestone">Create milestone</string>
+    <string name="due_date">Due date</string>
+    <string name="start_date">Start date</string>
+    <string name="dates_same_error">Start date and due date cannot be the same</string>
+    <string name="select_date">Select date</string>
+    <string name="milestone_created">Milestone created successfully</string>
+    <string name="import_export_database">Import/export database</string>
+    <string name="backup_dialog_title">Backup data</string>
+    <string name="backup_dialog_message">This will export (backup) all data to a backup file, which can be used to restore it later.</string>
+    <string name="import_dialog_title">Restore data</string>
+    <string name="import_dialog_message">You are about to import (restore) data from a backup file. This will overwrite existing data.</string>
+    <string name="export_button">Backup (Export)</string>
+    <string name="import_button">Restore (Import)</string>
+    <string name="backup_success">Backup created successfully</string>
+    <string name="backup_failed">Failed to create a backup file</string>
+    <string name="import_success">Data restored successfully</string>
+    <string name="import_failed">Failed to restore data from a backup file</string>
+    <string name="select_backup_file">Select backup file</string>
     <!-- errors -->
     <string name="generic_error">An unexpected error occurred</string>
     <string name="browserOpenFailed">Keine Anwendung gefunden, um diesen Link zu öffnen</string>
@@ -330,5 +348,7 @@
     <string name="refresh">Refresh</string>
     <string name="tags">Tags</string>
     <string name="unknown">Unknown</string>
+    <string name="languages">Languages</string>
+    <string name="backup">Backup</string>
     <!-- generic copy -->
 </resources>

@@ -1,0 +1,19 @@
+6.0.0
+
+🎉 Features 🎉
+- Markdown alert support
+- Create project milestones
+- Import/export database
+- Project language statistics
+- Search project and user issues
+- Search project and user merge requests
+
+🚀 Improvements 🚀 
+- Improved token expiry and refresh logic
+- Transition to TextInputLayout
+- UI enhancements across the app
+
+🐛 Bug Fixes 🐛
+- Fixed crash when viewing profiles (removed Skype field)
+
+Release Notes: https://github.com/labnex/LabNex/releases
