@@ -99,12 +99,17 @@ public class ProfileActivity extends BaseActivity {
 									}
 								}
 
-								if (!user.getDiscord().isEmpty()
-										|| !user.getLinkedin().isEmpty()
-										|| !user.getTwitter().isEmpty()) {
+								boolean hasDiscord =
+										user.getDiscord() != null && !user.getDiscord().isEmpty();
+								boolean hasLinkedin =
+										user.getLinkedin() != null && !user.getLinkedin().isEmpty();
+								boolean hasTwitter =
+										user.getTwitter() != null && !user.getTwitter().isEmpty();
+
+								if (hasDiscord || hasLinkedin || hasTwitter) {
 									binding.socialInfo.setVisibility(View.VISIBLE);
 
-									if (!user.getDiscord().isEmpty()) {
+									if (hasDiscord) {
 										binding.discord.setVisibility(View.VISIBLE);
 										binding.discord.setText(
 												getString(
@@ -112,12 +117,12 @@ public class ProfileActivity extends BaseActivity {
 														user.getDiscord()));
 									}
 
-									if (!user.getLinkedin().isEmpty()) {
+									if (hasLinkedin) {
 										binding.linkedin.setVisibility(View.VISIBLE);
 										binding.linkedin.setText(user.getLinkedin());
 									}
 
-									if (!user.getTwitter().isEmpty()) {
+									if (hasTwitter) {
 										binding.twitter.setVisibility(View.VISIBLE);
 										binding.twitter.setText(user.getTwitter());
 									}
