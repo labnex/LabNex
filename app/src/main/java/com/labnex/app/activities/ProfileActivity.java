@@ -99,17 +99,14 @@ public class ProfileActivity extends BaseActivity {
 									}
 								}
 
-								boolean hasDiscord =
-										user.getDiscord() != null && !user.getDiscord().isEmpty();
-								boolean hasLinkedin =
-										user.getLinkedin() != null && !user.getLinkedin().isEmpty();
-								boolean hasTwitter =
-										user.getTwitter() != null && !user.getTwitter().isEmpty();
-
-								if (hasDiscord || hasLinkedin || hasTwitter) {
+								if (user.getDiscord() != null && !user.getDiscord().isEmpty()
+										|| user.getLinkedin() != null
+												&& !user.getLinkedin().isEmpty()
+										|| user.getTwitter() != null
+												&& !user.getTwitter().isEmpty()) {
 									binding.socialInfo.setVisibility(View.VISIBLE);
 
-									if (hasDiscord) {
+									if (user.getDiscord() != null && !user.getDiscord().isEmpty()) {
 										binding.discord.setVisibility(View.VISIBLE);
 										binding.discord.setText(
 												getString(
@@ -117,12 +114,13 @@ public class ProfileActivity extends BaseActivity {
 														user.getDiscord()));
 									}
 
-									if (hasLinkedin) {
+									if (user.getLinkedin() != null
+											&& !user.getLinkedin().isEmpty()) {
 										binding.linkedin.setVisibility(View.VISIBLE);
 										binding.linkedin.setText(user.getLinkedin());
 									}
 
-									if (hasTwitter) {
+									if (user.getTwitter() != null && !user.getTwitter().isEmpty()) {
 										binding.twitter.setVisibility(View.VISIBLE);
 										binding.twitter.setText(user.getTwitter());
 									}
