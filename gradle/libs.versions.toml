@@ -39,7 +39,7 @@ splashscreen = "1.0.1"
 photoview = "2.3.0"
 commonsio = "2.19.0"
 #noinspection NewerVersionAvailable
-stormpot = "3.2"
+stormpot = "2.4.2"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }

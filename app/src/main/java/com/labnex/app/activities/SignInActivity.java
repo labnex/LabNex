@@ -1,5 +1,7 @@
 package com.labnex.app.activities;
 
+import static android.view.View.GONE;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.database.sqlite.SQLiteException;
@@ -89,6 +91,7 @@ public class SignInActivity extends BaseActivity {
 					.equalsIgnoreCase("add_account")) {
 				binding.signIn.setText(R.string.add_new_account);
 				binding.signInText.setText(R.string.add_new_account);
+				binding.restore.setVisibility(GONE);
 				intent.removeExtra("source");
 			}
 		}
