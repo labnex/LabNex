@@ -1,0 +1,7 @@
+6.0.1
+
+🐛 Bug Fixes 🐛
+- Fixed crashes on older Android versions
+- Hide the restore button when adding an account
+
+Release Notes: https://github.com/labnex/LabNex/releases
