@@ -1,8 +1,11 @@
 <resources>
     <string-array name="languages">
         <item>en</item>
-        <item>fr</item>
         <item>de</item>
+        <item>es</item>
+        <item>fr</item>
+        <item>zh-TW</item>
+        <item>ru</item>
         <item>zh</item>
     </string-array>
 
