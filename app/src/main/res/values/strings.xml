@@ -266,6 +266,9 @@
     <string name="import_success">Data restored successfully</string>
     <string name="import_failed">Failed to restore data from a backup file</string>
     <string name="select_backup_file">Select backup file</string>
+    <string name="account_does_not_exist">No account exists in the app for %1$s. You can add one by tapping the Add account button.</string>
+    <string name="no_action_text">LabNex cannot handle the requested resource. You can open an issue in the project repository with details so we can improve it. Use the buttons below to return to the screen of your choice.</string>
+    <string name="go_to_app">Go to App</string>
 
     <!-- errors -->
     <string name="generic_error">An unexpected error occurred</string>

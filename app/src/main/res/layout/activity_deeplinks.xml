@@ -23,7 +23,96 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_margin="@dimen/dimen24dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/add_new_account_frame"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="@dimen/dimen16dp"
+                android:paddingBottom="@dimen/dimen16dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/add_account_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/account_does_not_exist"
+                    android:textColor="?attr/primaryTextColor"
+                    android:textSize="@dimen/dimen18sp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/add_new_account"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dimen54dp"
+                    android:layout_marginTop="@dimen/dimen24dp"
+                    android:text="@string/add_new_account"
+                    android:textColor="?attr/materialCardBackgroundColor"
+                    android:textSize="@dimen/dimen16sp"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/go_to_app"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dimen54dp"
+                    android:layout_marginTop="@dimen/dimen12dp"
+                    android:text="@string/go_to_app"
+                    android:textColor="?attr/materialCardBackgroundColor"
+                    android:textSize="@dimen/dimen16sp"
+                    android:visibility="gone"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/others_frame"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="@dimen/dimen32dp"
+                android:paddingBottom="@dimen/dimen16dp">
+
+                <TextView
+                    android:id="@+id/no_action_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/no_action_text"
+                    android:textColor="?attr/primaryTextColor"
+                    android:textSize="@dimen/dimen18sp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/open_dashboard"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dimen54dp"
+                    android:layout_marginTop="@dimen/dimen24dp"
+                    android:text="@string/home"
+                    android:textColor="?attr/materialCardBackgroundColor"
+                    android:textSize="@dimen/dimen16sp"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/open_activities"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dimen54dp"
+                    android:layout_marginTop="@dimen/dimen12dp"
+                    android:text="@string/activities"
+                    android:textColor="?attr/materialCardBackgroundColor"
+                    android:textSize="@dimen/dimen16sp"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/open_explore"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dimen54dp"
+                    android:layout_marginTop="@dimen/dimen12dp"
+                    android:text="@string/explore"
+                    android:textColor="?attr/materialCardBackgroundColor"
+                    android:textSize="@dimen/dimen16sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
 
         </LinearLayout>
 

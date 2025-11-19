@@ -96,6 +96,12 @@ public class SignInActivity extends BaseActivity {
 			}
 		}
 
+		if (intent.hasExtra("instanceUrl")) {
+			binding.instanceUrl.setText(
+					Objects.requireNonNull(intent.getStringExtra("instanceUrl")));
+			intent.removeExtra("instanceUrl");
+		}
+
 		binding.personalTokenHelper.setOnClickListener(
 				personalTokenLink ->
 						Utils.openUrlInBrowser(
