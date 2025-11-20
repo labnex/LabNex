@@ -82,7 +82,6 @@ dependencies {
     implementation libs.notiesmarkwon.linkify
     implementation libs.notiesmarkwon.recycler
     implementation libs.notiesmarkwon.recycler.table
-    implementation libs.breadcrumbs
     implementation libs.room.db
     implementation libs.annotation
     implementation libs.lifecycle.livedata.ktx
