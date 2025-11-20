@@ -29,6 +29,7 @@
     <string name="light" translatable="false">Light</string>
     <string name="dynamic" translatable="false">Dynamic</string>
     <string name="theme_system" translatable="false">System</string>
+    <string name="where_to_get_token_message" translatable="false"><![CDATA[• Log in to your account on your instance (GitLab, framagit, etc.).<br>• Click on your user profile picture, then go to Preferences.<br>• In the left side menu, click on Personal access tokens.<br>• Click on Add new token button.<br>• Enter token name and choose expiration date as long as possible.<br>• Check all of the scopes.<br><br>Once created, copy and paste or type the token in Personal access token input field.]]></string>
     <!-- non translatable strings -->
 
     <string name="action_sign_in">Sign in</string>
@@ -269,6 +270,7 @@
     <string name="account_does_not_exist">No account exists in the app for %1$s. You can add one by tapping the Add account button.</string>
     <string name="no_action_text">LabNex cannot handle the requested resource. You can open an issue in the project repository with details so we can improve it. Use the buttons below to return to the screen of your choice.</string>
     <string name="go_to_app">Go to App</string>
+    <string name="how_to_get_access_token">How to get access token</string>
 
     <!-- errors -->
     <string name="generic_error">An unexpected error occurred</string>

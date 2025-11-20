@@ -67,7 +67,7 @@ public class DeepLinksActivity extends BaseActivity {
 		UserAccountsApi userAccountsApi = BaseApi.getInstance(ctx, UserAccountsApi.class);
 		assert userAccountsApi != null;
 		List<UserAccount> userAccounts = userAccountsApi.usersAccounts();
-        accountsCount = userAccountsApi.getCount();
+		accountsCount = userAccountsApi.getCount();
 
 		for (UserAccount userAccount : userAccounts) {
 

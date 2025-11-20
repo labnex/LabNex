@@ -11,9 +11,13 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.ParcelFileDescriptor;
 import android.util.Patterns;
+import android.util.TypedValue;
+import android.widget.TextView;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.text.HtmlCompat;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.labnex.app.R;
@@ -102,13 +106,7 @@ public class SignInActivity extends BaseActivity {
 			intent.removeExtra("instanceUrl");
 		}
 
-		binding.personalTokenHelper.setOnClickListener(
-				personalTokenLink ->
-						Utils.openUrlInBrowser(
-								this,
-								SignInActivity.this,
-								getResources()
-										.getString(R.string.personal_access_token_helper_link)));
+		binding.personalTokenHelper.setOnClickListener(token -> showTokenHelpDialog());
 
 		binding.signIn.setOnClickListener(
 				checkUser -> {
@@ -253,6 +251,38 @@ public class SignInActivity extends BaseActivity {
 		} catch (Exception e) {
 			Snackbar.info(SignInActivity.this, getString(R.string.generic_error));
 			enableSignInButton();
+		}
+	}
+
+	private void showTokenHelpDialog() {
+
+		MaterialAlertDialogBuilder dialogBuilder =
+				new MaterialAlertDialogBuilder(this)
+						.setTitle(R.string.how_to_get_access_token)
+						.setMessage(
+								HtmlCompat.fromHtml(
+										getString(R.string.where_to_get_token_message),
+										HtmlCompat.FROM_HTML_MODE_LEGACY))
+						.setPositiveButton(R.string.close, null)
+						.setCancelable(true);
+
+		AlertDialog dialog = dialogBuilder.create();
+		dialog.show();
+
+		TextView messageView = dialog.findViewById(android.R.id.message);
+		if (messageView != null) {
+			messageView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+			int paddingTop =
+					(int)
+							TypedValue.applyDimension(
+									TypedValue.COMPLEX_UNIT_DIP,
+									16,
+									getResources().getDisplayMetrics());
+			messageView.setPadding(
+					messageView.getPaddingLeft(),
+					paddingTop,
+					messageView.getPaddingRight(),
+					messageView.getPaddingBottom());
 		}
 	}
 
