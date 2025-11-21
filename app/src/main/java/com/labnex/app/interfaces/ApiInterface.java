@@ -123,6 +123,9 @@ public interface ApiInterface {
 	@GET("projects/{id}") // get a single project details
 	Call<Projects> getProjectInfo(@Path("id") long id);
 
+	@GET("projects/{id}") // get a single project details by path
+	Call<Projects> getProjectByPath(@Path("id") String id);
+
 	@GET("projects/{id}/approval_rules") // get project approval rules
 	Call<List<Rule>> getApprovalRules(@Path("id") int id);
 
@@ -252,6 +255,10 @@ public interface ApiInterface {
 			@Query("per_page") int per_page,
 			@Query("page") int page);
 
+	@GET("projects/{id}/merge_requests/{merge_request_iid}") // get single merge request by id
+	Call<MergeRequests> getMergeRequest(
+			@Path("id") int projectId, @Path("merge_request_iid") int mergeRequestIid);
+
 	@GET("projects/{id}/merge_requests/{merge_request_iid}/notes?sort=asc") // get merge request
 	// notes/comments
 	Call<List<Notes>> getMergeRequestNotes(
@@ -320,6 +327,9 @@ public interface ApiInterface {
 			@Query("search") String search,
 			@Query("per_page") int per_page,
 			@Query("page") int page);
+
+	@GET("projects/{id}/issues/{issue_iid}") // get issue by id
+	Call<Issues> getIssue(@Path("id") int projectId, @Path("issue_iid") int issueIid);
 
 	@GET("issues") // get user issues
 	Call<List<Issues>> getIssues(

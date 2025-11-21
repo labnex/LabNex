@@ -134,6 +134,28 @@
             android:configChanges="orientation|screenSize|smallestScreenSize|density|screenLayout|keyboard|keyboardHidden|navigation"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustResize" />
+
+        <meta-data
+            android:name="com.samsung.android.keepalive.density"
+            android:value="true"/>
+        <meta-data
+            android:name="com.samsung.android.multidisplay.keep_process_alive"
+            android:value="true"/>
+        <!-- Custom URL Scheme -->
+        <activity
+            android:name=".activities.DeepLinksActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="labnex"/>
+            </intent-filter>
+        </activity>
+
     </application>
 
     <queries>

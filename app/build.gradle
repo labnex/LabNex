@@ -1,18 +1,18 @@
 plugins {
     alias(libs.plugins.android.application)
-    id "com.diffplug.spotless" version "7.0.4"
+    id "com.diffplug.spotless" version "8.0.0"
 }
 
 android {
-    namespace 'com.labnex.app'
-    compileSdk 36
+    namespace = 'com.labnex.app'
+    compileSdk = 36
 
     defaultConfig {
         applicationId "com.labnex.app"
-        minSdk 26
-        targetSdk 36
-        versionCode 600
-        versionName "6.0.0"
+        minSdk = 26
+        targetSdk = 36
+        versionCode 695
+        versionName "7.0.0-dev"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -34,7 +34,7 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            shrinkResources false
+            shrinkResources = false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -44,7 +44,7 @@ android {
         targetCompatibility JavaVersion.VERSION_21
     }
     buildFeatures {
-        viewBinding true
+        viewBinding = true
     }
 }
 
@@ -82,7 +82,6 @@ dependencies {
     implementation libs.notiesmarkwon.linkify
     implementation libs.notiesmarkwon.recycler
     implementation libs.notiesmarkwon.recycler.table
-    implementation libs.breadcrumbs
     implementation libs.room.db
     implementation libs.annotation
     implementation libs.lifecycle.livedata.ktx
@@ -101,6 +100,7 @@ dependencies {
     implementation libs.splashscreen
     implementation libs.photoview
     implementation libs.commons.io
+    implementation libs.commons.lang3
 
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
