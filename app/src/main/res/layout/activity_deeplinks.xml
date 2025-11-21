@@ -7,13 +7,33 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fitsSystemWindows="true">
 
-    <com.google.android.material.progressindicator.LinearProgressIndicator
-        android:id="@+id/progress_bar"
-        style="@style/Widget.MaterialComponents.LinearProgressIndicator"
+    <LinearLayout
+        android:id="@+id/loading_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:indeterminate="true"
-        app:indicatorColor="?attr/progressIndicatorColor" />
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="gone">
+
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/progress_bar"
+            style="@style/Widget.MaterialComponents.LinearProgressIndicator"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            app:indicatorColor="?attr/progressIndicatorColor" />
+
+        <com.labnex.app.views.LoadingDotsTextView
+            android:id="@+id/fetch_data"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/fetching_data"
+            android:textColor="?attr/primaryTextColor"
+            android:textSize="@dimen/dimen16sp"
+            android:layout_marginTop="@dimen/dimen16dp" />
+
+    </LinearLayout>
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -72,7 +92,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:paddingTop="@dimen/dimen32dp"
-                android:paddingBottom="@dimen/dimen16dp">
+                android:paddingBottom="@dimen/dimen16dp"
+                android:visibility="gone">
 
                 <TextView
                     android:id="@+id/no_action_text"

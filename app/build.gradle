@@ -100,6 +100,7 @@ dependencies {
     implementation libs.splashscreen
     implementation libs.photoview
     implementation libs.commons.io
+    implementation libs.commons.lang3
 
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit

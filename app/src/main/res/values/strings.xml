@@ -271,6 +271,7 @@
     <string name="no_action_text">LabNex cannot handle the requested resource. You can open an issue in the project repository with details so we can improve it. Use the buttons below to return to the screen of your choice.</string>
     <string name="go_to_app">Go to App</string>
     <string name="how_to_get_access_token">How to get access token</string>
+    <string name="fetching_data">Fetching data</string>
 
     <!-- errors -->
     <string name="generic_error">An unexpected error occurred</string>

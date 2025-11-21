@@ -190,7 +190,7 @@ public class SignInActivity extends BaseActivity {
 			String instanceUrlRaw =
 					Objects.requireNonNull(binding.instanceUrl.getText())
 							.toString()
-							.replaceAll("[\\uFEFF]", "") // Remove BOM if present
+							.replaceAll("\\uFEFF", "") // Remove BOM if present
 							.trim();
 			String loginToken =
 					Objects.requireNonNull(binding.personalToken.getText())

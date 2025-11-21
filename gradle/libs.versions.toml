@@ -40,6 +40,7 @@ photoview = "2.3.0"
 commonsio = "2.19.0"
 #noinspection NewerVersionAvailable
 stormpot = "2.4.2"
+commonslang3 = "3.20.0"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -95,6 +96,7 @@ stormpot = { group = "com.github.chrisvest", name = "stormpot", version.ref = "s
 splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashscreen" }
 photoview = { group = "com.github.chrisbanes", name = "PhotoView", version.ref = "photoview" }
 commons-io = { group = "commons-io", name = "commons-io", version.ref = "commonsio" }
+commons-lang3 = { group = "org.apache.commons", name = "commons-lang3", version.ref = "commonslang3" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
