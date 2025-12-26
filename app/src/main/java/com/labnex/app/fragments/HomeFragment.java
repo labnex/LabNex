@@ -193,30 +193,60 @@ public class HomeFragment extends Fragment {
 
 	@Override
 	public void onResume() {
-
-		if (notesApi.getCount() > 0) {
-
-			if (notesApi.getCount() > 9) {
-				binding.sectionAppSettings.notesBadge.setPadding(16, 0, 16, 0);
-			}
-			binding.sectionAppSettings.notesBadge.setVisibility(View.VISIBLE);
-			binding.sectionAppSettings.notesBadge.setText(
-					String.format(notesApi.getCount().toString()));
-		} else {
-			binding.sectionAppSettings.notesBadge.setVisibility(View.GONE);
-		}
-
-		if (projectsApi.getCount() > 0) {
-			binding.sectionMostVisited.clearMostVisited.setVisibility(View.VISIBLE);
-		}
-
 		super.onResume();
+
+		refreshMostVisitedProjects();
+		updateNotesBadge();
+		updateClearButtonVisibility();
 	}
 
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
 		binding = null;
+	}
+
+	private void refreshMostVisitedProjects() {
+
+		LiveData<List<Projects>> liveData =
+				projectsApi.fetchMostVisitedWithLimit(currentActiveAccountId, 5);
+		liveData.observe(
+				getViewLifecycleOwner(),
+				mostVisited -> {
+					if (mostVisited != null) {
+						projectsList.clear();
+						if (!mostVisited.isEmpty()) {
+							binding.sectionMostVisited.nothingFoundFrame.setVisibility(View.GONE);
+							projectsList.addAll(mostVisited);
+							mostVisitedAdapter.notifyDataChanged();
+							binding.sectionMostVisited.clearMostVisited.setVisibility(View.VISIBLE);
+						} else {
+							binding.sectionMostVisited.nothingFoundFrame.setVisibility(
+									View.VISIBLE);
+							binding.sectionMostVisited.clearMostVisited.setVisibility(View.GONE);
+						}
+					}
+				});
+	}
+
+	private void updateNotesBadge() {
+		if (notesApi.getCount() > 0) {
+			if (notesApi.getCount() > 9) {
+				binding.sectionAppSettings.notesBadge.setPadding(16, 0, 16, 0);
+			}
+			binding.sectionAppSettings.notesBadge.setVisibility(View.VISIBLE);
+			binding.sectionAppSettings.notesBadge.setText(String.valueOf(notesApi.getCount()));
+		} else {
+			binding.sectionAppSettings.notesBadge.setVisibility(View.GONE);
+		}
+	}
+
+	private void updateClearButtonVisibility() {
+		if (projectsApi.getCount() > 0) {
+			binding.sectionMostVisited.clearMostVisited.setVisibility(View.VISIBLE);
+		} else {
+			binding.sectionMostVisited.clearMostVisited.setVisibility(View.GONE);
+		}
 	}
 
 	private void getBroadcastMessage() {
@@ -260,19 +290,8 @@ public class HomeFragment extends Fragment {
 
 	private void getMostVisitedProjects() {
 
-		LiveData<List<Projects>> liveData =
-				projectsApi.fetchMostVisitedWithLimit(currentActiveAccountId, 5);
-		liveData.observe(
-				requireActivity(),
-				mostVisited -> {
-					if (mostVisited != null) {
-						binding.sectionMostVisited.nothingFoundFrame.setVisibility(View.GONE);
-						projectsList.clear();
-					}
-					refreshSuccessCounter++;
-					checkRefreshComplete();
-					liveData.removeObservers(requireActivity());
-				});
+		refreshSuccessCounter++;
+		checkRefreshComplete();
 	}
 
 	private void getUserInfo() {
@@ -349,25 +368,7 @@ public class HomeFragment extends Fragment {
 			binding.sectionMostVisited.clearMostVisited.setEnabled(true);
 			binding.refreshHomeScreen.setEnabled(true);
 
-			LiveData<List<Projects>> liveData =
-					projectsApi.fetchMostVisitedWithLimit(currentActiveAccountId, 5);
-			liveData.observe(
-					requireActivity(),
-					mostVisited -> {
-						if (mostVisited != null) {
-							projectsList.clear();
-							if (!mostVisited.isEmpty()) {
-								binding.sectionMostVisited.nothingFoundFrame.setVisibility(
-										View.GONE);
-								projectsList.addAll(mostVisited);
-								mostVisitedAdapter.notifyDataChanged();
-							} else {
-								binding.sectionMostVisited.nothingFoundFrame.setVisibility(
-										View.VISIBLE);
-							}
-						}
-						liveData.removeObservers(requireActivity());
-					});
+			refreshMostVisitedProjects();
 
 			if (isUserRefresh) {
 				Snackbar.info(
@@ -381,7 +382,6 @@ public class HomeFragment extends Fragment {
 	}
 
 	private void clearMostVisited() {
-
 		if (!projectsList.isEmpty()) {
 			new MaterialAlertDialogBuilder(ctx)
 					.setMessage(R.string.delete_all_most_visited_dialog_message)
@@ -389,10 +389,16 @@ public class HomeFragment extends Fragment {
 							R.string.clear,
 							(dialog, which) -> {
 								projectsApi.deleteAllProjects();
+
 								projectsList.clear();
 								mostVisitedAdapter.notifyDataChanged();
+
+								binding.sectionMostVisited.nothingFoundFrame.setVisibility(
+										View.VISIBLE);
+
 								binding.sectionMostVisited.clearMostVisited.setVisibility(
 										View.GONE);
+
 								dialog.dismiss();
 							})
 					.setNeutralButton(R.string.cancel, null)

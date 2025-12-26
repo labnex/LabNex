@@ -1,80 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_marginTop="@dimen/dimen20dp"
-    android:paddingStart="@dimen/dimen16dp"
-    android:paddingEnd="@dimen/dimen16dp"
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    android:paddingHorizontal="@dimen/dimen16dp"
+    android:layout_marginTop="@dimen/dimen20dp"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="@dimen/dimen8dp">
 
         <TextView
             android:id="@+id/most_visited"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:gravity="start"
             android:layout_weight="1"
             android:text="@string/most_visited"
+            android:textSize="@dimen/dimen20sp"
             android:textStyle="bold"
-            android:textSize="@dimen/dimen18sp" />
+            android:textColor="?attr/colorOnSurface"/>
 
-        <TextView
+        <com.google.android.material.card.MaterialCardView
             android:id="@+id/clear_most_visited"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/clear"
-            android:layout_marginEnd="@dimen/dimen0dp"
-            android:layout_marginStart="@dimen/dimen8dp"
+            app:cardCornerRadius="@dimen/dimen8dp"
+            app:cardElevation="@dimen/dimen0dp"
+            app:strokeWidth="@dimen/dimen0dp"
+            android:backgroundTint="?attr/inputBackgroundColor"
             android:visibility="gone"
-            android:textSize="@dimen/dimen14sp" />
+            android:layout_marginStart="@dimen/dimen8dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/clear"
+                android:textSize="@dimen/dimen14sp"
+                android:textColor="?attr/colorPrimary"
+                android:paddingVertical="@dimen/dimen6dp"
+                android:paddingHorizontal="@dimen/dimen16dp"/>
+
+        </com.google.android.material.card.MaterialCardView>
 
     </LinearLayout>
 
-    <RelativeLayout
+    <!-- Single card container -->
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dimen16dp">
+        app:cardCornerRadius="@dimen/dimen16dp"
+        app:cardElevation="@dimen/dimen0dp"
+        style="?attr/materialCardViewElevatedStyle"
+        android:backgroundTint="?attr/inputBackgroundColor"
+        app:strokeWidth="@dimen/dimen0dp">
 
+        <!-- Empty state -->
         <LinearLayout
             android:id="@+id/nothing_found_frame"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_gravity="center_horizontal|center_vertical"
-            android:layout_margin="@dimen/dimen16dp"
+            android:gravity="center"
+            android:padding="@dimen/dimen40dp"
+            android:visibility="gone"
             tools:ignore="UseCompoundDrawables">
 
             <ImageView
-                android:layout_width="@dimen/dimen36dp"
-                android:layout_height="@dimen/dimen36dp"
+                android:layout_width="@dimen/dimen48dp"
+                android:layout_height="@dimen/dimen48dp"
                 android:contentDescription="@string/most_visited_empty_message"
-                android:layout_gravity="center"
                 android:src="@drawable/ic_trending"
-                android:layout_marginBottom="@dimen/dimen8dp"
-                app:tint="@color/md_theme_error" />
+                android:layout_marginBottom="@dimen/dimen16dp"
+                app:tint="?attr/colorOnSurfaceVariant"/>
 
             <TextView
                 android:id="@+id/nothing_found"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="@string/most_visited_empty_message"
-                android:textColor="@color/md_theme_error"
-                android:textSize="@dimen/dimen14sp" />
+                android:textSize="@dimen/dimen14sp"
+                android:textColor="?attr/colorOnSurfaceVariant"/>
 
         </LinearLayout>
 
+        <!-- RecyclerView -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view_most_visited"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:paddingVertical="@dimen/dimen8dp"/>
 
-    </RelativeLayout>
+    </com.google.android.material.card.MaterialCardView>
 
 </LinearLayout>

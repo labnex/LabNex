@@ -87,7 +87,7 @@ public class MostVisitedAdapter
 
 		String firstCharacter = "P";
 		if (currentItem.getProjectName() != null && !currentItem.getProjectName().isEmpty()) {
-			firstCharacter = String.valueOf(currentItem.getProjectName().charAt(0));
+			firstCharacter = String.valueOf(currentItem.getProjectName().charAt(0)).toUpperCase();
 		}
 
 		TextDrawable drawable =
@@ -95,12 +95,16 @@ public class MostVisitedAdapter
 						.beginConfig()
 						.useFont(Typeface.DEFAULT)
 						.textColor(textColor)
-						.fontSize(16)
+						.fontSize(20)
+						.width(32)
+						.height(32)
+						.bold()
 						.toUpperCase()
-						.width(26)
-						.height(26)
 						.endConfig()
-						.buildRoundRect(firstCharacter, backgroundColor, 9);
+						.buildRoundRect(
+								firstCharacter,
+								backgroundColor,
+								(int) ctx.getResources().getDimension(R.dimen.dimen8dp));
 
 		holder.avatar.setImageDrawable(drawable);
 		holder.projectName.setText(currentItem.getProjectName());
