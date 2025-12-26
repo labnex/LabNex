@@ -1,111 +1,127 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_marginTop="@dimen/dimen20dp"
-    android:paddingStart="@dimen/dimen16dp"
-    android:paddingEnd="@dimen/dimen16dp"
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    android:paddingHorizontal="@dimen/dimen16dp"
+    android:layout_marginTop="@dimen/dimen20dp"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <TextView
         android:id="@+id/app_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="start"
         android:text="@string/app"
+        android:textSize="@dimen/dimen20sp"
         android:textStyle="bold"
-        android:textSize="@dimen/dimen18sp" />
+        android:layout_marginBottom="@dimen/dimen8dp"/>
 
-    <RelativeLayout
-        android:id="@+id/notes_frame"
+    <!-- Single card container -->
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dimen24dp">
+        app:cardCornerRadius="@dimen/dimen16dp"
+        app:cardElevation="@dimen/dimen0dp"
+        style="?attr/materialCardViewElevatedStyle"
+        android:backgroundTint="?attr/inputBackgroundColor"
+        app:strokeWidth="@dimen/dimen0dp">
 
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/notes_view"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            app:strokeWidth="@dimen/dimen0dp"
-            android:backgroundTint="?attr/homeIconsBackgroundColor"
-            app:cardElevation="@dimen/dimen0dp">
+            android:orientation="vertical"
+            android:paddingTop="@dimen/dimen4dp"
+            android:paddingBottom="@dimen/dimen4dp">
 
-            <ImageView
-                android:id="@+id/notes_icon"
-                android:layout_height="@dimen/dimen36dp"
-                android:layout_width="@dimen/dimen36dp"
-                android:contentDescription="@string/generic_img_copy"
-                android:src="@drawable/ic_notes_home" />
+            <!-- Notes -->
+            <LinearLayout
+                android:id="@+id/notes_frame"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dimen56dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="@dimen/dimen16dp"
+                android:paddingEnd="@dimen/dimen16dp"
+                android:clickable="true"
+                android:background="?attr/selectableItemBackground">
 
-        </com.google.android.material.card.MaterialCardView>
+                <ImageView
+                    android:id="@+id/notes_icon"
+                    android:layout_width="@dimen/dimen40dp"
+                    android:layout_height="@dimen/dimen40dp"
+                    android:contentDescription="@string/notes"
+                    android:src="@drawable/ic_notes_home"
+                    app:tint="?attr/iconsColor" />
 
-        <TextView
-            android:id="@+id/notes_text"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:paddingStart="@dimen/dimen12dp"
-            android:paddingEnd="0dp"
-            android:layout_toEndOf="@id/notes_view"
-            android:layout_centerVertical="true"
-            android:text="@string/notes"
-            android:textSize="@dimen/dimen16sp" />
+                <TextView
+                    android:id="@+id/notes_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingStart="@dimen/dimen16dp"
+                    android:paddingEnd="@dimen/dimen4dp"
+                    android:text="@string/notes"
+                    android:textSize="@dimen/dimen16sp" />
 
-        <TextView
-            android:id="@+id/notes_badge"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minHeight="@dimen/dimen24dp"
-            android:minWidth="@dimen/dimen24dp"
-            android:maxLength="3"
-            android:layout_marginStart="@dimen/dimen8dp"
-            android:layout_marginEnd="@dimen/dimen0dp"
-            android:paddingStart="@dimen/dimen4dp"
-            android:paddingEnd="@dimen/dimen4dp"
-            android:layout_centerVertical="true"
-            android:gravity="center_vertical|center_horizontal"
-            android:singleLine="true"
-            android:textSize="@dimen/dimen16sp"
-            android:layout_alignParentEnd="true"
-            android:textColor="?attr/textColor"
-            android:visibility="gone" />
+                <TextView
+                    android:id="@+id/notes_badge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minHeight="@dimen/dimen24dp"
+                    android:minWidth="@dimen/dimen24dp"
+                    android:maxLength="3"
+                    android:paddingStart="@dimen/dimen6dp"
+                    android:paddingEnd="@dimen/dimen6dp"
+                    android:gravity="center"
+                    android:textSize="@dimen/dimen14sp"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:visibility="gone" />
 
-    </RelativeLayout>
+            </LinearLayout>
 
-    <RelativeLayout
-        android:id="@+id/settings_frame"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dimen24dp">
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginStart="@dimen/dimen72dp"
+                android:background="?attr/colorOutline"
+                android:alpha="0.08"/>
 
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/settings_view"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            app:strokeWidth="@dimen/dimen0dp"
-            android:backgroundTint="?attr/homeIconsBackgroundColor"
-            app:cardElevation="@dimen/dimen0dp">
+            <!-- Settings -->
+            <LinearLayout
+                android:id="@+id/settings_frame"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dimen56dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="@dimen/dimen16dp"
+                android:paddingEnd="@dimen/dimen16dp"
+                android:clickable="true"
+                android:background="?attr/selectableItemBackground">
 
-            <ImageView
-                android:id="@+id/settings_icon"
-                android:layout_height="@dimen/dimen36dp"
-                android:layout_width="@dimen/dimen36dp"
-                android:contentDescription="@string/generic_img_copy"
-                android:src="@drawable/ic_settings_home" />
+                <ImageView
+                    android:id="@+id/settings_icon"
+                    android:layout_width="@dimen/dimen40dp"
+                    android:layout_height="@dimen/dimen40dp"
+                    android:contentDescription="@string/settings"
+                    android:src="@drawable/ic_settings_home"
+                    app:tint="?attr/iconsColor" />
 
-        </com.google.android.material.card.MaterialCardView>
+                <TextView
+                    android:id="@+id/settings_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingStart="@dimen/dimen16dp"
+                    android:paddingEnd="@dimen/dimen4dp"
+                    android:text="@string/settings"
+                    android:textSize="@dimen/dimen16sp" />
 
-        <TextView
-            android:id="@+id/settings_text"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:paddingStart="@dimen/dimen12dp"
-            android:paddingEnd="0dp"
-            android:layout_toEndOf="@id/settings_view"
-            android:layout_centerVertical="true"
-            android:text="@string/settings"
-            android:textSize="@dimen/dimen16sp" />
+            </LinearLayout>
 
-    </RelativeLayout>
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
 
 </LinearLayout>

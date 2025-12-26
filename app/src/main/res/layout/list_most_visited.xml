@@ -1,43 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/most_visited_frame"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:id="@+id/most_visited_frame"
-    android:paddingTop="@dimen/dimen8dp"
-    android:paddingBottom="@dimen/dimen8dp">
+    android:gravity="center_vertical"
+    android:paddingVertical="@dimen/dimen8dp"
+    android:paddingHorizontal="@dimen/dimen24dp"
+    android:background="?attr/selectableItemBackground">
 
-    <ImageView
-        android:id="@+id/avatar"
-        android:layout_width="@dimen/dimen36dp"
-        android:layout_height="@dimen/dimen36dp"
-        android:layout_marginStart="@dimen/dimen0dp"
-        android:layout_marginEnd="@dimen/dimen12dp"
-        android:layout_gravity="center_horizontal|center_vertical"
-        android:contentDescription="@string/generic_img_copy"
-        android:src="@drawable/ic_spinner" />
+    <!-- Avatar/icon -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/avatar_container"
+        android:layout_width="@dimen/dimen40dp"
+        android:layout_height="@dimen/dimen40dp"
+        app:cardCornerRadius="@dimen/dimen8dp"
+        app:cardElevation="@dimen/dimen0dp"
+        style="?attr/materialCardViewElevatedStyle"
+        app:strokeWidth="@dimen/dimen0dp"
+        android:backgroundTint="?attr/homeIconsBackgroundColor">
 
+        <ImageView
+            android:id="@+id/avatar"
+            android:layout_width="@dimen/dimen32dp"
+            android:layout_height="@dimen/dimen32dp"
+            android:layout_gravity="center_horizontal|center_vertical"
+            android:contentDescription="@string/generic_img_copy"
+            tools:src="@drawable/ic_spinner"/>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Text content -->
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal|center_vertical"
-        android:orientation="vertical">
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_marginStart="@dimen/dimen16dp">
 
         <TextView
             android:id="@+id/project_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:text="@string/projects"
-            android:textSize="@dimen/dimen16sp" />
+            android:textSize="@dimen/dimen16sp"
+            android:maxLines="1"
+            android:ellipsize="end"/>
 
         <TextView
             android:id="@+id/project_path"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/path"
+            tools:text="group/subgroup/project"
             android:textSize="@dimen/dimen14sp"
-            android:alpha=".7" />
+            android:maxLines="1"
+            android:ellipsize="middle"
+            android:alpha="0.8"
+            android:layout_marginTop="@dimen/dimen2dp"/>
 
     </LinearLayout>
 

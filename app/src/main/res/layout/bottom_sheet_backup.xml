@@ -25,6 +25,7 @@
         android:layout_marginStart="@dimen/dimen8dp"
         app:cardBackgroundColor="?attr/colorPrimary"
         app:cardCornerRadius="@dimen/dimen4dp"
+        app:strokeWidth="@dimen/dimen0dp"
         android:layout_marginBottom="@dimen/dimen16dp"
         app:cardElevation="0dp" />
 
