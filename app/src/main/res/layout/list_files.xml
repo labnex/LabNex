@@ -8,24 +8,13 @@
     android:padding="@dimen/dimen12dp">
 
     <ImageView
-        android:id="@+id/folder"
+        android:id="@+id/icon"
         android:layout_width="@dimen/dimen24dp"
         android:layout_height="@dimen/dimen24dp"
-        android:visibility="gone"
-        android:layout_marginStart="@dimen/dimen4dp"
-        android:layout_marginEnd="@dimen/dimen8dp"
-        android:contentDescription="@string/folder"
-        android:src="@drawable/ic_folder" />
-
-    <ImageView
-        android:id="@+id/file"
-        android:layout_width="@dimen/dimen24dp"
-        android:layout_height="@dimen/dimen24dp"
-        android:visibility="gone"
         android:layout_marginStart="@dimen/dimen4dp"
         android:layout_marginEnd="@dimen/dimen8dp"
         android:contentDescription="@string/file"
-        android:src="@drawable/ic_file" />
+        android:src="@drawable/ic_file_document" />
 
     <TextView
         android:id="@+id/title"

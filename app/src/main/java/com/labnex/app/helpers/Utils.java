@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -45,7 +46,19 @@ import java.util.regex.Pattern;
  */
 public class Utils {
 
-	private static final HashMap<String[], FileType> extensions = new HashMap<>();
+	private static final Map<String[], FileType> extensions = new HashMap<>();
+
+	public enum FileType {
+		IMAGE,
+		AUDIO,
+		VIDEO,
+		DOCUMENT,
+		EXECUTABLE,
+		TEXT,
+		FONT,
+		UNKNOWN,
+		KEYSTORE
+	}
 
 	static {
 		extensions.put(
@@ -81,6 +94,7 @@ public class Utils {
 					"c",
 					"cc",
 					"cpp",
+					"d",
 					"h",
 					"cxx",
 					"cyc",
@@ -158,10 +172,29 @@ public class Utils {
 					"hx",
 					"ts",
 					"kt",
-					"kts"
+					"kts",
+					"el",
+					"cjs",
+					"jenkinsfile",
+					"toml",
+					"pro",
+					"gitattributes",
+					"gitleaksignore",
+					"gitmodules",
+					"editorconfig",
+					"gradlew",
+					"zig",
+					"yamllint",
+					"lock",
+					"mjs"
 				},
 				FileType.TEXT);
 		extensions.put(new String[] {"ttf", "otf", "woff", "woff2", "ttc", "eot"}, FileType.FONT);
+		extensions.put(new String[] {"jks"}, FileType.KEYSTORE);
+	}
+
+	public static Map<String[], FileType> getExtensions() {
+		return extensions;
 	}
 
 	public static boolean isNetworkAvailable(Context context) {
@@ -401,17 +434,6 @@ public class Utils {
 		while (matcher.find()) lines++;
 
 		return lines;
-	}
-
-	public enum FileType {
-		IMAGE,
-		AUDIO,
-		VIDEO,
-		DOCUMENT,
-		TEXT,
-		EXECUTABLE,
-		FONT,
-		UNKNOWN
 	}
 
 	public static FileType getFileType(String extension) {

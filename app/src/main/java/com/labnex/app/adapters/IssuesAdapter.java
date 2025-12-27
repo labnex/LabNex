@@ -18,9 +18,11 @@ import com.labnex.app.activities.ProfileActivity;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.contexts.IssueContext;
 import com.labnex.app.contexts.ProjectsContext;
+import com.labnex.app.helpers.Markdown;
 import com.labnex.app.helpers.TimeUtils;
 import com.labnex.app.models.issues.Issues;
 import com.labnex.app.models.projects.Projects;
+import com.vdurmont.emoji.EmojiParser;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -182,7 +184,8 @@ public class IssuesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 			this.issues = issues;
 			Locale locale = context.getResources().getConfiguration().getLocales().get(0);
 
-			title.setText(issues.getTitle());
+			Markdown.render(context, EmojiParser.parseToUnicode(issues.getTitle().trim()), title);
+
 			if (issues.getReferences() != null) {
 				project.setText(issues.getReferences().getFull());
 			} else {

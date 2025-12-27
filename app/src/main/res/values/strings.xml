@@ -33,7 +33,7 @@
     <!-- non translatable strings -->
 
     <string name="action_sign_in">Sign in</string>
-    <string name="hi_username">Hi %1$s 👋</string>
+    <string name="hi_username">Hi %1$s</string>
     <string name="welcome_back">Welcome back</string>
     <string name="login_failed">Login failed</string>
     <string name="all_good">You\'re all caught up</string>
@@ -272,6 +272,21 @@
     <string name="go_to_app">Go to App</string>
     <string name="how_to_get_access_token">How to get access token</string>
     <string name="fetching_data">Fetching data</string>
+    <string name="active_today">Active today</string>
+    <string name="active_yesterday">Active yesterday</string>
+    <plurals name="active_days_ago">
+        <item quantity="one">Active %d day ago</item>
+        <item quantity="other">Active %d days ago</item>
+    </plurals>
+    <plurals name="active_weeks_ago">
+        <item quantity="one">Active %d week ago</item>
+        <item quantity="other">Active %d weeks ago</item>
+    </plurals>
+    <plurals name="active_months_ago">
+        <item quantity="one">Active %d month ago</item>
+        <item quantity="other">Active %d months ago</item>
+    </plurals>
+    <string name="member_since">Member since %s</string>
 
     <!-- errors -->
     <string name="generic_error">An unexpected error occurred</string>
@@ -389,5 +404,8 @@
     <string name="unknown">Unknown</string>
     <string name="languages">Languages</string>
     <string name="backup">Backup</string>
+    <string name="there">there</string>
+    <string name="separator_dot" translatable="false">●</string>
+    <string name="plan">plan</string>
     <!-- generic copy -->
 </resources>
