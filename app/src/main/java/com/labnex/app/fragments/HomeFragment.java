@@ -2,10 +2,13 @@ package com.labnex.app.fragments;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
@@ -36,8 +39,13 @@ import com.labnex.app.helpers.SharedPrefDB;
 import com.labnex.app.helpers.Snackbar;
 import com.labnex.app.models.broadcast_messages.Messages;
 import com.labnex.app.models.user.User;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import retrofit2.Call;
 import retrofit2.Callback;
 
@@ -86,10 +94,6 @@ public class HomeFragment extends Fragment {
 				userAccountsApi != null
 						? userAccountsApi.getAccountById(currentActiveAccountId)
 						: null;
-		if (account != null) {
-			binding.welcomeTextHi.setText(
-					String.format(getString(R.string.hi_username), account.getUserName()));
-		}
 
 		notesApi = BaseApi.getInstance(ctx, NotesApi.class);
 		projectsApi = BaseApi.getInstance(ctx, ProjectsApi.class);
@@ -107,35 +111,36 @@ public class HomeFragment extends Fragment {
 		getMostVisitedProjects();
 
 		binding.refreshHomeScreen.setOnClickListener(
-				ref -> {
-					requireActivity()
-							.runOnUiThread(
-									() -> {
-										refreshSuccessCounter = 0;
-										isUserRefresh = true;
-										binding.progressBar.setVisibility(View.VISIBLE);
-										binding.userAvatar.setEnabled(false);
-										binding.sectionMostVisited.recyclerViewMostVisited
-												.setEnabled(false);
-										binding.sectionWork.groupsFrame.setEnabled(false);
-										binding.sectionWork.projectsFrame.setEnabled(false);
-										binding.sectionWork.starredFrame.setEnabled(false);
-										binding.sectionWork.snippetFrame.setEnabled(false);
-										binding.sectionWork.issuesFrame.setEnabled(false);
-										binding.sectionWork.mergeRequestsFrame.setEnabled(false);
-										binding.sectionAppSettings.notesFrame.setEnabled(false);
-										binding.sectionAppSettings.settingsFrame.setEnabled(false);
-										binding.settingsViewTop.setEnabled(false);
-										binding.sectionMostVisited.clearMostVisited.setEnabled(
-												false);
-										binding.refreshHomeScreen.setEnabled(false);
-										projectsList.clear();
-										mostVisitedAdapter.notifyDataChanged();
-										getBroadcastMessage();
-										getUserInfo();
-										getMostVisitedProjects();
-									});
-				});
+				ref ->
+						requireActivity()
+								.runOnUiThread(
+										() -> {
+											refreshSuccessCounter = 0;
+											isUserRefresh = true;
+											binding.progressBar.setVisibility(View.VISIBLE);
+											binding.userAvatar.setEnabled(false);
+											binding.sectionMostVisited.recyclerViewMostVisited
+													.setEnabled(false);
+											binding.sectionWork.groupsFrame.setEnabled(false);
+											binding.sectionWork.projectsFrame.setEnabled(false);
+											binding.sectionWork.starredFrame.setEnabled(false);
+											binding.sectionWork.snippetFrame.setEnabled(false);
+											binding.sectionWork.issuesFrame.setEnabled(false);
+											binding.sectionWork.mergeRequestsFrame.setEnabled(
+													false);
+											binding.sectionAppSettings.notesFrame.setEnabled(false);
+											binding.sectionAppSettings.settingsFrame.setEnabled(
+													false);
+											binding.settingsViewTop.setEnabled(false);
+											binding.sectionMostVisited.clearMostVisited.setEnabled(
+													false);
+											binding.refreshHomeScreen.setEnabled(false);
+											projectsList.clear();
+											mostVisitedAdapter.notifyDataChanged();
+											getBroadcastMessage();
+											getUserInfo();
+											getMostVisitedProjects();
+										}));
 
 		binding.sectionWork.groupsFrame.setOnClickListener(
 				view -> startActivity(new Intent(ctx, GroupsActivity.class)));
@@ -328,6 +333,7 @@ public class HomeFragment extends Fragment {
 											ctx.startActivity(intent);
 										});
 								binding.userAvatar.setEnabled(true);
+								updateWelcomeText(userDetails);
 							}
 						} else {
 							Snackbar.info(
@@ -349,6 +355,145 @@ public class HomeFragment extends Fragment {
 						checkRefreshComplete();
 					}
 				});
+	}
+
+	private void updateWelcomeText(User user) {
+		if (user == null) return;
+
+		String displayName = getDisplayName(user);
+		binding.hiText.setText(String.format(getString(R.string.hi_username), displayName));
+
+		updateTextViewWithData(binding.jobTitleText, user.getJobTitle());
+
+		String locationOrg = buildLocationOrganizationString(user);
+		updateTextViewWithData(binding.locationOrgText, locationOrg);
+
+		String additionalInfo = getAdditionalInfoString(user);
+		updateTextViewWithData(binding.userAdditionalInfo, additionalInfo);
+	}
+
+	private String getDisplayName(User user) {
+		if (user.getFullName() != null && !user.getFullName().trim().isEmpty()) {
+			return user.getFullName();
+		} else if (user.getUsername() != null && !user.getUsername().trim().isEmpty()) {
+			return user.getUsername();
+		}
+		return getString(R.string.there);
+	}
+
+	private String buildLocationOrganizationString(User user) {
+		StringBuilder sb = new StringBuilder();
+
+		boolean hasLocation = user.getLocation() != null && !user.getLocation().trim().isEmpty();
+		boolean hasOrganization =
+				user.getOrganization() != null && !user.getOrganization().trim().isEmpty();
+
+		if (hasLocation) {
+			sb.append(user.getLocation());
+		}
+
+		if (hasLocation && hasOrganization) {
+			sb.append(" ").append(getString(R.string.separator_dot)).append(" ");
+		}
+
+		if (hasOrganization) {
+			sb.append(user.getOrganization());
+		}
+
+		return sb.toString();
+	}
+
+	private void updateTextViewWithData(TextView textView, String data) {
+		if (data != null && !data.trim().isEmpty()) {
+			textView.setText(data);
+			textView.setVisibility(View.VISIBLE);
+		} else {
+			textView.setVisibility(View.GONE);
+		}
+	}
+
+	private String getAdditionalInfoString(User user) {
+		List<String> infoItems = new ArrayList<>();
+
+		String lastActive = getLastActiveText(user.getLastActivityOn());
+		if (!lastActive.isEmpty()) {
+			infoItems.add(lastActive);
+		}
+
+		String memberSince = getMemberSinceText(user.getCreatedAt());
+		if (!memberSince.isEmpty() && infoItems.size() < 2) {
+			infoItems.add(memberSince);
+		}
+
+		if (user.getPlan() != null && !user.getPlan().isEmpty() && infoItems.size() < 2) {
+			infoItems.add(user.getPlan() + " " + getString(R.string.plan));
+		}
+
+		String separator = " " + getString(R.string.separator_dot) + " ";
+		return TextUtils.join(separator, infoItems);
+	}
+
+	private String getLastActiveText(String lastActivityDate) {
+		if (TextUtils.isEmpty(lastActivityDate)) {
+			return "";
+		}
+
+		String datePart = lastActivityDate.split("T")[0];
+
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+			Date date = sdf.parse(datePart);
+
+			if (date == null) {
+				return "";
+			}
+
+			Calendar activityCal = Calendar.getInstance();
+			activityCal.setTime(date);
+			Calendar todayCal = Calendar.getInstance();
+
+			long diffMillis = todayCal.getTimeInMillis() - activityCal.getTimeInMillis();
+			long days = TimeUnit.MILLISECONDS.toDays(diffMillis);
+
+			Resources res = getResources();
+
+			if (days == 0) return res.getString(R.string.active_today);
+			if (days == 1) return res.getString(R.string.active_yesterday);
+			if (days < 7)
+				return res.getQuantityString(R.plurals.active_days_ago, (int) days, (int) days);
+			if (days < 30) {
+				int weeks = (int) (days / 7);
+				return res.getQuantityString(R.plurals.active_weeks_ago, weeks, weeks);
+			}
+
+			int months = (int) (days / 30);
+			return res.getQuantityString(R.plurals.active_months_ago, months, months);
+
+		} catch (Exception e) {
+			return "";
+		}
+	}
+
+	private String getMemberSinceText(String createdAt) {
+		if (TextUtils.isEmpty(createdAt)) {
+			return "";
+		}
+
+		try {
+			String datePart = createdAt.split("T")[0];
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+			Date date = sdf.parse(datePart);
+
+			if (date == null) {
+				return "";
+			}
+
+			SimpleDateFormat outputFormat = new SimpleDateFormat("MMM yyyy", Locale.getDefault());
+			return String.format(getString(R.string.member_since), outputFormat.format(date));
+
+		} catch (Exception e) {
+			return "";
+		}
 	}
 
 	private void checkRefreshComplete() {

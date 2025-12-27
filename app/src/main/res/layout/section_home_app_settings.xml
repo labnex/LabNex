@@ -80,14 +80,6 @@
 
             </LinearLayout>
 
-            <!-- Divider -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginStart="@dimen/dimen72dp"
-                android:background="?attr/colorOutline"
-                android:alpha="0.08"/>
-
             <!-- Settings -->
             <LinearLayout
                 android:id="@+id/settings_frame"
