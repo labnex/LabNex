@@ -185,12 +185,16 @@ public class MergeRequestDetailActivity extends BaseActivity
 			activityMergeRequestDetailBinding.userAvatar.setImageDrawable(drawable);
 		}
 
-		activityMergeRequestDetailBinding.mrTitle.setText(
-				HtmlCompat.fromHtml(
-						EmojiParser.parseToUnicode(mergeRequestContext.getMergeRequest().getTitle())
-								+ " "
-								+ mrId,
-						HtmlCompat.FROM_HTML_MODE_LEGACY));
+		Markdown.render(
+				ctx,
+				String.valueOf(
+						HtmlCompat.fromHtml(
+								EmojiParser.parseToUnicode(
+												mergeRequestContext.getMergeRequest().getTitle())
+										+ " "
+										+ mrId,
+								HtmlCompat.FROM_HTML_MODE_LEGACY)),
+				activityMergeRequestDetailBinding.mrTitle);
 
 		if (mergeRequestContext.getMergeRequest().getMilestone() != null) {
 

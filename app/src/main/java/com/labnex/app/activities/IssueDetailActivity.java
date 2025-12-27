@@ -171,10 +171,15 @@ public class IssueDetailActivity extends BaseActivity
 			activityIssueDetailBinding.userAvatar.setImageDrawable(drawable);
 		}
 
-		activityIssueDetailBinding.issueTitle.setText(
-				HtmlCompat.fromHtml(
-						EmojiParser.parseToUnicode(issue.getIssue().getTitle()) + " " + issueId,
-						HtmlCompat.FROM_HTML_MODE_LEGACY));
+		Markdown.render(
+				ctx,
+				String.valueOf(
+						HtmlCompat.fromHtml(
+								EmojiParser.parseToUnicode(issue.getIssue().getTitle())
+										+ " "
+										+ issueId,
+								HtmlCompat.FROM_HTML_MODE_LEGACY)),
+				activityIssueDetailBinding.issueTitle);
 
 		if (issue.getIssue().getMilestone() != null) {
 

@@ -18,9 +18,11 @@ import com.labnex.app.activities.ProfileActivity;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.contexts.MergeRequestContext;
 import com.labnex.app.contexts.ProjectsContext;
+import com.labnex.app.helpers.Markdown;
 import com.labnex.app.helpers.TimeUtils;
 import com.labnex.app.models.merge_requests.MergeRequests;
 import com.labnex.app.models.projects.Projects;
+import com.vdurmont.emoji.EmojiParser;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -194,7 +196,9 @@ public class MergeRequestsAdapter extends RecyclerView.Adapter<RecyclerView.View
 			this.mergeRequests = mergeRequests;
 			Locale locale = context.getResources().getConfiguration().getLocales().get(0);
 
-			title.setText(mergeRequests.getTitle());
+			Markdown.render(
+					context, EmojiParser.parseToUnicode(mergeRequests.getTitle().trim()), title);
+
 			project.setText(mergeRequests.getReferences().getFull());
 
 			if (mergeRequests.getAuthor() != null
