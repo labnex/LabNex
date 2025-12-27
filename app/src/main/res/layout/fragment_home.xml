@@ -45,8 +45,7 @@
                         android:layout_height="wrap_content"
                         android:baselineAligned="false"
                         android:orientation="horizontal"
-                        android:padding="@dimen/dimen24dp"
-                        android:layout_marginBottom="@dimen/dimen16dp">
+                        android:padding="@dimen/dimen24dp">
 
                         <LinearLayout
                             android:layout_width="0dp"

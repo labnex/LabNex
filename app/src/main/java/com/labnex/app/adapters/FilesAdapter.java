@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.labnex.app.R;
 import com.labnex.app.contexts.ProjectsContext;
+import com.labnex.app.helpers.FileIcon;
 import com.labnex.app.models.repository.Tree;
 import java.util.ArrayList;
 import java.util.List;
@@ -117,8 +118,7 @@ public class FilesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 	public class FilesHolder extends RecyclerView.ViewHolder {
 
 		private final TextView title;
-		private final ImageView folder;
-		private final ImageView file;
+		private final ImageView icon;
 		private Tree tree;
 
 		FilesHolder(View itemView) {
@@ -127,8 +127,7 @@ public class FilesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
 			LinearLayout filesFrame = itemView.findViewById(R.id.files_frame);
 			title = itemView.findViewById(R.id.title);
-			folder = itemView.findViewById(R.id.folder);
-			file = itemView.findViewById(R.id.file);
+			icon = itemView.findViewById(R.id.icon);
 
 			filesFrame.setOnClickListener(v -> filesListener.onClickFile(tree));
 		}
@@ -137,11 +136,13 @@ public class FilesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
 			this.tree = tree;
 
-			if (tree.getType().equalsIgnoreCase("tree")) {
-				folder.setVisibility(View.VISIBLE);
-			}
-			if (tree.getType().equalsIgnoreCase("blob")) {
-				file.setVisibility(View.VISIBLE);
+			if ("tree".equalsIgnoreCase(tree.getType())) {
+				icon.setImageResource(R.drawable.ic_file_directory);
+				icon.setContentDescription(context.getString(R.string.folder));
+			} else if ("blob".equalsIgnoreCase(tree.getType())) {
+				int iconRes = FileIcon.getIconResource(tree.getName(), tree.getType());
+				icon.setImageResource(iconRes);
+				icon.setContentDescription(context.getString(R.string.file));
 			}
 
 			title.setText(tree.getName());
