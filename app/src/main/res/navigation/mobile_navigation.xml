@@ -23,4 +23,10 @@
         android:label="@string/explore"
         tools:layout="@layout/fragment_explore" />
 
+    <fragment
+        android:id="@+id/navigation_todo"
+        android:name="com.labnex.app.fragments.TodoFragment"
+        android:label="@string/todo_list"
+        tools:layout="@layout/fragment_todo" />
+
 </navigation>

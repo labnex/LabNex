@@ -14,6 +14,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -51,6 +52,7 @@ import com.labnex.app.models.issues.Issues;
 import com.labnex.app.models.merge_requests.MergeRequests;
 import com.labnex.app.models.todo.ToDoItem;
 import com.labnex.app.models.user.User;
+import com.labnex.app.viewmodels.TodoViewModel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -67,6 +69,7 @@ import retrofit2.Response;
  */
 public class HomeFragment extends Fragment {
 
+	private TodoViewModel todoViewModel;
 	private FragmentHomeBinding binding;
 	private Context ctx;
 	private int currentActiveAccountId;
@@ -86,6 +89,8 @@ public class HomeFragment extends Fragment {
 		binding = FragmentHomeBinding.inflate(inflater, container, false);
 		View root = binding.getRoot();
 		ctx = requireContext();
+
+		todoViewModel = new ViewModelProvider(requireActivity()).get(TodoViewModel.class);
 
 		binding.progressBar.setVisibility(View.VISIBLE);
 		binding.userAvatar.setEnabled(false);
@@ -228,6 +233,7 @@ public class HomeFragment extends Fragment {
 				new TodoAdapter(
 						ctx,
 						todoList,
+						true,
 						new TodoAdapter.OnTodoClickListener() {
 							@Override
 							public void onTodoClick(ToDoItem todo) {
@@ -244,6 +250,8 @@ public class HomeFragment extends Fragment {
 		binding.sectionTodo.todoRecyclerView.setLayoutManager(
 				new LinearLayoutManager(requireContext()));
 		binding.sectionTodo.todoRecyclerView.setAdapter(todoAdapter);
+
+		setupTodoObservers();
 
 		return root;
 	}
@@ -272,6 +280,18 @@ public class HomeFragment extends Fragment {
 		fetchTodos(false);
 	}
 
+	private void setupTodoObservers() {
+		todoViewModel
+				.getRemovedTodoId()
+				.observe(
+						getViewLifecycleOwner(),
+						todoId -> {
+							if (todoId != null && todoId > 0) {
+								fetchTodos(false);
+							}
+						});
+	}
+
 	private void fetchTodos(boolean incrementCounter) {
 		Call<List<ToDoItem>> call = RetrofitClient.getApiInterface(ctx).getAllTodos();
 		call.enqueue(
@@ -281,24 +301,16 @@ public class HomeFragment extends Fragment {
 							@NonNull Call<List<ToDoItem>> call,
 							@NonNull Response<List<ToDoItem>> response) {
 						if (response.isSuccessful() && response.body() != null) {
-							todoList.clear();
-
 							List<ToDoItem> allTodos = response.body();
 							int itemsToShow = Math.min(allTodos.size(), 5);
 
+							todoList.clear();
 							for (int i = 0; i < itemsToShow; i++) {
 								todoList.add(allTodos.get(i));
 							}
 
 							todoAdapter.updateList(todoList);
-
-							if (todoList.isEmpty()) {
-								binding.sectionTodo.todoEmptyState.setVisibility(View.VISIBLE);
-								binding.sectionTodo.todoRecyclerView.setVisibility(View.GONE);
-							} else {
-								binding.sectionTodo.todoEmptyState.setVisibility(View.GONE);
-								binding.sectionTodo.todoRecyclerView.setVisibility(View.VISIBLE);
-							}
+							todoViewModel.setTodoList(allTodos);
 						}
 
 						if (incrementCounter) {
@@ -315,6 +327,30 @@ public class HomeFragment extends Fragment {
 							checkRefreshComplete();
 						}
 					}
+				});
+	}
+
+	private void markTodoAsDone(long todoId) {
+		Call<ToDoItem> call = RetrofitClient.getApiInterface(ctx).markTodoAsDone((int) todoId);
+		call.enqueue(
+				new Callback<>() {
+					@Override
+					public void onResponse(
+							@NonNull Call<ToDoItem> call, @NonNull Response<ToDoItem> response) {
+						if (response.isSuccessful()) {
+
+							todoViewModel.removeTodo(todoId);
+							fetchTodos(false);
+
+							Snackbar.info(
+									requireActivity(),
+									requireActivity().findViewById(R.id.nav_view),
+									getString(R.string.todo_marked_done));
+						}
+					}
+
+					@Override
+					public void onFailure(@NonNull Call<ToDoItem> call, @NonNull Throwable t) {}
 				});
 	}
 
@@ -674,35 +710,6 @@ public class HomeFragment extends Fragment {
 			}
 			refreshSuccessCounter = 0;
 		}
-	}
-
-	private void markTodoAsDone(long todoId) {
-		Call<ToDoItem> call = RetrofitClient.getApiInterface(ctx).markTodoAsDone((int) todoId);
-		call.enqueue(
-				new Callback<>() {
-					@Override
-					public void onResponse(
-							@NonNull Call<ToDoItem> call, @NonNull Response<ToDoItem> response) {
-						if (response.isSuccessful()) {
-
-							todoList.removeIf(todo -> todo.getId() == todoId);
-							todoAdapter.updateList(todoList);
-
-							if (todoList.isEmpty()) {
-								binding.sectionTodo.todoEmptyState.setVisibility(View.VISIBLE);
-								binding.sectionTodo.todoRecyclerView.setVisibility(View.GONE);
-							}
-
-							Snackbar.info(
-									requireActivity(),
-									requireActivity().findViewById(R.id.nav_view),
-									getString(R.string.todo_marked_done));
-						}
-					}
-
-					@Override
-					public void onFailure(@NonNull Call<ToDoItem> call, @NonNull Throwable t) {}
-				});
 	}
 
 	private void navigateToTodoTarget(ToDoItem todo) {

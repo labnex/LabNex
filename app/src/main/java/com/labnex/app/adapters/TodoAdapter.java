@@ -13,6 +13,7 @@ import com.labnex.app.R;
 import com.labnex.app.helpers.TimeUtils;
 import com.labnex.app.models.todo.ToDoItem;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -23,6 +24,7 @@ import java.util.Locale;
 public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder> {
 	private final Context context;
 	private List<ToDoItem> todoList;
+	private final boolean isHomeScreen;
 	private final OnTodoClickListener listener;
 
 	public interface OnTodoClickListener {
@@ -31,22 +33,40 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
 		void onTodoMarkAsDone(ToDoItem todo);
 	}
 
-	public TodoAdapter(Context context, List<ToDoItem> todoList, OnTodoClickListener listener) {
+	public TodoAdapter(
+			Context context,
+			List<ToDoItem> todoList,
+			boolean isHomeScreen,
+			OnTodoClickListener listener) {
 		this.context = context;
 		this.todoList = todoList;
+		this.isHomeScreen = isHomeScreen;
 		this.listener = listener;
 	}
 
 	@SuppressLint("NotifyDataSetChanged")
 	public void updateList(List<ToDoItem> newList) {
-		this.todoList = newList;
+		this.todoList = new ArrayList<>(newList);
 		notifyDataSetChanged();
+	}
+
+    @Override
+	public int getItemViewType(int position) {
+		return isHomeScreen ? 0 : 1;
 	}
 
 	@NonNull @Override
 	public TodoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-		View view =
-				LayoutInflater.from(parent.getContext()).inflate(R.layout.list_todo, parent, false);
+		LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+
+		View view;
+		if (viewType == 0) {
+			// Home screen layout
+			view = inflater.inflate(R.layout.list_todo, parent, false);
+		} else {
+			// Full list layout
+			view = inflater.inflate(R.layout.list_todo_card, parent, false);
+		}
 		return new TodoViewHolder(view);
 	}
 
@@ -70,6 +90,7 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
 
 		TodoViewHolder(@NonNull View itemView) {
 			super(itemView);
+
 			todoIcon = itemView.findViewById(R.id.todo_icon);
 			todoTitle = itemView.findViewById(R.id.todo_title);
 			todoProject = itemView.findViewById(R.id.todo_project);
@@ -83,12 +104,14 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
 						}
 					});
 
-			todoCheck.setOnClickListener(
-					v -> {
-						if (listener != null && currentTodo != null) {
-							listener.onTodoMarkAsDone(currentTodo);
-						}
-					});
+			if (todoCheck != null) {
+				todoCheck.setOnClickListener(
+						v -> {
+							if (listener != null && currentTodo != null) {
+								listener.onTodoMarkAsDone(currentTodo);
+							}
+						});
+			}
 		}
 
 		void bind(ToDoItem todo) {
@@ -104,7 +127,9 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
 			todoTitle.setText(title);
 
 			if (todo.getProject() != null) {
-				todoProject.setText(todo.getProject().getPathWithNamespace());
+				String projectName = todo.getProject().getPathWithNamespace();
+				todoProject.setText(projectName);
+
 			} else {
 				todoProject.setText("");
 			}
@@ -132,7 +157,7 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
 		private void setIconForType(String targetType) {
 			int iconRes =
 					switch (targetType != null ? targetType.toLowerCase() : "") {
-						case "issue" -> R.drawable.ic_issues;
+						case "issuerequest", "issue" -> R.drawable.ic_issues;
 						case "mergerequest" -> R.drawable.ic_merge_request;
 						case "alert" -> R.drawable.ic_alert;
 						case "design" -> R.drawable.ic_themes;
@@ -145,15 +170,13 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
 
 		private String getActionNameText(String actionName) {
 			return switch (actionName) {
-				case "assigned" -> context.getString(R.string.todo_action_assigned);
-				case "marked" -> context.getString(R.string.todo_action_marked);
-				case "mentioned" -> context.getString(R.string.todo_action_mentioned);
-				case "build_failed" -> context.getString(R.string.todo_action_build_failed);
-				case "approval_required" ->
-						context.getString(R.string.todo_action_approval_required);
-				case "unmergeable" -> context.getString(R.string.todo_action_unmergeable);
-				case "directly_addressed" ->
-						context.getString(R.string.todo_action_directly_addressed);
+				case "assigned" -> "Assigned";
+				case "marked" -> "Marked";
+				case "mentioned" -> "Mentioned";
+				case "build_failed" -> "Build failed";
+				case "approval_required" -> "Approval required";
+				case "unmergeable" -> "Cannot be merged";
+				case "directly_addressed" -> "Directly addressed";
 				default -> actionName;
 			};
 		}

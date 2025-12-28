@@ -25,6 +25,7 @@
         android:layout_height="wrap_content"
         app:cardCornerRadius="@dimen/dimen16dp"
         app:cardElevation="@dimen/dimen0dp"
+        android:animateLayoutChanges="true"
         style="?attr/materialCardViewElevatedStyle"
         android:backgroundTint="?attr/inputBackgroundColor"
         app:strokeWidth="@dimen/dimen0dp">

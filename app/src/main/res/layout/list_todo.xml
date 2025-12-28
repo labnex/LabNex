@@ -60,25 +60,14 @@
 
     </LinearLayout>
 
-    <com.google.android.material.card.MaterialCardView
-        android:layout_width="@dimen/dimen40dp"
-        android:layout_height="@dimen/dimen40dp"
-        app:cardCornerRadius="@dimen/dimen32dp"
-        app:cardElevation="@dimen/dimen0dp"
-        android:backgroundTint="@android:color/transparent"
-        app:strokeWidth="@dimen/dimen0dp">
-
-        <ImageView
-            android:id="@+id/todo_check"
-            android:layout_width="@dimen/dimen32dp"
-            android:layout_height="@dimen/dimen32dp"
-            android:padding="@dimen/dimen6dp"
-            android:layout_gravity="center_vertical|center_horizontal"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/mark_as_done"
-            app:tint="?attr/colorOnSurfaceVariant"
-            android:src="@drawable/ic_check"/>
-
-    </com.google.android.material.card.MaterialCardView>
+    <ImageView
+        android:id="@+id/todo_check"
+        android:layout_width="@dimen/dimen20dp"
+        android:layout_height="@dimen/dimen20dp"
+        android:layout_marginStart="@dimen/dimen8dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/mark_as_done"
+        app:tint="?attr/colorOnSurfaceVariant"
+        android:src="@drawable/ic_check"/>
 
 </LinearLayout>

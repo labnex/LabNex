@@ -15,6 +15,7 @@ import com.labnex.app.databinding.ActivityMainBinding;
 import com.labnex.app.fragments.ActivitiesFragment;
 import com.labnex.app.fragments.ExploreFragment;
 import com.labnex.app.fragments.HomeFragment;
+import com.labnex.app.fragments.TodoFragment;
 import com.labnex.app.helpers.AppSettingsInit;
 import com.labnex.app.helpers.CheckAuthorizationStatus;
 import com.labnex.app.models.metadata.Metadata;
@@ -32,6 +33,7 @@ public class MainActivity extends BaseActivity {
 	private Fragment homeFragment;
 	private Fragment activitiesFragment;
 	private Fragment exploreFragment;
+	private Fragment todoFragment;
 	public static boolean refActivity = false;
 	public static boolean closeActivity = false;
 	public static boolean homeScreen = true;
@@ -61,6 +63,7 @@ public class MainActivity extends BaseActivity {
 		homeFragment = new HomeFragment();
 		activitiesFragment = new ActivitiesFragment();
 		exploreFragment = new ExploreFragment();
+		todoFragment = new TodoFragment();
 
 		binding.navView.setOnItemSelectedListener(
 				item -> {
@@ -75,6 +78,10 @@ public class MainActivity extends BaseActivity {
 					} else if (R.id.navigation_explore_menu == item.getItemId()) {
 						lastFragmentIndex = 2;
 						loadFragment(exploreFragment);
+						return true;
+					} else if (R.id.navigation_todo_menu == item.getItemId()) {
+						lastFragmentIndex = 3;
+						loadFragment(todoFragment);
 						return true;
 					} else {
 						return false;
@@ -143,6 +150,8 @@ public class MainActivity extends BaseActivity {
 			binding.navView.getMenu().getItem(1).setChecked(true);
 		} else if (fragment == exploreFragment) {
 			binding.navView.getMenu().getItem(2).setChecked(true);
+		} else if (fragment == todoFragment) {
+			binding.navView.getMenu().getItem(3).setChecked(true);
 		}
 	}
 
@@ -166,6 +175,11 @@ public class MainActivity extends BaseActivity {
 				binding.navView.getMenu().getItem(2).setChecked(true);
 				loadFragment(exploreFragment);
 				break;
+			case 3:
+				lastFragmentIndex = 3;
+				binding.navView.getMenu().getItem(3).setChecked(true);
+				loadFragment(todoFragment);
+				break;
 		}
 	}
 
@@ -182,6 +196,10 @@ public class MainActivity extends BaseActivity {
 			case 2:
 				binding.navView.getMenu().getItem(2).setChecked(true);
 				loadFragment(exploreFragment);
+				break;
+			case 3:
+				binding.navView.getMenu().getItem(3).setChecked(true);
+				loadFragment(todoFragment);
 				break;
 			default:
 				setDefaultFragment();
