@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingHorizontal="@dimen/dimen12dp"
+    android:layout_marginTop="@dimen/dimen20dp">
+
+    <TextView
+        android:id="@+id/todo_section_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/todo_list"
+        android:textSize="@dimen/dimen20sp"
+        android:textStyle="bold"
+        android:textColor="?attr/colorOnSurface"
+        android:layout_marginBottom="@dimen/dimen8dp"/>
+
+    <!-- Single card container -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="@dimen/dimen16dp"
+        app:cardElevation="@dimen/dimen0dp"
+        style="?attr/materialCardViewElevatedStyle"
+        android:backgroundTint="?attr/inputBackgroundColor"
+        app:strokeWidth="@dimen/dimen0dp">
+
+        <!-- Empty state -->
+        <LinearLayout
+            android:id="@+id/todo_empty_state"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="@dimen/dimen40dp"
+            android:visibility="gone"
+            tools:ignore="UseCompoundDrawables">
+
+            <ImageView
+                android:layout_width="@dimen/dimen48dp"
+                android:layout_height="@dimen/dimen48dp"
+                android:contentDescription="@string/todo_empty_message"
+                android:src="@drawable/ic_check"
+                android:layout_marginBottom="@dimen/dimen16dp"
+                app:tint="?attr/colorOnSurfaceVariant"/>
+
+            <TextView
+                android:id="@+id/todo_empty_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/todo_empty_message"
+                android:textSize="@dimen/dimen14sp"
+                android:textColor="?attr/colorOnSurfaceVariant"/>
+
+        </LinearLayout>
+
+        <!-- RecyclerView -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/todo_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingVertical="@dimen/dimen8dp"/>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</LinearLayout>

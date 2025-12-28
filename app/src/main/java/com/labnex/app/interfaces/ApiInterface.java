@@ -33,6 +33,7 @@ import com.labnex.app.models.snippets.SnippetsItem;
 import com.labnex.app.models.tags.TagsItem;
 import com.labnex.app.models.templates.Template;
 import com.labnex.app.models.templates.Templates;
+import com.labnex.app.models.todo.ToDoItem;
 import com.labnex.app.models.user.User;
 import com.labnex.app.models.users.Users;
 import com.labnex.app.models.wikis.CrudeWiki;
@@ -465,4 +466,14 @@ public interface ApiInterface {
 
 	@DELETE("projects/{id}/repository/tags/{tag_name}")
 	Call<Void> deleteProjectTag(@Path("id") int projectId, @Path("tag_name") String tagName);
+
+	// Todos
+	@GET("todos")
+	Call<List<ToDoItem>> getAllTodos();
+
+	@POST("todos/{id}/mark_as_done")
+	Call<ToDoItem> markTodoAsDone(@Path("id") int todoId);
+
+	@POST("todos/mark_as_done")
+	Call<ToDoItem> markAllTodoAsDone();
 }

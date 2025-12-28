@@ -3,11 +3,13 @@ package com.labnex.app.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -20,14 +22,21 @@ import com.labnex.app.R;
 import com.labnex.app.activities.AppSettingsActivity;
 import com.labnex.app.activities.BaseActivity;
 import com.labnex.app.activities.GroupsActivity;
+import com.labnex.app.activities.IssueDetailActivity;
 import com.labnex.app.activities.IssuesActivity;
+import com.labnex.app.activities.MergeRequestDetailActivity;
 import com.labnex.app.activities.MergeRequestsActivity;
 import com.labnex.app.activities.NotesActivity;
 import com.labnex.app.activities.ProfileActivity;
+import com.labnex.app.activities.ProjectDetailActivity;
 import com.labnex.app.activities.ProjectsActivity;
 import com.labnex.app.activities.SnippetsActivity;
 import com.labnex.app.adapters.MostVisitedAdapter;
+import com.labnex.app.adapters.TodoAdapter;
 import com.labnex.app.clients.RetrofitClient;
+import com.labnex.app.contexts.IssueContext;
+import com.labnex.app.contexts.MergeRequestContext;
+import com.labnex.app.contexts.ProjectsContext;
 import com.labnex.app.database.api.BaseApi;
 import com.labnex.app.database.api.NotesApi;
 import com.labnex.app.database.api.ProjectsApi;
@@ -38,6 +47,9 @@ import com.labnex.app.databinding.FragmentHomeBinding;
 import com.labnex.app.helpers.SharedPrefDB;
 import com.labnex.app.helpers.Snackbar;
 import com.labnex.app.models.broadcast_messages.Messages;
+import com.labnex.app.models.issues.Issues;
+import com.labnex.app.models.merge_requests.MergeRequests;
+import com.labnex.app.models.todo.ToDoItem;
 import com.labnex.app.models.user.User;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -48,6 +60,7 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * @author mmarif
@@ -63,6 +76,9 @@ public class HomeFragment extends Fragment {
 	private MostVisitedAdapter mostVisitedAdapter;
 	private int refreshSuccessCounter;
 	private boolean isUserRefresh;
+	private List<ToDoItem> todoList;
+	private TodoAdapter todoAdapter;
+	private boolean isExpanded = false;
 
 	public View onCreateView(
 			@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -109,6 +125,7 @@ public class HomeFragment extends Fragment {
 		getBroadcastMessage();
 		getUserInfo();
 		getMostVisitedProjects();
+		getTodos();
 
 		binding.refreshHomeScreen.setOnClickListener(
 				ref ->
@@ -135,11 +152,24 @@ public class HomeFragment extends Fragment {
 											binding.sectionMostVisited.clearMostVisited.setEnabled(
 													false);
 											binding.refreshHomeScreen.setEnabled(false);
+
 											projectsList.clear();
 											mostVisitedAdapter.notifyDataChanged();
+
+											todoList.clear();
+											todoAdapter.updateList(todoList);
+
+											binding.sectionTodo.todoEmptyState.setVisibility(
+													View.GONE);
+											binding.sectionTodo.todoRecyclerView.setVisibility(
+													View.VISIBLE);
+											binding.sectionMostVisited.nothingFoundFrame
+													.setVisibility(View.GONE);
+
 											getBroadcastMessage();
 											getUserInfo();
 											getMostVisitedProjects();
+											getTodos();
 										}));
 
 		binding.sectionWork.groupsFrame.setOnClickListener(
@@ -193,6 +223,28 @@ public class HomeFragment extends Fragment {
 
 		binding.sectionMostVisited.clearMostVisited.setOnClickListener(view -> clearMostVisited());
 
+		todoList = new ArrayList<>();
+		todoAdapter =
+				new TodoAdapter(
+						ctx,
+						todoList,
+						new TodoAdapter.OnTodoClickListener() {
+							@Override
+							public void onTodoClick(ToDoItem todo) {
+								navigateToTodoTarget(todo);
+							}
+
+							@Override
+							public void onTodoMarkAsDone(ToDoItem todo) {
+								markTodoAsDone(todo.getId());
+							}
+						});
+
+		binding.sectionTodo.todoRecyclerView.setHasFixedSize(true);
+		binding.sectionTodo.todoRecyclerView.setLayoutManager(
+				new LinearLayoutManager(requireContext()));
+		binding.sectionTodo.todoRecyclerView.setAdapter(todoAdapter);
+
 		return root;
 	}
 
@@ -203,12 +255,67 @@ public class HomeFragment extends Fragment {
 		refreshMostVisitedProjects();
 		updateNotesBadge();
 		updateClearButtonVisibility();
+		refreshTodos();
 	}
 
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
 		binding = null;
+	}
+
+	private void getTodos() {
+		fetchTodos(true);
+	}
+
+	private void refreshTodos() {
+		fetchTodos(false);
+	}
+
+	private void fetchTodos(boolean incrementCounter) {
+		Call<List<ToDoItem>> call = RetrofitClient.getApiInterface(ctx).getAllTodos();
+		call.enqueue(
+				new Callback<>() {
+					@Override
+					public void onResponse(
+							@NonNull Call<List<ToDoItem>> call,
+							@NonNull Response<List<ToDoItem>> response) {
+						if (response.isSuccessful() && response.body() != null) {
+							todoList.clear();
+
+							List<ToDoItem> allTodos = response.body();
+							int itemsToShow = Math.min(allTodos.size(), 5);
+
+							for (int i = 0; i < itemsToShow; i++) {
+								todoList.add(allTodos.get(i));
+							}
+
+							todoAdapter.updateList(todoList);
+
+							if (todoList.isEmpty()) {
+								binding.sectionTodo.todoEmptyState.setVisibility(View.VISIBLE);
+								binding.sectionTodo.todoRecyclerView.setVisibility(View.GONE);
+							} else {
+								binding.sectionTodo.todoEmptyState.setVisibility(View.GONE);
+								binding.sectionTodo.todoRecyclerView.setVisibility(View.VISIBLE);
+							}
+						}
+
+						if (incrementCounter) {
+							refreshSuccessCounter++;
+							checkRefreshComplete();
+						}
+					}
+
+					@Override
+					public void onFailure(
+							@NonNull Call<List<ToDoItem>> call, @NonNull Throwable t) {
+						if (incrementCounter) {
+							refreshSuccessCounter++;
+							checkRefreshComplete();
+						}
+					}
+				});
 	}
 
 	private void refreshMostVisitedProjects() {
@@ -254,6 +361,47 @@ public class HomeFragment extends Fragment {
 		}
 	}
 
+	private void setupBroadcastToggle() {
+		TextView messageView = binding.message;
+		ImageView toggleIcon = binding.toggleIcon;
+
+		isExpanded = false;
+		messageView.setMaxLines(2);
+		toggleIcon.setRotation(0f);
+
+		View.OnClickListener toggleListener =
+				v -> {
+					isExpanded = !isExpanded;
+					messageView.setMaxLines(isExpanded ? Integer.MAX_VALUE : 2);
+					toggleIcon.setRotation(isExpanded ? 180f : 0f);
+				};
+
+		toggleIcon.setOnClickListener(toggleListener);
+
+		binding.broadcastMessage.setOnClickListener(
+				v ->
+						messageView.post(
+								() -> {
+									if (messageView.getLayout() != null
+											&& messageView.getLineCount() > 2) {
+										toggleListener.onClick(v);
+									}
+								}));
+
+		String text = messageView.getText().toString();
+		if (text.length() > 100) {
+			toggleIcon.setVisibility(View.VISIBLE);
+		} else {
+			messageView.post(
+					() -> {
+						if (messageView.getLayout() != null) {
+							int lineCount = messageView.getLineCount();
+							toggleIcon.setVisibility(lineCount > 2 ? View.VISIBLE : View.GONE);
+						}
+					});
+		}
+	}
+
 	private void getBroadcastMessage() {
 
 		Call<List<Messages>> call = RetrofitClient.getApiInterface(ctx).getBroadcastMessage();
@@ -275,6 +423,7 @@ public class HomeFragment extends Fragment {
 									if (message.isActive()) {
 										binding.broadcastMessage.setVisibility(View.VISIBLE);
 										binding.message.setText(message.getMessage());
+										setupBroadcastToggle();
 										break;
 									}
 								}
@@ -497,7 +646,7 @@ public class HomeFragment extends Fragment {
 	}
 
 	private void checkRefreshComplete() {
-		if (refreshSuccessCounter == 3 && isAdded()) {
+		if (refreshSuccessCounter == 4 && isAdded()) {
 			binding.progressBar.setVisibility(View.GONE);
 			binding.userAvatar.setEnabled(true);
 			binding.sectionMostVisited.recyclerViewMostVisited.setEnabled(true);
@@ -514,6 +663,7 @@ public class HomeFragment extends Fragment {
 			binding.refreshHomeScreen.setEnabled(true);
 
 			refreshMostVisitedProjects();
+			refreshTodos();
 
 			if (isUserRefresh) {
 				Snackbar.info(
@@ -524,6 +674,244 @@ public class HomeFragment extends Fragment {
 			}
 			refreshSuccessCounter = 0;
 		}
+	}
+
+	private void markTodoAsDone(long todoId) {
+		Call<ToDoItem> call = RetrofitClient.getApiInterface(ctx).markTodoAsDone((int) todoId);
+		call.enqueue(
+				new Callback<>() {
+					@Override
+					public void onResponse(
+							@NonNull Call<ToDoItem> call, @NonNull Response<ToDoItem> response) {
+						if (response.isSuccessful()) {
+
+							todoList.removeIf(todo -> todo.getId() == todoId);
+							todoAdapter.updateList(todoList);
+
+							if (todoList.isEmpty()) {
+								binding.sectionTodo.todoEmptyState.setVisibility(View.VISIBLE);
+								binding.sectionTodo.todoRecyclerView.setVisibility(View.GONE);
+							}
+
+							Snackbar.info(
+									requireActivity(),
+									requireActivity().findViewById(R.id.nav_view),
+									getString(R.string.todo_marked_done));
+						}
+					}
+
+					@Override
+					public void onFailure(@NonNull Call<ToDoItem> call, @NonNull Throwable t) {}
+				});
+	}
+
+	private void navigateToTodoTarget(ToDoItem todo) {
+		if (todo.getTargetType().equalsIgnoreCase("MergeRequest") && todo.getTarget() != null) {
+			navigateToMergeRequest(todo);
+		} else if (todo.getTargetType().equalsIgnoreCase("Issue") && todo.getTarget() != null) {
+			navigateToIssue(todo);
+		} else {
+			if (todo.getTargetUrl() != null) {
+				Intent browserIntent =
+						new Intent(Intent.ACTION_VIEW, Uri.parse(todo.getTargetUrl()));
+				startActivity(browserIntent);
+			}
+		}
+	}
+
+	private void navigateToMergeRequest(ToDoItem todo) {
+		fetchProjectAndOpenMergeRequest(todo);
+	}
+
+	private void navigateToIssue(ToDoItem todo) {
+		fetchProjectAndOpenIssue(todo);
+	}
+
+	private void fetchProjectAndOpenMergeRequest(ToDoItem todo) {
+		if (todo.getProject() == null) {
+			showErrorAndFallback(String.valueOf(R.string.project_info_not_available));
+			return;
+		}
+
+		Call<com.labnex.app.models.projects.Projects> call =
+				RetrofitClient.getApiInterface(ctx).getProjectInfo(todo.getProject().getId());
+
+		call.enqueue(
+				new Callback<>() {
+					@Override
+					public void onResponse(
+							@NonNull Call<com.labnex.app.models.projects.Projects> call,
+							@NonNull Response<com.labnex.app.models.projects.Projects> response) {
+						if (response.isSuccessful() && response.body() != null) {
+							com.labnex.app.models.projects.Projects project = response.body();
+							fetchAndOpenSpecificMergeRequest(project, todo);
+						} else {
+							showErrorAndFallback(
+									String.valueOf(R.string.generic_server_response_error));
+						}
+					}
+
+					@Override
+					public void onFailure(
+							@NonNull Call<com.labnex.app.models.projects.Projects> call,
+							@NonNull Throwable t) {
+						showErrorAndFallback(
+								String.valueOf(R.string.generic_server_response_error));
+					}
+				});
+	}
+
+	private void fetchProjectAndOpenIssue(ToDoItem todo) {
+		if (todo.getProject() == null) {
+			showErrorAndFallback(String.valueOf(R.string.project_info_not_available));
+			return;
+		}
+
+		Call<com.labnex.app.models.projects.Projects> call =
+				RetrofitClient.getApiInterface(ctx).getProjectInfo(todo.getProject().getId());
+
+		call.enqueue(
+				new Callback<>() {
+					@Override
+					public void onResponse(
+							@NonNull Call<com.labnex.app.models.projects.Projects> call,
+							@NonNull Response<com.labnex.app.models.projects.Projects> response) {
+						if (response.isSuccessful() && response.body() != null) {
+							com.labnex.app.models.projects.Projects project = response.body();
+							fetchAndOpenSpecificIssue(project, todo);
+						} else {
+							showErrorAndFallback(
+									String.valueOf(R.string.generic_server_response_error));
+						}
+					}
+
+					@Override
+					public void onFailure(
+							@NonNull Call<com.labnex.app.models.projects.Projects> call,
+							@NonNull Throwable t) {
+						showErrorAndFallback(
+								String.valueOf(R.string.generic_server_response_error));
+					}
+				});
+	}
+
+	private void fetchAndOpenSpecificMergeRequest(
+			com.labnex.app.models.projects.Projects project, ToDoItem todo) {
+		if (todo.getTarget() == null) {
+			showErrorAndFallback(String.valueOf(R.string.mr_detail_not_available));
+			return;
+		}
+
+		Call<MergeRequests> call =
+				RetrofitClient.getApiInterface(ctx)
+						.getMergeRequest(project.getId(), todo.getTarget().getIid());
+
+		call.enqueue(
+				new Callback<>() {
+					@Override
+					public void onResponse(
+							@NonNull Call<MergeRequests> call,
+							@NonNull Response<MergeRequests> response) {
+						if (response.isSuccessful() && response.body() != null) {
+							MergeRequests mergeRequest = response.body();
+							createBackStackAndOpenMergeRequest(project, mergeRequest);
+						} else {
+							goToProjectWithSection(project, "merge_request");
+						}
+					}
+
+					@Override
+					public void onFailure(@NonNull Call<MergeRequests> call, @NonNull Throwable t) {
+						goToProjectWithSection(project, "merge_request");
+					}
+				});
+	}
+
+	private void fetchAndOpenSpecificIssue(
+			com.labnex.app.models.projects.Projects project, ToDoItem todo) {
+		if (todo.getTarget() == null) {
+			showErrorAndFallback(String.valueOf(R.string.issue_detail_not_available));
+			return;
+		}
+
+		Call<Issues> call =
+				RetrofitClient.getApiInterface(ctx)
+						.getIssue(project.getId(), todo.getTarget().getIid());
+
+		call.enqueue(
+				new Callback<>() {
+					@Override
+					public void onResponse(
+							@NonNull Call<Issues> call, @NonNull Response<Issues> response) {
+						if (response.isSuccessful() && response.body() != null) {
+							Issues issue = response.body();
+							createBackStackAndOpenIssue(project, issue);
+						} else {
+							goToProjectWithSection(project, "issue");
+						}
+					}
+
+					@Override
+					public void onFailure(@NonNull Call<Issues> call, @NonNull Throwable t) {
+						goToProjectWithSection(project, "issue");
+					}
+				});
+	}
+
+	private void createBackStackAndOpenIssue(
+			com.labnex.app.models.projects.Projects project, Issues issue) {
+		ProjectsContext projectContext = new ProjectsContext(project, ctx);
+		projectContext.saveToDB(ctx);
+
+		Intent projectIntent = projectContext.getIntent(ctx, ProjectDetailActivity.class);
+		projectIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		ctx.startActivity(projectIntent);
+
+		Intent issuesIntent = new Intent(ctx, IssuesActivity.class);
+		issuesIntent.putExtra("project", projectContext);
+		issuesIntent.putExtra("source", "project");
+		issuesIntent.putExtra("id", projectContext.getProjectId());
+		ctx.startActivity(issuesIntent);
+
+		IssueContext issueContext = new IssueContext(issue, projectContext);
+		Intent issueDetailIntent = issueContext.getIntent(ctx, IssueDetailActivity.class);
+		ctx.startActivity(issueDetailIntent);
+	}
+
+	private void createBackStackAndOpenMergeRequest(
+			com.labnex.app.models.projects.Projects project, MergeRequests mergeRequest) {
+		ProjectsContext projectContext = new ProjectsContext(project, ctx);
+		projectContext.saveToDB(ctx);
+
+		Intent projectIntent = projectContext.getIntent(ctx, ProjectDetailActivity.class);
+		projectIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		ctx.startActivity(projectIntent);
+
+		Intent mrIntent = new Intent(ctx, MergeRequestsActivity.class);
+		mrIntent.putExtra("project", projectContext);
+		mrIntent.putExtra("source", "mr");
+		mrIntent.putExtra("projectId", projectContext.getProjectId());
+		ctx.startActivity(mrIntent);
+
+		MergeRequestContext mrContext = new MergeRequestContext(mergeRequest, projectContext);
+		Intent mrDetailIntent = mrContext.getIntent(ctx, MergeRequestDetailActivity.class);
+		ctx.startActivity(mrDetailIntent);
+	}
+
+	private void goToProjectWithSection(
+			com.labnex.app.models.projects.Projects project, String sectionType) {
+		ProjectsContext projectContext = new ProjectsContext(project, ctx);
+		projectContext.saveToDB(ctx);
+
+		Intent projectIntent = projectContext.getIntent(ctx, ProjectDetailActivity.class);
+		projectIntent.putExtra("goToSection", "yes");
+		projectIntent.putExtra("goToSectionType", sectionType);
+		ctx.startActivity(projectIntent);
+	}
+
+	private void showErrorAndFallback(String errorMessage) {
+		Snackbar.info(
+				requireActivity(), requireActivity().findViewById(R.id.nav_view), errorMessage);
 	}
 
 	private void clearMostVisited() {

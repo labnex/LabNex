@@ -287,6 +287,17 @@
         <item quantity="other">Active %d months ago</item>
     </plurals>
     <string name="member_since">Member since %s</string>
+    <string name="todo_list">To-Do List</string>
+    <string name="todo_empty_message">All caught up! No pending todos.</string>
+    <string name="mark_as_done">Mark as done</string>
+    <string name="todo_marked_done">Todo is masked as done</string>
+    <string name="todo_action_assigned">Assigned to you</string>
+    <string name="todo_action_marked">Marked</string>
+    <string name="todo_action_mentioned">Mentioned</string>
+    <string name="todo_action_build_failed">Build failed</string>
+    <string name="todo_action_approval_required">Approval required</string>
+    <string name="todo_action_unmergeable">Cannot be merged</string>
+    <string name="todo_action_directly_addressed">Directly addressed</string>
 
     <!-- errors -->
     <string name="generic_error">An unexpected error occurred</string>
@@ -316,6 +327,9 @@
     <string name="empty_file_content">File content cannot be empty</string>
     <string name="branch_check_failed">Failed to check branch: %1$s</string>
     <string name="branch_creation_failed">Failed to create branch: %1$s</string>
+    <string name="issue_detail_not_available">Issue details not available</string>
+    <string name="mr_detail_not_available">Merge request details not available</string>
+    <string name="project_info_not_available">Project information not available</string>
     <!-- errors -->
 
     <!-- generic copy -->
