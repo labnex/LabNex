@@ -485,22 +485,23 @@ public class HomeFragment extends Fragment {
 	}
 
 	private void getUserInfo() {
-
 		Call<User> call = RetrofitClient.getApiInterface(ctx).getCurrentUser();
 
 		call.enqueue(
 				new Callback<>() {
-
 					@Override
 					public void onResponse(
 							@NonNull Call<User> call, @NonNull retrofit2.Response<User> response) {
 
+						if (!isAdded() || getContext() == null) {
+							return;
+						}
+
 						User userDetails = response.body();
 						if (response.isSuccessful() && response.code() == 200) {
-
 							assert userDetails != null;
 
-							if (isAdded() && ctx != null) {
+							try {
 								((BaseActivity) requireActivity())
 										.getAccount()
 										.setUserInfo(userDetails);
@@ -512,13 +513,15 @@ public class HomeFragment extends Fragment {
 										.into(binding.userAvatar);
 								binding.userAvatar.setOnClickListener(
 										profile -> {
-											Intent intent = new Intent(ctx, ProfileActivity.class);
+											Intent intent =
+													new Intent(getContext(), ProfileActivity.class);
 											intent.putExtra("source", "home");
 											intent.putExtra("userId", userDetails.getId());
-											ctx.startActivity(intent);
+											startActivity(intent);
 										});
 								binding.userAvatar.setEnabled(true);
-								updateWelcomeText(userDetails);
+							} catch (IllegalStateException e) {
+								return;
 							}
 						} else {
 							Snackbar.info(
@@ -532,10 +535,12 @@ public class HomeFragment extends Fragment {
 
 					@Override
 					public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
-						Snackbar.info(
-								requireActivity(),
-								requireActivity().findViewById(R.id.nav_view),
-								getString(R.string.generic_server_response_error));
+						if (isAdded() && getContext() != null) {
+							Snackbar.info(
+									requireActivity(),
+									requireActivity().findViewById(R.id.nav_view),
+									getString(R.string.generic_server_response_error));
+						}
 						refreshSuccessCounter++;
 						checkRefreshComplete();
 					}
