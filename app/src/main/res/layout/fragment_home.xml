@@ -45,7 +45,7 @@
                         android:layout_height="wrap_content"
                         android:baselineAligned="false"
                         android:orientation="horizontal"
-                        android:padding="@dimen/dimen24dp">
+                        android:padding="@dimen/dimen20dp">
 
                         <LinearLayout
                             android:layout_width="0dp"
@@ -170,49 +170,68 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/dimen16dp"
-                android:layout_marginTop="@dimen/dimen8dp"
-                android:layout_marginBottom="@dimen/dimen16dp"
+                android:layout_marginTop="@dimen/dimen4dp"
+                android:layout_marginBottom="@dimen/dimen8dp"
                 app:cardCornerRadius="@dimen/dimen12dp"
                 app:cardElevation="@dimen/dimen0dp"
                 style="?attr/materialCardViewElevatedStyle"
                 android:visibility="gone"
-                android:backgroundTint="?attr/inputBackgroundColor"
-                app:strokeWidth="@dimen/dimen0dp">
+                android:backgroundTint="?attr/inputBackgroundColor">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:padding="@dimen/dimen12dp"
-                    tools:ignore="UseCompoundDrawables">
+                    android:orientation="vertical"
+                    android:padding="@dimen/dimen12dp">
 
-                    <ImageView
-                        android:layout_width="@dimen/dimen20dp"
-                        android:layout_height="@dimen/dimen20dp"
-                        android:contentDescription="@string/generic_img_copy"
-                        android:src="@drawable/ic_info"
-                        app:tint="?attr/colorOnSecondaryContainer"
-                        android:layout_marginEnd="@dimen/dimen8dp"/>
-
-                    <TextView
-                        android:id="@+id/message"
-                        android:layout_width="0dp"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/broadcast_message"
-                        android:textSize="@dimen/dimen14sp"
-                        android:textColor="?attr/colorOnSecondaryContainer"/>
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="@dimen/dimen12dp"
+                        android:paddingVertical="@dimen/dimen8dp"
+                        android:gravity="center_vertical"
+                        tools:ignore="UseCompoundDrawables,UselessParent">
+
+                        <TextView
+                            android:id="@+id/message"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="@dimen/dimen24dp"
+                            android:maxLines="2"
+                            android:ellipsize="end"
+                            android:textSize="@dimen/dimen14sp"
+                            android:textColor="?attr/colorOnSecondaryContainer" />
+
+                        <ImageView
+                            android:id="@+id/toggleIcon"
+                            android:layout_width="@dimen/dimen24dp"
+                            android:layout_height="@dimen/dimen24dp"
+                            android:contentDescription="@string/generic_img_copy"
+                            android:src="@drawable/ic_chevron_down"
+                            app:tint="?attr/colorOnSecondaryContainer"
+                            android:layout_gravity="end|top"
+                            android:layout_marginTop="@dimen/dimen8dp"
+                            android:visibility="visible" />
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
+
             <!-- Broadcast message -->
 
             <!-- work section -->
             <include
                 android:id="@+id/section_work"
                 layout="@layout/section_home_work" />
+
+            <!-- to-do section -->
+            <include
+                android:id="@+id/section_todo"
+                layout="@layout/section_home_todo" />
 
             <!-- most visited section -->
             <include

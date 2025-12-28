@@ -16,4 +16,9 @@
         android:icon="@drawable/ic_explore"
         android:title="@string/explore" />
 
+    <item
+        android:id="@+id/navigation_todo_menu"
+        android:icon="@drawable/ic_list_details"
+        android:title="@string/todo_list" />
+
 </menu>
