@@ -50,7 +50,7 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
 		notifyDataSetChanged();
 	}
 
-    @Override
+	@Override
 	public int getItemViewType(int position) {
 		return isHomeScreen ? 0 : 1;
 	}

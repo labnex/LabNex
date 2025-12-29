@@ -11,8 +11,11 @@ import com.labnex.app.R;
 import com.labnex.app.adapters.GroupsAdapter;
 import com.labnex.app.bottomsheets.GroupsBottomSheet;
 import com.labnex.app.databinding.ActivityGroupsBinding;
+import com.labnex.app.helpers.GroupsHierarchyBuilder;
 import com.labnex.app.interfaces.BottomSheetListener;
+import com.labnex.app.models.groups.GroupsItem;
 import com.labnex.app.viewmodels.GroupsViewModel;
+import java.util.List;
 
 /**
  * @author mmarif
@@ -86,8 +89,10 @@ public class GroupsActivity extends BaseActivity implements BottomSheetListener 
 				.getGroups(ctx, resultLimit, page, GroupsActivity.this, binding)
 				.observe(
 						GroupsActivity.this,
-						orgListMain -> {
-							adapter = new GroupsAdapter(GroupsActivity.this, orgListMain);
+						groupsList -> {
+							List<GroupsItem> hierarchicalList =
+									GroupsHierarchyBuilder.buildHierarchyRecursive(groupsList);
+							adapter = new GroupsAdapter(GroupsActivity.this, hierarchicalList);
 							adapter.setLoadMoreListener(
 									new GroupsAdapter.OnLoadMoreListener() {
 
