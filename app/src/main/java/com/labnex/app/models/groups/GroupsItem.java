@@ -84,7 +84,7 @@ public class GroupsItem implements Serializable {
 	private String webUrl;
 
 	@SerializedName("parent_id")
-	private Object parentId;
+	private Integer parentId;
 
 	@SerializedName("duo_features_enabled")
 	private boolean duoFeaturesEnabled;
@@ -100,6 +100,8 @@ public class GroupsItem implements Serializable {
 
 	@SerializedName("statistics")
 	private Statistics statistics;
+
+	private int level = 0;
 
 	public boolean isRequestAccessEnabled() {
 		return requestAccessEnabled;
@@ -201,8 +203,12 @@ public class GroupsItem implements Serializable {
 		return webUrl;
 	}
 
-	public Object getParentId() {
+	public Integer getParentId() {
 		return parentId;
+	}
+
+	public void setParentId(Integer parentId) {
+		this.parentId = parentId;
 	}
 
 	public boolean isDuoFeaturesEnabled() {
@@ -223,5 +229,13 @@ public class GroupsItem implements Serializable {
 
 	public Statistics getStatistics() {
 		return statistics;
+	}
+
+	public int getLevel() {
+		return level;
+	}
+
+	public void setLevel(int level) {
+		this.level = level;
 	}
 }

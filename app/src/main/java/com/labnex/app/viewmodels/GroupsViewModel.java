@@ -46,7 +46,7 @@ public class GroupsViewModel extends ViewModel {
 			ActivityGroupsBinding binding) {
 
 		Call<List<GroupsItem>> call =
-				RetrofitClient.getApiInterface(ctx).getGroups(true, resultLimit, page);
+				RetrofitClient.getApiInterface(ctx).getGroups(true, "id", "asc", 100, page);
 
 		call.enqueue(
 				new Callback<>() {
@@ -99,7 +99,7 @@ public class GroupsViewModel extends ViewModel {
 			ActivityGroupsBinding binding) {
 
 		Call<List<GroupsItem>> call =
-				RetrofitClient.getApiInterface(ctx).getGroups(true, resultLimit, page);
+				RetrofitClient.getApiInterface(ctx).getGroups(true, "id", "asc", 100, page);
 
 		call.enqueue(
 				new Callback<>() {

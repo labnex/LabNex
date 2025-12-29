@@ -70,9 +70,8 @@ public interface ApiInterface {
 	@GET("personal_access_tokens/self") // personal access token info
 	Call<PersonalAccessTokens> getPersonalAccessTokenInfo();
 
-	@GET("users/{user_id}/projects") // get user projects
-	Call<List<Projects>> getProjects(
-			@Path("user_id") int user_id, @Query("per_page") int per_page, @Query("page") int page);
+	@GET("projects?owned=true") // get user projects
+	Call<List<Projects>> getProjects(@Query("per_page") int per_page, @Query("page") int page);
 
 	@GET("users/{user_id}/starred_projects") // get user starred projects
 	Call<List<Projects>> getStarredProjects(
@@ -82,6 +81,8 @@ public interface ApiInterface {
 	@GET("groups") // get groups
 	Call<List<GroupsItem>> getGroups(
 			@Query("statistics") boolean statistics,
+			@Query("order_by") String orderBy,
+			@Query("sort") String sort,
 			@Query("per_page") int per_page,
 			@Query("page") int page);
 

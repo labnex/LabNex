@@ -1,13 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/linearLayoutFrame"
+    android:id="@+id/rootContainer"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
     android:padding="@dimen/dimen6dp">
 
+    <ImageView
+        android:id="@+id/subgroup_arrow"
+        android:layout_width="24dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="@dimen/dimen4dp"
+        android:visibility="gone"
+        app:srcCompat="@drawable/ic_arrow_corner_down_right"
+        app:tint="?attr/colorOnSurfaceVariant"
+        android:layout_gravity="center_vertical|start"/>
+
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/group_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         style="?attr/materialCardViewElevatedStyle"
@@ -85,4 +95,4 @@
 
     </com.google.android.material.card.MaterialCardView>
 
-</LinearLayout>
+</FrameLayout>

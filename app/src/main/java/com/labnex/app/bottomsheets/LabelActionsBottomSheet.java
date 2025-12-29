@@ -393,7 +393,8 @@ public class LabelActionsBottomSheet extends BottomSheetDialogFragment {
 						BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(bottomSheet);
 						behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 						behavior.setPeekHeight(bottomSheet.getHeight());
-						behavior.setHideable(false);
+						behavior.setHideable(true);
+						behavior.setSkipCollapsed(true);
 					}
 				});
 

@@ -520,6 +520,7 @@ public class HomeFragment extends Fragment {
 											startActivity(intent);
 										});
 								binding.userAvatar.setEnabled(true);
+								updateWelcomeText(userDetails);
 							} catch (IllegalStateException e) {
 								return;
 							}
