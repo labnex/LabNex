@@ -32,31 +32,38 @@
                 tools:ignore="UseCompoundDrawables">
 
                 <LinearLayout
+                    android:id="@+id/label_container"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:gravity="start"
                     android:orientation="horizontal"
                     android:layout_weight="1"
-                    tools:ignore="UseCompoundDrawables">
+                    android:background="@android:color/transparent">
 
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/labelView"
+                    <!-- key/label -->
+                    <TextView
+                        android:id="@+id/label_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        style="?attr/materialCardViewElevatedStyle"
-                        app:cardElevation="@dimen/dimen0dp"
-                        app:contentPadding="@dimen/dimen4dp">
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp" />
 
-                        <TextView
-                            android:id="@+id/label_name"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/dimen8dp"
-                            android:layout_marginEnd="@dimen/dimen8dp"
-                            android:textColor="@color/md_theme_onPrimary"
-                            android:textSize="@dimen/dimen14sp" />
-
-                    </com.google.android.material.card.MaterialCardView>
+                    <!-- value/2nd part -->
+                    <TextView
+                        android:id="@+id/label_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp"
+                        android:visibility="gone" />
 
                 </LinearLayout>
 
@@ -85,7 +92,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dimen12dp"
                 android:visibility="gone"
-                android:textSize="@dimen/dimen14sp" />
+                android:textSize="@dimen/dimen16sp" />
 
             <!-- label open issues/mr -->
             <LinearLayout

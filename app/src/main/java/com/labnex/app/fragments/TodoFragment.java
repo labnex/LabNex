@@ -198,7 +198,7 @@ public class TodoFragment extends Fragment {
 							List<ToDoItem> newItems = response.body();
 							todoViewModel.setTodoList(newItems);
 						} else {
-							showError(String.valueOf(R.string.generic_server_response_error));
+							showError(getString(R.string.generic_server_response_error));
 							binding.nothingFoundFrame.getRoot().setVisibility(View.VISIBLE);
 							binding.recyclerView.setVisibility(View.GONE);
 						}
@@ -208,7 +208,7 @@ public class TodoFragment extends Fragment {
 					public void onFailure(
 							@NonNull Call<List<ToDoItem>> call, @NonNull Throwable t) {
 						binding.progressBar.setVisibility(View.GONE);
-						showError(String.valueOf(R.string.generic_server_response_error));
+						showError(getString(R.string.generic_server_response_error));
 						binding.nothingFoundFrame.getRoot().setVisibility(View.VISIBLE);
 						binding.recyclerView.setVisibility(View.GONE);
 					}
@@ -253,13 +253,13 @@ public class TodoFragment extends Fragment {
 									requireActivity().findViewById(R.id.nav_view),
 									getString(R.string.todo_marked_done));
 						} else {
-							showError(String.valueOf(R.string.generic_server_response_error));
+							showError(getString(R.string.generic_server_response_error));
 						}
 					}
 
 					@Override
 					public void onFailure(@NonNull Call<ToDoItem> call, @NonNull Throwable t) {
-						showError(String.valueOf(R.string.generic_server_response_error));
+						showError(getString(R.string.generic_server_response_error));
 					}
 				});
 	}
@@ -288,7 +288,7 @@ public class TodoFragment extends Fragment {
 
 	private void fetchProjectAndOpenMergeRequest(ToDoItem todo) {
 		if (todo.getProject() == null) {
-			showError(String.valueOf(R.string.project_info_not_available));
+			showError(getString(R.string.project_info_not_available));
 			return;
 		}
 
@@ -305,7 +305,7 @@ public class TodoFragment extends Fragment {
 							com.labnex.app.models.projects.Projects project = response.body();
 							fetchAndOpenSpecificMergeRequest(project, todo);
 						} else {
-							showError(String.valueOf(R.string.generic_server_response_error));
+							showError(getString(R.string.generic_server_response_error));
 						}
 					}
 
@@ -313,14 +313,14 @@ public class TodoFragment extends Fragment {
 					public void onFailure(
 							@NonNull Call<com.labnex.app.models.projects.Projects> call,
 							@NonNull Throwable t) {
-						showError(String.valueOf(R.string.generic_server_response_error));
+						showError(getString(R.string.generic_server_response_error));
 					}
 				});
 	}
 
 	private void fetchProjectAndOpenIssue(ToDoItem todo) {
 		if (todo.getProject() == null) {
-			showError(String.valueOf(R.string.project_info_not_available));
+			showError(getString(R.string.project_info_not_available));
 			return;
 		}
 
@@ -337,7 +337,7 @@ public class TodoFragment extends Fragment {
 							com.labnex.app.models.projects.Projects project = response.body();
 							fetchAndOpenSpecificIssue(project, todo);
 						} else {
-							showError(String.valueOf(R.string.generic_server_response_error));
+							showError(getString(R.string.generic_server_response_error));
 						}
 					}
 
@@ -345,7 +345,7 @@ public class TodoFragment extends Fragment {
 					public void onFailure(
 							@NonNull Call<com.labnex.app.models.projects.Projects> call,
 							@NonNull Throwable t) {
-						showError(String.valueOf(R.string.generic_server_response_error));
+						showError(getString(R.string.generic_server_response_error));
 					}
 				});
 	}
@@ -353,7 +353,7 @@ public class TodoFragment extends Fragment {
 	private void fetchAndOpenSpecificMergeRequest(
 			com.labnex.app.models.projects.Projects project, ToDoItem todo) {
 		if (todo.getTarget() == null) {
-			showError(String.valueOf(R.string.mr_detail_not_available));
+			showError(getString(R.string.mr_detail_not_available));
 			return;
 		}
 
@@ -385,7 +385,7 @@ public class TodoFragment extends Fragment {
 	private void fetchAndOpenSpecificIssue(
 			com.labnex.app.models.projects.Projects project, ToDoItem todo) {
 		if (todo.getTarget() == null) {
-			showError(String.valueOf(R.string.issue_detail_not_available));
+			showError(getString(R.string.issue_detail_not_available));
 			return;
 		}
 
