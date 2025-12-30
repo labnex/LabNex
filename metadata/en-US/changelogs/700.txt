@@ -1,0 +1,16 @@
+7.0.0
+
+🎉 Features 🎉
+- Revamped dashboard UI
+- Render markdown in issue and PR titles
+- File icons in the file browser
+- To-do list
+- Mark to-do list items as done
+- Custom URL scheme: labnex:// (more in README.md)
+- Deep links with custom URLs for issues, merge requests, and projects
+- Subgroup listing (nested)
+- Projects for subgroups
+- Self-signed certificate support (more in FAQ)
+- Scoped label support for groups and projects
+
+Release Notes: https://github.com/labnex/LabNex/releases
