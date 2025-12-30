@@ -742,7 +742,7 @@ public class HomeFragment extends Fragment {
 
 	private void fetchProjectAndOpenMergeRequest(ToDoItem todo) {
 		if (todo.getProject() == null) {
-			showErrorAndFallback(String.valueOf(R.string.project_info_not_available));
+			showErrorAndFallback(getString(R.string.project_info_not_available));
 			return;
 		}
 
@@ -759,8 +759,7 @@ public class HomeFragment extends Fragment {
 							com.labnex.app.models.projects.Projects project = response.body();
 							fetchAndOpenSpecificMergeRequest(project, todo);
 						} else {
-							showErrorAndFallback(
-									String.valueOf(R.string.generic_server_response_error));
+							showErrorAndFallback(getString(R.string.generic_server_response_error));
 						}
 					}
 
@@ -768,15 +767,14 @@ public class HomeFragment extends Fragment {
 					public void onFailure(
 							@NonNull Call<com.labnex.app.models.projects.Projects> call,
 							@NonNull Throwable t) {
-						showErrorAndFallback(
-								String.valueOf(R.string.generic_server_response_error));
+						showErrorAndFallback(getString(R.string.generic_server_response_error));
 					}
 				});
 	}
 
 	private void fetchProjectAndOpenIssue(ToDoItem todo) {
 		if (todo.getProject() == null) {
-			showErrorAndFallback(String.valueOf(R.string.project_info_not_available));
+			showErrorAndFallback(getString(R.string.project_info_not_available));
 			return;
 		}
 
@@ -793,8 +791,7 @@ public class HomeFragment extends Fragment {
 							com.labnex.app.models.projects.Projects project = response.body();
 							fetchAndOpenSpecificIssue(project, todo);
 						} else {
-							showErrorAndFallback(
-									String.valueOf(R.string.generic_server_response_error));
+							showErrorAndFallback(getString(R.string.generic_server_response_error));
 						}
 					}
 
@@ -802,8 +799,7 @@ public class HomeFragment extends Fragment {
 					public void onFailure(
 							@NonNull Call<com.labnex.app.models.projects.Projects> call,
 							@NonNull Throwable t) {
-						showErrorAndFallback(
-								String.valueOf(R.string.generic_server_response_error));
+						showErrorAndFallback(getString(R.string.generic_server_response_error));
 					}
 				});
 	}
@@ -811,7 +807,7 @@ public class HomeFragment extends Fragment {
 	private void fetchAndOpenSpecificMergeRequest(
 			com.labnex.app.models.projects.Projects project, ToDoItem todo) {
 		if (todo.getTarget() == null) {
-			showErrorAndFallback(String.valueOf(R.string.mr_detail_not_available));
+			showErrorAndFallback(getString(R.string.mr_detail_not_available));
 			return;
 		}
 
@@ -843,7 +839,7 @@ public class HomeFragment extends Fragment {
 	private void fetchAndOpenSpecificIssue(
 			com.labnex.app.models.projects.Projects project, ToDoItem todo) {
 		if (todo.getTarget() == null) {
-			showErrorAndFallback(String.valueOf(R.string.issue_detail_not_available));
+			showErrorAndFallback(getString(R.string.issue_detail_not_available));
 			return;
 		}
 

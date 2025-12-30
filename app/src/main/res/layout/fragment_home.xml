@@ -188,7 +188,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:paddingHorizontal="@dimen/dimen12dp"
+                        android:paddingHorizontal="@dimen/dimen10dp"
                         android:paddingVertical="@dimen/dimen8dp"
                         android:gravity="center_vertical"
                         tools:ignore="UseCompoundDrawables,UselessParent">

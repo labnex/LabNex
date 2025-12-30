@@ -2,7 +2,6 @@ package com.labnex.app.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,14 +11,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
-import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.labnex.app.R;
 import com.labnex.app.bottomsheets.LabelActionsBottomSheet;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.databinding.BottomSheetProjectLabelsBinding;
+import com.labnex.app.helpers.LabelStylingHelper;
 import com.labnex.app.helpers.Snackbar;
-import com.labnex.app.helpers.Utils;
 import com.labnex.app.models.labels.Labels;
 import java.util.List;
 import retrofit2.Call;
@@ -114,23 +112,26 @@ public class ProjectLabelsAdapter extends RecyclerView.Adapter<RecyclerView.View
 	public class LabelsHolder extends RecyclerView.ViewHolder {
 
 		private final TextView labelName;
-		private final MaterialCardView labelView;
+		private final TextView labelValue;
 		private final TextView description;
 		private final TextView labelOpenIssues;
 		private final TextView labelOpenMergeRequests;
 		private Labels labels;
+		private final LabelStylingHelper stylingHelper;
 
 		LabelsHolder(View itemView) {
 
 			super(itemView);
 
 			labelName = itemView.findViewById(R.id.label_name);
-			labelView = itemView.findViewById(R.id.labelView);
+			labelValue = itemView.findViewById(R.id.label_value);
 			description = itemView.findViewById(R.id.description);
 			labelOpenIssues = itemView.findViewById(R.id.label_open_issues);
 			labelOpenMergeRequests = itemView.findViewById(R.id.label_open_merge_requests);
 			ImageView editLabel = itemView.findViewById(R.id.edit_label);
 			ImageView deleteLabel = itemView.findViewById(R.id.delete_label);
+
+			stylingHelper = LabelStylingHelper.getInstance(itemView.getContext());
 
 			editLabel.setOnClickListener(
 					edit -> {
@@ -178,10 +179,16 @@ public class ProjectLabelsAdapter extends RecyclerView.Adapter<RecyclerView.View
 		void bindData(Labels labels) {
 
 			this.labels = labels;
+			String labelText = labels.getName();
 
-			labelName.setText(labels.getName());
-			labelName.setTextColor(
-					Color.parseColor(Utils.repeatString(labels.getTextColor(), 4, 1, 2)));
+			if (LabelStylingHelper.isScopedLabel(labelText)) {
+				stylingHelper.styleScopedLabel(
+						labelText, labels.getColor(), labels.getTextColor(), labelName, labelValue);
+			} else {
+				labelValue.setVisibility(View.GONE);
+				stylingHelper.styleRegularLabel(
+						labelText, labels.getColor(), labels.getTextColor(), labelName);
+			}
 
 			if (labels.getDescription() != null) {
 				if (!labels.getDescription().toString().isEmpty()) {
@@ -191,9 +198,6 @@ public class ProjectLabelsAdapter extends RecyclerView.Adapter<RecyclerView.View
 			}
 			labelOpenIssues.setText(String.valueOf(labels.getOpenIssuesCount()));
 			labelOpenMergeRequests.setText(String.valueOf(labels.getOpenMergeRequestsCount()));
-
-			labelView.setCardBackgroundColor(
-					Color.parseColor(Utils.repeatString(labels.getColor(), 4, 1, 2)));
 		}
 	}
 
