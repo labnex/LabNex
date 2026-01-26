@@ -132,6 +132,98 @@
 
             </com.google.android.material.card.MaterialCardView>
 
+        <!-- issues/mr -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/code_section"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            style="?attr/materialCardViewElevatedStyle"
+            android:layout_gravity="center_vertical"
+            android:layout_marginTop="@dimen/dimen16dp"
+            android:layout_marginStart="@dimen/dimen8dp"
+            android:layout_marginEnd="@dimen/dimen8dp"
+            app:strokeWidth="@dimen/dimen0dp"
+            app:cardElevation="@dimen/dimen0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:id="@+id/issues_main_frame"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="@dimen/dimen12dp">
+
+                        <ImageView
+                            android:layout_width="@dimen/dimen24dp"
+                            android:layout_height="@dimen/dimen24dp"
+                            android:contentDescription="@string/issues"
+                            android:layout_marginEnd="@dimen/dimen16dp"
+                            app:tint="?attr/iconsColor"
+                            app:srcCompat="@drawable/ic_issues" />
+
+                        <LinearLayout
+                            android:id="@+id/issues_frame"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            tools:ignore="UseCompoundDrawables">
+
+                            <TextView
+                                android:id="@+id/issues_title"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/issues"
+                                android:textSize="@dimen/dimen16sp" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/merge_requests_main_frame"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="@dimen/dimen12dp">
+
+                        <ImageView
+                            android:layout_width="@dimen/dimen24dp"
+                            android:layout_height="@dimen/dimen24dp"
+                            android:contentDescription="@string/merge_requests"
+                            android:layout_marginEnd="@dimen/dimen16dp"
+                            app:srcCompat="@drawable/ic_merge_request" />
+
+                        <LinearLayout
+                            android:id="@+id/merge_requests_frame"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            tools:ignore="UseCompoundDrawables">
+
+                            <TextView
+                                android:id="@+id/merge_requests_title"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/merge_requests"
+                                android:textSize="@dimen/dimen16sp" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
             <LinearLayout
                 android:id="@+id/group_projects_frame"
                 android:layout_width="match_parent"
