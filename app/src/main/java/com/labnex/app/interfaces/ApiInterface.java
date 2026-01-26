@@ -121,6 +121,15 @@ public interface ApiInterface {
 	Call<List<User>> getGroupMembers(
 			@Path("id") int id, @Query("per_page") int per_page, @Query("page") int page);
 
+	@GET("groups/{id}/issues") // get group issues
+	Call<List<Issues>> getGroupIssues(
+			@Path("id") int groupId,
+			@Query("state") String state,
+			@Query("search") String search,
+			@Query("per_page") int perPage,
+			@Query("page") int page,
+			@Query("scope") String scope);
+
 	// Project endpoints
 	@GET("projects/{id}") // get a single project details
 	Call<Projects> getProjectInfo(@Path("id") long id);

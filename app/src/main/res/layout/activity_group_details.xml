@@ -157,6 +157,7 @@
                         android:background="?android:attr/selectableItemBackground"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
+                        android:layout_marginTop="@dimen/dimen8dp"
                         android:padding="@dimen/dimen12dp">
 
                         <ImageView
@@ -193,6 +194,7 @@
                         android:background="?android:attr/selectableItemBackground"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
+                        android:layout_marginBottom="@dimen/dimen8dp"
                         android:padding="@dimen/dimen12dp">
 
                         <ImageView

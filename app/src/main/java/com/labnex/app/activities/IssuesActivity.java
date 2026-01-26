@@ -46,7 +46,6 @@ public class IssuesActivity extends BaseActivity implements CreateIssueActivity.
 		setContentView(binding.getRoot());
 
 		issuesViewModel = new ViewModelProvider(this).get(IssuesViewModel.class);
-		projectsContext = ProjectsContext.fromIntent(getIntent());
 		resultLimit = getAccount().getMaxPageLimit();
 
 		CreateIssueActivity.setUpdateListener(this);
@@ -55,6 +54,10 @@ public class IssuesActivity extends BaseActivity implements CreateIssueActivity.
 			source = getIntent().getStringExtra("source");
 		}
 		id = getIntent().getIntExtra("id", 0);
+
+		if ("project".equals(source)) {
+			projectsContext = ProjectsContext.fromIntent(getIntent());
+		}
 
 		binding.recyclerView.setHasFixedSize(true);
 		binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -72,11 +75,11 @@ public class IssuesActivity extends BaseActivity implements CreateIssueActivity.
 					return false;
 				});
 
-		Bundle bsBundle = new Bundle();
-
-		if (source.equalsIgnoreCase("my_issues") || projectsContext.getProject().isArchived()) {
+		if ("my_issues".equals(source)
+				|| "group".equals(source)
+				|| (projectsContext != null && projectsContext.getProject().isArchived())) {
 			binding.newIssue.setVisibility(View.GONE);
-		} else {
+		} else if ("project".equals(source)) {
 			binding.newIssue.setOnClickListener(
 					accounts -> {
 						ProjectsContext project =
