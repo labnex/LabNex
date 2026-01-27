@@ -70,14 +70,23 @@ public class MergeRequestsViewModel extends ViewModel {
 			currentCall.cancel();
 		}
 
-		if (source.equalsIgnoreCase("mr")) {
-			currentCall =
-					RetrofitClient.getApiInterface(ctx)
-							.getProjectMergeRequests(id, state, searchQuery, resultLimit, page);
-		} else {
-			currentCall =
-					RetrofitClient.getApiInterface(ctx)
-							.getMergeRequests(scope, state, searchQuery, resultLimit, page);
+		switch (source) {
+			case "mr":
+				currentCall =
+						RetrofitClient.getApiInterface(ctx)
+								.getProjectMergeRequests(id, state, searchQuery, resultLimit, page);
+				break;
+			case "group":
+				currentCall =
+						RetrofitClient.getApiInterface(ctx)
+								.getGroupMergeRequests(
+										id, state, searchQuery, resultLimit, page, scope);
+				break;
+			default:
+				currentCall =
+						RetrofitClient.getApiInterface(ctx)
+								.getMergeRequests(scope, state, searchQuery, resultLimit, page);
+				break;
 		}
 
 		currentCall.enqueue(
@@ -110,9 +119,10 @@ public class MergeRequestsViewModel extends ViewModel {
 							@NonNull Call<List<MergeRequests>> call, @NonNull Throwable t) {
 						if (!call.isCanceled()) {
 							Snackbar.info(
-									ctx, activity.findViewById(android.R.id.content),
+									ctx,
+									activity.findViewById(android.R.id.content),
 									bottomAppBar,
-											ctx.getString(R.string.generic_server_response_error));
+									ctx.getString(R.string.generic_server_response_error));
 						}
 					}
 				});
@@ -135,14 +145,23 @@ public class MergeRequestsViewModel extends ViewModel {
 			currentCall.cancel();
 		}
 
-		if (source.equalsIgnoreCase("mr")) {
-			currentCall =
-					RetrofitClient.getApiInterface(ctx)
-							.getProjectMergeRequests(id, state, searchQuery, resultLimit, page);
-		} else {
-			currentCall =
-					RetrofitClient.getApiInterface(ctx)
-							.getMergeRequests(scope, state, searchQuery, resultLimit, page);
+		switch (source) {
+			case "mr":
+				currentCall =
+						RetrofitClient.getApiInterface(ctx)
+								.getProjectMergeRequests(id, state, searchQuery, resultLimit, page);
+				break;
+			case "group":
+				currentCall =
+						RetrofitClient.getApiInterface(ctx)
+								.getGroupMergeRequests(
+										id, state, searchQuery, resultLimit, page, scope);
+				break;
+			default:
+				currentCall =
+						RetrofitClient.getApiInterface(ctx)
+								.getMergeRequests(scope, state, searchQuery, resultLimit, page);
+				break;
 		}
 
 		currentCall.enqueue(
@@ -177,9 +196,10 @@ public class MergeRequestsViewModel extends ViewModel {
 							@NonNull Call<List<MergeRequests>> call, @NonNull Throwable t) {
 						if (!call.isCanceled()) {
 							Snackbar.info(
-									ctx, activity.findViewById(android.R.id.content),
+									ctx,
+									activity.findViewById(android.R.id.content),
 									bottomAppBar,
-											ctx.getString(R.string.generic_server_response_error));
+									ctx.getString(R.string.generic_server_response_error));
 						}
 					}
 				});

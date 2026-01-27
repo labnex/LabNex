@@ -130,6 +130,15 @@ public interface ApiInterface {
 			@Query("page") int page,
 			@Query("scope") String scope);
 
+	@GET("groups/{id}/merge_requests") // get a group merge requests
+	Call<List<MergeRequests>> getGroupMergeRequests(
+			@Path("id") int groupId,
+			@Query("state") String state,
+			@Query("search") String search,
+			@Query("per_page") int perPage,
+			@Query("page") int page,
+			@Query("scope") String scope);
+
 	// Project endpoints
 	@GET("projects/{id}") // get a single project details
 	Call<Projects> getProjectInfo(@Path("id") long id);

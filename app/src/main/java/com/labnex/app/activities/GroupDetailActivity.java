@@ -14,7 +14,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.labnex.app.R;
 import com.labnex.app.adapters.ProjectsAdapter;
 import com.labnex.app.bottomsheets.GroupDetailBottomSheet;
-import com.labnex.app.bottomsheets.ProjectReleasesBottomSheet;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.databinding.ActivityGroupDetailsBinding;
 import com.labnex.app.databinding.BottomSheetGroupActionsBinding;
@@ -57,13 +56,10 @@ public class GroupDetailActivity extends BaseActivity implements BottomSheetList
 
 		binding.bottomAppBar.setNavigationOnClickListener(bottomAppBar -> finish());
 
-        binding.issuesMainFrame.setOnClickListener(
-                groupIssues -> {
-                    Intent intent = new Intent(ctx, IssuesActivity.class);
-                    intent.putExtra("source", "group");
-                    intent.putExtra("id", groupId);
-                    ctx.startActivity(intent);
-                });
+		setupNavigationClickListener(binding.issuesMainFrame, IssuesActivity.class, groupId);
+
+		setupNavigationClickListener(
+				binding.mergeRequestsMainFrame, MergeRequestsActivity.class, groupId);
 
 		binding.bottomAppBar.setOnMenuItemClickListener(
 				menuItem -> {
@@ -76,6 +72,16 @@ public class GroupDetailActivity extends BaseActivity implements BottomSheetList
 
 		getGroupDetails();
 		getGroupProjects();
+	}
+
+	private void setupNavigationClickListener(View view, Class<?> targetActivity, int id) {
+		view.setOnClickListener(
+				v -> {
+					Intent intent = new Intent(ctx, targetActivity);
+					intent.putExtra("source", "group");
+					intent.putExtra("id", id);
+					ctx.startActivity(intent);
+				});
 	}
 
 	private void showGroupActionsBottomSheet() {
