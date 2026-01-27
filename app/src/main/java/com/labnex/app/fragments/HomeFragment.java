@@ -165,9 +165,9 @@ public class HomeFragment extends Fragment {
 											todoAdapter.updateList(todoList);
 
 											binding.sectionTodo.todoEmptyState.setVisibility(
-													View.GONE);
-											binding.sectionTodo.todoRecyclerView.setVisibility(
 													View.VISIBLE);
+											binding.sectionTodo.todoRecyclerView.setVisibility(
+													View.GONE);
 											binding.sectionMostVisited.nothingFoundFrame
 													.setVisibility(View.GONE);
 
@@ -302,15 +302,27 @@ public class HomeFragment extends Fragment {
 							@NonNull Response<List<ToDoItem>> response) {
 						if (response.isSuccessful() && response.body() != null) {
 							List<ToDoItem> allTodos = response.body();
-							int itemsToShow = Math.min(allTodos.size(), 5);
 
-							todoList.clear();
-							for (int i = 0; i < itemsToShow; i++) {
-								todoList.add(allTodos.get(i));
+							if (allTodos.isEmpty()) {
+								binding.sectionTodo.todoEmptyState.setVisibility(View.VISIBLE);
+								binding.sectionTodo.todoRecyclerView.setVisibility(View.GONE);
+
+								todoList.clear();
+							} else {
+								binding.sectionTodo.todoEmptyState.setVisibility(View.GONE);
+								binding.sectionTodo.todoRecyclerView.setVisibility(View.VISIBLE);
+
+								int itemsToShow = Math.min(allTodos.size(), 5);
+								todoList.clear();
+								for (int i = 0; i < itemsToShow; i++) {
+									todoList.add(allTodos.get(i));
+								}
 							}
-
 							todoAdapter.updateList(todoList);
 							todoViewModel.setTodoList(allTodos);
+						} else {
+							binding.sectionTodo.todoEmptyState.setVisibility(View.VISIBLE);
+							binding.sectionTodo.todoRecyclerView.setVisibility(View.GONE);
 						}
 
 						if (incrementCounter) {
@@ -322,6 +334,9 @@ public class HomeFragment extends Fragment {
 					@Override
 					public void onFailure(
 							@NonNull Call<List<ToDoItem>> call, @NonNull Throwable t) {
+						binding.sectionTodo.todoEmptyState.setVisibility(View.VISIBLE);
+						binding.sectionTodo.todoRecyclerView.setVisibility(View.GONE);
+
 						if (incrementCounter) {
 							refreshSuccessCounter++;
 							checkRefreshComplete();

@@ -32,7 +32,7 @@ public class MergeRequestsActivity extends BaseActivity
 	private int resultLimit;
 	private final String scope = "created_by_me";
 	private String source;
-	private int projectId;
+	private int id;
 	public ProjectsContext projectsContext;
 	public static boolean updateMergeRequestList = false;
 	private String filter = "opened";
@@ -46,7 +46,6 @@ public class MergeRequestsActivity extends BaseActivity
 		setContentView(binding.getRoot());
 
 		mergeRequestsViewModel = new ViewModelProvider(this).get(MergeRequestsViewModel.class);
-		projectsContext = ProjectsContext.fromIntent(getIntent());
 		resultLimit = getAccount().getMaxPageLimit();
 
 		CreateMergeRequestActivity.setUpdateListener(this);
@@ -54,7 +53,13 @@ public class MergeRequestsActivity extends BaseActivity
 		if (getIntent().getStringExtra("source") != null) {
 			source = getIntent().getStringExtra("source");
 		}
-		projectId = getIntent().getIntExtra("projectId", 0);
+		id = getIntent().getIntExtra("id", 0);
+
+		if ("mr".equals(source)) {
+			projectsContext = ProjectsContext.fromIntent(getIntent());
+		} else {
+			projectsContext = null;
+		}
 
 		binding.bottomAppBar.setNavigationOnClickListener(bottomAppBar -> finish());
 
@@ -72,12 +77,11 @@ public class MergeRequestsActivity extends BaseActivity
 					return false;
 				});
 
-		Bundle bsBundle = new Bundle();
-
-		if (source.equalsIgnoreCase("my_merge_requests")
-				|| projectsContext.getProject().isArchived()) {
+		if ("my_merge_requests".equals(source)
+				|| "group".equals(source)
+				|| (projectsContext != null && projectsContext.getProject().isArchived())) {
 			binding.newMergeRequest.setVisibility(View.GONE);
-		} else {
+		} else if ("mr".equals(source) && projectsContext != null) {
 			binding.newMergeRequest.setOnClickListener(
 					accounts -> {
 						ProjectsContext project =
@@ -170,7 +174,7 @@ public class MergeRequestsActivity extends BaseActivity
 				.getMergeRequests(
 						ctx,
 						source,
-						projectId,
+						id,
 						scope,
 						filter,
 						searchQuery,
@@ -191,7 +195,7 @@ public class MergeRequestsActivity extends BaseActivity
 												mergeRequestsViewModel.loadMore(
 														ctx,
 														source,
-														projectId,
+														id,
 														scope,
 														filter,
 														searchQuery,

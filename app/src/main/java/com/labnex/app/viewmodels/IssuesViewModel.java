@@ -70,14 +70,22 @@ public class IssuesViewModel extends ViewModel {
 			currentCall.cancel();
 		}
 
-		if (source.equalsIgnoreCase("project")) {
-			currentCall =
-					RetrofitClient.getApiInterface(ctx)
-							.getProjectIssues(id, state, searchQuery, resultLimit, page);
-		} else {
-			currentCall =
-					RetrofitClient.getApiInterface(ctx)
-							.getIssues(scope, state, searchQuery, resultLimit, page);
+		switch (source) {
+			case "project":
+				currentCall =
+						RetrofitClient.getApiInterface(ctx)
+								.getProjectIssues(id, state, searchQuery, resultLimit, page);
+				break;
+			case "group":
+				currentCall =
+						RetrofitClient.getApiInterface(ctx)
+								.getGroupIssues(id, state, searchQuery, resultLimit, page, scope);
+				break;
+			default: // "my_issues" or other
+				currentCall =
+						RetrofitClient.getApiInterface(ctx)
+								.getIssues(scope, state, searchQuery, resultLimit, page);
+				break;
 		}
 
 		currentCall.enqueue(
@@ -109,9 +117,10 @@ public class IssuesViewModel extends ViewModel {
 					public void onFailure(@NonNull Call<List<Issues>> call, @NonNull Throwable t) {
 						if (!call.isCanceled()) {
 							Snackbar.info(
-									ctx, activity.findViewById(android.R.id.content),
+									ctx,
+									activity.findViewById(android.R.id.content),
 									bottomAppBar,
-											ctx.getString(R.string.generic_server_response_error));
+									ctx.getString(R.string.generic_server_response_error));
 						}
 					}
 				});
@@ -134,14 +143,22 @@ public class IssuesViewModel extends ViewModel {
 			currentCall.cancel();
 		}
 
-		if (source.equalsIgnoreCase("project")) {
-			currentCall =
-					RetrofitClient.getApiInterface(ctx)
-							.getProjectIssues(id, state, searchQuery, resultLimit, page);
-		} else {
-			currentCall =
-					RetrofitClient.getApiInterface(ctx)
-							.getIssues(scope, state, searchQuery, resultLimit, page);
+		switch (source) {
+			case "project":
+				currentCall =
+						RetrofitClient.getApiInterface(ctx)
+								.getProjectIssues(id, state, searchQuery, resultLimit, page);
+				break;
+			case "group":
+				currentCall =
+						RetrofitClient.getApiInterface(ctx)
+								.getGroupIssues(id, state, searchQuery, resultLimit, page, scope);
+				break;
+			default: // "my_issues" or other
+				currentCall =
+						RetrofitClient.getApiInterface(ctx)
+								.getIssues(scope, state, searchQuery, resultLimit, page);
+				break;
 		}
 
 		currentCall.enqueue(
@@ -175,9 +192,10 @@ public class IssuesViewModel extends ViewModel {
 					public void onFailure(@NonNull Call<List<Issues>> call, @NonNull Throwable t) {
 						if (!call.isCanceled()) {
 							Snackbar.info(
-									ctx, activity.findViewById(android.R.id.content),
+									ctx,
+									activity.findViewById(android.R.id.content),
 									bottomAppBar,
-											ctx.getString(R.string.generic_server_response_error));
+									ctx.getString(R.string.generic_server_response_error));
 						}
 					}
 				});
