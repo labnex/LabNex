@@ -132,15 +132,13 @@ public class DeepLinksActivity extends BaseActivity {
 	private void processDeepLink() {
 		List<String> pathSegments = data.getPathSegments();
 
-		if (pathSegments.size() >= 5) {
-			String sectionType = pathSegments.get(3);
-
-			String userOrGroupName = pathSegments.get(0);
-			String projectName = pathSegments.get(1);
-			String projectPathWithNamespace = userOrGroupName + "/" + projectName;
+		int split = pathSegments.indexOf("-");
+		if (split >= 2) {
+			String sectionType = pathSegments.get(split + 1);
+			String projectPathWithNamespace = String.join("/", pathSegments.subList(0, split));
 
 			if ("issues".equals(sectionType)) {
-				String issueIdStr = pathSegments.get(4);
+				String issueIdStr = pathSegments.get(split + 2);
 				if (issueIdStr != null && issueIdStr.matches("\\d+")) {
 					int issueIid = Integer.parseInt(issueIdStr);
 					goToSpecificIssue(projectPathWithNamespace, issueIid);
@@ -148,7 +146,7 @@ public class DeepLinksActivity extends BaseActivity {
 					goToProjectWithSection(projectPathWithNamespace, "issue");
 				}
 			} else if ("merge_requests".equals(sectionType)) {
-				String mrIdStr = pathSegments.get(4);
+				String mrIdStr = pathSegments.get(split + 2);
 				if (mrIdStr != null && mrIdStr.matches("\\d+")) {
 					int mergeRequestIid = Integer.parseInt(mrIdStr);
 					goToSpecificMergeRequest(projectPathWithNamespace, mergeRequestIid);
@@ -159,9 +157,7 @@ public class DeepLinksActivity extends BaseActivity {
 				goToProject(projectPathWithNamespace);
 			}
 		} else if (pathSegments.size() >= 2) {
-			String userOrGroupName = pathSegments.get(0);
-			String projectName = pathSegments.get(1);
-			String projectPathWithNamespace = userOrGroupName + "/" + projectName;
+			String projectPathWithNamespace = String.join("/", pathSegments);
 			goToProject(projectPathWithNamespace);
 		} else {
 			startActivity(mainIntent);
