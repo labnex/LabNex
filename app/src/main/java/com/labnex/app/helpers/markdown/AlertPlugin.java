@@ -378,7 +378,13 @@ public class AlertPlugin extends AbstractMarkwonPlugin {
 		}
 	}
 
-	private record AlertBlockParserFactory(AlertPlugin plugin) implements BlockParserFactory {
+	private static class AlertBlockParserFactory implements BlockParserFactory {
+		private final AlertPlugin plugin;
+
+		public AlertBlockParserFactory(AlertPlugin plugin) {
+			this.plugin = plugin;
+		}
+
 		@Override
 		public BlockStart tryStart(ParserState state, MatchedBlockParser matchedBlockParser) {
 			String line = state.getLine().toString();
@@ -393,7 +399,13 @@ public class AlertPlugin extends AbstractMarkwonPlugin {
 		}
 	}
 
-	private record AlertVerticalLineSpan(int color, Context context) implements LeadingMarginSpan {
+	private static class AlertVerticalLineSpan implements LeadingMarginSpan {
+		private final int color;
+
+		public AlertVerticalLineSpan(int color, Context context) {
+			this.color = color;
+		}
+
 		@Override
 		public int getLeadingMargin(boolean first) {
 			return 40;

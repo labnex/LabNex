@@ -1,16 +1,16 @@
 plugins {
     alias(libs.plugins.android.application)
-    id "com.diffplug.spotless" version "8.2.0"
+    id "com.diffplug.spotless" version "8.4.0"
 }
 
 android {
     namespace = 'com.labnex.app'
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId "com.labnex.app"
         minSdk = 26
-        targetSdk = 36
+        targetSdk = 37
         versionCode 795
         versionName "8.0.0-dev"
 
@@ -34,6 +34,7 @@ android {
     buildTypes {
         release {
             minifyEnabled false
+            //noinspection NotShrinkingResources
             shrinkResources = false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }

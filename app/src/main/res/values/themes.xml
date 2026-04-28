@@ -1,6 +1,7 @@
 <resources>
     <!-- System default - light -->
     <style name="AppTheme" parent="Theme.Material3.Light.NoActionBar">
+        <item name="primaryBackgroundColor">@color/md_theme_primaryContainer</item>
         <item name="android:statusBarColor">@color/md_theme_background</item>
         <item name="android:navigationBarColor">@color/md_theme_inverseOnSurface</item>
         <item name="android:windowLightStatusBar">true</item>
@@ -66,6 +67,7 @@
 
     <!-- Light theme -->
     <style name="AppThemeLight" parent="Theme.Material3.Light.NoActionBar">
+        <item name="primaryBackgroundColor">@color/md_theme_primaryContainer_light</item>
         <item name="android:statusBarColor">@color/md_theme_background_light</item>
         <item name="android:navigationBarColor">@color/md_theme_inverseOnSurface_light</item>
         <item name="android:windowLightStatusBar">true</item>
@@ -132,6 +134,7 @@
 
     <!-- Dark theme -->
     <style name="AppThemeDark" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="primaryBackgroundColor">@color/md_theme_primaryContainer_dark</item>
         <item name="android:statusBarColor">@color/md_theme_background_dark</item>
         <item name="android:navigationBarColor">@color/md_theme_inverseOnSurface_dark</item>
         <item name="android:windowLightStatusBar">false</item>
