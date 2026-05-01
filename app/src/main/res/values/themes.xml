@@ -51,6 +51,7 @@
         <item name="colorSurfaceContainer">@color/md_theme_surfaceContainer</item>
         <item name="colorSurfaceContainerHigh">@color/md_theme_surfaceContainerHigh</item>
         <item name="colorSurfaceContainerHighest">@color/md_theme_surfaceContainerHighest</item>
+        <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
 
         <item name="iconsColor">@color/md_system_default_icons_color</item>
         <item name="textColor">@color/md_system_default_icons_color</item>
@@ -117,6 +118,7 @@
         <item name="colorSurfaceContainer">@color/md_theme_surfaceContainer_light</item>
         <item name="colorSurfaceContainerHigh">@color/md_theme_surfaceContainerHigh_light</item>
         <item name="colorSurfaceContainerHighest">@color/md_theme_surfaceContainerHighest_light</item>
+        <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
 
         <item name="isDark">0</item>
         <item name="iconsColor">@color/md_light_theme_icons_color</item>
@@ -184,6 +186,7 @@
         <item name="colorSurfaceContainer">@color/md_theme_surfaceContainer_dark</item>
         <item name="colorSurfaceContainerHigh">@color/md_theme_surfaceContainerHigh_dark</item>
         <item name="colorSurfaceContainerHighest">@color/md_theme_surfaceContainerHighest_dark</item>
+        <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
 
         <item name="isDark">1</item>
         <item name="iconsColor">@color/md_dark_theme_icons_color</item>

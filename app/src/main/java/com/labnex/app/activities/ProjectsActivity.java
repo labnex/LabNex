@@ -99,32 +99,32 @@ public class ProjectsActivity extends BaseActivity
 						ProjectsActivity.this,
 						listMain -> {
 							adapter = new ProjectsAdapter(ProjectsActivity.this, listMain, source);
-							adapter.setLoadMoreListener(
-									new ProjectsAdapter.OnLoadMoreListener() {
+							/*adapter.setLoadMoreListener(
+							new ProjectsAdapter.OnLoadMoreListener() {
 
-										@Override
-										public void onLoadMore() {
+								@Override
+								public void onLoadMore() {
 
-											page += 1;
-											projectsViewModel.loadMoreProjects(
-													ctx,
-													source,
-													"multi",
-													userId,
-													resultLimit,
-													page,
-													adapter,
-													ProjectsActivity.this,
-													binding.bottomAppBar);
-											binding.progressBar.setVisibility(View.VISIBLE);
-										}
+									page += 1;
+									projectsViewModel.loadMoreProjects(
+											ctx,
+											source,
+											"multi",
+											userId,
+											resultLimit,
+											page,
+											adapter,
+											ProjectsActivity.this,
+											binding.bottomAppBar);
+									binding.progressBar.setVisibility(View.VISIBLE);
+								}
 
-										@Override
-										public void onLoadFinished() {
+								@Override
+								public void onLoadFinished() {
 
-											binding.progressBar.setVisibility(View.GONE);
-										}
-									});
+									binding.progressBar.setVisibility(View.GONE);
+								}
+							});*/
 
 							if (adapter.getItemCount() > 0) {
 
@@ -132,7 +132,7 @@ public class ProjectsActivity extends BaseActivity
 								binding.nothingFoundFrame.getRoot().setVisibility(View.GONE);
 							} else {
 
-								adapter.notifyDataChanged();
+								// adapter.notifyDataChanged();
 								binding.recyclerView.setAdapter(adapter);
 								binding.nothingFoundFrame.getRoot().setVisibility(View.VISIBLE);
 							}

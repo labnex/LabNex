@@ -32,6 +32,7 @@ import com.labnex.app.database.db.LabNexDatabase;
 import com.labnex.app.database.models.UserAccount;
 import com.labnex.app.databinding.ActivityAppSettingsBinding;
 import com.labnex.app.helpers.AppSettingsInit;
+import com.labnex.app.helpers.AppUIStateManager;
 import com.labnex.app.helpers.SharedPrefDB;
 import com.labnex.app.helpers.Snackbar;
 import com.labnex.app.helpers.Utils;
@@ -272,7 +273,7 @@ public class AppSettingsActivity extends BaseActivity
 
 												Utils.setLocale(this, selectedLanguage);
 
-												MainActivity.refActivity = true;
+												AppUIStateManager.invalidateUI();
 												this.overridePendingTransition(0, 0);
 												dialogInterface.dismiss();
 												this.recreate();
@@ -422,7 +423,7 @@ public class AppSettingsActivity extends BaseActivity
 
 		updateThemeCardBorders(themeIndex);
 
-		MainActivity.refActivity = true;
+		AppUIStateManager.invalidateUI();
 		this.recreate();
 		this.overridePendingTransition(0, 0);
 		Snackbar.info(

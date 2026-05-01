@@ -150,8 +150,7 @@ public class CheckAuthorizationStatus {
 
 				builder.show();
 			}
-		} catch (DateTimeParseException e) {
-			// Invalid date format, skip warning
+		} catch (DateTimeParseException ignored) {
 		}
 	}
 
@@ -290,7 +289,7 @@ public class CheckAuthorizationStatus {
 							}
 
 							if (activity instanceof MainActivity) {
-								MainActivity.refActivity = true;
+								AppUIStateManager.invalidateUI();
 								activity.recreate();
 							}
 							dialog.dismiss();

@@ -5,22 +5,30 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import androidx.recyclerview.widget.RecyclerView;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.labnex.app.R;
 import com.labnex.app.activities.BaseActivity;
-import com.labnex.app.activities.MainActivity;
 import com.labnex.app.adapters.IssuesAdapter;
 import com.labnex.app.adapters.MembersAdapter;
 import com.labnex.app.adapters.MergeRequestsAdapter;
 import com.labnex.app.adapters.ProjectsAdapter;
+import com.labnex.app.databinding.BottomsheetExploreSearchBinding;
 import com.labnex.app.databinding.FragmentExploreBinding;
+import com.labnex.app.helpers.EndlessRecyclerViewScrollListener;
+import com.labnex.app.helpers.Toasty;
+import com.labnex.app.helpers.UIHelper;
+import com.labnex.app.models.issues.Issues;
+import com.labnex.app.models.merge_requests.MergeRequests;
+import com.labnex.app.models.projects.Projects;
+import com.labnex.app.models.user.User;
 import com.labnex.app.viewmodels.ExploreViewModel;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -28,372 +36,159 @@ import java.util.Objects;
  */
 public class ExploreFragment extends Fragment {
 
-	private Context ctx;
 	private FragmentExploreBinding binding;
-	private ExploreViewModel exploreViewModel;
-	private ProjectsAdapter projectsAdapter;
-	private IssuesAdapter issuesAdapter;
-	private MergeRequestsAdapter mergeRequestsAdapter;
-	private MembersAdapter membersAdapter;
-	private int page = 1;
-	private int resultLimit;
-	private String scope = "projects";
-	private int scopeSelection = 0;
-	private BottomNavigationView bottomNavigationView;
+	private Context ctx;
+	private ExploreViewModel viewModel;
+	private EndlessRecyclerViewScrollListener scrollListener;
 
+	@Override
+	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+		View dock = requireActivity().findViewById(R.id.docked_toolbar);
+		UIHelper.applyInsets(view, dock, binding.recyclerView, null, null);
+	}
+
+	@Nullable @Override
 	public View onCreateView(
-			@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-		ctx = requireContext();
-		exploreViewModel = new ViewModelProvider(this).get(ExploreViewModel.class);
+			@NonNull LayoutInflater inflater,
+			@Nullable ViewGroup container,
+			@Nullable Bundle savedInstanceState) {
 		binding = FragmentExploreBinding.inflate(inflater, container, false);
+		ctx = requireContext();
+		viewModel = new ViewModelProvider(this).get(ExploreViewModel.class);
 
-		resultLimit = ((BaseActivity) requireContext()).getAccount().getMaxPageLimit();
-		bottomNavigationView = ((MainActivity) requireContext()).findViewById(R.id.nav_view);
+		int resultLimit = ((BaseActivity) requireActivity()).getAccount().getMaxPageLimit();
+		viewModel.setResultLimit(resultLimit);
 
-		binding.recyclerView.setHasFixedSize(true);
-		binding.recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
-
-		MaterialAlertDialogBuilder materialAlertDialogBuilder =
-				new MaterialAlertDialogBuilder(
-						ctx,
-						com.google.android.material.R.style.ThemeOverlay_Material3_Dialog_Alert);
-		CharSequence[] scopes = {"Projects", "Issues", "Merge requests", "Users"};
-
-		binding.scope.setOnClickListener(
-				filter -> {
-					materialAlertDialogBuilder.setSingleChoiceItems(
-							scopes,
-							scopeSelection,
-							(dialog, which) -> {
-								page = 1;
-								if (scopes[which] == "Projects") {
-									scope = "projects";
-									scopeSelection = 0;
-									dialog.dismiss();
-								} else if (scopes[which] == "Issues") {
-									scope = "issues";
-									scopeSelection = 1;
-									dialog.dismiss();
-								} else if (scopes[which] == "Merge requests") {
-									scope = "merge_requests";
-									scopeSelection = 2;
-									dialog.dismiss();
-								} else if (scopes[which] == "Users") {
-									scope = "users";
-									scopeSelection = 3;
-									dialog.dismiss();
-								}
-							});
-					materialAlertDialogBuilder.create().show();
-				});
-
-		binding.exploreLayout.setEndIconOnClickListener(
-				v -> {
-					page = 1;
-					String query = Objects.requireNonNull(binding.search.getText()).toString();
-					if (scope.equalsIgnoreCase("projects")) {
-						searchProjects(query);
-					} else if (scope.equalsIgnoreCase("issues")) {
-						searchIssues(query);
-					} else if (scope.equalsIgnoreCase("merge_requests")) {
-						searchMergeRequests(query);
-					} else if (scope.equalsIgnoreCase("users")) {
-						searchUsers(query);
-					}
-				});
-
-		binding.search.setOnEditorActionListener(
-				(v, actionId, event) -> {
-					if (scope.equalsIgnoreCase("projects")) {
-						if (actionId == EditorInfo.IME_ACTION_DONE) {
-							searchProjects(
-									Objects.requireNonNull(binding.search.getText()).toString());
-						}
-					} else if (scope.equalsIgnoreCase("issues")) {
-						if (actionId == EditorInfo.IME_ACTION_DONE) {
-							searchIssues(
-									Objects.requireNonNull(binding.search.getText()).toString());
-						}
-					} else if (scope.equalsIgnoreCase("merge_requests")) {
-						if (actionId == EditorInfo.IME_ACTION_DONE) {
-							searchMergeRequests(
-									Objects.requireNonNull(binding.search.getText()).toString());
-						}
-					} else if (scope.equalsIgnoreCase("users")) {
-						if (actionId == EditorInfo.IME_ACTION_DONE) {
-							searchUsers(
-									Objects.requireNonNull(binding.search.getText()).toString());
-						}
-					}
-
-					return false;
-				});
+		setupRecyclerView();
+		observeViewModel();
 
 		return binding.getRoot();
 	}
 
-	private void searchProjects(String search) {
+	private void setupRecyclerView() {
+		LinearLayoutManager layoutManager = new LinearLayoutManager(ctx);
+		binding.recyclerView.setLayoutManager(layoutManager);
+		scrollListener =
+				new EndlessRecyclerViewScrollListener(layoutManager) {
+					@Override
+					public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+						viewModel.loadNextPage(ctx);
+					}
+				};
+		binding.recyclerView.addOnScrollListener(scrollListener);
+	}
 
-		binding.progressBar.setVisibility(View.VISIBLE);
-		clearAdapters();
-
-		exploreViewModel
-				.searchProjects(
-						ctx,
-						"projects",
-						search,
-						resultLimit,
-						page,
-						binding,
-						requireActivity(),
-						bottomNavigationView)
+	private void observeViewModel() {
+		viewModel
+				.getIsLoading()
 				.observe(
-						requireActivity(),
-						mainList -> {
-							projectsAdapter = new ProjectsAdapter(ctx, mainList, "search");
-							projectsAdapter.setLoadMoreListener(
-									new ProjectsAdapter.OnLoadMoreListener() {
-
-										@Override
-										public void onLoadMore() {
-
-											page += 1;
-											exploreViewModel.loadMoreProjects(
-													ctx,
-													"projects",
-													search,
-													resultLimit,
-													page,
-													binding,
-													projectsAdapter,
-													requireActivity(),
-													bottomNavigationView);
-											binding.progressBar.setVisibility(View.VISIBLE);
-										}
-
-										@Override
-										public void onLoadFinished() {
-
-											binding.progressBar.setVisibility(View.GONE);
-										}
-									});
-
-							if (projectsAdapter.getItemCount() > 0) {
-
-								binding.recyclerView.setAdapter(projectsAdapter);
+						getViewLifecycleOwner(),
+						loading -> {
+							if (Boolean.TRUE.equals(loading)) {
+								binding.progressBar.setVisibility(View.VISIBLE);
+								binding.recyclerView.setVisibility(View.GONE);
 								binding.nothingFoundFrame.getRoot().setVisibility(View.GONE);
 							} else {
+								binding.progressBar.setVisibility(View.GONE);
+							}
+						});
 
-								projectsAdapter.notifyDataChanged();
-								binding.recyclerView.setAdapter(projectsAdapter);
-								binding.nothingFoundFrame.getRoot().setVisibility(View.VISIBLE);
+		viewModel
+				.getSearchResult()
+				.observe(
+						getViewLifecycleOwner(),
+						result -> {
+							Boolean loading = viewModel.getIsLoading().getValue();
+							if (Boolean.TRUE.equals(loading) && result.data.isEmpty()) {
+								return;
 							}
 
-							binding.progressBar.setVisibility(View.GONE);
+							if (result.data.isEmpty()) {
+								if (Boolean.FALSE.equals(loading)) {
+									binding.nothingFoundFrame.getRoot().setVisibility(View.VISIBLE);
+									binding.recyclerView.setVisibility(View.GONE);
+								}
+							} else {
+								binding.nothingFoundFrame.getRoot().setVisibility(View.GONE);
+								binding.recyclerView.setVisibility(View.VISIBLE);
+								renderResults(result.scope, result.data);
+							}
+						});
+
+		viewModel
+				.getError()
+				.observe(
+						getViewLifecycleOwner(),
+						errorMsg -> {
+							if (errorMsg != null) {
+								Toasty.show(ctx, errorMsg);
+								binding.nothingFoundFrame.getRoot().setVisibility(View.VISIBLE);
+							}
 						});
 	}
 
-	private void searchIssues(String search) {
+	@SuppressWarnings("unchecked")
+	private void renderResults(String scope, List<?> data) {
+		scrollListener.resetState();
 
-		binding.progressBar.setVisibility(View.VISIBLE);
-		clearAdapters();
-
-		exploreViewModel
-				.searchIssues(
-						ctx,
-						"issues",
-						search,
-						resultLimit,
-						page,
-						binding,
-						requireActivity(),
-						bottomNavigationView)
-				.observe(
-						requireActivity(),
-						mainList -> {
-							issuesAdapter = new IssuesAdapter(ctx, mainList);
-							issuesAdapter.setLoadMoreListener(
-									new IssuesAdapter.OnLoadMoreListener() {
-
-										@Override
-										public void onLoadMore() {
-
-											page += 1;
-											exploreViewModel.loadMoreIssues(
-													ctx,
-													"issues",
-													search,
-													resultLimit,
-													page,
-													binding,
-													issuesAdapter,
-													requireActivity(),
-													bottomNavigationView);
-											binding.progressBar.setVisibility(View.VISIBLE);
-										}
-
-										@Override
-										public void onLoadFinished() {
-
-											binding.progressBar.setVisibility(View.GONE);
-										}
-									});
-
-							if (issuesAdapter.getItemCount() > 0) {
-
-								binding.recyclerView.setAdapter(issuesAdapter);
-								binding.nothingFoundFrame.getRoot().setVisibility(View.GONE);
-							} else {
-
-								issuesAdapter.notifyDataChanged();
-								binding.recyclerView.setAdapter(issuesAdapter);
-								binding.nothingFoundFrame.getRoot().setVisibility(View.VISIBLE);
-							}
-
-							binding.progressBar.setVisibility(View.GONE);
-						});
+		switch (scope) {
+			case ExploreViewModel.SCOPE_PROJECTS:
+				binding.recyclerView.setAdapter(
+						new ProjectsAdapter(ctx, (List<Projects>) data, "search"));
+				break;
+			case ExploreViewModel.SCOPE_ISSUES:
+				binding.recyclerView.setAdapter(new IssuesAdapter(ctx, (List<Issues>) data));
+				break;
+			case ExploreViewModel.SCOPE_MERGE_REQUESTS:
+				binding.recyclerView.setAdapter(
+						new MergeRequestsAdapter(ctx, (List<MergeRequests>) data));
+				break;
+			case ExploreViewModel.SCOPE_USERS:
+				binding.recyclerView.setAdapter(new MembersAdapter(ctx, (List<User>) data));
+				break;
+		}
 	}
 
-	private void searchMergeRequests(String search) {
+	private void showSearchBottomSheet() {
+		BottomSheetDialog dialog = new BottomSheetDialog(ctx);
+		BottomsheetExploreSearchBinding sheetBinding =
+				BottomsheetExploreSearchBinding.inflate(getLayoutInflater());
+		dialog.setContentView(sheetBinding.getRoot());
+		UIHelper.applySheetStyle(dialog, true);
 
-		binding.progressBar.setVisibility(View.VISIBLE);
-		clearAdapters();
+		String currentScope = viewModel.getScope();
+		sheetBinding.chipIssues.setChecked(ExploreViewModel.SCOPE_ISSUES.equals(currentScope));
+		sheetBinding.chipMr.setChecked(ExploreViewModel.SCOPE_MERGE_REQUESTS.equals(currentScope));
+		sheetBinding.chipUsers.setChecked(ExploreViewModel.SCOPE_USERS.equals(currentScope));
+		sheetBinding.chipProjects.setChecked(ExploreViewModel.SCOPE_PROJECTS.equals(currentScope));
 
-		exploreViewModel
-				.searchMergeRequests(
-						ctx,
-						"merge_requests",
-						search,
-						resultLimit,
-						page,
-						binding,
-						requireActivity(),
-						bottomNavigationView)
-				.observe(
-						requireActivity(),
-						mainList -> {
-							mergeRequestsAdapter = new MergeRequestsAdapter(ctx, mainList);
-							mergeRequestsAdapter.setLoadMoreListener(
-									new MergeRequestsAdapter.OnLoadMoreListener() {
+		sheetBinding.btnSearch.setOnClickListener(
+				v -> {
+					String query =
+							Objects.requireNonNull(sheetBinding.searchQueryInput.getText())
+									.toString()
+									.trim();
+					if (!query.isEmpty()) {
+						String scope = ExploreViewModel.SCOPE_PROJECTS;
+						if (sheetBinding.chipIssues.isChecked())
+							scope = ExploreViewModel.SCOPE_ISSUES;
+						else if (sheetBinding.chipMr.isChecked())
+							scope = ExploreViewModel.SCOPE_MERGE_REQUESTS;
+						else if (sheetBinding.chipUsers.isChecked())
+							scope = ExploreViewModel.SCOPE_USERS;
 
-										@Override
-										public void onLoadMore() {
+						viewModel.setScope(scope);
+						viewModel.search(ctx, query);
+						dialog.dismiss();
+					}
+				});
 
-											page += 1;
-											exploreViewModel.loadMoreMergeRequests(
-													ctx,
-													"merge_requests",
-													search,
-													resultLimit,
-													page,
-													binding,
-													mergeRequestsAdapter,
-													requireActivity(),
-													bottomNavigationView);
-											binding.progressBar.setVisibility(View.VISIBLE);
-										}
-
-										@Override
-										public void onLoadFinished() {
-
-											binding.progressBar.setVisibility(View.GONE);
-										}
-									});
-
-							if (mergeRequestsAdapter.getItemCount() > 0) {
-
-								binding.recyclerView.setAdapter(mergeRequestsAdapter);
-								binding.nothingFoundFrame.getRoot().setVisibility(View.GONE);
-							} else {
-
-								mergeRequestsAdapter.notifyDataChanged();
-								binding.recyclerView.setAdapter(mergeRequestsAdapter);
-								binding.nothingFoundFrame.getRoot().setVisibility(View.VISIBLE);
-							}
-
-							binding.progressBar.setVisibility(View.GONE);
-						});
+		dialog.show();
 	}
 
-	private void searchUsers(String search) {
-
-		binding.progressBar.setVisibility(View.VISIBLE);
-		clearAdapters();
-
-		exploreViewModel
-				.searchUsers(
-						ctx,
-						"users",
-						search,
-						resultLimit,
-						page,
-						binding,
-						requireActivity(),
-						bottomNavigationView)
-				.observe(
-						requireActivity(),
-						listMain -> {
-							membersAdapter = new MembersAdapter(getContext(), listMain);
-							membersAdapter.setLoadMoreListener(
-									new MembersAdapter.OnLoadMoreListener() {
-
-										@Override
-										public void onLoadMore() {
-
-											page += 1;
-											exploreViewModel.loadMoreUsers(
-													ctx,
-													"users",
-													search,
-													resultLimit,
-													page,
-													binding,
-													membersAdapter,
-													requireActivity(),
-													bottomNavigationView);
-											binding.progressBar.setVisibility(View.VISIBLE);
-										}
-
-										@Override
-										public void onLoadFinished() {
-
-											binding.progressBar.setVisibility(View.GONE);
-										}
-									});
-
-							if (membersAdapter.getItemCount() > 0) {
-
-								binding.recyclerView.setAdapter(membersAdapter);
-								binding.nothingFoundFrame.getRoot().setVisibility(View.GONE);
-							} else {
-
-								membersAdapter.notifyDataChanged();
-								binding.recyclerView.setAdapter(membersAdapter);
-								binding.nothingFoundFrame.getRoot().setVisibility(View.VISIBLE);
-							}
-
-							binding.progressBar.setVisibility(View.GONE);
-						});
-	}
-
-	private void clearAdapters() {
-		if (projectsAdapter != null) {
-			projectsAdapter.clearAdapter();
-			projectsAdapter.notifyDataChanged();
-		}
-		if (issuesAdapter != null) {
-			issuesAdapter.clearAdapter();
-			issuesAdapter.notifyDataChanged();
-		}
-		if (mergeRequestsAdapter != null) {
-			mergeRequestsAdapter.clearAdapter();
-			mergeRequestsAdapter.notifyDataChanged();
-		}
-		if (membersAdapter != null) {
-			membersAdapter.clearAdapter();
-			membersAdapter.notifyDataChanged();
-		}
+	public void openContextMenu() {
+		showSearchBottomSheet();
 	}
 
 	@Override

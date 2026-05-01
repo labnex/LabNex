@@ -143,7 +143,7 @@ public class ProjectsViewModel extends ViewModel {
 								list.addAll(response.body());
 								adapter.updateList(list);
 							} else {
-								adapter.setMoreDataAvailable(false);
+								// adapter.setMoreDataAvailable(false);
 							}
 						} else {
 							Snackbar.info(

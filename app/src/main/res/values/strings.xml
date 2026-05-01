@@ -30,6 +30,7 @@
     <string name="dynamic" translatable="false">Dynamic</string>
     <string name="theme_system" translatable="false">System</string>
     <string name="where_to_get_token_message" translatable="false"><![CDATA[• Log in to your account on your instance (GitLab, framagit, etc.).<br>• Click on your user profile picture, then go to Preferences.<br>• In the left side menu, click on Personal access tokens.<br>• Click on Add new token button.<br>• Enter token name and choose expiration date as long as possible.<br>• Check all of the scopes.<br><br>Once created, copy and paste or type the token in Personal access token input field.]]></string>
+    <string name="number_label" translatable="false">12</string>
     <!-- non translatable strings -->
 
     <string name="action_sign_in">Sign in</string>
@@ -37,7 +38,7 @@
     <string name="welcome_back">Welcome back</string>
     <string name="login_failed">Login failed</string>
     <string name="all_good">You\'re all caught up</string>
-    <string name="most_visited">Most visited</string>
+    <string name="most_visited">Most visited projects</string>
     <string name="gitlab_link">GitLab URL</string>
     <string name="gitlab_link_help">i.e., gitlab.com (do not add https, http is not supported by LabNex)</string>
     <string name="personal_access_token">Personal access token</string>
@@ -60,7 +61,7 @@
     <string name="biometric_not_supported">No biometric features available on this device</string>
     <string name="biometric_not_available">Biometric features are currently unavailable</string>
     <string name="enroll_biometric">Enroll biometric from phone settings</string>
-    <string name="nothing_found">Nothing here at the moment</string>
+    <string name="nothing_found">There is no data to display at the moment.</string>
     <string name="created_with">Created %1$s</string>
     <string name="updated_with">Updated %1$s</string>
     <plurals name="note_delete_message">
@@ -135,8 +136,8 @@
     <string name="branch_ref_required">Branch name and ref are required</string>
     <string name="branch_created">"Branch %1$s created successfully"</string>
     <string name="source_target_branch_empty_error">Both the target and source branches are required</string>
-    <string name="user_followers">Followers %1$s</string>
-    <string name="user_following">Following %1$s</string>
+    <string name="user_followers">%s followers</string>
+    <string name="user_following">%s following</string>
     <string name="remove_source_branch">Remove source branch</string>
     <string name="create_branch">Create branch</string>
     <string name="squash_commits">Squash all commits</string>
@@ -158,8 +159,6 @@
     <string name="activity_created_wiki_page">\@%1$s created wiki page</string>
     <string name="activity_created_project">\@%1$s created project</string>
     <string name="activity_updated_wiki_page">\@%1$s updated wiki page</string>
-
-    <!-- merge requests -->
     <string name="activity_mr_approvals">Approvals: %1$d / %2$d</string>
     <string name="activity_mr_not_eligible">You can not approve this merge request</string>
     <string name="mr_approve_failed">Approval failed. You are probably not authorized to approve this merge request.</string>
@@ -182,7 +181,6 @@
     <string name="mr_created">Merge request created successfully</string>
     <string name="merge_requests">Merge requests</string>
     <string name="mr_branches_are_same">Target and source branches cannot be the same</string>
-
     <string name="revoke_approval">Revoke approval</string>
     <string name="files_ref">Files - ref:%1$s</string>
     <string name="exclude_files_in_fileviewer">This file type/size is not supported by the file viewer. You can download it to your phone instead.</string>
@@ -298,6 +296,40 @@
     <string name="todo_action_approval_required">Approval required</string>
     <string name="todo_action_unmergeable">Cannot be merged</string>
     <string name="todo_action_directly_addressed">Directly addressed</string>
+    <string name="time_in_moments">in moments</string>
+    <string name="time_in_minute">in %d minute</string>
+    <string name="time_in_minutes">in %d minutes</string>
+    <string name="time_in_hour">in %d hour</string>
+    <string name="time_in_hours">in %d hours</string>
+    <string name="time_in_day">in %d day</string>
+    <string name="time_in_days">in %d days</string>
+    <string name="time_in_month">in %d month</string>
+    <string name="time_in_months">in %d months</string>
+    <string name="time_in_year">in %d year</string>
+    <string name="time_in_years">in %d years</string>
+    <string name="time_moments_ago">moments ago</string>
+    <string name="time_minute_ago">%d minute ago</string>
+    <string name="time_minutes_ago">%d minutes ago</string>
+    <string name="time_hour_ago">%d hour ago</string>
+    <string name="time_hours_ago">%d hours ago</string>
+    <string name="time_day_ago">%d day ago</string>
+    <string name="time_days_ago">%d days ago</string>
+    <string name="time_month_ago">%d month ago</string>
+    <string name="time_months_ago">%d months ago</string>
+    <string name="time_year_ago">%d year ago</string>
+    <string name="time_years_ago">%d years ago</string>
+    <string name="most_visited_subtitle">Frequently visited projects</string>
+    <string name="notes_subtitle">Take some quick notes</string>
+    <string name="settings_subtitle">Theme, language, backup &amp; more</string>
+    <string name="activities_subtitle">Recent account activity</string>
+    <string name="issues_subtitle">Manage issues</string>
+    <string name="mr_subtitle">Manage merge requests</string>
+    <string name="snippets_subtitle">Browse snippets</string>
+    <string name="good_morning">Good morning</string>
+    <string name="good_afternoon">Good afternoon</string>
+    <string name="good_evening">Good evening</string>
+    <string name="nothing_found_title">Nothing here</string>
+    <string name="explore_search_subtitle">Search across projects, issues, merge requests, and users</string>
 
     <!-- errors -->
     <string name="generic_error">An unexpected error occurred</string>
@@ -421,5 +453,10 @@
     <string name="there">there</string>
     <string name="separator_dot" translatable="false">●</string>
     <string name="plan">plan</string>
+    <string name="total">Total</string>
+    <string name="users">Users</string>
+    <string name="reset">Reset</string>
+    <string name="all">All</string>
+    <string name="epics">Epics</string>
     <!-- generic copy -->
 </resources>

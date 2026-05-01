@@ -2,249 +2,74 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.HomeFragment">
+    android:background="?attr/colorSurface">
 
-    <com.google.android.material.progressindicator.LinearProgressIndicator
+    <com.google.android.material.loadingindicator.LoadingIndicator
         android:id="@+id/progress_bar"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:indeterminate="true"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/progress_bar"
+        android:visibility="gone"
+        app:indicatorSize="@dimen/dimen48dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:trackThickness="@dimen/dimen4dp" />
 
-        <LinearLayout
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/pull_to_refresh"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/nested_scroll_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingBottom="@dimen/dimen104dp"
-            android:orientation="vertical">
+            android:visibility="gone"
+            android:clipToPadding="false">
 
-            <!-- Header section -->
-            <com.google.android.material.card.MaterialCardView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="@dimen/dimen16dp"
-                android:layout_margin="@dimen/dimen16dp"
-                app:cardElevation="@dimen/dimen0dp"
-                android:backgroundTint="?attr/inputBackgroundColor"
-                app:strokeWidth="@dimen/dimen0dp">
+                android:orientation="vertical"
+                android:paddingHorizontal="@dimen/dimen16dp"
+                android:paddingBottom="@dimen/dimen16dp">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:baselineAligned="false"
-                        android:orientation="horizontal"
-                        android:padding="@dimen/dimen20dp">
+                <include
+                    android:id="@+id/section_header"
+                    layout="@layout/section_home_header"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <!-- hi text -->
-                            <TextView
-                                android:id="@+id/hi_text"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textSize="@dimen/dimen24sp"
-                                android:textStyle="bold" />
-
-                            <!-- job title text -->
-                            <TextView
-                                android:id="@+id/job_title_text"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textSize="@dimen/dimen18sp"
-                                android:alpha="0.9"
-                                android:layout_marginTop="@dimen/dimen4dp"/>
-
-                            <!-- location and org text -->
-                            <TextView
-                                android:id="@+id/location_org_text"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textSize="@dimen/dimen14sp"
-                                android:alpha="0.9"
-                                android:layout_marginTop="@dimen/dimen4dp"/>
-
-                            <!-- active and member since text -->
-                            <TextView
-                                android:id="@+id/user_additional_info"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textSize="@dimen/dimen14sp"
-                                android:alpha="0.8"
-                                android:layout_marginTop="@dimen/dimen4dp"/>
-
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:gravity="end|center_vertical"
-                            android:layout_marginStart="@dimen/dimen16dp">
-
-                            <com.google.android.material.card.MaterialCardView
-                                android:id="@+id/profile_picture_layout"
-                                android:layout_width="@dimen/dimen40dp"
-                                android:layout_height="@dimen/dimen40dp"
-                                app:cardCornerRadius="@dimen/dimen10dp"
-                                app:cardElevation="@dimen/dimen0dp"
-                                app:strokeWidth="@dimen/dimen0dp"
-                                android:layout_marginBottom="@dimen/dimen8dp">
-
-                                <ImageView
-                                    android:id="@+id/user_avatar"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:scaleType="centerCrop"
-                                    android:contentDescription="@string/profile"
-                                    android:src="@drawable/ic_spinner"/>
-
-                            </com.google.android.material.card.MaterialCardView>
-
-                            <com.google.android.material.card.MaterialCardView
-                                android:id="@+id/settings_view_top"
-                                android:layout_width="@dimen/dimen40dp"
-                                android:layout_height="@dimen/dimen40dp"
-                                app:cardCornerRadius="@dimen/dimen10dp"
-                                app:cardElevation="@dimen/dimen0dp"
-                                app:strokeWidth="@dimen/dimen0dp"
-                                android:backgroundTint="?android:attr/colorBackground"
-                                android:layout_marginBottom="@dimen/dimen8dp">
-
-                                <ImageView
-                                    android:id="@+id/settings_icon_top"
-                                    android:layout_width="@dimen/dimen36dp"
-                                    android:layout_height="@dimen/dimen36dp"
-                                    android:layout_gravity="center"
-                                    android:contentDescription="@string/settings"
-                                    app:tint="?attr/iconsColor"
-                                    android:src="@drawable/ic_settings_home"/>
-
-                            </com.google.android.material.card.MaterialCardView>
-
-                            <com.google.android.material.card.MaterialCardView
-                                android:id="@+id/refresh_home_screen"
-                                android:layout_width="@dimen/dimen40dp"
-                                android:layout_height="@dimen/dimen40dp"
-                                app:cardCornerRadius="@dimen/dimen10dp"
-                                app:cardElevation="@dimen/dimen0dp"
-                                app:strokeWidth="@dimen/dimen0dp"
-                                android:backgroundTint="?android:attr/colorBackground">
-
-                                <ImageView
-                                    android:id="@+id/refresh_home_icon"
-                                    android:layout_width="@dimen/dimen20dp"
-                                    android:layout_height="@dimen/dimen20dp"
-                                    android:layout_gravity="center"
-                                    android:contentDescription="@string/refresh"
-                                    app:tint="?attr/iconsColor"
-                                    android:src="@drawable/ic_refresh"/>
-
-                            </com.google.android.material.card.MaterialCardView>
-
-                        </LinearLayout>
-
-                </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>
-            <!-- End header section -->
-
-            <!-- Broadcast message -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/broadcast_message"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/dimen16dp"
-                android:layout_marginTop="@dimen/dimen4dp"
-                android:layout_marginBottom="@dimen/dimen8dp"
-                app:cardCornerRadius="@dimen/dimen12dp"
-                app:cardElevation="@dimen/dimen0dp"
-                style="?attr/materialCardViewElevatedStyle"
-                android:visibility="gone"
-                android:backgroundTint="?attr/inputBackgroundColor">
-
-                <LinearLayout
+                <include
+                    android:id="@+id/section_projects"
+                    layout="@layout/section_home_projects"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="@dimen/dimen12dp">
+                    android:layout_marginTop="@dimen/dimen16dp" />
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:paddingHorizontal="@dimen/dimen10dp"
-                        android:paddingVertical="@dimen/dimen8dp"
-                        android:gravity="center_vertical"
-                        tools:ignore="UseCompoundDrawables,UselessParent">
+                <include
+                    android:id="@+id/section_activity"
+                    layout="@layout/section_home_activity"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dimen16dp" />
 
-                        <TextView
-                            android:id="@+id/message"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_marginEnd="@dimen/dimen24dp"
-                            android:maxLines="2"
-                            android:ellipsize="end"
-                            android:textSize="@dimen/dimen14sp"
-                            android:textColor="?attr/colorOnSecondaryContainer" />
+                <include
+                    android:id="@+id/section_preferences"
+                    layout="@layout/section_home_preferences"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dimen16dp" />
 
-                        <ImageView
-                            android:id="@+id/toggleIcon"
-                            android:layout_width="@dimen/dimen24dp"
-                            android:layout_height="@dimen/dimen24dp"
-                            android:contentDescription="@string/generic_img_copy"
-                            android:src="@drawable/ic_chevron_down"
-                            app:tint="?attr/colorOnSecondaryContainer"
-                            android:layout_gravity="end|top"
-                            android:layout_marginTop="@dimen/dimen8dp"
-                            android:visibility="visible" />
+            </LinearLayout>
 
-                    </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
 
-                </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Broadcast message -->
-
-            <!-- work section -->
-            <include
-                android:id="@+id/section_work"
-                layout="@layout/section_home_work" />
-
-            <!-- to-do section -->
-            <include
-                android:id="@+id/section_todo"
-                layout="@layout/section_home_todo" />
-
-            <!-- most visited section -->
-            <include
-                android:id="@+id/section_most_visited"
-                layout="@layout/section_home_most_visited" />
-
-            <!-- app section - notes, settings -->
-            <include
-                android:id="@+id/section_app_settings"
-                layout="@layout/section_home_app_settings" />
-
-        </LinearLayout>
-
-    </androidx.core.widget.NestedScrollView>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

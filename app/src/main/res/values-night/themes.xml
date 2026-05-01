@@ -61,6 +61,7 @@
         <item name="inputBsDividerColor">@color/md_system_input_divider_color</item>
         <item name="chipStyle">@style/CustomChipFilterDark</item>
         <item name="homeIconsBackgroundColor">@color/md_theme_inverseOnSurface_dark</item>
+        <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
     </style>
     <!-- System default - dark -->
 </resources>

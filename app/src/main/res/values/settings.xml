@@ -48,8 +48,9 @@
 
     <string-array name="home_screen">
         <item>@string/home</item>
-        <item>@string/activities</item>
         <item>@string/explore</item>
+        <item>@string/todo_list</item>
+        <item>@string/activities</item>
     </string-array>
 
     <string-array name="snippet_visibility_options">

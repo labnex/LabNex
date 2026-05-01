@@ -1,25 +1,12 @@
 package com.labnex.app.viewmodels;
 
-import android.app.Activity;
 import android.content.Context;
-import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.labnex.app.R;
-import com.labnex.app.adapters.IssuesAdapter;
-import com.labnex.app.adapters.MembersAdapter;
-import com.labnex.app.adapters.MergeRequestsAdapter;
-import com.labnex.app.adapters.ProjectsAdapter;
 import com.labnex.app.clients.RetrofitClient;
-import com.labnex.app.databinding.FragmentExploreBinding;
-import com.labnex.app.helpers.Snackbar;
-import com.labnex.app.models.issues.Issues;
-import com.labnex.app.models.merge_requests.MergeRequests;
-import com.labnex.app.models.projects.Projects;
-import com.labnex.app.models.user.User;
+import java.util.ArrayList;
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -30,524 +17,146 @@ import retrofit2.Response;
  */
 public class ExploreViewModel extends ViewModel {
 
-	private MutableLiveData<List<Projects>> projects;
-	private MutableLiveData<List<Issues>> issues;
-	private MutableLiveData<List<MergeRequests>> mergeRequests;
-	private MutableLiveData<List<User>> users;
+	public static final String SCOPE_PROJECTS = "projects";
+	public static final String SCOPE_ISSUES = "issues";
+	public static final String SCOPE_MERGE_REQUESTS = "merge_requests";
+	public static final String SCOPE_USERS = "users";
 
-	// search projects
-	public LiveData<List<Projects>> searchProjects(
-			Context ctx,
-			String scope,
-			String search,
-			int resultLimit,
-			int page,
-			FragmentExploreBinding binding,
-			Activity activity,
-			BottomNavigationView bottomNavigationView) {
+	public static class SearchResult {
+		public final String scope;
+		public final List<?> data;
 
-		projects = new MutableLiveData<>();
-		loadProjects(
-				ctx, scope, search, resultLimit, page, binding, activity, bottomNavigationView);
-
-		return projects;
+		public SearchResult(String scope, List<?> data) {
+			this.scope = scope;
+			this.data = data;
+		}
 	}
 
-	public void loadProjects(
-			Context ctx,
-			String scope,
-			String search,
-			int resultLimit,
-			int page,
-			FragmentExploreBinding binding,
-			Activity activity,
-			BottomNavigationView bottomNavigationView) {
+	private final MutableLiveData<SearchResult> searchResult =
+			new MutableLiveData<>(new SearchResult(SCOPE_PROJECTS, new ArrayList<>()));
+	private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
+	private final MutableLiveData<String> error = new MutableLiveData<>();
+	private final MutableLiveData<String> activeScope = new MutableLiveData<>(SCOPE_PROJECTS);
 
-		Call<List<Projects>> call =
-				RetrofitClient.getApiInterface(ctx).searchProjects(search, resultLimit, page);
+	private String currentQuery = "";
+	private int currentPage = 1;
+	private int resultLimit;
 
+	public LiveData<SearchResult> getSearchResult() {
+		return searchResult;
+	}
+
+	public LiveData<Boolean> getIsLoading() {
+		return isLoading;
+	}
+
+	public LiveData<String> getError() {
+		return error;
+	}
+
+	public void setScope(String scope) {
+		activeScope.setValue(scope);
+	}
+
+	public String getScope() {
+		return activeScope.getValue();
+	}
+
+	public void setResultLimit(int limit) {
+		this.resultLimit = limit;
+	}
+
+	public void search(Context ctx, String query) {
+		this.currentQuery = query;
+		this.currentPage = 1;
+		this.error.setValue(null);
+		this.isLoading.setValue(true);
+		executeRequest(ctx, query, 1, true);
+	}
+
+	public void loadNextPage(Context ctx) {
+		currentPage++;
+		executeRequest(ctx, currentQuery, currentPage, false);
+	}
+
+	private void executeRequest(Context ctx, String query, int page, boolean isNewSearch) {
+		String scope = getScope();
+		if (scope == null) scope = SCOPE_PROJECTS;
+
+		switch (scope) {
+			case SCOPE_PROJECTS:
+				handleCall(
+						RetrofitClient.getApiInterface(ctx)
+								.searchProjects(query, resultLimit, page),
+						SCOPE_PROJECTS,
+						isNewSearch);
+				break;
+			case SCOPE_ISSUES:
+				handleCall(
+						RetrofitClient.getApiInterface(ctx).searchIssues(query, resultLimit, page),
+						SCOPE_ISSUES,
+						isNewSearch);
+				break;
+			case SCOPE_MERGE_REQUESTS:
+				handleCall(
+						RetrofitClient.getApiInterface(ctx)
+								.searchMergeRequests(query, resultLimit, page),
+						SCOPE_MERGE_REQUESTS,
+						isNewSearch);
+				break;
+			case SCOPE_USERS:
+				handleCall(
+						RetrofitClient.getApiInterface(ctx).searchUsers(query, resultLimit, page),
+						SCOPE_USERS,
+						isNewSearch);
+				break;
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T> void handleCall(Call<List<T>> call, String requestScope, boolean isNewSearch) {
 		call.enqueue(
 				new Callback<>() {
-
 					@Override
 					public void onResponse(
-							@NonNull Call<List<Projects>> call,
-							@NonNull Response<List<Projects>> response) {
+							@NonNull Call<List<T>> call, @NonNull Response<List<T>> response) {
+						if (!requestScope.equals(getScope())) return;
 
-						if (response.isSuccessful()) {
-							projects.postValue(response.body());
-						} else if (response.code() == 401) {
+						List<T> newData = response.body();
+						List<T> currentList;
 
-							Snackbar.info(
-									ctx, activity.findViewById(android.R.id.content),
-									bottomNavigationView, ctx.getString(R.string.not_authorized));
-						} else if (response.code() == 403) {
-
-							Snackbar.info(
-									ctx,
-									activity.findViewById(android.R.id.content),
-									bottomNavigationView,
-									ctx.getString(R.string.access_forbidden_403));
+						if (isNewSearch || searchResult.getValue() == null) {
+							currentList = new ArrayList<>();
 						} else {
-
-							Snackbar.info(
-									ctx, activity.findViewById(android.R.id.content),
-									bottomNavigationView, ctx.getString(R.string.generic_error));
+							currentList = new ArrayList<>((List<T>) searchResult.getValue().data);
 						}
+
+						if (response.isSuccessful() && newData != null && !newData.isEmpty()) {
+							currentList.addAll(newData);
+							searchResult.setValue(new SearchResult(requestScope, currentList));
+						} else if (response.isSuccessful() && isNewSearch) {
+							searchResult.setValue(
+									new SearchResult(requestScope, new ArrayList<>()));
+						} else if (!response.isSuccessful() && isNewSearch) {
+							searchResult.setValue(
+									new SearchResult(requestScope, new ArrayList<>()));
+							if (response.code() == 401) error.setValue("auth_error");
+							else if (response.code() == 403) error.setValue("access_forbidden_403");
+							else error.setValue("generic_error");
+						}
+						isLoading.setValue(false);
 					}
 
 					@Override
-					public void onFailure(
-							@NonNull Call<List<Projects>> call, @NonNull Throwable t) {
-						Snackbar.info(
-								ctx,
-								activity.findViewById(android.R.id.content),
-								bottomNavigationView,
-								ctx.getString(R.string.generic_server_response_error));
+					public void onFailure(@NonNull Call<List<T>> call, @NonNull Throwable t) {
+						if (!requestScope.equals(getScope())) return;
+						if (isNewSearch) {
+							searchResult.setValue(
+									new SearchResult(requestScope, new ArrayList<>()));
+						}
+						isLoading.setValue(false);
+						error.setValue(t.getMessage());
 					}
 				});
 	}
-
-	public void loadMoreProjects(
-			Context ctx,
-			String scope,
-			String search,
-			int resultLimit,
-			int page,
-			FragmentExploreBinding binding,
-			ProjectsAdapter adapter,
-			Activity activity,
-			BottomNavigationView bottomNavigationView) {
-
-		Call<List<Projects>> call =
-				RetrofitClient.getApiInterface(ctx).searchProjects(search, resultLimit, page);
-
-		call.enqueue(
-				new Callback<>() {
-
-					@Override
-					public void onResponse(
-							@NonNull Call<List<Projects>> call,
-							@NonNull Response<List<Projects>> response) {
-
-						if (response.isSuccessful()) {
-
-							List<Projects> list = projects.getValue();
-							assert list != null;
-							assert response.body() != null;
-
-							if (!response.body().isEmpty()) {
-								list.addAll(response.body());
-								adapter.updateList(list);
-							} else {
-								adapter.setMoreDataAvailable(false);
-							}
-						} else {
-							Snackbar.info(
-									ctx,
-									activity.findViewById(android.R.id.content),
-									bottomNavigationView,
-									ctx.getString(R.string.generic_error));
-						}
-					}
-
-					@Override
-					public void onFailure(
-							@NonNull Call<List<Projects>> call, @NonNull Throwable t) {
-						Snackbar.info(
-								ctx,
-								activity.findViewById(android.R.id.content),
-								bottomNavigationView,
-								ctx.getString(R.string.generic_server_response_error));
-					}
-				});
-	}
-
-	// search projects
-
-	// search issues
-	public LiveData<List<Issues>> searchIssues(
-			Context ctx,
-			String scope,
-			String search,
-			int resultLimit,
-			int page,
-			FragmentExploreBinding binding,
-			Activity activity,
-			BottomNavigationView bottomNavigationView) {
-
-		issues = new MutableLiveData<>();
-		loadIssues(ctx, scope, search, resultLimit, page, binding, activity, bottomNavigationView);
-
-		return issues;
-	}
-
-	public void loadIssues(
-			Context ctx,
-			String scope,
-			String search,
-			int resultLimit,
-			int page,
-			FragmentExploreBinding binding,
-			Activity activity,
-			BottomNavigationView bottomNavigationView) {
-
-		Call<List<Issues>> call =
-				RetrofitClient.getApiInterface(ctx).searchIssues(search, resultLimit, page);
-
-		call.enqueue(
-				new Callback<>() {
-
-					@Override
-					public void onResponse(
-							@NonNull Call<List<Issues>> call,
-							@NonNull Response<List<Issues>> response) {
-
-						if (response.isSuccessful()) {
-							issues.postValue(response.body());
-						} else if (response.code() == 401) {
-
-							Snackbar.info(
-									ctx, activity.findViewById(android.R.id.content),
-									bottomNavigationView, ctx.getString(R.string.not_authorized));
-						} else if (response.code() == 403) {
-
-							Snackbar.info(
-									ctx,
-									activity.findViewById(android.R.id.content),
-									bottomNavigationView,
-									ctx.getString(R.string.access_forbidden_403));
-						} else {
-
-							Snackbar.info(
-									ctx, activity.findViewById(android.R.id.content),
-									bottomNavigationView, ctx.getString(R.string.generic_error));
-						}
-					}
-
-					@Override
-					public void onFailure(@NonNull Call<List<Issues>> call, @NonNull Throwable t) {
-						Snackbar.info(
-								ctx,
-								activity.findViewById(android.R.id.content),
-								bottomNavigationView,
-								ctx.getString(R.string.generic_server_response_error));
-					}
-				});
-	}
-
-	public void loadMoreIssues(
-			Context ctx,
-			String scope,
-			String search,
-			int resultLimit,
-			int page,
-			FragmentExploreBinding binding,
-			IssuesAdapter adapter,
-			Activity activity,
-			BottomNavigationView bottomNavigationView) {
-
-		Call<List<Issues>> call =
-				RetrofitClient.getApiInterface(ctx).searchIssues(search, resultLimit, page);
-
-		call.enqueue(
-				new Callback<>() {
-
-					@Override
-					public void onResponse(
-							@NonNull Call<List<Issues>> call,
-							@NonNull Response<List<Issues>> response) {
-
-						if (response.isSuccessful()) {
-
-							List<Issues> list = issues.getValue();
-							assert list != null;
-							assert response.body() != null;
-
-							if (!response.body().isEmpty()) {
-								list.addAll(response.body());
-								adapter.updateList(list);
-							} else {
-								adapter.setMoreDataAvailable(false);
-							}
-						} else {
-							Snackbar.info(
-									ctx,
-									activity.findViewById(android.R.id.content),
-									bottomNavigationView,
-									ctx.getString(R.string.generic_error));
-						}
-					}
-
-					@Override
-					public void onFailure(@NonNull Call<List<Issues>> call, @NonNull Throwable t) {
-						Snackbar.info(
-								ctx,
-								activity.findViewById(android.R.id.content),
-								bottomNavigationView,
-								ctx.getString(R.string.generic_server_response_error));
-					}
-				});
-	}
-
-	// search issues
-
-	// search mr
-	public LiveData<List<MergeRequests>> searchMergeRequests(
-			Context ctx,
-			String scope,
-			String search,
-			int resultLimit,
-			int page,
-			FragmentExploreBinding binding,
-			Activity activity,
-			BottomNavigationView bottomNavigationView) {
-
-		mergeRequests = new MutableLiveData<>();
-		loadMergeRequests(
-				ctx, scope, search, resultLimit, page, binding, activity, bottomNavigationView);
-
-		return mergeRequests;
-	}
-
-	public void loadMergeRequests(
-			Context ctx,
-			String scope,
-			String search,
-			int resultLimit,
-			int page,
-			FragmentExploreBinding binding,
-			Activity activity,
-			BottomNavigationView bottomNavigationView) {
-
-		Call<List<MergeRequests>> call =
-				RetrofitClient.getApiInterface(ctx).searchMergeRequests(search, resultLimit, page);
-
-		call.enqueue(
-				new Callback<>() {
-
-					@Override
-					public void onResponse(
-							@NonNull Call<List<MergeRequests>> call,
-							@NonNull Response<List<MergeRequests>> response) {
-
-						if (response.isSuccessful()) {
-							mergeRequests.postValue(response.body());
-						} else if (response.code() == 401) {
-
-							Snackbar.info(
-									ctx, activity.findViewById(android.R.id.content),
-									bottomNavigationView, ctx.getString(R.string.not_authorized));
-						} else if (response.code() == 403) {
-
-							Snackbar.info(
-									ctx,
-									activity.findViewById(android.R.id.content),
-									bottomNavigationView,
-									ctx.getString(R.string.access_forbidden_403));
-						} else {
-
-							Snackbar.info(
-									ctx, activity.findViewById(android.R.id.content),
-									bottomNavigationView, ctx.getString(R.string.generic_error));
-						}
-					}
-
-					@Override
-					public void onFailure(
-							@NonNull Call<List<MergeRequests>> call, @NonNull Throwable t) {
-						Snackbar.info(
-								ctx,
-								activity.findViewById(android.R.id.content),
-								bottomNavigationView,
-								ctx.getString(R.string.generic_server_response_error));
-					}
-				});
-	}
-
-	public void loadMoreMergeRequests(
-			Context ctx,
-			String scope,
-			String search,
-			int resultLimit,
-			int page,
-			FragmentExploreBinding binding,
-			MergeRequestsAdapter adapter,
-			Activity activity,
-			BottomNavigationView bottomNavigationView) {
-
-		Call<List<MergeRequests>> call =
-				RetrofitClient.getApiInterface(ctx).searchMergeRequests(search, resultLimit, page);
-
-		call.enqueue(
-				new Callback<>() {
-
-					@Override
-					public void onResponse(
-							@NonNull Call<List<MergeRequests>> call,
-							@NonNull Response<List<MergeRequests>> response) {
-
-						if (response.isSuccessful()) {
-
-							List<MergeRequests> list = mergeRequests.getValue();
-							assert list != null;
-							assert response.body() != null;
-
-							if (!response.body().isEmpty()) {
-								list.addAll(response.body());
-								adapter.updateList(list);
-							} else {
-								adapter.setMoreDataAvailable(false);
-							}
-						} else {
-							Snackbar.info(
-									ctx,
-									activity.findViewById(android.R.id.content),
-									bottomNavigationView,
-									ctx.getString(R.string.generic_error));
-						}
-					}
-
-					@Override
-					public void onFailure(
-							@NonNull Call<List<MergeRequests>> call, @NonNull Throwable t) {
-						Snackbar.info(
-								ctx,
-								activity.findViewById(android.R.id.content),
-								bottomNavigationView,
-								ctx.getString(R.string.generic_server_response_error));
-					}
-				});
-	}
-
-	// search mr
-
-	// search users
-	public LiveData<List<User>> searchUsers(
-			Context ctx,
-			String scope,
-			String search,
-			int resultLimit,
-			int page,
-			FragmentExploreBinding binding,
-			Activity activity,
-			BottomNavigationView bottomNavigationView) {
-
-		users = new MutableLiveData<>();
-		loadUsers(ctx, scope, search, resultLimit, page, binding, activity, bottomNavigationView);
-
-		return users;
-	}
-
-	public void loadUsers(
-			Context ctx,
-			String scope,
-			String search,
-			int resultLimit,
-			int page,
-			FragmentExploreBinding binding,
-			Activity activity,
-			BottomNavigationView bottomNavigationView) {
-
-		Call<List<User>> call =
-				RetrofitClient.getApiInterface(ctx).searchUsers(search, resultLimit, page);
-
-		call.enqueue(
-				new Callback<>() {
-
-					@Override
-					public void onResponse(
-							@NonNull Call<List<User>> call,
-							@NonNull Response<List<User>> response) {
-
-						if (response.code() == 200) {
-							users.postValue(response.body());
-						} else if (response.code() == 401) {
-
-							Snackbar.info(
-									ctx, activity.findViewById(android.R.id.content),
-									bottomNavigationView, ctx.getString(R.string.not_authorized));
-						} else if (response.code() == 403) {
-
-							Snackbar.info(
-									ctx,
-									activity.findViewById(android.R.id.content),
-									bottomNavigationView,
-									ctx.getString(R.string.access_forbidden_403));
-						} else {
-
-							Snackbar.info(
-									ctx, activity.findViewById(android.R.id.content),
-									bottomNavigationView, ctx.getString(R.string.generic_error));
-						}
-					}
-
-					@Override
-					public void onFailure(@NonNull Call<List<User>> call, @NonNull Throwable t) {
-
-						Snackbar.info(
-								ctx,
-								activity.findViewById(android.R.id.content),
-								bottomNavigationView,
-								ctx.getString(R.string.generic_server_response_error));
-					}
-				});
-	}
-
-	public void loadMoreUsers(
-			Context ctx,
-			String scope,
-			String search,
-			int resultLimit,
-			int page,
-			FragmentExploreBinding binding,
-			MembersAdapter adapter,
-			Activity activity,
-			BottomNavigationView bottomNavigationView) {
-
-		Call<List<User>> call =
-				RetrofitClient.getApiInterface(ctx).searchUsers(search, resultLimit, page);
-
-		call.enqueue(
-				new Callback<>() {
-
-					@Override
-					public void onResponse(
-							@NonNull Call<List<User>> call,
-							@NonNull Response<List<User>> response) {
-
-						if (response.isSuccessful()) {
-
-							List<User> list = users.getValue();
-							assert list != null;
-							assert response.body() != null;
-
-							if (!response.body().isEmpty()) {
-								list.addAll(response.body());
-								adapter.updateList(list);
-							} else {
-								adapter.setMoreDataAvailable(false);
-							}
-						} else {
-							Snackbar.info(
-									ctx,
-									activity.findViewById(android.R.id.content),
-									bottomNavigationView,
-									ctx.getString(R.string.generic_error));
-						}
-					}
-
-					@Override
-					public void onFailure(@NonNull Call<List<User>> call, @NonNull Throwable t) {
-
-						binding.progressBar.setVisibility(View.GONE);
-						Snackbar.info(
-								ctx,
-								activity.findViewById(android.R.id.content),
-								bottomNavigationView,
-								ctx.getString(R.string.generic_server_response_error));
-					}
-				});
-	}
-	// search users
 }

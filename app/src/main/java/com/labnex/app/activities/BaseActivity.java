@@ -9,6 +9,7 @@ import com.labnex.app.R;
 import com.labnex.app.contexts.AccountContext;
 import com.labnex.app.core.CoreApplication;
 import com.labnex.app.helpers.AppSettingsInit;
+import com.labnex.app.helpers.AppUIStateManager;
 import com.labnex.app.helpers.SharedPrefDB;
 import com.labnex.app.helpers.Utils;
 import java.util.Locale;
@@ -21,6 +22,10 @@ public abstract class BaseActivity extends AppCompatActivity {
 	protected SharedPrefDB sharedPrefDB;
 	protected Context ctx = this;
 	protected Context appCtx;
+	private int localUiVersion = AppUIStateManager.getUiVersion();
+	private int localRefreshVersion = AppUIStateManager.getDataVersion();
+
+	protected void onGlobalRefresh() {}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -55,6 +60,14 @@ public abstract class BaseActivity extends AppCompatActivity {
 	@Override
 	protected void attachBaseContext(Context base) {
 		super.attachBaseContext(Utils.setLocale(base, getCurrentLocale()));
+	}
+
+	public void triggerGlobalRefresh() { // direct refresh if in the same activity/frgment
+		int globalDataVersion = AppUIStateManager.getDataVersion();
+		if (globalDataVersion > localRefreshVersion) {
+			localRefreshVersion = globalDataVersion;
+			onGlobalRefresh();
+		}
 	}
 
 	private String getCurrentLocale() {
@@ -93,6 +106,18 @@ public abstract class BaseActivity extends AppCompatActivity {
 				Intent unlockIntent = new Intent(ctx, BiometricLockActivity.class);
 				ctx.startActivity(unlockIntent);
 			}
+		}
+
+		if (localUiVersion < AppUIStateManager.getUiVersion()) {
+			localUiVersion = AppUIStateManager.getUiVersion();
+			recreate();
+			overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+		}
+
+		int globalDataVersion = AppUIStateManager.getDataVersion();
+		if (globalDataVersion > localRefreshVersion) {
+			localRefreshVersion = globalDataVersion;
+			onGlobalRefresh();
 		}
 	}
 

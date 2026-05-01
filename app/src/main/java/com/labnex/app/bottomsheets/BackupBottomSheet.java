@@ -9,7 +9,7 @@ import androidx.annotation.Nullable;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.labnex.app.R;
-import com.labnex.app.helpers.Snackbar;
+import com.labnex.app.helpers.Toasty;
 
 /**
  * @author mmarif
@@ -51,19 +51,9 @@ public class BackupBottomSheet extends BottomSheetDialogFragment {
 											if (callback != null) {
 												callback.onExport();
 											} else {
-												requireActivity()
-														.findViewById(R.id.nav_view)
-														.post(
-																() ->
-																		Snackbar.info(
-																				requireActivity(),
-																				requireActivity()
-																						.findViewById(
-																								R.id
-																										.nav_view),
-																				getString(
-																						R.string
-																								.backup_failed)));
+												Toasty.show(
+														requireContext(),
+														getString(R.string.backup_failed));
 											}
 											dialog.dismiss();
 											dismiss();
@@ -87,19 +77,9 @@ public class BackupBottomSheet extends BottomSheetDialogFragment {
 											if (callback != null) {
 												callback.onImport();
 											} else {
-												requireActivity()
-														.findViewById(R.id.nav_view)
-														.post(
-																() ->
-																		Snackbar.info(
-																				requireActivity(),
-																				requireActivity()
-																						.findViewById(
-																								R.id
-																										.nav_view),
-																				getString(
-																						R.string
-																								.import_failed)));
+												Toasty.show(
+														requireContext(),
+														getString(R.string.import_failed));
 											}
 											dialog.dismiss();
 											dismiss();

@@ -1,73 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<com.google.android.material.listitem.ListItemLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/todo_item_frame"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:gravity="center_vertical"
-    android:paddingVertical="@dimen/dimen12dp"
-    android:paddingHorizontal="@dimen/dimen20dp"
-    android:background="?attr/selectableItemBackground">
+    android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/todo_icon"
-        android:layout_width="@dimen/dimen24dp"
-        android:layout_height="@dimen/dimen24dp"
-        android:layout_marginEnd="@dimen/dimen12dp"
-        android:contentDescription="@string/generic_img_copy"
-        app:tint="?attr/colorPrimary"
-        tools:src="@drawable/ic_merge_request"/>
-
-    <LinearLayout
-        android:layout_width="0dp"
+    <com.google.android.material.listitem.ListItemCardView
+        android:id="@+id/card"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        android:checkable="false"
+        android:layout_marginVertical="@dimen/dimen1dp"
+        app:cardBackgroundColor="?attr/colorSurfaceContainerLow"
+        app:strokeWidth="0dp">
 
-        <TextView
-            android:id="@+id/todo_title"
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:text="Review merge request #7"
-            android:textSize="@dimen/dimen16sp"
-            android:textColor="?attr/colorOnSurface"
-            android:maxLines="2"
-            android:ellipsize="end"/>
+            android:padding="@dimen/dimen8dp">
 
-        <TextView
-            android:id="@+id/todo_project"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="gitlab-org/gitlab-foss"
-            android:textSize="@dimen/dimen14sp"
-            android:textColor="?attr/colorOnSurfaceVariant"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:layout_marginTop="@dimen/dimen2dp"/>
+            <ImageView
+                android:id="@+id/todo_icon"
+                android:layout_width="@dimen/dimen24dp"
+                android:layout_height="@dimen/dimen24dp"
+                android:contentDescription="@string/generic_img_copy"
+                android:src="@drawable/ic_list_details"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="?attr/iconsColor" />
 
-        <TextView
-            android:id="@+id/todo_time_action"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="2 hours ago • Assigned to you"
-            android:textSize="@dimen/dimen12sp"
-            android:textColor="?attr/colorOnSurfaceVariant"
-            android:alpha="0.8"
-            android:layout_marginTop="@dimen/dimen4dp"/>
+            <TextView
+                android:id="@+id/todo_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dimen12dp"
+                android:layout_marginEnd="@dimen/dimen8dp"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textAppearance="?attr/textAppearanceTitleSmall"
+                android:textColor="?attr/colorOnSurface"
+                app:layout_constraintEnd_toStartOf="@id/todo_check"
+                app:layout_constraintStart_toEndOf="@id/todo_icon"
+                app:layout_constraintTop_toTopOf="@id/todo_icon" />
 
-    </LinearLayout>
+            <ImageView
+                android:id="@+id/todo_check"
+                android:layout_width="@dimen/dimen20dp"
+                android:layout_height="@dimen/dimen20dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/mark_as_done"
+                android:src="@drawable/ic_check"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/todo_icon"
+                app:tint="?attr/colorOnSurfaceVariant" />
 
-    <ImageView
-        android:id="@+id/todo_check"
-        android:layout_width="@dimen/dimen20dp"
-        android:layout_height="@dimen/dimen20dp"
-        android:layout_marginStart="@dimen/dimen8dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="@string/mark_as_done"
-        app:tint="?attr/colorOnSurfaceVariant"
-        android:src="@drawable/ic_check"/>
+            <TextView
+                android:id="@+id/todo_project"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dimen12dp"
+                android:layout_marginTop="@dimen/dimen6dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textAppearance="?attr/textAppearanceLabelMedium"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:alpha="0.7"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/todo_icon"
+                app:layout_constraintTop_toBottomOf="@id/todo_title" />
 
-</LinearLayout>
+            <TextView
+                android:id="@+id/todo_time_action"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dimen12dp"
+                android:layout_marginTop="@dimen/dimen4dp"
+                android:textAppearance="?attr/textAppearanceLabelMedium"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:alpha="0.7"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/todo_icon"
+                app:layout_constraintTop_toBottomOf="@id/todo_project" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.listitem.ListItemCardView>
+
+</com.google.android.material.listitem.ListItemLayout>

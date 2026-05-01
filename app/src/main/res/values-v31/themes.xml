@@ -37,6 +37,7 @@
         <item name="materialAlertDialogBackgroundColor">@color/material_alert_dialog_background</item>
         <item name="chipStyle">@style/CustomChipFilterDynamicLight</item>
         <item name="homeIconsBackgroundColor">@android:color/system_neutral1_100</item>
+        <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
     </style>
     <!-- dynamic colors - light -->
 
