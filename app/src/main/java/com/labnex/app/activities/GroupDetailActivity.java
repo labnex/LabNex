@@ -194,34 +194,55 @@ public class GroupDetailActivity extends BaseActivity implements BottomSheetList
 	}
 
 	private void getGroupProjects() {
+		projectsViewModel.setResultLimit(resultLimit);
+		projectsViewModel.loadProjects(ctx, "group", groupId);
 
 		projectsViewModel
-				.getProjects(
-						ctx,
-						"group",
-						"single",
-						groupId,
-						resultLimit,
-						page,
-						GroupDetailActivity.this,
-						binding.bottomAppBar)
+				.getIsLoading()
 				.observe(
-						GroupDetailActivity.this,
-						projectsListMain -> {
-							projectsAdapter =
-									new ProjectsAdapter(
-											GroupDetailActivity.this, projectsListMain, "");
-
-							if (projectsAdapter.getItemCount() > 0) {
-
-								binding.groupProjectsFrame.setVisibility(View.VISIBLE);
-								binding.recyclerView.setAdapter(projectsAdapter);
+						this,
+						loading -> {
+							if (Boolean.TRUE.equals(loading)) {
+								binding.progressBar.setVisibility(View.VISIBLE);
+								binding.recyclerView.setVisibility(View.GONE);
 							} else {
+								binding.progressBar.setVisibility(View.GONE);
+							}
+						});
 
-								binding.recyclerView.setAdapter(projectsAdapter);
+		projectsViewModel
+				.getProjectsList()
+				.observe(
+						this,
+						projects -> {
+							if (Boolean.TRUE.equals(projectsViewModel.getIsLoading().getValue()))
+								return;
+
+							if (projects == null || projects.isEmpty()) {
+								binding.recyclerView.setVisibility(View.GONE);
+								return;
 							}
 
-							binding.progressBar.setVisibility(View.GONE);
+							binding.groupProjectsFrame.setVisibility(View.VISIBLE);
+							binding.recyclerView.setVisibility(View.VISIBLE);
+
+							if (projectsAdapter == null) {
+								projectsAdapter = new ProjectsAdapter(ctx, projects, "");
+								binding.recyclerView.setAdapter(projectsAdapter);
+							} else {
+								projectsAdapter.updateList(projects);
+							}
+						});
+
+		projectsViewModel
+				.getError()
+				.observe(
+						this,
+						errorMsg -> {
+							if (errorMsg != null) {
+								Toasty.show(ctx, getString(R.string.generic_server_response_error));
+								projectsViewModel.clearError();
+							}
 						});
 	}
 

@@ -93,7 +93,7 @@
                 android:layout_width="@dimen/dimen40dp"
                 android:layout_height="@dimen/dimen40dp"
                 android:contentDescription="@string/generic_img_copy"
-                android:src="@drawable/ic_groups_home"
+                android:src="@drawable/ic_groups"
                 app:tint="?attr/colorOnTertiaryContainer"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

@@ -90,7 +90,6 @@ Thanks to all open-source libraries, contributors, and donors for your support.
 
 - [Fediverse - mastodon.social/@mmarif](https://mastodon.social/@mmarif)
 - [Bluesky](https://bsky.app/profile/mmarif.bsky.social)
-- [X profile](https://x.com/mmarif08)
 
 ## Support LabNex
 

@@ -35,8 +35,9 @@
     <string name="light" translatable="false">Light</string>
     <string name="dynamic" translatable="false">Dynamic</string>
     <string name="theme_system" translatable="false">System</string>
-    <string name="where_to_get_token_message" translatable="false"><![CDATA[• Log in to your account on your instance (GitLab, framagit, etc.).<br>• Click on your user profile picture, then go to Preferences.<br>• In the left side menu, click on Personal access tokens.<br>• Click on Add new token button.<br>• Enter token name and choose expiration date as long as possible.<br>• Check all of the scopes.<br><br>Once created, copy and paste or type the token in Personal access token input field.]]></string>
+    <string name="where_to_get_token_message" translatable="false"><![CDATA[• Log in to your account on your instance (GitLab, framagit, etc.).<br>• Click on your user profile picture, then go to Preferences.<br>• In the left side menu, click on Personal access tokens.<br>• Click on Add new token button.<br>• Enter token name and choose expiration date as long as possible.<br>• Check all the scopes.<br><br>Once created, copy and paste or type the token in Personal access token input field.]]></string>
     <string name="number_label" translatable="false">12</string>
+    <string name="main" translatable="false">main</string>
     <!-- non translatable strings -->
 
     <string name="action_sign_in">Sign in</string>
@@ -336,6 +337,10 @@
     <string name="good_evening">Good evening</string>
     <string name="nothing_found_title">Nothing here</string>
     <string name="explore_search_subtitle">Search across projects, issues, merge requests, and users</string>
+    <string name="namespace">Namespace</string>
+    <string name="default_branch">Default branch</string>
+    <string name="enable_lfs">Enable LFS</string>
+    <string name="enable_email_notifications">Enable email notifications</string>
 
     <!-- errors -->
     <string name="generic_error">An unexpected error occurred</string>
