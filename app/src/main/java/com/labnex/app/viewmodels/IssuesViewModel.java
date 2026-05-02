@@ -10,7 +10,7 @@ import com.google.android.material.bottomappbar.BottomAppBar;
 import com.labnex.app.R;
 import com.labnex.app.adapters.IssuesAdapter;
 import com.labnex.app.clients.RetrofitClient;
-import com.labnex.app.helpers.Snackbar;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.models.issues.Issues;
 import java.util.ArrayList;
 import java.util.List;
@@ -98,17 +98,11 @@ public class IssuesViewModel extends ViewModel {
 							if (response.isSuccessful() && response.body() != null) {
 								mutableList.postValue(response.body());
 							} else if (response.code() == 401) {
-								Snackbar.info(
-										ctx, activity.findViewById(android.R.id.content),
-										bottomAppBar, ctx.getString(R.string.not_authorized));
+								Toasty.show(ctx, ctx.getString(R.string.not_authorized));
 							} else if (response.code() == 403) {
-								Snackbar.info(
-										ctx, activity.findViewById(android.R.id.content),
-										bottomAppBar, ctx.getString(R.string.access_forbidden_403));
+								Toasty.show(ctx, ctx.getString(R.string.access_forbidden_403));
 							} else {
-								Snackbar.info(
-										ctx, activity.findViewById(android.R.id.content),
-										bottomAppBar, ctx.getString(R.string.generic_error));
+								Toasty.show(ctx, ctx.getString(R.string.generic_error));
 							}
 						}
 					}
@@ -116,11 +110,7 @@ public class IssuesViewModel extends ViewModel {
 					@Override
 					public void onFailure(@NonNull Call<List<Issues>> call, @NonNull Throwable t) {
 						if (!call.isCanceled()) {
-							Snackbar.info(
-									ctx,
-									activity.findViewById(android.R.id.content),
-									bottomAppBar,
-									ctx.getString(R.string.generic_server_response_error));
+							Toasty.show(ctx, ctx.getString(R.string.generic_server_response_error));
 						}
 					}
 				});
@@ -181,9 +171,7 @@ public class IssuesViewModel extends ViewModel {
 									adapter.setMoreDataAvailable(false);
 								}
 							} else {
-								Snackbar.info(
-										ctx, activity.findViewById(android.R.id.content),
-										bottomAppBar, ctx.getString(R.string.generic_error));
+								Toasty.show(ctx, ctx.getString(R.string.generic_error));
 							}
 						}
 					}
@@ -191,11 +179,7 @@ public class IssuesViewModel extends ViewModel {
 					@Override
 					public void onFailure(@NonNull Call<List<Issues>> call, @NonNull Throwable t) {
 						if (!call.isCanceled()) {
-							Snackbar.info(
-									ctx,
-									activity.findViewById(android.R.id.content),
-									bottomAppBar,
-									ctx.getString(R.string.generic_server_response_error));
+							Toasty.show(ctx, ctx.getString(R.string.generic_server_response_error));
 						}
 					}
 				});

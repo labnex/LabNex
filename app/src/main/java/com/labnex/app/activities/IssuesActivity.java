@@ -15,7 +15,7 @@ import com.labnex.app.adapters.IssuesAdapter;
 import com.labnex.app.contexts.ProjectsContext;
 import com.labnex.app.databinding.ActivityIssuesBinding;
 import com.labnex.app.databinding.BottomSheetIssuesMenuBinding;
-import com.labnex.app.helpers.Snackbar;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.viewmodels.IssuesViewModel;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -220,11 +220,7 @@ public class IssuesActivity extends BaseActivity implements CreateIssueActivity.
 	@Override
 	public void updateDataListener(String str) {
 		if (str.equalsIgnoreCase("created")) {
-			Snackbar.info(
-					ctx,
-					findViewById(android.R.id.content),
-					binding.bottomAppBar,
-					getString(R.string.issue_created));
+			Toasty.show(ctx, getString(R.string.issue_created));
 		}
 
 		adapter.clearAdapter();

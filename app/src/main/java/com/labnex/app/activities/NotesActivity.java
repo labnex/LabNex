@@ -14,7 +14,7 @@ import com.labnex.app.database.api.BaseApi;
 import com.labnex.app.database.api.NotesApi;
 import com.labnex.app.database.models.Notes;
 import com.labnex.app.databinding.ActivityNotesBinding;
-import com.labnex.app.helpers.Snackbar;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.interfaces.BottomSheetListener;
 import java.util.ArrayList;
 import java.util.List;
@@ -69,11 +69,7 @@ public class NotesActivity extends BaseActivity implements BottomSheetListener {
 					if (menuItem.getItemId() == R.id.delete_all_notes) {
 
 						if (notesList.isEmpty()) {
-							Snackbar.info(
-									ctx,
-									findViewById(android.R.id.content),
-									binding.bottomAppBar,
-									ctx.getResources().getString(R.string.all_good));
+							Toasty.show(ctx, getString(R.string.all_good));
 						} else {
 							new MaterialAlertDialogBuilder(ctx)
 									.setMessage(R.string.delete_all_notes_dialog_message)
@@ -172,17 +168,10 @@ public class NotesActivity extends BaseActivity implements BottomSheetListener {
 			notesApi.deleteAllNotes();
 			notesList.clear();
 			adapter.notifyDataChanged();
-			Snackbar.info(
-					ctx,
-					findViewById(android.R.id.content),
-					binding.bottomAppBar,
-					ctx.getResources().getQuantityString(R.plurals.note_delete_message, 2));
+			Toasty.show(
+					ctx, ctx.getResources().getQuantityString(R.plurals.note_delete_message, 2));
 		} else {
-			Snackbar.info(
-					ctx,
-					findViewById(android.R.id.content),
-					binding.bottomAppBar,
-					ctx.getResources().getString(R.string.all_good));
+			Toasty.show(ctx, getString(R.string.all_good));
 		}
 	}
 

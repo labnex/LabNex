@@ -21,8 +21,8 @@ import com.labnex.app.activities.SnippetDetailActivity;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.contexts.AccountContext;
 import com.labnex.app.database.models.UserAccount;
-import com.labnex.app.helpers.Snackbar;
 import com.labnex.app.helpers.TimeUtils;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.models.snippets.SnippetsItem;
 import java.time.OffsetDateTime;
 import java.util.Date;
@@ -160,24 +160,19 @@ public class SnippetsAdapter extends RecyclerView.Adapter<SnippetsAdapter.Snippe
 									snippetsList.remove(position);
 									notifyItemRemoved(position);
 									notifyItemRangeChanged(position, snippetsList.size());
-									Snackbar.info(
-											activity,
-											bottomAppBar,
-											context.getString(R.string.snippet_deleted));
+									Toasty.show(
+											context, context.getString(R.string.snippet_deleted));
 								} else {
-									Snackbar.info(
-											activity,
-											bottomAppBar,
+									Toasty.show(
+											context,
 											context.getString(R.string.delete_snippet_error));
 								}
 							}
 
 							@Override
 							public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-								Snackbar.info(
-										activity,
-										bottomAppBar,
-										context.getString(R.string.delete_snippet_error));
+								Toasty.show(
+										context, context.getString(R.string.delete_snippet_error));
 							}
 						});
 	}

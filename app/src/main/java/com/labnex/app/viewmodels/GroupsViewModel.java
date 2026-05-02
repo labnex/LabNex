@@ -11,7 +11,7 @@ import com.labnex.app.R;
 import com.labnex.app.adapters.GroupsAdapter;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.databinding.ActivityGroupsBinding;
-import com.labnex.app.helpers.Snackbar;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.models.groups.GroupsItem;
 import java.util.List;
 import retrofit2.Call;
@@ -61,31 +61,22 @@ public class GroupsViewModel extends ViewModel {
 						} else if (response.code() == 401) {
 
 							binding.progressBar.setVisibility(View.GONE);
-							Snackbar.info(
-									ctx, binding.getRoot(), ctx.getString(R.string.not_authorized));
+							Toasty.show(ctx, ctx.getString(R.string.not_authorized));
 						} else if (response.code() == 403) {
 
 							binding.progressBar.setVisibility(View.GONE);
-							Snackbar.info(
-									ctx,
-									binding.getRoot(),
-									ctx.getString(R.string.access_forbidden_403));
+							Toasty.show(ctx, ctx.getString(R.string.access_forbidden_403));
 						} else {
 
 							binding.progressBar.setVisibility(View.GONE);
-							Snackbar.info(
-									ctx, binding.getRoot(), ctx.getString(R.string.generic_error));
+							Toasty.show(ctx, ctx.getString(R.string.generic_error));
 						}
 					}
 
 					@Override
 					public void onFailure(
 							@NonNull Call<List<GroupsItem>> call, @NonNull Throwable t) {
-						Snackbar.info(
-								ctx,
-								activity.findViewById(android.R.id.content),
-								binding.getRoot().findViewById(R.id.bottom_app_bar),
-								ctx.getString(R.string.generic_server_response_error));
+						Toasty.show(ctx, ctx.getString(R.string.generic_server_response_error));
 					}
 				});
 	}
@@ -121,22 +112,14 @@ public class GroupsViewModel extends ViewModel {
 								adapter.setMoreDataAvailable(false);
 							}
 						} else {
-							Snackbar.info(
-									ctx,
-									activity.findViewById(android.R.id.content),
-									binding.getRoot().findViewById(R.id.bottom_app_bar),
-									ctx.getString(R.string.generic_error));
+							Toasty.show(ctx, ctx.getString(R.string.generic_error));
 						}
 					}
 
 					@Override
 					public void onFailure(
 							@NonNull Call<List<GroupsItem>> call, @NonNull Throwable t) {
-						Snackbar.info(
-								ctx,
-								activity.findViewById(android.R.id.content),
-								binding.getRoot().findViewById(R.id.bottom_app_bar),
-								ctx.getString(R.string.generic_server_response_error));
+						Toasty.show(ctx, ctx.getString(R.string.generic_server_response_error));
 					}
 				});
 	}

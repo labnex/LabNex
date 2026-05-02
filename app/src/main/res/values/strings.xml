@@ -1,13 +1,19 @@
 <resources>
     <!-- non translatable strings -->
     <string name="app_name" translatable="false">LabNex</string>
-    <string name="app_version_build" translatable="false">%1$s / %2$d</string>
+    <string name="version_display" translatable="false">LabNex %1$s | GitLab %2$s</string>
     <string name="support_link_patreon" translatable="false">https://www.patreon.com/mmarif</string>
     <string name="crowd_in_link" translatable="false">https://crowdin.com/project/labnex</string>
     <string name="app_website_link" translatable="false">https://labnex.app</string>
     <string name="source_code_link" translatable="false">https://github.com/labnex/LabNex</string>
     <string name="support_text_patreon" translatable="false">Patreon</string>
     <string name="crowd_in_text" translatable="false">Crowdin</string>
+    <string name="gitnex" translatable="false">GitNex</string>
+    <string name="gitnex_link" translatable="false">https://gitnex.com</string>
+    <string name="oceannex" translatable="false">OceanNex</string>
+    <string name="oceannex_link" translatable="false">https://oceannex.swatian.com</string>
+    <string name="nexnode" translatable="false">NexNode</string>
+    <string name="nexnode_link" translatable="false">https://nexnode.swatian.com</string>
 
     <string name="gitlab" translatable="false">GitLab</string>
     <string name="private_placeholder" translatable="false">Private</string>

@@ -264,7 +264,7 @@ public class Utils {
 		return chooserIntent;
 	}
 
-	public static void openUrlInBrowser(Context ctx, Activity activity, String url) {
+	public static void openUrlInBrowser(Context ctx, String url) {
 
 		Intent i;
 		i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
@@ -273,13 +273,13 @@ public class Utils {
 		try {
 			Intent browserIntent = wrapBrowserIntent(ctx, i);
 			if (browserIntent == null) {
-				Snackbar.info(activity, ctx.getString(R.string.generic_error));
+				Toasty.show(ctx, ctx.getString(R.string.generic_error));
 			}
 			ctx.startActivity(browserIntent);
 		} catch (ActivityNotFoundException e) {
-			Snackbar.info(activity, ctx.getString(R.string.browserOpenFailed));
+			Toasty.show(ctx, ctx.getString(R.string.browserOpenFailed));
 		} catch (Exception e) {
-			Snackbar.info(activity, ctx.getString(R.string.generic_error));
+			Toasty.show(ctx, ctx.getString(R.string.generic_error));
 		}
 	}
 
@@ -321,8 +321,7 @@ public class Utils {
 		return context.createConfigurationContext(config);
 	}
 
-	public static void copyToClipboard(
-			Context ctx, Activity activity, CharSequence data, String message) {
+	public static void copyToClipboard(Context ctx, CharSequence data, String message) {
 
 		ClipboardManager clipboard =
 				(ClipboardManager)
@@ -332,7 +331,7 @@ public class Utils {
 		ClipData clip = ClipData.newPlainText(data, data);
 		clipboard.setPrimaryClip(clip);
 
-		Snackbar.info(activity, activity.findViewById(R.id.bottom_app_bar), message);
+		Toasty.show(ctx, message);
 	}
 
 	/** pretty number formatter: 1200 = 1.2k */

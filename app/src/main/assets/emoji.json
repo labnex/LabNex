@@ -1,0 +1,24 @@
+{
+  "emojis": [
+    { "name": "thumbsup", "char": "👍" },
+    { "name": "thumbsdown", "char": "👎" },
+    { "name": "heart", "char": "❤️" },
+    { "name": "fire", "char": "🔥" },
+    { "name": "smile", "char": "😄" },
+    { "name": "tada", "char": "🎉" },
+    { "name": "rocket", "char": "🚀" },
+    { "name": "eyes", "char": "👀" },
+    { "name": "white_check_mark", "char": "✅" },
+    { "name": "raised_hands", "char": "🙌" },
+    { "name": "clap", "char": "👏" },
+    { "name": "thinking", "char": "🤔" },
+    { "name": "cry", "char": "😢" },
+    { "name": "facepalm", "char": "🤦" },
+    { "name": "laughing", "char": "😆" },
+    { "name": "100", "char": "💯" },
+    { "name": "star", "char": "⭐" },
+    { "name": "party_popper", "char": "🥳" },
+    { "name": "warning", "char": "⚠️" },
+    { "name": "bulb", "char": "💡" }
+  ]
+}

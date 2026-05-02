@@ -15,7 +15,7 @@ import com.labnex.app.contexts.ProjectsContext;
 import com.labnex.app.database.api.BaseApi;
 import com.labnex.app.database.api.ProjectsApi;
 import com.labnex.app.databinding.ActivityFilesBrowserBinding;
-import com.labnex.app.helpers.Snackbar;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.models.repository.Tree;
 import com.labnex.app.viewmodels.FilesViewModel;
 import java.util.ArrayList;
@@ -158,11 +158,7 @@ public class FilesBrowserActivity extends BaseActivity
 	public void createFileDataListener(String str, String newBranch) {
 
 		if (str.equalsIgnoreCase("created")) {
-			Snackbar.info(
-					ctx,
-					findViewById(android.R.id.content),
-					binding.bottomAppBar,
-					getString(R.string.new_file_created));
+			Toasty.show(ctx, getString(R.string.new_file_created));
 
 			path = "";
 			branch = newBranch;

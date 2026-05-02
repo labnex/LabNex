@@ -9,7 +9,7 @@ import com.labnex.app.R;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.databinding.ActivityProfileBinding;
 import com.labnex.app.helpers.Markdown;
-import com.labnex.app.helpers.Snackbar;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.models.user.User;
 import com.vdurmont.emoji.EmojiParser;
 import retrofit2.Call;
@@ -148,10 +148,7 @@ public class ProfileActivity extends BaseActivity {
 
 					@Override
 					public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
-						Snackbar.info(
-								ProfileActivity.this,
-								findViewById(R.id.bottom_app_bar),
-								getString(R.string.generic_server_response_error));
+						Toasty.show(ctx, getString(R.string.generic_server_response_error));
 					}
 				});
 	}

@@ -15,7 +15,7 @@ import com.labnex.app.adapters.MergeRequestsAdapter;
 import com.labnex.app.contexts.ProjectsContext;
 import com.labnex.app.databinding.ActivityMergeRequestsBinding;
 import com.labnex.app.databinding.BottomSheetMergeRequestsMenuBinding;
-import com.labnex.app.helpers.Snackbar;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.viewmodels.MergeRequestsViewModel;
 import java.util.Objects;
 
@@ -227,11 +227,7 @@ public class MergeRequestsActivity extends BaseActivity
 	public void updateDataListener(String str) {
 
 		if (str.equalsIgnoreCase("created")) {
-			Snackbar.info(
-					ctx,
-					findViewById(android.R.id.content),
-					binding.bottomAppBar,
-					getString(R.string.mr_created));
+			Toasty.show(ctx, getString(R.string.mr_created));
 		}
 
 		adapter.clearAdapter();

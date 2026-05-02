@@ -19,7 +19,7 @@ import com.labnex.app.activities.BaseActivity;
 import com.labnex.app.adapters.LabelsAdapter;
 import com.labnex.app.adapters.MembersAdapter;
 import com.labnex.app.databinding.BottomSheetGroupDetailBinding;
-import com.labnex.app.helpers.Snackbar;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.interfaces.BottomSheetListener;
 import com.labnex.app.viewmodels.LabelsViewModel;
 import com.labnex.app.viewmodels.MembersViewModel;
@@ -116,16 +116,10 @@ public class GroupDetailBottomSheet extends BottomSheetDialogFragment
 	public void updateDataListener(String str) {
 
 		if (str.equalsIgnoreCase("created")) {
-			Snackbar.info(
-					requireContext(),
-					bottomSheetGroupDetailBinding.bottomSheetGroupLabels.labelsLayout,
-					getString(R.string.label_created));
+			Toasty.show(requireContext(), getString(R.string.label_created));
 		}
 		if (str.equalsIgnoreCase("updated")) {
-			Snackbar.info(
-					requireContext(),
-					bottomSheetGroupDetailBinding.bottomSheetGroupLabels.labelsLayout,
-					getString(R.string.label_updated));
+			Toasty.show(requireContext(), getString(R.string.label_updated));
 		}
 
 		adapter.clearAdapter();

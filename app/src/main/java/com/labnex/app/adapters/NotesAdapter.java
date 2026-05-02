@@ -18,8 +18,8 @@ import com.labnex.app.bottomsheets.NotesBottomSheet;
 import com.labnex.app.database.api.BaseApi;
 import com.labnex.app.database.api.NotesApi;
 import com.labnex.app.database.models.Notes;
-import com.labnex.app.helpers.Snackbar;
 import com.labnex.app.helpers.TimeUtils;
+import com.labnex.app.helpers.Toasty;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
@@ -151,18 +151,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesViewHol
 		notesList.remove(position);
 		notifyItemRemoved(position);
 		notifyItemRangeChanged(position, notesList.size());
-		if (source.equalsIgnoreCase("search")) {
-			Snackbar.info(
-					ctx,
-					view,
-					ctx.getResources().getQuantityString(R.plurals.note_delete_message, 1));
-		} else {
-			Snackbar.info(
-					ctx,
-					view,
-					bottomAppBar,
-					ctx.getResources().getQuantityString(R.plurals.note_delete_message, 1));
-		}
+		Toasty.show(ctx, ctx.getResources().getQuantityString(R.plurals.note_delete_message, 1));
 	}
 
 	@NonNull @Override

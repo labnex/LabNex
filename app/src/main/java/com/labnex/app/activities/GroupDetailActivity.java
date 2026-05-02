@@ -17,9 +17,9 @@ import com.labnex.app.bottomsheets.GroupDetailBottomSheet;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.databinding.ActivityGroupDetailsBinding;
 import com.labnex.app.databinding.BottomSheetGroupActionsBinding;
-import com.labnex.app.helpers.Snackbar;
 import com.labnex.app.helpers.TextDrawable.ColorGenerator;
 import com.labnex.app.helpers.TextDrawable.TextDrawable;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.interfaces.BottomSheetListener;
 import com.labnex.app.models.groups.GroupsItem;
 import com.labnex.app.viewmodels.ProjectsViewModel;
@@ -188,10 +188,7 @@ public class GroupDetailActivity extends BaseActivity implements BottomSheetList
 					public void onFailure(@NonNull Call<GroupsItem> call, @NonNull Throwable t) {
 
 						binding.progressBar.setVisibility(View.GONE);
-						Snackbar.info(
-								ctx,
-								findViewById(R.id.content),
-								getString(R.string.generic_server_response_error));
+						Toasty.show(ctx, getString(R.string.generic_server_response_error));
 					}
 				});
 	}

@@ -14,7 +14,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.labnex.app.R;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.databinding.BottomSheetTagActionsBinding;
-import com.labnex.app.helpers.Snackbar;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.models.tags.TagsItem;
 import java.util.Objects;
 import retrofit2.Call;
@@ -61,19 +61,13 @@ public class TagActionsBottomSheet extends BottomSheetDialogFragment {
 
 					if (tagName.isEmpty()) {
 						enableButton();
-						Snackbar.info(
-								requireContext(),
-								binding.mainBsFrame,
-								getString(R.string.tag_name_empty));
+						Toasty.show(requireContext(), getString(R.string.tag_name_empty));
 						return;
 					}
 
 					if (ref.isEmpty()) {
 						enableButton();
-						Snackbar.info(
-								requireContext(),
-								binding.mainBsFrame,
-								getString(R.string.ref_empty));
+						Toasty.show(requireContext(), getString(R.string.ref_empty));
 						return;
 					}
 
@@ -99,43 +93,27 @@ public class TagActionsBottomSheet extends BottomSheetDialogFragment {
 							updateInterface.updateDataListener("created");
 						} else if (response.code() == 400) {
 							enableButton();
-							Snackbar.info(
-									requireContext(),
-									binding.mainBsFrame,
-									getString(R.string.tag_ref_invalid));
+							Toasty.show(requireContext(), getString(R.string.tag_ref_invalid));
 						} else if (response.code() == 401) {
 							enableButton();
-							Snackbar.info(
-									requireContext(),
-									binding.mainBsFrame,
-									getString(R.string.not_authorized));
+							Toasty.show(requireContext(), getString(R.string.not_authorized));
 						} else if (response.code() == 403) {
 							enableButton();
-							Snackbar.info(
-									requireContext(),
-									binding.mainBsFrame,
-									getString(R.string.access_forbidden_403));
+							Toasty.show(requireContext(), getString(R.string.access_forbidden_403));
 						} else if (response.code() == 409) {
 							enableButton();
-							Snackbar.info(
-									requireContext(),
-									binding.mainBsFrame,
-									getString(R.string.tag_already_exists));
+							Toasty.show(requireContext(), getString(R.string.tag_already_exists));
 						} else {
 							enableButton();
-							Snackbar.info(
-									requireContext(),
-									binding.mainBsFrame,
-									getString(R.string.generic_error));
+							Toasty.show(requireContext(), getString(R.string.generic_error));
 						}
 					}
 
 					@Override
 					public void onFailure(@NonNull Call<TagsItem> call, @NonNull Throwable t) {
 						enableButton();
-						Snackbar.info(
+						Toasty.show(
 								requireContext(),
-								binding.mainBsFrame,
 								getString(R.string.generic_server_response_error));
 					}
 				});

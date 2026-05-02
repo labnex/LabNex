@@ -12,8 +12,8 @@ import com.labnex.app.R;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.databinding.BottomSheetProjectTagsBinding;
 import com.labnex.app.databinding.ListTagsBinding;
-import com.labnex.app.helpers.Snackbar;
 import com.labnex.app.helpers.TimeUtils;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.helpers.Utils;
 import com.labnex.app.models.tags.TagsItem;
 import java.time.OffsetDateTime;
@@ -180,7 +180,6 @@ public class ProjectTagsAdapter extends RecyclerView.Adapter<ProjectTagsAdapter.
 						v ->
 								Utils.copyToClipboard(
 										context,
-										(android.app.Activity) context,
 										tag.getCommit().getId(),
 										context.getString(R.string.commit_id_copied)));
 			} else {
@@ -219,39 +218,22 @@ public class ProjectTagsAdapter extends RecyclerView.Adapter<ProjectTagsAdapter.
 						if (response.code() == 204) {
 							list.remove(position);
 							notifyItemRemoved(position);
-							Snackbar.info(
-									context,
-									bottomSheetBinding.tagsLayout,
-									context.getString(R.string.tag_deleted));
+							Toasty.show(context, context.getString(R.string.tag_deleted));
 						} else if (response.code() == 400) {
-							Snackbar.info(
-									context,
-									bottomSheetBinding.tagsLayout,
-									context.getString(R.string.tag_ref_invalid));
+							Toasty.show(context, context.getString(R.string.tag_ref_invalid));
 						} else if (response.code() == 401) {
-							Snackbar.info(
-									context,
-									bottomSheetBinding.tagsLayout,
-									context.getString(R.string.not_authorized));
+							Toasty.show(context, context.getString(R.string.not_authorized));
 						} else if (response.code() == 403) {
-							Snackbar.info(
-									context,
-									bottomSheetBinding.tagsLayout,
-									context.getString(R.string.access_forbidden_403));
+							Toasty.show(context, context.getString(R.string.access_forbidden_403));
 						} else {
-							Snackbar.info(
-									context,
-									bottomSheetBinding.tagsLayout,
-									context.getString(R.string.generic_error));
+							Toasty.show(context, context.getString(R.string.generic_error));
 						}
 					}
 
 					@Override
 					public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-						Snackbar.info(
-								context,
-								bottomSheetBinding.tagsLayout,
-								context.getString(R.string.generic_server_response_error));
+						Toasty.show(
+								context, context.getString(R.string.generic_server_response_error));
 					}
 				});
 	}

@@ -15,7 +15,7 @@ import com.labnex.app.contexts.ProjectsContext;
 import com.labnex.app.database.api.BaseApi;
 import com.labnex.app.database.api.ProjectsApi;
 import com.labnex.app.databinding.ActivityCreateFileBinding;
-import com.labnex.app.helpers.Snackbar;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.interfaces.BottomSheetListener;
 import com.labnex.app.models.branches.Branches;
 import com.labnex.app.models.repository.CrudeFile;
@@ -150,7 +150,7 @@ public class CreateFileActivity extends BaseActivity
 
 		binding.openCe.setOnClickListener(
 				ce -> {
-					if (binding.filename.getText().toString().isEmpty()) {
+					if (Objects.requireNonNull(binding.filename.getText()).toString().isEmpty()) {
 						materialAlertDialogBuilder
 								.setMessage(R.string.ce_no_filename_filled)
 								.setPositiveButton(
@@ -206,10 +206,7 @@ public class CreateFileActivity extends BaseActivity
 							|| commitMessage.isEmpty()
 							|| (!"delete".equalsIgnoreCase(mode) && fileContentNew.isEmpty())) {
 						enableButton();
-						Snackbar.info(
-								this,
-								binding.bottomAppBar,
-								getString(R.string.all_fields_are_required));
+						Toasty.show(this, getString(R.string.all_fields_are_required));
 						return;
 					}
 
@@ -263,10 +260,7 @@ public class CreateFileActivity extends BaseActivity
 					@Override
 					public void onFailure(@NonNull Call<FileContents> call, @NonNull Throwable t) {
 						enableButton();
-						Snackbar.info(
-								CreateFileActivity.this,
-								binding.bottomAppBar,
-								getString(R.string.generic_server_response_error));
+						Toasty.show(ctx, getString(R.string.generic_server_response_error));
 					}
 				});
 	}
@@ -299,10 +293,7 @@ public class CreateFileActivity extends BaseActivity
 					@Override
 					public void onFailure(@NonNull Call<FileContents> call, @NonNull Throwable t) {
 						enableButton();
-						Snackbar.info(
-								CreateFileActivity.this,
-								binding.bottomAppBar,
-								getString(R.string.generic_server_response_error));
+						Toasty.show(ctx, getString(R.string.generic_server_response_error));
 					}
 				});
 	}
@@ -354,9 +345,8 @@ public class CreateFileActivity extends BaseActivity
 													}
 												} catch (Exception ignored) {
 												}
-												Snackbar.info(
-														CreateFileActivity.this,
-														binding.bottomAppBar,
+												Toasty.show(
+														ctx,
 														getString(
 																R.string.branch_creation_failed,
 																errorMessage));
@@ -368,9 +358,8 @@ public class CreateFileActivity extends BaseActivity
 												@NonNull Call<Branches> call,
 												@NonNull Throwable t) {
 											enableButton();
-											Snackbar.info(
-													CreateFileActivity.this,
-													binding.bottomAppBar,
+											Toasty.show(
+													ctx,
 													getString(
 															R.string
 																	.generic_server_response_error));
@@ -385,20 +374,14 @@ public class CreateFileActivity extends BaseActivity
 								}
 							} catch (Exception ignored) {
 							}
-							Snackbar.info(
-									CreateFileActivity.this,
-									binding.bottomAppBar,
-									getString(R.string.branch_check_failed, errorMessage));
+							Toasty.show(ctx, getString(R.string.branch_check_failed, errorMessage));
 						}
 					}
 
 					@Override
 					public void onFailure(@NonNull Call<Branches> call, @NonNull Throwable t) {
 						enableButton();
-						Snackbar.info(
-								CreateFileActivity.this,
-								binding.bottomAppBar,
-								getString(R.string.generic_server_response_error));
+						Toasty.show(ctx, getString(R.string.generic_server_response_error));
 					}
 				});
 	}
@@ -439,16 +422,10 @@ public class CreateFileActivity extends BaseActivity
 							finish();
 						} else if (response.code() == 401) {
 							enableButton();
-							Snackbar.info(
-									CreateFileActivity.this,
-									binding.bottomAppBar,
-									getString(R.string.not_authorized));
+							Toasty.show(ctx, getString(R.string.not_authorized));
 						} else if (response.code() == 403) {
 							enableButton();
-							Snackbar.info(
-									CreateFileActivity.this,
-									binding.bottomAppBar,
-									getString(R.string.access_forbidden_403));
+							Toasty.show(ctx, getString(R.string.access_forbidden_403));
 						} else {
 							enableButton();
 							String errorMessage = getString(R.string.generic_error);
@@ -458,18 +435,14 @@ public class CreateFileActivity extends BaseActivity
 								}
 							} catch (Exception ignored) {
 							}
-							Snackbar.info(
-									CreateFileActivity.this, binding.bottomAppBar, errorMessage);
+							Toasty.show(ctx, errorMessage);
 						}
 					}
 
 					@Override
 					public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
 						enableButton();
-						Snackbar.info(
-								CreateFileActivity.this,
-								binding.bottomAppBar,
-								getString(R.string.generic_server_response_error));
+						Toasty.show(ctx, getString(R.string.generic_server_response_error));
 					}
 				});
 	}
@@ -495,13 +468,13 @@ public class CreateFileActivity extends BaseActivity
 			finish();
 		} else if (response.code() == 401) {
 			enableButton();
-			Snackbar.info(this, binding.bottomAppBar, getString(R.string.not_authorized));
+			Toasty.show(ctx, getString(R.string.not_authorized));
 		} else if (response.code() == 403) {
 			enableButton();
-			Snackbar.info(this, binding.bottomAppBar, getString(R.string.access_forbidden_403));
+			Toasty.show(ctx, getString(R.string.access_forbidden_403));
 		} else {
 			enableButton();
-			Snackbar.info(this, binding.bottomAppBar, getString(R.string.generic_error));
+			Toasty.show(ctx, getString(R.string.generic_error));
 		}
 	}
 

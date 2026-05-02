@@ -16,8 +16,8 @@ import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.databinding.ActivitySnippetCreateBinding;
 import com.labnex.app.databinding.ActivitySnippetViewBinding;
 import com.labnex.app.fragments.SnippetFileFragment;
-import com.labnex.app.helpers.Snackbar;
 import com.labnex.app.helpers.SyntaxHighlightedArea;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.models.snippets.SnippetCreateModel;
 import com.labnex.app.models.snippets.SnippetsItem;
 import java.io.IOException;
@@ -110,9 +110,8 @@ public class SnippetDetailActivity extends BaseActivity
 																updateFileCount(
 																		pagerAdapter
 																				.getItemCount());
-																Snackbar.info(
-																		this,
-																		createBinding.bottomAppBar,
+																Toasty.show(
+																		ctx,
 																		getString(
 																				R.string
 																						.file_deleted));
@@ -133,10 +132,7 @@ public class SnippetDetailActivity extends BaseActivity
 								"file" + (pagerAdapter.getItemCount() + 1) + ".txt", "");
 						updateFileCount(pagerAdapter.getItemCount());
 					} else {
-						Snackbar.info(
-								this,
-								createBinding.bottomAppBar,
-								getString(R.string.max_files_reached));
+						Toasty.show(ctx, getString(R.string.max_files_reached));
 					}
 				});
 
@@ -152,7 +148,7 @@ public class SnippetDetailActivity extends BaseActivity
 		String visibility = mapVisibility(visibilityText);
 
 		if (title.isEmpty()) {
-			Snackbar.info(this, createBinding.bottomAppBar, getString(R.string.title_required));
+			Toasty.show(ctx, getString(R.string.title_required));
 			return;
 		}
 
@@ -164,21 +160,19 @@ public class SnippetDetailActivity extends BaseActivity
 				continue;
 			}
 			if (!fileNames.add(fileName)) {
-				Snackbar.info(
-						this, createBinding.bottomAppBar, getString(R.string.duplicate_file_name));
+				Toasty.show(ctx, getString(R.string.duplicate_file_name));
 				return;
 			}
 			String fileContent = fragment.getFileContent();
 			if (fileContent == null || fileContent.trim().isEmpty()) {
-				Snackbar.info(
-						this, createBinding.bottomAppBar, getString(R.string.empty_file_content));
+				Toasty.show(ctx, getString(R.string.empty_file_content));
 				return;
 			}
 			files.add(new SnippetCreateModel.File(fileName, fileContent));
 		}
 
 		if (files.isEmpty()) {
-			Snackbar.info(this, createBinding.bottomAppBar, getString(R.string.at_least_one_file));
+			Toasty.show(ctx, getString(R.string.at_least_one_file));
 			return;
 		}
 
@@ -220,19 +214,12 @@ public class SnippetDetailActivity extends BaseActivity
 											});
 									snackbar.show();
 								} else if (response.code() == 401) {
-									Snackbar.info(
-											SnippetDetailActivity.this,
-											createBinding.bottomAppBar,
-											getString(R.string.not_authorized));
+									Toasty.show(ctx, getString(R.string.not_authorized));
 								} else if (response.code() == 403) {
-									Snackbar.info(
-											SnippetDetailActivity.this,
-											createBinding.bottomAppBar,
-											getString(R.string.access_forbidden_403));
+									Toasty.show(ctx, getString(R.string.access_forbidden_403));
 								} else {
-									Snackbar.info(
-											SnippetDetailActivity.this,
-											createBinding.bottomAppBar,
+									Toasty.show(
+											ctx,
 											getString(R.string.generic_api_error, response.code()));
 								}
 							}
@@ -242,10 +229,7 @@ public class SnippetDetailActivity extends BaseActivity
 									@NonNull Call<SnippetsItem> call, @NonNull Throwable t) {
 								createBinding.progressBar.setVisibility(View.GONE);
 								createBinding.create.setEnabled(true);
-								Snackbar.info(
-										SnippetDetailActivity.this,
-										createBinding.bottomAppBar,
-										getString(R.string.generic_server_response_error));
+								Toasty.show(ctx, getString(R.string.generic_server_response_error));
 							}
 						});
 	}
@@ -293,10 +277,7 @@ public class SnippetDetailActivity extends BaseActivity
 									loadFileContents(response.body());
 								} else {
 									binding.progressBar.setVisibility(View.GONE);
-									Snackbar.info(
-											SnippetDetailActivity.this,
-											binding.getRoot(),
-											getString(R.string.generic_api_error));
+									Toasty.show(ctx, getString(R.string.generic_api_error));
 								}
 							}
 
@@ -304,10 +285,7 @@ public class SnippetDetailActivity extends BaseActivity
 							public void onFailure(
 									@NonNull Call<SnippetsItem> call, @NonNull Throwable t) {
 								binding.progressBar.setVisibility(View.GONE);
-								Snackbar.info(
-										SnippetDetailActivity.this,
-										binding.getRoot(),
-										getString(R.string.generic_api_error));
+								Toasty.show(ctx, getString(R.string.generic_api_error));
 							}
 						});
 	}
@@ -336,7 +314,7 @@ public class SnippetDetailActivity extends BaseActivity
 
 		if (fileNames.isEmpty()) {
 			binding.progressBar.setVisibility(View.GONE);
-			Snackbar.info(this, binding.getRoot(), getString(R.string.no_files_snippet));
+			Toasty.show(ctx, getString(R.string.no_files_snippet));
 			return;
 		}
 
@@ -378,22 +356,16 @@ public class SnippetDetailActivity extends BaseActivity
 														content,
 														FilenameUtils.getExtension(fileName));
 											} else {
-												Snackbar.info(
-														SnippetDetailActivity.this,
-														binding.getRoot(),
+												Toasty.show(
+														ctx,
 														getString(R.string.file_content_error));
 											}
 										} catch (IOException e) {
-											Snackbar.info(
-													SnippetDetailActivity.this,
-													binding.getRoot(),
-													getString(R.string.file_content_error));
+											Toasty.show(
+													ctx, getString(R.string.file_content_error));
 										}
 									} else {
-										Snackbar.info(
-												SnippetDetailActivity.this,
-												binding.getRoot(),
-												getString(R.string.file_content_error));
+										Toasty.show(ctx, getString(R.string.file_content_error));
 									}
 									loadedFiles[0]++;
 									if (loadedFiles[0] == totalFiles) {
@@ -407,10 +379,7 @@ public class SnippetDetailActivity extends BaseActivity
 
 									fileContentView.setContent(
 											"", FilenameUtils.getExtension(fileName));
-									Snackbar.info(
-											SnippetDetailActivity.this,
-											binding.getRoot(),
-											getString(R.string.file_content_error));
+									Toasty.show(ctx, getString(R.string.file_content_error));
 									loadedFiles[0]++;
 									if (loadedFiles[0] == totalFiles) {
 										binding.progressBar.setVisibility(View.GONE);

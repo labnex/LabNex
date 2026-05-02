@@ -11,7 +11,7 @@ import com.labnex.app.R;
 import com.labnex.app.adapters.CommitDiffsAdapter;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.databinding.BottomSheetCommitDiffsBinding;
-import com.labnex.app.helpers.Snackbar;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.models.commits.Diff;
 import java.util.List;
 import retrofit2.Call;
@@ -67,20 +67,15 @@ public class CommitDiffsViewModel extends ViewModel {
 						} else if (response.code() == 401) {
 
 							binding.progressBar.setVisibility(View.GONE);
-							Snackbar.info(
-									ctx, binding.getRoot(), ctx.getString(R.string.not_authorized));
+							Toasty.show(ctx, ctx.getString(R.string.not_authorized));
 						} else if (response.code() == 403) {
 
 							binding.progressBar.setVisibility(View.GONE);
-							Snackbar.info(
-									ctx,
-									binding.getRoot(),
-									ctx.getString(R.string.access_forbidden_403));
+							Toasty.show(ctx, ctx.getString(R.string.not_authorized));
 						} else {
 
 							binding.progressBar.setVisibility(View.GONE);
-							Snackbar.info(
-									ctx, binding.getRoot(), ctx.getString(R.string.generic_error));
+							Toasty.show(ctx, ctx.getString(R.string.not_authorized));
 						}
 					}
 
@@ -88,10 +83,7 @@ public class CommitDiffsViewModel extends ViewModel {
 					public void onFailure(@NonNull Call<List<Diff>> call, @NonNull Throwable t) {
 
 						binding.progressBar.setVisibility(View.GONE);
-						Snackbar.info(
-								ctx,
-								binding.getRoot(),
-								ctx.getString(R.string.generic_server_response_error));
+						Toasty.show(ctx, ctx.getString(R.string.not_authorized));
 					}
 				});
 	}
@@ -132,20 +124,15 @@ public class CommitDiffsViewModel extends ViewModel {
 						} else if (response.code() == 401) {
 
 							binding.progressBar.setVisibility(View.GONE);
-							Snackbar.info(
-									ctx, binding.getRoot(), ctx.getString(R.string.not_authorized));
+							Toasty.show(ctx, ctx.getString(R.string.not_authorized));
 						} else if (response.code() == 403) {
 
 							binding.progressBar.setVisibility(View.GONE);
-							Snackbar.info(
-									ctx,
-									binding.getRoot(),
-									ctx.getString(R.string.access_forbidden_403));
+							Toasty.show(ctx, ctx.getString(R.string.access_forbidden_403));
 						} else {
 
 							binding.progressBar.setVisibility(View.GONE);
-							Snackbar.info(
-									ctx, binding.getRoot(), ctx.getString(R.string.generic_error));
+							Toasty.show(ctx, ctx.getString(R.string.generic_error));
 						}
 					}
 
@@ -153,10 +140,7 @@ public class CommitDiffsViewModel extends ViewModel {
 					public void onFailure(@NonNull Call<List<Diff>> call, @NonNull Throwable t) {
 
 						binding.progressBar.setVisibility(View.GONE);
-						Snackbar.info(
-								ctx,
-								binding.getRoot(),
-								ctx.getString(R.string.generic_server_response_error));
+						Toasty.show(ctx, ctx.getString(R.string.generic_server_response_error));
 					}
 				});
 	}

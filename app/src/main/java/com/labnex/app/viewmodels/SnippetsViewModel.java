@@ -12,7 +12,7 @@ import com.labnex.app.R;
 import com.labnex.app.adapters.SnippetsAdapter;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.databinding.ActivitySnippetsBinding;
-import com.labnex.app.helpers.Snackbar;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.models.snippets.SnippetsItem;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,11 +76,7 @@ public class SnippetsViewModel extends ViewModel {
 							@NonNull Call<List<SnippetsItem>> call, @NonNull Throwable t) {
 						if (!call.isCanceled()) {
 							mutableList.postValue(new ArrayList<>());
-							Snackbar.info(
-									ctx,
-									activity.findViewById(android.R.id.content),
-									binding.bottomAppBar,
-									ctx.getString(R.string.generic_server_response_error));
+							Toasty.show(ctx, ctx.getString(R.string.generic_server_response_error));
 						}
 						binding.progressBar.setVisibility(View.GONE);
 					}
@@ -132,11 +128,7 @@ public class SnippetsViewModel extends ViewModel {
 					public void onFailure(
 							@NonNull Call<List<SnippetsItem>> call, @NonNull Throwable t) {
 						if (!call.isCanceled()) {
-							Snackbar.info(
-									ctx,
-									activity.findViewById(android.R.id.content),
-									binding.bottomAppBar,
-									ctx.getString(R.string.generic_server_response_error));
+							Toasty.show(ctx, ctx.getString(R.string.generic_server_response_error));
 						}
 						binding.progressBar.setVisibility(View.GONE);
 					}
@@ -153,7 +145,7 @@ public class SnippetsViewModel extends ViewModel {
 		} else {
 			message = ctx.getString(R.string.generic_error);
 		}
-		Snackbar.info(ctx, activity.findViewById(android.R.id.content), bottomAppBar, message);
+		Toasty.show(ctx, message);
 	}
 
 	@Override

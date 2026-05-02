@@ -17,7 +17,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.labnex.app.R;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.databinding.BottomSheetMilestoneActionsBinding;
-import com.labnex.app.helpers.Snackbar;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.interfaces.BottomSheetListener;
 import com.labnex.app.models.milestone.CrudeMilestone;
 import com.labnex.app.models.milestone.Milestones;
@@ -79,19 +79,13 @@ public class MilestoneActionsBottomSheet extends BottomSheetDialogFragment {
 
 					if (title.isEmpty()) {
 						enableButton();
-						Snackbar.info(
-								requireContext(),
-								binding.mainBsFrame,
-								getString(R.string.title_required));
+						Toasty.show(requireContext(), getString(R.string.title_required));
 						return;
 					}
 
 					if (dueDate.equals(startDate)) {
 						enableButton();
-						Snackbar.info(
-								requireContext(),
-								binding.mainBsFrame,
-								getString(R.string.dates_same_error));
+						Toasty.show(requireContext(), getString(R.string.dates_same_error));
 						return;
 					}
 
@@ -154,31 +148,21 @@ public class MilestoneActionsBottomSheet extends BottomSheetDialogFragment {
 							dismiss();
 						} else if (response.code() == 401) {
 							enableButton();
-							Snackbar.info(
-									requireContext(),
-									binding.mainBsFrame,
-									getString(R.string.not_authorized));
+							Toasty.show(requireContext(), getString(R.string.not_authorized));
 						} else if (response.code() == 403) {
 							enableButton();
-							Snackbar.info(
-									requireContext(),
-									binding.mainBsFrame,
-									getString(R.string.access_forbidden_403));
+							Toasty.show(requireContext(), getString(R.string.access_forbidden_403));
 						} else {
 							enableButton();
-							Snackbar.info(
-									requireContext(),
-									binding.mainBsFrame,
-									getString(R.string.generic_error));
+							Toasty.show(requireContext(), getString(R.string.generic_error));
 						}
 					}
 
 					@Override
 					public void onFailure(@NonNull Call<Milestones> call, @NonNull Throwable t) {
 						enableButton();
-						Snackbar.info(
+						Toasty.show(
 								requireContext(),
-								binding.mainBsFrame,
 								getString(R.string.generic_server_response_error));
 					}
 				});

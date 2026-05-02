@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.labnex.app.R;
 import com.labnex.app.adapters.ProjectsAdapter;
 import com.labnex.app.databinding.ActivityProjectsBinding;
-import com.labnex.app.helpers.Snackbar;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.viewmodels.ProjectsViewModel;
 import java.util.Objects;
 
@@ -145,11 +145,7 @@ public class ProjectsActivity extends BaseActivity
 	public void updateDataListener(String str) {
 
 		if (str.equalsIgnoreCase("created")) {
-			Snackbar.info(
-					ctx,
-					findViewById(android.R.id.content),
-					binding.bottomAppBar,
-					getString(R.string.project_created));
+			Toasty.show(ctx, getString(R.string.project_created));
 		}
 
 		adapter.clearAdapter();

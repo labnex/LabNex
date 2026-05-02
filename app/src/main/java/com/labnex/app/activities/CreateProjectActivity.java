@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 import com.labnex.app.R;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.databinding.ActivityCreateProjectBinding;
-import com.labnex.app.helpers.Snackbar;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.models.projects.CrudeProject;
 import com.labnex.app.models.projects.Projects;
 import java.util.Objects;
@@ -56,10 +56,7 @@ public class CreateProjectActivity extends BaseActivity {
 					if (name.isEmpty()) {
 
 						enableButton();
-						Snackbar.info(
-								CreateProjectActivity.this,
-								binding.bottomAppBar,
-								getString(R.string.project_name_required));
+						Toasty.show(ctx, getString(R.string.project_name_required));
 						return;
 					}
 
@@ -93,24 +90,15 @@ public class CreateProjectActivity extends BaseActivity {
 						} else if (response.code() == 401) {
 
 							enableButton();
-							Snackbar.info(
-									CreateProjectActivity.this,
-									binding.bottomAppBar,
-									getString(R.string.not_authorized));
+							Toasty.show(ctx, getString(R.string.not_authorized));
 						} else if (response.code() == 403) {
 
 							enableButton();
-							Snackbar.info(
-									CreateProjectActivity.this,
-									binding.bottomAppBar,
-									getString(R.string.access_forbidden_403));
+							Toasty.show(ctx, getString(R.string.access_forbidden_403));
 						} else {
 
 							enableButton();
-							Snackbar.info(
-									CreateProjectActivity.this,
-									binding.bottomAppBar,
-									getString(R.string.generic_error));
+							Toasty.show(ctx, getString(R.string.generic_error));
 						}
 					}
 
@@ -118,10 +106,7 @@ public class CreateProjectActivity extends BaseActivity {
 					public void onFailure(@NonNull Call<Projects> call, @NonNull Throwable t) {
 
 						enableButton();
-						Snackbar.info(
-								CreateProjectActivity.this,
-								binding.bottomAppBar,
-								getString(R.string.generic_server_response_error));
+						Toasty.show(ctx, getString(R.string.generic_server_response_error));
 					}
 				});
 	}

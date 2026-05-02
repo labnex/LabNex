@@ -17,7 +17,7 @@ import com.labnex.app.bottomsheets.LabelActionsBottomSheet;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.databinding.BottomSheetGroupDetailBinding;
 import com.labnex.app.helpers.LabelStylingHelper;
-import com.labnex.app.helpers.Snackbar;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.models.labels.Labels;
 import java.util.List;
 import retrofit2.Call;
@@ -222,35 +222,27 @@ public class LabelsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 								if (response.code() == 204) {
 
 									updateAdapter(position);
-									Snackbar.info(
+									Toasty.show(
 											context,
-											bottomSheetGroupDetailBinding.bottomSheetGroupLabels
-													.getRoot(),
 											context.getResources()
 													.getString(R.string.label_deleted));
 
 								} else if (response.code() == 401) {
 
-									Snackbar.info(
+									Toasty.show(
 											context,
-											bottomSheetGroupDetailBinding.bottomSheetGroupLabels
-													.getRoot(),
 											context.getResources()
 													.getString(R.string.not_authorized));
 								} else if (response.code() == 403) {
 
-									Snackbar.info(
+									Toasty.show(
 											context,
-											bottomSheetGroupDetailBinding.bottomSheetGroupLabels
-													.getRoot(),
 											context.getResources()
 													.getString(R.string.access_forbidden_403));
 								} else {
 
-									Snackbar.info(
+									Toasty.show(
 											context,
-											bottomSheetGroupDetailBinding.bottomSheetGroupLabels
-													.getRoot(),
 											context.getResources()
 													.getString(R.string.generic_error));
 								}
@@ -259,10 +251,8 @@ public class LabelsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 							@Override
 							public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
 
-								Snackbar.info(
+								Toasty.show(
 										context,
-										bottomSheetGroupDetailBinding.bottomSheetGroupLabels
-												.getRoot(),
 										context.getResources()
 												.getString(R.string.generic_server_response_error));
 							}

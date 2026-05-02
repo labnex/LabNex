@@ -28,7 +28,7 @@ import com.labnex.app.database.db.LabNexDatabase;
 import com.labnex.app.database.models.UserAccount;
 import com.labnex.app.databinding.ActivitySignInBinding;
 import com.labnex.app.helpers.SharedPrefDB;
-import com.labnex.app.helpers.Snackbar;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.helpers.Utils;
 import com.labnex.app.helpers.Version;
 import com.labnex.app.models.metadata.Metadata;
@@ -77,16 +77,10 @@ public class SignInActivity extends BaseActivity {
 								if (uri != null) {
 									processImport(uri);
 								} else {
-									Snackbar.info(
-											this,
-											findViewById(R.id.bottom_app_bar),
-											getString(R.string.import_failed));
+									Toasty.show(ctx, getString(R.string.import_failed));
 								}
 							} else {
-								Snackbar.info(
-										this,
-										findViewById(R.id.bottom_app_bar),
-										getString(R.string.import_failed));
+								Toasty.show(ctx, getString(R.string.import_failed));
 							}
 						});
 
@@ -152,8 +146,7 @@ public class SignInActivity extends BaseActivity {
 				throw new SQLiteException("Database not opened after restore");
 			}
 
-			Snackbar.info(
-					this, findViewById(R.id.bottom_app_bar), getString(R.string.import_success));
+			Toasty.show(ctx, getString(R.string.import_success));
 
 			UserAccountsApi userAccountsApi = BaseApi.getInstance(ctx, UserAccountsApi.class);
 			assert userAccountsApi != null;
@@ -166,12 +159,10 @@ public class SignInActivity extends BaseActivity {
 			} else {
 				LabNexDatabase.getDatabaseInstance(this);
 				SharedPrefDB.getInstance(this).putInt("currentActiveAccountId", -1);
-				Snackbar.info(
-						this, findViewById(R.id.bottom_app_bar), getString(R.string.import_failed));
+				Toasty.show(ctx, getString(R.string.import_failed));
 			}
 		} catch (IOException | SQLiteException e) {
-			Snackbar.info(
-					this, findViewById(R.id.bottom_app_bar), getString(R.string.import_failed));
+			Toasty.show(ctx, getString(R.string.import_failed));
 			LabNexDatabase.getDatabaseInstance(this);
 		}
 	}
@@ -199,44 +190,42 @@ public class SignInActivity extends BaseActivity {
 							.trim();
 
 			if (instanceUrlRaw.isEmpty()) {
-				Snackbar.info(SignInActivity.this, getString(R.string.gitlab_url_empty_error));
+				Toasty.show(ctx, getString(R.string.gitlab_url_empty_error));
 				enableSignInButton();
 				return;
 			}
 			if (loginToken.isEmpty()) {
-				Snackbar.info(SignInActivity.this, getString(R.string.gitlab_token_empty_error));
+				Toasty.show(ctx, getString(R.string.gitlab_token_empty_error));
 				enableSignInButton();
 				return;
 			}
 
 			if (instanceUrlRaw.contains(" ")) {
-				Snackbar.info(
-						SignInActivity.this, getString(R.string.gitlab_url_spaces_not_supported));
+				Toasty.show(ctx, getString(R.string.gitlab_url_spaces_not_supported));
 				enableSignInButton();
 				return;
 			}
 
 			if (loginToken.contains(" ")) {
-				Snackbar.info(
-						SignInActivity.this, getString(R.string.gitlab_token_spaces_not_supported));
+				Toasty.show(ctx, getString(R.string.gitlab_token_spaces_not_supported));
 				enableSignInButton();
 				return;
 			}
 
 			if (instanceUrlRaw.startsWith("http://") || instanceUrlRaw.startsWith("https://")) {
-				Snackbar.info(SignInActivity.this, getString(R.string.gitlab_url_no_http_allowed));
+				Toasty.show(ctx, getString(R.string.gitlab_url_no_http_allowed));
 				enableSignInButton();
 				return;
 			}
 
 			if (!instanceUrlRaw.contains(".")) {
-				Snackbar.info(SignInActivity.this, getString(R.string.gitlab_url_missing_dot));
+				Toasty.show(ctx, getString(R.string.gitlab_url_missing_dot));
 				enableSignInButton();
 				return;
 			}
 
 			if (!Patterns.WEB_URL.matcher(instanceUrlRaw).matches()) {
-				Snackbar.info(SignInActivity.this, getString(R.string.gitlab_url_invalid_format));
+				Toasty.show(ctx, getString(R.string.gitlab_url_invalid_format));
 				enableSignInButton();
 				return;
 			}
@@ -246,10 +235,10 @@ public class SignInActivity extends BaseActivity {
 			versionCheck(loginToken);
 
 		} catch (IllegalArgumentException e) {
-			Snackbar.info(SignInActivity.this, getString(R.string.gitlab_url_invalid_format));
+			Toasty.show(ctx, getString(R.string.gitlab_url_invalid_format));
 			enableSignInButton();
 		} catch (Exception e) {
-			Snackbar.info(SignInActivity.this, getString(R.string.generic_error));
+			Toasty.show(ctx, getString(R.string.generic_error));
 			enableSignInButton();
 		}
 	}
@@ -306,8 +295,7 @@ public class SignInActivity extends BaseActivity {
 
 							if (responseVersion.code() == 401) {
 
-								Snackbar.info(
-										SignInActivity.this, getString(R.string.not_authorized));
+								Toasty.show(ctx, getString(R.string.not_authorized));
 								enableSignInButton();
 							} else if (responseVersion.code() == 200) {
 
@@ -316,9 +304,7 @@ public class SignInActivity extends BaseActivity {
 
 								if (!Version.valid(metadata.getVersion())) {
 
-									Snackbar.info(
-											SignInActivity.this,
-											getString(R.string.version_unknown));
+									Toasty.show(ctx, getString(R.string.version_unknown));
 									enableSignInButton();
 									return;
 								}
@@ -359,9 +345,7 @@ public class SignInActivity extends BaseActivity {
 									getTokenExpiry(token);
 								} else {
 
-									Snackbar.info(
-											SignInActivity.this,
-											getString(R.string.version_unsupported_new));
+									Toasty.show(ctx, getString(R.string.version_unsupported_new));
 									setupAccount(token);
 								}
 							}
@@ -371,9 +355,7 @@ public class SignInActivity extends BaseActivity {
 						public void onFailure(
 								@NonNull Call<Metadata> callVersion, @NonNull Throwable t) {
 
-							Snackbar.info(
-									SignInActivity.this,
-									getString(R.string.generic_server_response_error));
+							Toasty.show(ctx, getString(R.string.generic_server_response_error));
 							enableSignInButton();
 						}
 					});
@@ -436,13 +418,12 @@ public class SignInActivity extends BaseActivity {
 								finish();
 								break;
 							case 401:
-								Snackbar.info(
-										SignInActivity.this, getString(R.string.not_authorized));
+								Toasty.show(ctx, getString(R.string.not_authorized));
 								enableSignInButton();
 								break;
 							default:
-								Snackbar.info(
-										SignInActivity.this,
+								Toasty.show(
+										ctx,
 										getString(R.string.generic_api_error, response.code()));
 								enableSignInButton();
 						}
@@ -451,9 +432,7 @@ public class SignInActivity extends BaseActivity {
 					@Override
 					public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
 
-						Snackbar.info(
-								SignInActivity.this,
-								getString(R.string.generic_server_response_error));
+						Toasty.show(ctx, getString(R.string.generic_server_response_error));
 						enableSignInButton();
 					}
 				});
@@ -478,9 +457,8 @@ public class SignInActivity extends BaseActivity {
 							tokenExpiry = (String) response.body().getExpiresAt();
 							setupAccount(token);
 						} else {
-							Snackbar.info(
-									SignInActivity.this,
-									getString(R.string.generic_api_error, response.code()));
+							Toasty.show(
+									ctx, getString(R.string.generic_api_error, response.code()));
 							enableSignInButton();
 						}
 					}

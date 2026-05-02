@@ -45,7 +45,6 @@
                 android:text="@string/activities"
                 android:textColor="?attr/colorOnSurface"
                 android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-                android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/activities_icon"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -98,24 +97,29 @@
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dimen10dp"
+                android:layout_marginStart="@dimen/dimen8dp"
+                android:layout_marginEnd="@dimen/dimen8dp"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/issues_chip"
                 app:layout_constraintStart_toEndOf="@id/issues_icon"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/issues"
+                    android:maxLines="1"
+                    android:ellipsize="end"
                     android:textColor="?attr/colorOnSurfaceVariant"
-                    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-                    android:textStyle="bold" />
+                    android:textAppearance="@style/TextAppearance.Material3.TitleMedium" />
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/issues_subtitle"
+                    android:maxLines="1"
+                    android:ellipsize="end"
                     android:textColor="?attr/colorOnSurfaceVariant"
                     android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
                     android:alpha="0.7" />
@@ -172,19 +176,22 @@
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dimen12dp"
+                android:layout_marginStart="@dimen/dimen8dp"
+                android:layout_marginEnd="@dimen/dimen8dp"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/mr_chip"
                 app:layout_constraintStart_toEndOf="@id/mr_icon"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/merge_requests"
+                    android:maxLines="1"
+                    android:ellipsize="end"
                     android:textColor="?attr/colorOnSurfaceVariant"
-                    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-                    android:textStyle="bold" />
+                    android:textAppearance="@style/TextAppearance.Material3.TitleMedium" />
 
             </LinearLayout>
 
@@ -235,26 +242,35 @@
 
             <TextView
                 android:id="@+id/snippet_title"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dimen12dp"
+                android:layout_marginStart="@dimen/dimen4dp"
+                android:layout_marginEnd="@dimen/dimen4dp"
                 android:text="@string/snippets"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:gravity="center"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/snippet_icon" />
 
             <TextView
                 android:id="@+id/snippet_subtitle"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dimen4dp"
+                android:layout_marginStart="@dimen/dimen4dp"
+                android:layout_marginEnd="@dimen/dimen4dp"
                 android:text="@string/snippets_subtitle"
+                android:maxLines="1"
+                android:ellipsize="end"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
                 android:alpha="0.7"
+                android:gravity="center"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/snippet_title" />

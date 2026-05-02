@@ -16,6 +16,9 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.ParcelFileDescriptor;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.biometric.BiometricManager;
@@ -24,7 +27,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.labnex.app.R;
-import com.labnex.app.bottomsheets.AppSettingsBottomSheet;
+import com.labnex.app.bottomsheets.AppAccountsBottomSheet;
 import com.labnex.app.bottomsheets.BackupBottomSheet;
 import com.labnex.app.database.api.BaseApi;
 import com.labnex.app.database.api.UserAccountsApi;
@@ -34,7 +37,8 @@ import com.labnex.app.databinding.ActivityAppSettingsBinding;
 import com.labnex.app.helpers.AppSettingsInit;
 import com.labnex.app.helpers.AppUIStateManager;
 import com.labnex.app.helpers.SharedPrefDB;
-import com.labnex.app.helpers.Snackbar;
+import com.labnex.app.helpers.Toasty;
+import com.labnex.app.helpers.UIHelper;
 import com.labnex.app.helpers.Utils;
 import com.labnex.app.interfaces.BottomSheetListener;
 import io.mikael.urlbuilder.UrlBuilder;
@@ -58,91 +62,49 @@ public class AppSettingsActivity extends BaseActivity
 		implements BottomSheetListener, BackupBottomSheet.BackupCallback {
 
 	private ActivityAppSettingsBinding binding;
-	private static String[] themeList;
-	private static int themeSelectedChoice;
-	private static int langSelectedChoice;
-	private static String[] homeScreenList;
-	private static int homeScreenSelectedChoice;
+	private String[] themeList;
+	private int themeSelectedChoice;
+	private int langSelectedChoice;
+	private int homeScreenSelectedChoice;
 	private ActivityResultLauncher<Intent> importFileLauncher;
 	private ActivityResultLauncher<Intent> exportFileLauncher;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-
 		super.onCreate(savedInstanceState);
 		binding = ActivityAppSettingsBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
-		binding.bottomAppBar.setNavigationOnClickListener(topBar -> finish());
+		UIHelper.applyEdgeToEdge(this, binding.dockedToolbar, binding.nestedScrollView, null, null);
 
-		importFileLauncher =
-				registerForActivityResult(
-						new ActivityResultContracts.StartActivityForResult(),
-						result -> {
-							if (result.getResultCode() == Activity.RESULT_OK
-									&& result.getData() != null) {
-								Uri uri = result.getData().getData();
-								if (uri != null) {
-									processImport(uri);
-								} else {
-									Snackbar.info(
-											this,
-											findViewById(R.id.bottom_app_bar),
-											getString(R.string.import_failed));
-								}
-							} else {
-								Snackbar.info(
-										this,
-										findViewById(R.id.bottom_app_bar),
-										getString(R.string.import_failed));
-							}
-						});
+		initCoreUI();
+		setupAccountHero();
+		setupAppearanceSection();
+		setupSecuritySection();
+		setupDynamicSections();
+		initLaunchers();
+	}
 
-		exportFileLauncher =
-				registerForActivityResult(
-						new ActivityResultContracts.StartActivityForResult(),
-						result -> {
-							if (result.getResultCode() == Activity.RESULT_OK
-									&& result.getData() != null) {
-								Uri uri = result.getData().getData();
-								if (uri != null) {
-									exportDatabaseToUri(uri);
-								} else {
-									Snackbar.info(
-											this,
-											findViewById(R.id.bottom_app_bar),
-											getString(R.string.backup_failed));
-								}
-							} else {
-								Snackbar.info(
-										this,
-										findViewById(R.id.bottom_app_bar),
-										getString(R.string.backup_failed));
-							}
-						});
+	private void initCoreUI() {
+		binding.btnBack.setOnClickListener(v -> finish());
 
+		String appVersion = Utils.getAppVersion(ctx);
+		String serverVersion =
+				getAccount().getServerVersion() != null
+						? getAccount().getServerVersion().toString()
+						: "0.0.0";
+		binding.version.setText(getString(R.string.version_display, appVersion, serverVersion));
+	}
+
+	private void setupAccountHero() {
 		int accountId = SharedPrefDB.getInstance(ctx).getInt("currentActiveAccountId");
 		UserAccountsApi userAccountsApi = BaseApi.getInstance(ctx, UserAccountsApi.class);
 		UserAccount account =
 				userAccountsApi != null ? userAccountsApi.getAccountById(accountId) : null;
 
 		if (account != null) {
-
 			binding.accountsUserFullName.setText(account.getUserName());
-
-			String accountName = account.getAccountName();
-			if (accountName != null && accountName.contains("@")) {
-				String username = accountName.split("@")[0];
-				String instanceUrl = accountName.split("@")[1];
-
-				UrlBuilder urlBuilder = UrlBuilder.fromString(instanceUrl);
-				String hostName = urlBuilder.hostName;
-
-				binding.accountsUsername.setText(
-						getString(R.string.username_with_domain, username, hostName));
-			} else {
-				binding.accountsUsername.setText("");
-			}
+			handleAccountSubtext(account);
 
 			if (getAccount().getUserInfo() != null) {
 				Glide.with(ctx)
@@ -153,294 +115,174 @@ public class AppSettingsActivity extends BaseActivity
 						.into(binding.userAvatar);
 
 				binding.userAvatar.setOnClickListener(
-						profile -> {
-							Intent intent =
-									new Intent(AppSettingsActivity.this, ProfileActivity.class);
+						v -> {
+							Intent intent = new Intent(this, ProfileActivity.class);
 							intent.putExtra("source", "app_settings");
 							intent.putExtra("userId", getAccount().getUserInfo().getId());
-							AppSettingsActivity.this.startActivity(intent);
+							startActivity(intent);
 						});
 			}
 		}
 
-		binding.sectionAbout.appVersion.setText(Utils.getAppVersion(ctx));
-		binding.sectionAbout.gitlabVersion.setText(getAccount().getServerVersion().toString());
-
-		binding.sectionLinks.supportPatreonFrame.setOnClickListener(
-				v11 ->
-						Utils.openUrlInBrowser(
-								this,
-								AppSettingsActivity.this,
-								getResources().getString(R.string.support_link_patreon)));
-		binding.sectionLinks.crowdinFrame.setOnClickListener(
-				v13 ->
-						Utils.openUrlInBrowser(
-								this,
-								AppSettingsActivity.this,
-								getResources().getString(R.string.crowd_in_link)));
-		binding.sectionLinks.websiteFrame.setOnClickListener(
-				v14 ->
-						Utils.openUrlInBrowser(
-								this,
-								AppSettingsActivity.this,
-								getResources().getString(R.string.app_website_link)));
-		binding.sectionLinks.sourceCodeFrame.setOnClickListener(
-				v15 ->
-						Utils.openUrlInBrowser(
-								this,
-								AppSettingsActivity.this,
-								getResources().getString(R.string.source_code_link)));
-
-		/*if (Utils.isPremium(ctx)) {
-			binding.supportPatreonFrame.setVisibility(View.GONE);
-			binding.dividerPatreon.setVisibility(View.GONE);
-		}*/
-
-		Bundle bsBundle = new Bundle();
-		binding.accountsSheetLayout.setOnClickListener(
-				accounts -> {
-					bsBundle.putString("source", "accounts");
-					AppSettingsBottomSheet bottomSheet = new AppSettingsBottomSheet();
-					bottomSheet.setArguments(bsBundle);
-					bottomSheet.show(getSupportFragmentManager(), "accountsBottomSheet");
-				});
-
+		binding.accountsSheetLayout.setOnClickListener(v -> openAccountsBottomSheet());
 		if (getIntent().getBooleanExtra("openAccountsBottomSheet", false)) {
-			bsBundle.putString("source", "accounts");
-			AppSettingsBottomSheet bottomSheet = new AppSettingsBottomSheet();
-			bottomSheet.setArguments(bsBundle);
-			bottomSheet.show(getSupportFragmentManager(), "accountsBottomSheet");
+			openAccountsBottomSheet();
 		}
+	}
 
-		// theme selection cards
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S || "S".equals(Build.VERSION.CODENAME)) {
-			themeList = getResources().getStringArray(R.array.themes);
-		} else {
-			binding.sectionAppearance.themeDynamic.setVisibility(View.GONE);
-			themeList = getResources().getStringArray(R.array.themes_older_versions);
-		}
+	private void setupAppearanceSection() {
+		boolean isSPlus = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S;
+		themeList =
+				getResources()
+						.getStringArray(isSPlus ? R.array.themes : R.array.themes_older_versions);
 		themeSelectedChoice =
 				Integer.parseInt(
 						AppSettingsInit.getSettingsValue(ctx, AppSettingsInit.APP_THEME_KEY));
 
-		updateThemeCardBorders(themeSelectedChoice);
+		binding.sectionAll.themeDark.themeText.setText(R.string.dark);
+		binding.sectionAll.themeDark.themeIcon.setImageResource(R.drawable.ic_theme_dark);
 
-		binding.sectionAppearance.themeDark.setOnClickListener(
-				v -> selectTheme(getString(R.string.dark)));
-		binding.sectionAppearance.themeLight.setOnClickListener(
-				v -> selectTheme(getString(R.string.light)));
-		binding.sectionAppearance.themeSystem.setOnClickListener(
-				v -> selectTheme(getString(R.string.theme_system)));
-		binding.sectionAppearance.themeDynamic.setOnClickListener(
-				v -> selectTheme(getString(R.string.dynamic)));
-		// theme selection cards
+		binding.sectionAll.themeLight.themeText.setText(R.string.light);
+		binding.sectionAll.themeLight.themeIcon.setImageResource(R.drawable.ic_theme_light);
 
-		// language selection dialog
-		LinkedHashMap<String, String> lang = new LinkedHashMap<>();
-		lang.put("sys", getString(R.string.system));
-		for (String langCode : getResources().getStringArray(R.array.languages)) {
-			lang.put(langCode, getLanguageDisplayName(langCode));
+		binding.sectionAll.themeSystem.themeText.setText(R.string.theme_system);
+		binding.sectionAll.themeSystem.themeIcon.setImageResource(R.drawable.ic_phone);
+
+		if (isSPlus) {
+			binding.sectionAll.themeDynamic.themeText.setText(R.string.dynamic);
+			binding.sectionAll.themeDynamic.themeIcon.setImageResource(R.drawable.ic_themes);
+			binding.sectionAll
+					.themeDynamic
+					.getRoot()
+					.setOnClickListener(v -> selectTheme(getString(R.string.dynamic)));
+		} else {
+			binding.sectionAll.themeDynamic.getRoot().setVisibility(View.GONE);
 		}
 
-		String[] locale =
-				AppSettingsInit.getSettingsValue(ctx, AppSettingsInit.APP_LOCALE_KEY).split("\\|");
-		langSelectedChoice = Integer.parseInt(locale[0]);
-		binding.sectionAppearance.languageSelected.setText(
-				lang.get(lang.keySet().toArray(new String[0])[langSelectedChoice]));
+		updateThemeCardBorders(themeSelectedChoice);
 
-		binding.sectionAppearance.languageSelectionFrame.setOnClickListener(
-				view -> {
-					MaterialAlertDialogBuilder materialAlertDialogBuilder =
-							new MaterialAlertDialogBuilder(AppSettingsActivity.this)
-									.setTitle(R.string.settings_language_selector_dialog_title)
-									.setCancelable(langSelectedChoice != -1)
-									.setSingleChoiceItems(
-											lang.values().toArray(new String[0]),
-											langSelectedChoice,
-											(dialogInterface, i) -> {
-												String selectedLanguage =
-														lang.keySet().toArray(new String[0])[i];
-												AppSettingsInit.updateSettingsValue(
-														ctx,
-														i + "|" + selectedLanguage,
-														AppSettingsInit.APP_LOCALE_KEY);
+		binding.sectionAll
+				.themeDark
+				.getRoot()
+				.setOnClickListener(v -> selectTheme(getString(R.string.dark)));
+		binding.sectionAll
+				.themeLight
+				.getRoot()
+				.setOnClickListener(v -> selectTheme(getString(R.string.light)));
+		binding.sectionAll
+				.themeSystem
+				.getRoot()
+				.setOnClickListener(v -> selectTheme(getString(R.string.theme_system)));
 
-												String[] multiCodeLang =
-														selectedLanguage.split("-");
-												if (selectedLanguage.contains("-")) {
-													selectedLanguage = multiCodeLang[0];
-												}
+		initLanguageSelector();
+		initHomeScreenSelector();
+	}
 
-												Utils.setLocale(this, selectedLanguage);
-
-												AppUIStateManager.invalidateUI();
-												this.overridePendingTransition(0, 0);
-												dialogInterface.dismiss();
-												this.recreate();
-											});
-
-					materialAlertDialogBuilder.create().show();
-				});
-		// language selection dialog
-
-		// home screen selection dialog
-		homeScreenList = getResources().getStringArray(R.array.home_screen);
-		homeScreenSelectedChoice =
-				Integer.parseInt(
-						AppSettingsInit.getSettingsValue(ctx, AppSettingsInit.APP_HOME_SCREEN_KEY));
-		binding.sectionAppearance.homeScreenSelected.setText(
-				homeScreenList[homeScreenSelectedChoice]);
-
-		binding.sectionAppearance.homeScreenSelectionFrame.setOnClickListener(
-				view -> {
-					MaterialAlertDialogBuilder materialAlertDialogBuilder =
-							new MaterialAlertDialogBuilder(AppSettingsActivity.this)
-									.setTitle(R.string.home_screen_dialog_title)
-									.setSingleChoiceItems(
-											homeScreenList,
-											homeScreenSelectedChoice,
-											(dialogInterfaceTheme, i) -> {
-												homeScreenSelectedChoice = i;
-												binding.sectionAppearance.homeScreenSelected
-														.setText(homeScreenList[i]);
-												AppSettingsInit.updateSettingsValue(
-														ctx,
-														String.valueOf(i),
-														AppSettingsInit.APP_HOME_SCREEN_KEY);
-
-												dialogInterfaceTheme.dismiss();
-												Snackbar.info(
-														AppSettingsActivity.this,
-														findViewById(R.id.bottom_app_bar),
-														getString(R.string.settings_saved));
-											});
-
-					materialAlertDialogBuilder.create().show();
-				});
-		// home screen selection dialog
-
-		// biometric switcher
-		binding.sectionSecurity.switchBiometric.setChecked(
+	private void setupSecuritySection() {
+		binding.sectionAll.switchBiometric.setChecked(
 				Boolean.parseBoolean(
 						AppSettingsInit.getSettingsValue(ctx, AppSettingsInit.APP_BIOMETRIC_KEY)));
 
-		binding.sectionSecurity.switchBiometric.setOnCheckedChangeListener(
-				(buttonView, isChecked) -> {
-					if (isChecked) {
+		binding.sectionAll.switchBiometric.setOnCheckedChangeListener(
+				(bv, isChecked) -> handleBiometricToggle(isChecked));
 
-						BiometricManager biometricManager = BiometricManager.from(ctx);
-						KeyguardManager keyguardManager =
-								(KeyguardManager) ctx.getSystemService(Context.KEYGUARD_SERVICE);
-
-						if (!keyguardManager.isDeviceSecure()) {
-
-							switch (biometricManager.canAuthenticate(
-									BIOMETRIC_STRONG | DEVICE_CREDENTIAL)) {
-								case BiometricManager.BIOMETRIC_SUCCESS:
-									AppSettingsInit.updateSettingsValue(
-											ctx, "true", AppSettingsInit.APP_BIOMETRIC_KEY);
-									Snackbar.info(
-											AppSettingsActivity.this,
-											findViewById(R.id.bottom_app_bar),
-											getString(R.string.settings_saved));
-									break;
-								case BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE:
-								case BiometricManager.BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED:
-								case BiometricManager.BIOMETRIC_ERROR_UNSUPPORTED:
-								case BiometricManager.BIOMETRIC_STATUS_UNKNOWN:
-									AppSettingsInit.updateSettingsValue(
-											ctx, "false", AppSettingsInit.APP_BIOMETRIC_KEY);
-									binding.sectionSecurity.switchBiometric.setChecked(false);
-									Snackbar.info(
-											AppSettingsActivity.this,
-											findViewById(R.id.bottom_app_bar),
-											getString(R.string.biometric_not_supported));
-									break;
-								case BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE:
-									AppSettingsInit.updateSettingsValue(
-											ctx, "false", AppSettingsInit.APP_BIOMETRIC_KEY);
-									binding.sectionSecurity.switchBiometric.setChecked(false);
-									Snackbar.info(
-											AppSettingsActivity.this,
-											findViewById(R.id.bottom_app_bar),
-											getString(R.string.biometric_not_available));
-									break;
-								case BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED:
-									AppSettingsInit.updateSettingsValue(
-											ctx, "false", AppSettingsInit.APP_BIOMETRIC_KEY);
-									binding.sectionSecurity.switchBiometric.setChecked(false);
-									Snackbar.info(
-											AppSettingsActivity.this,
-											findViewById(R.id.bottom_app_bar),
-											getString(R.string.enroll_biometric));
-									break;
-							}
-						} else {
-
-							AppSettingsInit.updateSettingsValue(
-									ctx, "true", AppSettingsInit.APP_BIOMETRIC_KEY);
-							Snackbar.info(
-									AppSettingsActivity.this,
-									findViewById(R.id.bottom_app_bar),
-									getString(R.string.settings_saved));
-						}
-					} else {
-
-						AppSettingsInit.updateSettingsValue(
-								ctx, "false", AppSettingsInit.APP_BIOMETRIC_KEY);
-						Snackbar.info(
-								AppSettingsActivity.this,
-								findViewById(R.id.bottom_app_bar),
-								getString(R.string.settings_saved));
-					}
-				});
-
-		binding.sectionSecurity.biometricFrameCard.setOnClickListener(
-				v ->
-						binding.sectionSecurity.switchBiometric.setChecked(
-								!binding.sectionSecurity.switchBiometric.isChecked()));
-		// biometric switcher
-
-		// backup and restore
-		binding.sectionBackup.backupFrameCard.setOnClickListener(
+		binding.sectionAll.backupFrameSelection.setOnClickListener(
 				v -> {
 					BackupBottomSheet bottomSheet = BackupBottomSheet.newInstance(this);
 					bottomSheet.show(getSupportFragmentManager(), "BackupBottomSheet");
 				});
-		// backup and restore
+	}
+
+	private void setupDynamicSections() {
+		LinearLayout linksContainer =
+				binding.sectionLinks.getRoot().findViewById(R.id.links_container);
+		LinearLayout appsContainer =
+				binding.sectionApps.getRoot().findViewById(R.id.apps_container);
+		linksContainer.removeAllViews();
+		appsContainer.removeAllViews();
+
+		addDynamicRow(
+				linksContainer,
+				getString(R.string.support_text_patreon),
+				R.drawable.ic_patreon,
+				getString(R.string.support_link_patreon));
+		addDynamicRow(
+				linksContainer,
+				getString(R.string.source_code),
+				R.drawable.ic_code,
+				getString(R.string.source_code_link));
+		addDynamicRow(
+				linksContainer,
+				getString(R.string.website),
+				R.drawable.ic_browser,
+				getString(R.string.app_website_link));
+		addDynamicRow(
+				linksContainer,
+				getString(R.string.crowd_in_text),
+				R.drawable.ic_language,
+				getString(R.string.crowd_in_link));
+
+		addDynamicRow(
+				appsContainer,
+				getString(R.string.gitnex),
+				R.drawable.ic_app_gitnex,
+				getString(R.string.gitnex_link));
+		addDynamicRow(
+				appsContainer,
+				getString(R.string.oceannex),
+				R.drawable.ic_app_oceannex,
+				getString(R.string.oceannex_link));
+		addDynamicRow(
+				appsContainer,
+				getString(R.string.nexnode),
+				R.drawable.ic_app_nexnode,
+				getString(R.string.nexnode_link));
+	}
+
+	private void addDynamicRow(LinearLayout container, String title, int iconRes, String url) {
+		View row = getLayoutInflater().inflate(R.layout.item_settings_others, container, false);
+		((TextView) row.findViewById(R.id.item_title)).setText(title);
+		((ImageView) row.findViewById(R.id.item_icon)).setImageResource(iconRes);
+
+		row.setOnClickListener(v -> Utils.openUrlInBrowser(this, url));
+		container.addView(row);
+	}
+
+	private void handleAccountSubtext(UserAccount account) {
+		String accountName = account.getAccountName();
+		if (accountName != null && accountName.contains("@")) {
+			String[] parts = accountName.split("@");
+			String host = UrlBuilder.fromString(parts[1]).hostName;
+			binding.accountsUsername.setText(
+					getString(R.string.username_with_domain, parts[0], host));
+		} else {
+			binding.accountsUsername.setText("");
+		}
 	}
 
 	private void selectTheme(String themeName) {
-
 		int themeIndex = Arrays.asList(themeList).indexOf(themeName);
-		if (themeIndex == -1 || themeSelectedChoice == themeIndex) {
-			return;
-		}
+		if (themeIndex == -1 || themeSelectedChoice == themeIndex) return;
 
 		themeSelectedChoice = themeIndex;
 		AppSettingsInit.updateSettingsValue(
 				ctx, String.valueOf(themeIndex), AppSettingsInit.APP_THEME_KEY);
+		recreateWithAnimation();
+	}
 
-		updateThemeCardBorders(themeIndex);
-
+	private void recreateWithAnimation() {
 		AppUIStateManager.invalidateUI();
-		this.recreate();
-		this.overridePendingTransition(0, 0);
-		Snackbar.info(
-				AppSettingsActivity.this,
-				findViewById(R.id.bottom_app_bar),
-				getString(R.string.settings_saved));
+		overridePendingTransition(0, 0);
+		recreate();
 	}
 
 	private void updateThemeCardBorders(int selectedIndex) {
-
 		MaterialCardView[] themeCards = {
-			binding.sectionAppearance.themeDark,
-			binding.sectionAppearance.themeLight,
-			binding.sectionAppearance.themeSystem,
-			binding.sectionAppearance.themeDynamic
+			binding.sectionAll.themeDark.themeIconCard, binding.sectionAll.themeLight.themeIconCard,
+			binding.sectionAll.themeSystem.themeIconCard,
+					binding.sectionAll.themeDynamic.themeIconCard
 		};
-		String[] themeNames = {
+		String[] internalNames = {
 			getString(R.string.dark),
 			getString(R.string.light),
 			getString(R.string.theme_system),
@@ -448,13 +290,135 @@ public class AppSettingsActivity extends BaseActivity
 		};
 
 		for (int i = 0; i < themeCards.length; i++) {
-			if (i < themeList.length && themeNames[i].equals(themeList[selectedIndex])) {
-				themeCards[i].setStrokeWidth(
-						getResources().getDimensionPixelSize(R.dimen.dimen2dp));
-			} else {
-				themeCards[i].setStrokeWidth(0);
-			}
+			boolean isSelected =
+					i < themeList.length && internalNames[i].equals(themeList[selectedIndex]);
+			themeCards[i].setStrokeWidth(
+					isSelected ? getResources().getDimensionPixelSize(R.dimen.dimen2dp) : 0);
 		}
+	}
+
+	private void initLanguageSelector() {
+		LinkedHashMap<String, String> langMap = new LinkedHashMap<>();
+		langMap.put("sys", getString(R.string.system));
+		for (String code : getResources().getStringArray(R.array.languages)) {
+			langMap.put(code, getLanguageDisplayName(code));
+		}
+
+		String[] localePref =
+				AppSettingsInit.getSettingsValue(ctx, AppSettingsInit.APP_LOCALE_KEY).split("\\|");
+		langSelectedChoice = Integer.parseInt(localePref[0]);
+		binding.sectionAll.languageSelected.setText(
+				langMap.get(langMap.keySet().toArray(new String[0])[langSelectedChoice]));
+
+		binding.sectionAll.languageSelectionFrame.setOnClickListener(
+				v -> {
+					new MaterialAlertDialogBuilder(this)
+							.setTitle(R.string.settings_language_selector_dialog_title)
+							.setSingleChoiceItems(
+									langMap.values().toArray(new String[0]),
+									langSelectedChoice,
+									(dialog, i) -> {
+										String selectedLanguage =
+												langMap.keySet().toArray(new String[0])[i];
+										AppSettingsInit.updateSettingsValue(
+												ctx,
+												i + "|" + selectedLanguage,
+												AppSettingsInit.APP_LOCALE_KEY);
+										Utils.setLocale(this, selectedLanguage.split("-")[0]);
+										dialog.dismiss();
+										recreateWithAnimation();
+									})
+							.show();
+				});
+	}
+
+	private void initHomeScreenSelector() {
+		String[] homeScreenList = getResources().getStringArray(R.array.home_screen);
+		homeScreenSelectedChoice =
+				Integer.parseInt(
+						AppSettingsInit.getSettingsValue(ctx, AppSettingsInit.APP_HOME_SCREEN_KEY));
+		binding.sectionAll.homeScreenSelected.setText(homeScreenList[homeScreenSelectedChoice]);
+
+		binding.sectionAll.homeScreenSelectionFrame.setOnClickListener(
+				v -> {
+					new MaterialAlertDialogBuilder(this)
+							.setTitle(R.string.home_screen_dialog_title)
+							.setSingleChoiceItems(
+									homeScreenList,
+									homeScreenSelectedChoice,
+									(dialog, i) -> {
+										homeScreenSelectedChoice = i;
+										binding.sectionAll.homeScreenSelected.setText(
+												homeScreenList[i]);
+										AppSettingsInit.updateSettingsValue(
+												ctx,
+												String.valueOf(i),
+												AppSettingsInit.APP_HOME_SCREEN_KEY);
+										dialog.dismiss();
+										Toasty.show(this, getString(R.string.settings_saved));
+									})
+							.show();
+				});
+	}
+
+	private void handleBiometricToggle(boolean isChecked) {
+		if (isChecked) {
+			BiometricManager bm = BiometricManager.from(ctx);
+			KeyguardManager km = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+
+			if (!km.isDeviceSecure()) {
+				int canAuth = bm.canAuthenticate(BIOMETRIC_STRONG | DEVICE_CREDENTIAL);
+				if (canAuth == BiometricManager.BIOMETRIC_SUCCESS) {
+					saveBiometric(true);
+				} else {
+					binding.sectionAll.switchBiometric.setChecked(false);
+					saveBiometric(false);
+					Toasty.show(this, getString(R.string.biometric_not_supported));
+				}
+			} else {
+				saveBiometric(true);
+			}
+		} else {
+			saveBiometric(false);
+		}
+	}
+
+	private void saveBiometric(boolean val) {
+		AppSettingsInit.updateSettingsValue(
+				ctx, String.valueOf(val), AppSettingsInit.APP_BIOMETRIC_KEY);
+		Toasty.show(this, getString(R.string.settings_saved));
+	}
+
+	private void openAccountsBottomSheet() {
+		Bundle b = new Bundle();
+		b.putString("source", "accounts");
+		AppAccountsBottomSheet bs = new AppAccountsBottomSheet();
+		bs.setArguments(b);
+		bs.show(getSupportFragmentManager(), "accountsBottomSheet");
+	}
+
+	private void initLaunchers() {
+		importFileLauncher =
+				registerForActivityResult(
+						new ActivityResultContracts.StartActivityForResult(),
+						result -> {
+							if (result.getResultCode() == Activity.RESULT_OK
+									&& result.getData() != null) {
+								Uri uri = result.getData().getData();
+								if (uri != null) processImport(uri);
+							}
+						});
+
+		exportFileLauncher =
+				registerForActivityResult(
+						new ActivityResultContracts.StartActivityForResult(),
+						result -> {
+							if (result.getResultCode() == Activity.RESULT_OK
+									&& result.getData() != null) {
+								Uri uri = result.getData().getData();
+								if (uri != null) exportDatabaseToUri(uri);
+							}
+						});
 	}
 
 	private static String getLanguageDisplayName(String langCode) {
@@ -580,20 +544,13 @@ public class AppSettingsActivity extends BaseActivity
 
 								runOnUiThread(
 										() -> {
-											Snackbar.info(
-													this,
-													findViewById(R.id.bottom_app_bar),
-													getString(R.string.backup_success));
+											Toasty.show(this, getString(R.string.backup_success));
 											new Handler(Looper.getMainLooper())
 													.postDelayed(this::restartApp, 1500);
 										});
 							} catch (IOException | SQLiteException e) {
 								runOnUiThread(
-										() ->
-												Snackbar.info(
-														this,
-														findViewById(R.id.bottom_app_bar),
-														getString(R.string.backup_failed)));
+										() -> Toasty.show(this, getString(R.string.backup_failed)));
 							}
 						});
 		exportThread.setDaemon(false);
@@ -625,12 +582,10 @@ public class AppSettingsActivity extends BaseActivity
 			db = LabNexDatabase.getDatabaseInstance(this);
 			db.getOpenHelper().getWritableDatabase();
 
-			Snackbar.info(
-					this, findViewById(R.id.bottom_app_bar), getString(R.string.import_success));
+			Toasty.show(this, getString(R.string.import_success));
 			new Handler(Looper.getMainLooper()).postDelayed(this::restartApp, 1500);
 		} catch (IOException | SQLiteException e) {
-			Snackbar.info(
-					this, findViewById(R.id.bottom_app_bar), getString(R.string.import_failed));
+			Toasty.show(this, getString(R.string.import_failed));
 		}
 	}
 

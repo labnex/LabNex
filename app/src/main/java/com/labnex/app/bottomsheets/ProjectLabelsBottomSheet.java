@@ -18,7 +18,7 @@ import com.labnex.app.R;
 import com.labnex.app.activities.BaseActivity;
 import com.labnex.app.adapters.ProjectLabelsAdapter;
 import com.labnex.app.databinding.BottomSheetProjectLabelsBinding;
-import com.labnex.app.helpers.Snackbar;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.interfaces.BottomSheetListener;
 import com.labnex.app.viewmodels.LabelsViewModel;
 
@@ -78,16 +78,10 @@ public class ProjectLabelsBottomSheet extends BottomSheetDialogFragment
 	public void updateDataListener(String str) {
 
 		if (str.equalsIgnoreCase("created")) {
-			Snackbar.info(
-					requireContext(),
-					bottomSheetProjectLabelsBinding.labelsLayout,
-					getString(R.string.label_created));
+			Toasty.show(requireContext(), getString(R.string.label_created));
 		}
 		if (str.equalsIgnoreCase("updated")) {
-			Snackbar.info(
-					requireContext(),
-					bottomSheetProjectLabelsBinding.labelsLayout,
-					getString(R.string.label_updated));
+			Toasty.show(requireContext(), getString(R.string.label_updated));
 		}
 
 		adapter.clearAdapter();

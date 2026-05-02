@@ -18,7 +18,7 @@ import com.labnex.app.R;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.databinding.BottomSheetWikiActionsBinding;
 import com.labnex.app.helpers.Markdown;
-import com.labnex.app.helpers.Snackbar;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.interfaces.BottomSheetListener;
 import com.labnex.app.models.wikis.CrudeWiki;
 import com.labnex.app.models.wikis.Wiki;
@@ -124,17 +124,11 @@ public class WikiActionsBottomSheet extends BottomSheetDialogFragment {
 						if (title.isEmpty()) {
 
 							enableButton();
-							Snackbar.info(
-									requireContext(),
-									bottomSheetWikiActionsBinding.mainLayout,
-									getString(R.string.title_required));
+							Toasty.show(requireContext(), getString(R.string.title_required));
 						} else if (content.isEmpty()) {
 
 							enableButton();
-							Snackbar.info(
-									requireContext(),
-									bottomSheetWikiActionsBinding.mainLayout,
-									getString(R.string.content_required));
+							Toasty.show(requireContext(), getString(R.string.content_required));
 						} else {
 							updateWikiPage(title, content, bundle.getString("slug"));
 						}
@@ -156,17 +150,11 @@ public class WikiActionsBottomSheet extends BottomSheetDialogFragment {
 						if (title.isEmpty()) {
 
 							enableButton();
-							Snackbar.info(
-									requireContext(),
-									bottomSheetWikiActionsBinding.mainLayout,
-									getString(R.string.title_required));
+							Toasty.show(requireContext(), getString(R.string.title_required));
 						} else if (content.isEmpty()) {
 
 							enableButton();
-							Snackbar.info(
-									requireContext(),
-									bottomSheetWikiActionsBinding.mainLayout,
-									getString(R.string.content_required));
+							Toasty.show(requireContext(), getString(R.string.content_required));
 						} else {
 							createNewPage(title, content);
 						}
@@ -209,24 +197,15 @@ public class WikiActionsBottomSheet extends BottomSheetDialogFragment {
 						} else if (response.code() == 401) {
 
 							enableButton();
-							Snackbar.info(
-									requireContext(),
-									bottomSheetWikiActionsBinding.mainLayout,
-									getString(R.string.not_authorized));
+							Toasty.show(requireContext(), getString(R.string.not_authorized));
 						} else if (response.code() == 403) {
 
 							enableButton();
-							Snackbar.info(
-									requireContext(),
-									bottomSheetWikiActionsBinding.mainLayout,
-									getString(R.string.access_forbidden_403));
+							Toasty.show(requireContext(), getString(R.string.access_forbidden_403));
 						} else {
 
 							enableButton();
-							Snackbar.info(
-									requireContext(),
-									bottomSheetWikiActionsBinding.mainLayout,
-									getString(R.string.generic_error));
+							Toasty.show(requireContext(), getString(R.string.generic_error));
 						}
 					}
 
@@ -234,9 +213,8 @@ public class WikiActionsBottomSheet extends BottomSheetDialogFragment {
 					public void onFailure(@NonNull Call<Wiki> call, @NonNull Throwable t) {
 
 						enableButton();
-						Snackbar.info(
+						Toasty.show(
 								requireContext(),
-								bottomSheetWikiActionsBinding.mainLayout,
 								getString(R.string.generic_server_response_error));
 					}
 				});
@@ -266,24 +244,15 @@ public class WikiActionsBottomSheet extends BottomSheetDialogFragment {
 						} else if (response.code() == 401) {
 
 							enableButton();
-							Snackbar.info(
-									requireContext(),
-									bottomSheetWikiActionsBinding.mainLayout,
-									getString(R.string.not_authorized));
+							Toasty.show(requireContext(), getString(R.string.not_authorized));
 						} else if (response.code() == 403) {
 
 							enableButton();
-							Snackbar.info(
-									requireContext(),
-									bottomSheetWikiActionsBinding.mainLayout,
-									getString(R.string.access_forbidden_403));
+							Toasty.show(requireContext(), getString(R.string.access_forbidden_403));
 						} else {
 
 							enableButton();
-							Snackbar.info(
-									requireContext(),
-									bottomSheetWikiActionsBinding.mainLayout,
-									getString(R.string.generic_error));
+							Toasty.show(requireContext(), getString(R.string.generic_error));
 						}
 					}
 
@@ -291,9 +260,8 @@ public class WikiActionsBottomSheet extends BottomSheetDialogFragment {
 					public void onFailure(@NonNull Call<Wiki> call, @NonNull Throwable t) {
 
 						enableButton();
-						Snackbar.info(
+						Toasty.show(
 								requireContext(),
-								bottomSheetWikiActionsBinding.mainLayout,
 								getString(R.string.generic_server_response_error));
 					}
 				});

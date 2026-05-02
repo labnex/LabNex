@@ -15,7 +15,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.labnex.app.R;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.databinding.BottomSheetGroupsBinding;
-import com.labnex.app.helpers.Snackbar;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.interfaces.BottomSheetListener;
 import com.labnex.app.models.groups.CreateGroup;
 import com.labnex.app.models.groups.GroupsItem;
@@ -78,10 +78,8 @@ public class GroupsBottomSheet extends BottomSheetDialogFragment {
 
 							if (groupName.isEmpty()) {
 
-								Snackbar.info(
-										requireContext(),
-										bottomSheetGroupsBinding.mainBsFrame,
-										getString(R.string.group_name_required));
+								Toasty.show(
+										requireContext(), getString(R.string.group_name_required));
 							} else {
 								createGroup(groupName, groupDescription);
 							}
@@ -131,39 +129,26 @@ public class GroupsBottomSheet extends BottomSheetDialogFragment {
 
 						if (response.code() == 201) {
 
-							Snackbar.info(
-									requireContext(),
-									bottomSheetGroupsBinding.mainBsFrame,
-									getString(R.string.group_created));
+							Toasty.show(requireContext(), getString(R.string.group_created));
 							dismiss();
 
 						} else if (response.code() == 401) {
 
-							Snackbar.info(
-									requireContext(),
-									bottomSheetGroupsBinding.mainBsFrame,
-									getString(R.string.not_authorized));
+							Toasty.show(requireContext(), getString(R.string.not_authorized));
 						} else if (response.code() == 403) {
 
-							Snackbar.info(
-									requireContext(),
-									bottomSheetGroupsBinding.mainBsFrame,
-									getString(R.string.access_forbidden_403));
+							Toasty.show(requireContext(), getString(R.string.access_forbidden_403));
 						} else {
 
-							Snackbar.info(
-									requireContext(),
-									bottomSheetGroupsBinding.mainBsFrame,
-									getString(R.string.generic_error));
+							Toasty.show(requireContext(), getString(R.string.generic_error));
 						}
 					}
 
 					@Override
 					public void onFailure(@NonNull Call<GroupsItem> call, @NonNull Throwable t) {
 
-						Snackbar.info(
+						Toasty.show(
 								requireContext(),
-								bottomSheetGroupsBinding.mainBsFrame,
 								getString(R.string.generic_server_response_error));
 					}
 				});
