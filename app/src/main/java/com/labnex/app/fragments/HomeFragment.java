@@ -146,9 +146,8 @@ public class HomeFragment extends Fragment {
 					startActivity(intent);
 				});
 
-		// preferences section
-		// binding.sectionPreferences.mostVisited.setOnClickListener(
-		//		v -> startActivity(new Intent(ctx, MostVisitedActivity.class)));
+		binding.sectionPreferences.mostVisited.setOnClickListener(
+				v -> startActivity(new Intent(ctx, MostVisitedProjectsActivity.class)));
 
 		binding.sectionPreferences.notesFrame.setOnClickListener(
 				v -> startActivity(new Intent(ctx, NotesActivity.class)));

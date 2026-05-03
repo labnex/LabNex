@@ -25,7 +25,7 @@
                 android:layout_width="@dimen/dimen24dp"
                 android:layout_height="@dimen/dimen24dp"
                 android:contentDescription="@string/generic_img_copy"
-                android:src="@drawable/ic_analytics"
+                android:src="@drawable/ic_trending"
                 app:tint="?attr/iconsColor"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

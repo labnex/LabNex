@@ -83,7 +83,6 @@
     <string name="gitlab_saas_message_extra">On GitLab SaaS, you must use the GitLab UI to create groups without a parent group.</string>
     <string name="group_created">New group created</string>
     <string name="starred_projects">Starred projects</string>
-    <string name="most_visited_empty_message">You haven\'t visited any projects yet. Explore projects to list them here.</string>
     <string name="archived_project">This is an archived project. Repository and other project resources are read-only.</string>
     <string name="project_starred">The project has been starred successfully</string>
     <string name="project_unstarred">The project has been unstarred successfully</string>
@@ -198,7 +197,6 @@
     <string name="file_viewer_notification_description_finished">Downloaded %1$s</string>
     <string name="file_viewer_notification_title_failed">Download failed</string>
     <string name="file_viewer_notification_description_failed">Couldn\'t download %1$s</string>
-    <string name="delete_all_most_visited_dialog_message">This will delete all projects added to Most Visited. Press Clear to remove them.</string>
     <string name="create_file">Create file</string>
     <string name="filename">File name</string>
     <string name="filename_hint">with directory: app/config.json</string>
@@ -325,7 +323,7 @@
     <string name="time_months_ago">%d months ago</string>
     <string name="time_year_ago">%d year ago</string>
     <string name="time_years_ago">%d years ago</string>
-    <string name="most_visited_subtitle">Frequently visited projects</string>
+    <string name="most_visited_subtitle">Projects that you frequently visited</string>
     <string name="notes_subtitle">Take some quick notes</string>
     <string name="settings_subtitle">Theme, language, backup &amp; more</string>
     <string name="activities_subtitle">Recent account activity</string>
@@ -341,6 +339,10 @@
     <string name="default_branch">Default branch</string>
     <string name="enable_lfs">Enable LFS</string>
     <string name="enable_email_notifications">Enable email notifications</string>
+    <string name="remove_all_projects">Remove all projects</string>
+    <string name="remove_all_projects_message">This will remove all most visited projects from the list.</string>
+    <string name="all_projects_removed">All projects removed</string>
+    <string name="project_removed">Project removed</string>
 
     <!-- errors -->
     <string name="generic_error">An unexpected error occurred</string>
