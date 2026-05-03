@@ -137,7 +137,7 @@ public class DeepLinksActivity extends BaseActivity {
 			String sectionType = pathSegments.get(split + 1);
 			String projectPathWithNamespace = String.join("/", pathSegments.subList(0, split));
 
-			if ("issues".equals(sectionType)) {
+			if ("issues".equals(sectionType) || "work_items".equals(sectionType)) {
 				String issueIdStr = pathSegments.get(split + 2);
 				if (issueIdStr != null && issueIdStr.matches("\\d+")) {
 					int issueIid = Integer.parseInt(issueIdStr);
