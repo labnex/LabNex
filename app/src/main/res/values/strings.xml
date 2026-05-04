@@ -329,6 +329,7 @@
     <string name="remove_all_projects_message">This will remove all most visited projects from the list.</string>
     <string name="all_projects_removed">All projects removed</string>
     <string name="project_removed">Project removed</string>
+    <string name="take_notes">Take notes</string>
 
     <!-- errors -->
     <string name="generic_error">An unexpected error occurred</string>

@@ -158,7 +158,7 @@ public class GroupsBottomSheet extends BottomSheetDialogFragment {
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 
 		BottomSheetDialog dialog = (BottomSheetDialog) super.onCreateDialog(savedInstanceState);
-		dialog.setContentView(R.layout.bottom_sheet_notes);
+		dialog.setContentView(R.layout.bottomsheet_notes);
 
 		dialog.setOnShowListener(
 				dialogInterface -> {

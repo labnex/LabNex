@@ -1,11 +1,8 @@
 package com.labnex.app.activities;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.labnex.app.R;
 import com.labnex.app.adapters.NotesAdapter;
@@ -15,166 +12,132 @@ import com.labnex.app.database.api.NotesApi;
 import com.labnex.app.database.models.Notes;
 import com.labnex.app.databinding.ActivityNotesBinding;
 import com.labnex.app.helpers.Toasty;
-import com.labnex.app.interfaces.BottomSheetListener;
+import com.labnex.app.helpers.UIHelper;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author mmarif
  */
-public class NotesActivity extends BaseActivity implements BottomSheetListener {
+public class NotesActivity extends BaseActivity implements NotesAdapter.OnNoteClickListener {
 
 	private ActivityNotesBinding binding;
 	private NotesApi notesApi;
-	private List<Notes> notesList;
-	private List<Notes> notesListSearch;
 	private NotesAdapter adapter;
-	private NotesAdapter adapterSearch;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-
 		super.onCreate(savedInstanceState);
 		binding = ActivityNotesBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
-		binding.bottomAppBar.setNavigationOnClickListener(bottomAppBar -> finish());
+		UIHelper.applyEdgeToEdge(
+				this, binding.dockedToolbar, binding.recyclerView, binding.pullToRefresh, null);
 
-		notesList = new ArrayList<>();
 		notesApi = BaseApi.getInstance(ctx, NotesApi.class);
 
-		notesListSearch = new ArrayList<>();
-		adapterSearch = new NotesAdapter(ctx, notesListSearch, "", "search", binding.bottomAppBar);
+		binding.btnBack.setOnClickListener(v -> finish());
 
-		binding.recyclerView.setHasFixedSize(true);
-
-		adapter = new NotesAdapter(ctx, notesList, "", "", binding.bottomAppBar);
-
-		binding.pullToRefresh.setOnRefreshListener(
-				() ->
-						new Handler(Looper.getMainLooper())
-								.postDelayed(
-										() -> {
-											notesList.clear();
-											binding.pullToRefresh.setRefreshing(false);
-											binding.progressBar.setVisibility(View.VISIBLE);
-											getNotes();
-										},
-										350));
-
-		getNotes();
-
-		binding.bottomAppBar.setOnMenuItemClickListener(
-				menuItem -> {
-					if (menuItem.getItemId() == R.id.delete_all_notes) {
-
-						if (notesList.isEmpty()) {
-							Toasty.show(ctx, getString(R.string.all_good));
-						} else {
-							new MaterialAlertDialogBuilder(ctx)
-									.setMessage(R.string.delete_all_notes_dialog_message)
-									.setPositiveButton(
-											R.string.delete,
-											(dialog, which) -> {
-												deleteAllNotes();
-												dialog.dismiss();
-											})
-									.setNeutralButton(R.string.cancel, null)
-									.show();
-						}
+		binding.btnDeleteAll.setOnClickListener(
+				v -> {
+					if (adapter.getItemCount() == 0) {
+						Toasty.show(ctx, getString(R.string.all_good));
+						return;
 					}
-					return false;
+					new MaterialAlertDialogBuilder(ctx)
+							.setMessage(R.string.delete_all_notes_dialog_message)
+							.setPositiveButton(
+									R.string.delete,
+									(dialog, which) -> {
+										if (notesApi != null) notesApi.deleteAllNotes();
+										adapter.updateList(new ArrayList<>());
+										showEmptyState();
+										Toasty.show(
+												ctx,
+												getResources()
+														.getQuantityString(
+																R.plurals.note_delete_message, 2));
+									})
+							.setNeutralButton(R.string.cancel, null)
+							.show();
 				});
 
-		binding.searchView
-				.getEditText()
-				.addTextChangedListener(
-						new TextWatcher() {
-							@Override
-							public void beforeTextChanged(
-									CharSequence charSequence, int i, int i1, int i2) {}
+		binding.btnNewNote.setOnClickListener(
+				v -> {
+					NotesBottomSheet sheet = new NotesBottomSheet();
+					Bundle args = new Bundle();
+					args.putString("source", "new");
+					sheet.setArguments(args);
+					sheet.show(getSupportFragmentManager(), "notesBottomSheet");
+				});
 
-							@Override
-							public void onTextChanged(
-									CharSequence charSequence, int i, int i1, int i2) {
-								String searchText = charSequence.toString();
-								if (searchText.length() >= 2) {
-									updateSearchResult(searchText);
+		adapter = new NotesAdapter(ctx, new ArrayList<>(), this);
+		binding.recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
+		binding.recyclerView.setAdapter(adapter);
+
+		binding.pullToRefresh.setOnRefreshListener(this::loadNotes);
+		loadNotes();
+	}
+
+	@Override
+	protected void onGlobalRefresh() {
+		loadNotes();
+	}
+
+	private void loadNotes() {
+		binding.progressBar.setVisibility(View.VISIBLE);
+
+		if (notesApi != null) {
+			notesApi.fetchAllNotes()
+					.observe(
+							this,
+							notes -> {
+								binding.progressBar.setVisibility(View.GONE);
+								binding.pullToRefresh.setRefreshing(false);
+
+								if (notes != null && !notes.isEmpty()) {
+									adapter.updateList(notes);
+									binding.nothingFoundFrame.getRoot().setVisibility(View.GONE);
+									binding.recyclerView.setVisibility(View.VISIBLE);
 								} else {
-									notesListSearch.clear();
-									adapterSearch.notifyDataChanged();
+									showEmptyState();
 								}
-							}
-
-							@Override
-							public void afterTextChanged(Editable editable) {}
-						});
-
-		Bundle bsBundle = new Bundle();
-		binding.newNote.setOnClickListener(
-				newNote -> {
-					bsBundle.putString("source", "new");
-					NotesBottomSheet bottomSheet = new NotesBottomSheet();
-					bottomSheet.setArguments(bsBundle);
-					bottomSheet.show(getSupportFragmentManager(), "notesBottomSheet");
-				});
+							});
+		}
 	}
 
-	public void updateSearchResult(String text) {
-
-		binding.recyclerViewSearch.setHasFixedSize(true);
-
-		notesApi.searchNotes(text)
-				.observe(
-						this,
-						allNotes -> {
-							assert allNotes != null;
-							if (!allNotes.isEmpty()) {
-								notesListSearch.clear();
-								notesListSearch.addAll(allNotes);
-								adapterSearch.notifyDataChanged();
-								binding.recyclerViewSearch.setAdapter(adapterSearch);
-							}
-						});
-	}
-
-	private void getNotes() {
-
-		notesApi.fetchAllNotes()
-				.observe(
-						this,
-						allNotes -> {
-							binding.pullToRefresh.setRefreshing(false);
-							assert allNotes != null;
-							if (!allNotes.isEmpty()) {
-
-								notesList.clear();
-								binding.nothingFoundFrame.getRoot().setVisibility(View.GONE);
-								notesList.addAll(allNotes);
-								adapter.notifyDataChanged();
-								binding.recyclerView.setAdapter(adapter);
-							} else {
-
-								binding.nothingFoundFrame.getRoot().setVisibility(View.VISIBLE);
-							}
-							binding.progressBar.setVisibility(View.GONE);
-						});
-	}
-
-	public void deleteAllNotes() {
-
-		if (!notesList.isEmpty()) {
-
-			notesApi.deleteAllNotes();
-			notesList.clear();
-			adapter.notifyDataChanged();
-			Toasty.show(
-					ctx, ctx.getResources().getQuantityString(R.plurals.note_delete_message, 2));
-		} else {
-			Toasty.show(ctx, getString(R.string.all_good));
+	private void showEmptyState() {
+		if (adapter.getItemCount() == 0) {
+			binding.nothingFoundFrame.getRoot().setVisibility(View.VISIBLE);
+			binding.recyclerView.setVisibility(View.GONE);
 		}
 	}
 
 	@Override
-	public void onButtonClicked(String text) {}
+	public void onNoteClick(Notes note) {
+		NotesBottomSheet sheet = new NotesBottomSheet();
+		Bundle args = new Bundle();
+		args.putString("source", "edit");
+		args.putInt("noteId", note.getNoteId());
+		sheet.setArguments(args);
+		sheet.show(getSupportFragmentManager(), "notesBottomSheet");
+	}
+
+	@Override
+	public void onNoteDelete(Notes note, int position) {
+		new MaterialAlertDialogBuilder(ctx)
+				.setMessage(R.string.delete_note_dialog_message)
+				.setPositiveButton(
+						R.string.delete,
+						(dialog, which) -> {
+							if (notesApi != null) notesApi.deleteNote(note.getNoteId());
+							adapter.removeItem(position);
+							showEmptyState();
+							Toasty.show(
+									ctx,
+									getResources()
+											.getQuantityString(R.plurals.note_delete_message, 1));
+						})
+				.setNeutralButton(R.string.cancel, null)
+				.show();
+	}
 }

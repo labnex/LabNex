@@ -16,7 +16,7 @@ public interface NotesDao {
 	@Insert
 	long insertNote(Notes notes);
 
-	@Query("SELECT * FROM Notes ORDER BY modified DESC, noteId DESC")
+	@Query("SELECT * FROM Notes ORDER BY COALESCE(modified, datetime) DESC, noteId DESC")
 	LiveData<List<Notes>> fetchAllNotes();
 
 	@Query("SELECT * FROM Notes WHERE noteId = :noteId")
