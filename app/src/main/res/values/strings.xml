@@ -275,20 +275,6 @@
     <string name="go_to_app">Go to App</string>
     <string name="how_to_get_access_token">How to get access token</string>
     <string name="fetching_data">Fetching data</string>
-    <string name="active_today">Active today</string>
-    <string name="active_yesterday">Active yesterday</string>
-    <plurals name="active_days_ago">
-        <item quantity="one">Active %d day ago</item>
-        <item quantity="other">Active %d days ago</item>
-    </plurals>
-    <plurals name="active_weeks_ago">
-        <item quantity="one">Active %d week ago</item>
-        <item quantity="other">Active %d weeks ago</item>
-    </plurals>
-    <plurals name="active_months_ago">
-        <item quantity="one">Active %d month ago</item>
-        <item quantity="other">Active %d months ago</item>
-    </plurals>
     <string name="member_since">Member since %s</string>
     <string name="todo_list">To-Do List</string>
     <string name="todo_empty_message">All caught up! No pending todos.</string>
@@ -471,5 +457,8 @@
     <string name="reset">Reset</string>
     <string name="all">All</string>
     <string name="epics">Epics</string>
+    <string name="admin">Admin</string>
+    <string name="stars">Stars</string>
+    <string name="bio">Bio</string>
     <!-- generic copy -->
 </resources>

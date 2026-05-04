@@ -60,9 +60,6 @@ public class User implements Serializable {
 	@SerializedName("is_admin")
 	private boolean isAdmin;
 
-	@SerializedName("skype")
-	private String skype;
-
 	@SerializedName("twitter")
 	private String twitter;
 
@@ -219,10 +216,6 @@ public class User implements Serializable {
 
 	public boolean isIsAdmin() {
 		return isAdmin;
-	}
-
-	public String getSkype() {
-		return skype;
 	}
 
 	public String getTwitter() {
