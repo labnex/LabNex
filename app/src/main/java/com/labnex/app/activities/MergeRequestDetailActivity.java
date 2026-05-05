@@ -453,7 +453,7 @@ public class MergeRequestDetailActivity extends BaseActivity
 						if (response.code() == 200) {
 
 							sheetBinding.closeItemCard.setVisibility(View.GONE);
-							MergeRequestsActivity.updateMergeRequestList = true;
+							// MergeRequestsActivity.updateMergeRequestList = true;
 							Toasty.show(ctx, getString(R.string.mr_closed));
 						} else if (response.code() == 401) {
 
@@ -495,7 +495,7 @@ public class MergeRequestDetailActivity extends BaseActivity
 
 						if (response.code() == 200) {
 
-							MergeRequestsActivity.updateMergeRequestList = true;
+							// MergeRequestsActivity.updateMergeRequestList = true;
 							Toasty.show(ctx, getString(R.string.merge_request_merged_text));
 						} else if (response.code() == 401) {
 

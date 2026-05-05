@@ -265,7 +265,8 @@ public class HomeViewModel extends ViewModel {
 
 	private void fetchMergeRequestsCount(Context ctx) {
 		Call<List<MergeRequests>> call =
-				RetrofitClient.getApiInterface(ctx).getMergeRequests(null, "opened", null, 1, 1);
+				RetrofitClient.getApiInterface(ctx)
+						.getMergeRequests(null, "opened", null, null, null, 1, 1);
 
 		call.enqueue(
 				new Callback<>() {

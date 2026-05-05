@@ -135,9 +135,11 @@ public interface ApiInterface {
 			@Path("id") int groupId,
 			@Query("state") String state,
 			@Query("search") String search,
+			@Query("scope") String scope,
+			@Query("sort") String sort,
+			@Query("order_by") String orderBy,
 			@Query("per_page") int perPage,
-			@Query("page") int page,
-			@Query("scope") String scope);
+			@Query("page") int page);
 
 	// Project endpoints
 	@GET("projects/{id}") // get a single project details
@@ -272,6 +274,8 @@ public interface ApiInterface {
 			@Path("id") int id,
 			@Query("state") String state,
 			@Query("search") String search,
+			@Query("sort") String sort,
+			@Query("order_by") String orderBy,
 			@Query("per_page") int per_page,
 			@Query("page") int page);
 
@@ -313,6 +317,8 @@ public interface ApiInterface {
 			@Query("scope") String scope,
 			@Query("state") String state,
 			@Query("search") String search,
+			@Query("sort") String sort,
+			@Query("order_by") String orderBy,
 			@Query("per_page") int per_page,
 			@Query("page") int page);
 

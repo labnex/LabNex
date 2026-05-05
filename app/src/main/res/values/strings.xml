@@ -330,6 +330,13 @@
     <string name="all_projects_removed">All projects removed</string>
     <string name="project_removed">Project removed</string>
     <string name="take_notes">Take notes</string>
+    <string name="scope_created_by_me">Created by me</string>
+    <string name="scope_assigned_to_me">Assigned to me</string>
+    <string name="scope_review_for_me">Review requested</string>
+    <string name="order_by">Order by</string>
+    <string name="newest_first">Newest first</string>
+    <string name="oldest_first">Oldest first</string>
+
 
     <!-- errors -->
     <string name="generic_error">An unexpected error occurred</string>
@@ -461,5 +468,12 @@
     <string name="admin">Admin</string>
     <string name="stars">Stars</string>
     <string name="bio">Bio</string>
+    <string name="milestone">Milestone</string>
+    <string name="state">State</string>
+    <string name="scope">Scope</string>
+    <string name="sort">Sort</string>
+    <string name="apply">Apply</string>
+    <string name="created">Created</string>
+    <string name="updated">Updated</string>
     <!-- generic copy -->
 </resources>
