@@ -357,7 +357,7 @@ public class IssueDetailActivity extends BaseActivity
 						if (response.code() == 200) {
 
 							sheetBinding.closeItemCard.setVisibility(View.GONE);
-							IssuesActivity.updateIssuesList = true;
+							// IssuesActivity.updateIssuesList = true;
 							Toasty.show(ctx, getString(R.string.issue_closed));
 						} else if (response.code() == 401) {
 

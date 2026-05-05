@@ -1,17 +1,15 @@
 package com.labnex.app.viewmodels;
 
-import android.app.Activity;
 import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-import com.google.android.material.bottomappbar.BottomAppBar;
-import com.labnex.app.R;
-import com.labnex.app.adapters.IssuesAdapter;
 import com.labnex.app.clients.RetrofitClient;
-import com.labnex.app.helpers.Toasty;
+import com.labnex.app.contexts.IssueContext;
+import com.labnex.app.contexts.ProjectsContext;
 import com.labnex.app.models.issues.Issues;
+import com.labnex.app.models.projects.Projects;
 import java.util.ArrayList;
 import java.util.List;
 import retrofit2.Call;
@@ -23,173 +21,193 @@ import retrofit2.Response;
  */
 public class IssuesViewModel extends ViewModel {
 
-	private MutableLiveData<List<Issues>> mutableList;
-	private Call<List<Issues>> currentCall;
+	private final MutableLiveData<List<Issues>> issueList = new MutableLiveData<>(null);
+	private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
+	private final MutableLiveData<String> error = new MutableLiveData<>();
+	private final MutableLiveData<IssueContext> navigateToIssue = new MutableLiveData<>();
 
-	public LiveData<List<Issues>> getIssues(
-			Context ctx,
-			String source,
-			int id,
-			String scope,
-			String state,
-			String searchQuery,
-			int resultLimit,
-			int page,
-			Activity activity,
-			BottomAppBar bottomAppBar) {
+	private String currentSource;
+	private int currentId;
+	private String currentScope = "created_by_me";
+	private String currentState;
+	private String currentSearch;
+	private String currentOrderBy = "created_at";
+	private String currentSort = "desc";
+	private int currentPage = 1;
+	private int resultLimit;
+	private boolean isLastPage = false;
+	private boolean isLoadingMore = false;
 
-		mutableList = new MutableLiveData<>();
-		loadInitialList(
-				ctx,
-				source,
-				id,
-				scope,
-				state,
-				searchQuery,
-				resultLimit,
-				page,
-				activity,
-				bottomAppBar);
-
-		return mutableList;
+	public LiveData<List<Issues>> getIssueList() {
+		return issueList;
 	}
 
-	public void loadInitialList(
-			Context ctx,
-			String source,
-			int id,
-			String scope,
-			String state,
-			String searchQuery,
-			int resultLimit,
-			int page,
-			Activity activity,
-			BottomAppBar bottomAppBar) {
+	public LiveData<Boolean> getIsLoading() {
+		return isLoading;
+	}
 
-		if (currentCall != null && !currentCall.isCanceled()) {
-			currentCall.cancel();
-		}
+	public LiveData<String> getError() {
+		return error;
+	}
 
-		switch (source) {
-			case "project":
-				currentCall =
-						RetrofitClient.getApiInterface(ctx)
-								.getProjectIssues(id, state, searchQuery, resultLimit, page);
-				break;
-			case "group":
-				currentCall =
-						RetrofitClient.getApiInterface(ctx)
-								.getGroupIssues(id, state, searchQuery, resultLimit, page, scope);
-				break;
-			default: // "my_issues" or other
-				currentCall =
-						RetrofitClient.getApiInterface(ctx)
-								.getIssues(scope, state, searchQuery, resultLimit, page);
-				break;
-		}
+	public LiveData<IssueContext> getNavigateToIssue() {
+		return navigateToIssue;
+	}
 
-		currentCall.enqueue(
+	public String getCurrentScope() {
+		return currentScope;
+	}
+
+	public void setCurrentScope(String scope) {
+		this.currentScope = scope;
+	}
+
+	public String getCurrentOrderBy() {
+		return currentOrderBy;
+	}
+
+	public void setCurrentOrderBy(String orderBy) {
+		this.currentOrderBy = orderBy;
+	}
+
+	public String getCurrentSort() {
+		return currentSort;
+	}
+
+	public void setCurrentSort(String sort) {
+		this.currentSort = sort;
+	}
+
+	public void setResultLimit(int limit) {
+		this.resultLimit = limit;
+	}
+
+	public void fetchAndNavigateIssue(Context ctx, Issues issue) {
+		RetrofitClient.getApiInterface(ctx)
+				.getProjectInfo(issue.getProjectId())
+				.enqueue(
+						new Callback<>() {
+							@Override
+							public void onResponse(
+									@NonNull Call<Projects> c, @NonNull Response<Projects> r) {
+								if (r.isSuccessful() && r.body() != null) {
+									ProjectsContext pc = new ProjectsContext(r.body(), ctx);
+									pc.saveToDB(ctx);
+									navigateToIssue.setValue(new IssueContext(issue, pc));
+								}
+							}
+
+							@Override
+							public void onFailure(
+									@NonNull Call<Projects> c, @NonNull Throwable t) {}
+						});
+	}
+
+	public void clearNavigation() {
+		navigateToIssue.setValue(null);
+	}
+
+	public void loadIssues(
+			Context ctx, String source, int id, String scope, String state, String search) {
+		this.currentSource = source;
+		this.currentId = id;
+		this.currentScope = scope;
+		this.currentState = state;
+		this.currentSearch = search;
+		currentPage = 1;
+		isLastPage = false;
+		isLoadingMore = false;
+		isLoading.setValue(true);
+		fetch(ctx, 1);
+	}
+
+	public void loadNextPage(Context ctx) {
+		if (isLoadingMore || isLastPage) return;
+		isLoadingMore = true;
+		currentPage++;
+		fetch(ctx, currentPage);
+	}
+
+	private void fetch(Context ctx, int page) {
+		Call<List<Issues>> call =
+				switch (currentSource != null ? currentSource : "") {
+					case "project" ->
+							RetrofitClient.getApiInterface(ctx)
+									.getProjectIssues(
+											currentId,
+											currentState,
+											currentSearch,
+											resultLimit,
+											page);
+					case "group" ->
+							RetrofitClient.getApiInterface(ctx)
+									.getGroupIssues(
+											currentId,
+											currentState,
+											currentSearch,
+											resultLimit,
+											page,
+											currentScope);
+					default ->
+							RetrofitClient.getApiInterface(ctx)
+									.getIssues(
+											currentScope,
+											currentState,
+											currentSearch,
+											resultLimit,
+											page);
+				};
+
+		call.enqueue(
 				new Callback<>() {
 					@Override
 					public void onResponse(
 							@NonNull Call<List<Issues>> call,
 							@NonNull Response<List<Issues>> response) {
-						if (!call.isCanceled()) {
-							if (response.isSuccessful() && response.body() != null) {
-								mutableList.postValue(response.body());
-							} else if (response.code() == 401) {
-								Toasty.show(ctx, ctx.getString(R.string.not_authorized));
-							} else if (response.code() == 403) {
-								Toasty.show(ctx, ctx.getString(R.string.access_forbidden_403));
-							} else {
-								Toasty.show(ctx, ctx.getString(R.string.generic_error));
-							}
+						isLoading.setValue(false);
+						isLoadingMore = false;
+						if (response.isSuccessful()) {
+							String totalHeader = response.headers().get("x-total");
+							List<Issues> body = response.body();
+							List<Issues> current =
+									(page == 1)
+											? new ArrayList<>()
+											: issueList.getValue() != null
+													? new ArrayList<>(issueList.getValue())
+													: new ArrayList<>();
+							if (body != null) current.addAll(body);
+							issueList.setValue(current);
+							checkLastPage(
+									body != null ? body.size() : 0, totalHeader, current.size());
+						} else {
+							if (page == 1) issueList.setValue(new ArrayList<>());
+							if (response.code() == 401) error.setValue("auth_error");
+							else if (response.code() == 403) error.setValue("access_forbidden_403");
+							else error.setValue("generic_error");
 						}
 					}
 
 					@Override
 					public void onFailure(@NonNull Call<List<Issues>> call, @NonNull Throwable t) {
-						if (!call.isCanceled()) {
-							Toasty.show(ctx, ctx.getString(R.string.generic_server_response_error));
-						}
+						isLoading.setValue(false);
+						isLoadingMore = false;
+						if (page == 1) issueList.setValue(new ArrayList<>());
+						error.setValue(t.getMessage());
 					}
 				});
 	}
 
-	public void loadMore(
-			Context ctx,
-			String source,
-			int id,
-			String scope,
-			String state,
-			String searchQuery,
-			int resultLimit,
-			int page,
-			IssuesAdapter adapter,
-			Activity activity,
-			BottomAppBar bottomAppBar) {
-
-		if (currentCall != null && !currentCall.isCanceled()) {
-			currentCall.cancel();
+	private void checkLastPage(int bodySize, String totalHeader, int fullListSize) {
+		if (bodySize < resultLimit) isLastPage = true;
+		else if (totalHeader != null) {
+			try {
+				if (fullListSize >= Integer.parseInt(totalHeader)) isLastPage = true;
+			} catch (NumberFormatException ignored) {
+			}
 		}
-
-		switch (source) {
-			case "project":
-				currentCall =
-						RetrofitClient.getApiInterface(ctx)
-								.getProjectIssues(id, state, searchQuery, resultLimit, page);
-				break;
-			case "group":
-				currentCall =
-						RetrofitClient.getApiInterface(ctx)
-								.getGroupIssues(id, state, searchQuery, resultLimit, page, scope);
-				break;
-			default: // "my_issues" or other
-				currentCall =
-						RetrofitClient.getApiInterface(ctx)
-								.getIssues(scope, state, searchQuery, resultLimit, page);
-				break;
-		}
-
-		currentCall.enqueue(
-				new Callback<>() {
-					@Override
-					public void onResponse(
-							@NonNull Call<List<Issues>> call,
-							@NonNull Response<List<Issues>> response) {
-						if (!call.isCanceled()) {
-							if (response.isSuccessful() && response.body() != null) {
-								List<Issues> currentList = mutableList.getValue();
-								if (currentList == null) {
-									currentList = new ArrayList<>();
-								}
-								if (!response.body().isEmpty()) {
-									currentList.addAll(response.body());
-									adapter.updateList(currentList);
-									mutableList.postValue(currentList);
-								} else {
-									adapter.setMoreDataAvailable(false);
-								}
-							} else {
-								Toasty.show(ctx, ctx.getString(R.string.generic_error));
-							}
-						}
-					}
-
-					@Override
-					public void onFailure(@NonNull Call<List<Issues>> call, @NonNull Throwable t) {
-						if (!call.isCanceled()) {
-							Toasty.show(ctx, ctx.getString(R.string.generic_server_response_error));
-						}
-					}
-				});
 	}
 
-	@Override
-	protected void onCleared() {
-		if (currentCall != null && !currentCall.isCanceled()) {
-			currentCall.cancel();
-		}
-		super.onCleared();
+	public void clearError() {
+		error.setValue(null);
 	}
 }

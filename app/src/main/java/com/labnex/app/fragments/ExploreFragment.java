@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.labnex.app.R;
 import com.labnex.app.activities.BaseActivity;
+import com.labnex.app.activities.IssueDetailActivity;
 import com.labnex.app.activities.MergeRequestDetailActivity;
 import com.labnex.app.activities.ProfileActivity;
 import com.labnex.app.adapters.IssuesAdapter;
@@ -31,7 +32,6 @@ import com.labnex.app.models.merge_requests.MergeRequests;
 import com.labnex.app.models.projects.Projects;
 import com.labnex.app.models.user.User;
 import com.labnex.app.viewmodels.ExploreViewModel;
-import com.labnex.app.viewmodels.MergeRequestsViewModel;
 import java.util.List;
 import java.util.Objects;
 
@@ -43,7 +43,6 @@ public class ExploreFragment extends Fragment {
 	private FragmentExploreBinding binding;
 	private Context ctx;
 	private ExploreViewModel viewModel;
-	private MergeRequestsViewModel mergeRequestsViewModel;
 	private EndlessRecyclerViewScrollListener scrollListener;
 
 	@Override
@@ -61,7 +60,6 @@ public class ExploreFragment extends Fragment {
 		binding = FragmentExploreBinding.inflate(inflater, container, false);
 		ctx = requireContext();
 		viewModel = new ViewModelProvider(this).get(ExploreViewModel.class);
-		mergeRequestsViewModel = new ViewModelProvider(this).get(MergeRequestsViewModel.class);
 
 		int resultLimit = ((BaseActivity) requireActivity()).getAccount().getMaxPageLimit();
 		viewModel.setResultLimit(resultLimit);
@@ -133,7 +131,7 @@ public class ExploreFragment extends Fragment {
 							}
 						});
 
-		mergeRequestsViewModel
+		viewModel
 				.getNavigateToMr()
 				.observe(
 						getViewLifecycleOwner(),
@@ -141,7 +139,18 @@ public class ExploreFragment extends Fragment {
 							if (mrCtx != null) {
 								startActivity(
 										mrCtx.getIntent(ctx, MergeRequestDetailActivity.class));
-								mergeRequestsViewModel.clearNavigation();
+								viewModel.clearMrNavigation();
+							}
+						});
+
+		viewModel
+				.getNavigateToIssue()
+				.observe(
+						getViewLifecycleOwner(),
+						issueCtx -> {
+							if (issueCtx != null) {
+								startActivity(issueCtx.getIntent(ctx, IssueDetailActivity.class));
+								viewModel.clearIssueNavigation();
 							}
 						});
 	}
@@ -156,7 +165,26 @@ public class ExploreFragment extends Fragment {
 						new ProjectsAdapter(ctx, (List<Projects>) data, "search"));
 				break;
 			case ExploreViewModel.SCOPE_ISSUES:
-				binding.recyclerView.setAdapter(new IssuesAdapter(ctx, (List<Issues>) data));
+				binding.recyclerView.setAdapter(
+						new IssuesAdapter(
+								ctx,
+								(List<Issues>) data,
+								new IssuesAdapter.OnIssueClickListener() {
+									@Override
+									public void onIssueClick(Issues issue) {
+										viewModel.fetchAndNavigateIssue(ctx, issue);
+									}
+
+									@Override
+									public void onAuthorClick(Issues issue) {
+										if (issue.getAuthor() != null) {
+											Intent intent = new Intent(ctx, ProfileActivity.class);
+											intent.putExtra("source", "issues");
+											intent.putExtra("userId", issue.getAuthor().getId());
+											startActivity(intent);
+										}
+									}
+								}));
 				break;
 			case ExploreViewModel.SCOPE_MERGE_REQUESTS:
 				binding.recyclerView.setAdapter(
@@ -166,7 +194,7 @@ public class ExploreFragment extends Fragment {
 								new MergeRequestsAdapter.OnMrClickListener() {
 									@Override
 									public void onMrClick(MergeRequests mr) {
-										mergeRequestsViewModel.fetchAndNavigateMr(ctx, mr);
+										viewModel.fetchAndNavigateMr(ctx, mr);
 									}
 
 									@Override

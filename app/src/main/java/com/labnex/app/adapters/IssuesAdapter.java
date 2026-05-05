@@ -2,75 +2,74 @@ package com.labnex.app.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.labnex.app.R;
-import com.labnex.app.activities.IssueDetailActivity;
-import com.labnex.app.activities.ProfileActivity;
-import com.labnex.app.clients.RetrofitClient;
-import com.labnex.app.contexts.IssueContext;
-import com.labnex.app.contexts.ProjectsContext;
+import com.labnex.app.databinding.ListIssuesBinding;
+import com.labnex.app.helpers.AvatarGenerator;
 import com.labnex.app.helpers.Markdown;
-import com.labnex.app.helpers.TimeUtils;
+import com.labnex.app.helpers.TimeHelper;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.models.issues.Issues;
-import com.labnex.app.models.projects.Projects;
 import com.vdurmont.emoji.EmojiParser;
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import retrofit2.Call;
-import retrofit2.Callback;
 
 /**
  * @author mmarif
  */
-public class IssuesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssuesHolder> {
 
-	private ProjectsContext projectsContext;
 	private final Context context;
-	private final List<Issues> list = new ArrayList<>();
-	private OnLoadMoreListener loadMoreListener;
-	private boolean isLoading = false, isMoreDataAvailable = true;
+	private final List<Issues> list;
+	private final OnIssueClickListener listener;
 
-	public IssuesAdapter(Context ctx, List<Issues> mainList) {
+	public interface OnIssueClickListener {
+		void onIssueClick(Issues issue);
+
+		void onAuthorClick(Issues issue);
+	}
+
+	public IssuesAdapter(Context ctx, List<Issues> mainList, OnIssueClickListener listener) {
 		this.context = ctx;
-		if (mainList != null) {
-			this.list.addAll(mainList);
-		}
+		this.list = new ArrayList<>();
+		if (mainList != null) this.list.addAll(mainList);
+		this.listener = listener;
+	}
+
+	@SuppressLint("NotifyDataSetChanged")
+	public void updateList(List<Issues> newList) {
+		list.clear();
+		if (newList != null) list.addAll(newList);
+		notifyDataSetChanged();
+	}
+
+	@SuppressLint("NotifyDataSetChanged")
+	public void clearAdapter() {
+		list.clear();
+		notifyDataSetChanged();
 	}
 
 	@NonNull @Override
-	public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-		LayoutInflater inflater = LayoutInflater.from(context);
-		return new IssuesHolder(inflater.inflate(R.layout.list_issues, parent, false));
+	public IssuesHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+		ListIssuesBinding binding =
+				ListIssuesBinding.inflate(LayoutInflater.from(context), parent, false);
+		return new IssuesHolder(binding);
 	}
 
 	@Override
-	public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-		if (position >= getItemCount() - 1
-				&& isMoreDataAvailable
-				&& !isLoading
-				&& loadMoreListener != null) {
-			isLoading = true;
-			loadMoreListener.onLoadMore();
-		}
-
-		((IssuesHolder) holder).bindData(list.get(position));
-	}
-
-	@Override
-	public int getItemViewType(int position) {
-		return position;
+	public void onBindViewHolder(@NonNull IssuesHolder holder, int position) {
+		holder.bind(list.get(position));
+		holder.binding.getRoot().updateAppearance(position, getItemCount());
 	}
 
 	@Override
@@ -78,135 +77,140 @@ public class IssuesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 		return list.size();
 	}
 
-	public void setMoreDataAvailable(boolean moreDataAvailable) {
-		isMoreDataAvailable = moreDataAvailable;
-		if (!isMoreDataAvailable && loadMoreListener != null) {
-			loadMoreListener.onLoadFinished();
-		}
-	}
-
-	@SuppressLint("NotifyDataSetChanged")
-	public void notifyDataChanged() {
-		notifyDataSetChanged();
-		isLoading = false;
-		if (loadMoreListener != null) {
-			loadMoreListener.onLoadFinished();
-		}
-	}
-
-	public void setLoadMoreListener(OnLoadMoreListener loadMoreListener) {
-		this.loadMoreListener = loadMoreListener;
-	}
-
-	public void updateList(List<Issues> list_) {
-		list.clear();
-		if (list_ != null) {
-			list.addAll(list_);
-		}
-		notifyDataChanged();
-	}
-
-	public void clearAdapter() {
-		list.clear();
-		notifyDataChanged();
-	}
-
-	public abstract static class OnLoadMoreListener {
-
-		protected abstract void onLoadMore();
-
-		public void onLoadFinished() {}
-	}
-
 	public class IssuesHolder extends RecyclerView.ViewHolder {
 
-		private final ImageView author;
-		private final TextView title;
-		private final TextView project;
-		private final TextView issueNotesCount;
-		private final TextView issueCreatedAt;
-		private Issues issues;
+		final ListIssuesBinding binding;
 
-		IssuesHolder(View itemView) {
-			super(itemView);
-
-			author = itemView.findViewById(R.id.avatar);
-			title = itemView.findViewById(R.id.title);
-			project = itemView.findViewById(R.id.project);
-			issueNotesCount = itemView.findViewById(R.id.issue_notes_count);
-			issueCreatedAt = itemView.findViewById(R.id.issue_created_at);
-
-			author.setOnClickListener(
-					profile -> {
-						Intent intent = new Intent(context, ProfileActivity.class);
-						intent.putExtra("source", "issues");
-						intent.putExtra("userId", issues.getAuthor().getId());
-						context.startActivity(intent);
-					});
+		IssuesHolder(ListIssuesBinding binding) {
+			super(binding.getRoot());
+			this.binding = binding;
 
 			itemView.setOnClickListener(
 					v -> {
-						Call<Projects> call =
-								RetrofitClient.getApiInterface(context)
-										.getProjectInfo(issues.getProjectId());
+						int pos = getBindingAdapterPosition();
+						if (pos != RecyclerView.NO_POSITION && listener != null) {
+							listener.onIssueClick(list.get(pos));
+						}
+					});
 
-						call.enqueue(
-								new Callback<>() {
-									@Override
-									public void onResponse(
-											@NonNull Call<Projects> call,
-											@NonNull retrofit2.Response<Projects> response) {
-										Projects projectDetails = response.body();
-
-										if (response.isSuccessful() && response.code() == 200) {
-											assert projectDetails != null;
-											projectsContext =
-													new ProjectsContext(projectDetails, context);
-
-											Context context = v.getContext();
-											IssueContext issueContext =
-													new IssueContext(issues, projectsContext);
-											Intent intent =
-													issueContext.getIntent(
-															context, IssueDetailActivity.class);
-											context.startActivity(intent);
-										}
-									}
-
-									@Override
-									public void onFailure(
-											@NonNull Call<Projects> call, @NonNull Throwable t) {}
-								});
+			binding.avatar.setOnClickListener(
+					v -> {
+						int pos = getBindingAdapterPosition();
+						if (pos != RecyclerView.NO_POSITION && listener != null) {
+							listener.onAuthorClick(list.get(pos));
+						}
 					});
 		}
 
-		void bindData(Issues issues) {
-			this.issues = issues;
-			Locale locale = context.getResources().getConfiguration().getLocales().get(0);
-
-			Markdown.render(context, EmojiParser.parseToUnicode(issues.getTitle().trim()), title);
-
-			if (issues.getReferences() != null) {
-				project.setText(issues.getReferences().getFull());
+		@SuppressLint("SetTextI18n")
+		void bind(Issues issue) {
+			String state = issue.getState();
+			String stateLabel =
+					state != null ? state.substring(0, 1).toUpperCase() + state.substring(1) : "";
+			int stateColor;
+			if ("closed".equalsIgnoreCase(state)) {
+				stateColor =
+						context.getResources()
+								.getColor(R.color.label_default_color, context.getTheme());
 			} else {
-				project.setVisibility(View.GONE);
+				stateColor = context.getResources().getColor(R.color.green, context.getTheme());
+				stateLabel = context.getString(R.string.open);
+			}
+			binding.stateCard.setBackground(
+					AvatarGenerator.getLabelDrawable(context, stateLabel, stateColor, 20));
+
+			if (issue.isHasTasks() && issue.getTaskCompletionStatus() != null) {
+				binding.tasksIcon.setVisibility(View.VISIBLE);
+				binding.tasksCount.setVisibility(View.VISIBLE);
+				binding.tasksCount.setText(
+						issue.getTaskCompletionStatus().getCompletedCount()
+								+ "/"
+								+ issue.getTaskCompletionStatus().getCount());
+			} else {
+				binding.tasksIcon.setVisibility(View.GONE);
+				binding.tasksCount.setVisibility(View.GONE);
 			}
 
-			if (issues.getAuthor() != null && issues.getAuthor().getAvatarUrl() != null) {
-				Glide.with(itemView.getContext())
-						.load(issues.getAuthor().getAvatarUrl())
-						.diskCacheStrategy(DiskCacheStrategy.ALL)
-						.placeholder(R.drawable.ic_spinner)
-						.centerCrop()
-						.into(author);
+			if (issue.getCreatedAt() != null) {
+				Date date = TimeHelper.parseIso8601(issue.getCreatedAt());
+				binding.issueCreatedAt.setText(TimeHelper.formatTime(date));
+				binding.issueCreatedAt.setOnClickListener(
+						v ->
+								Toasty.show(
+										context,
+										TimeHelper.getFullDateTime(date, Locale.getDefault())));
 			}
 
-			issueNotesCount.setText(String.valueOf(issues.getUserNotesCount()));
-			String modifiedTime =
-					TimeUtils.formatTime(
-							Date.from(OffsetDateTime.parse(issues.getCreatedAt()).toInstant()),
-							locale);
-			issueCreatedAt.setText(modifiedTime);
+			String authorName = "";
+			if (issue.getAuthor() != null) {
+				authorName =
+						issue.getAuthor().getName() != null
+										&& !issue.getAuthor().getName().isEmpty()
+								? issue.getAuthor().getName()
+								: "@" + issue.getAuthor().getUsername();
+				if (issue.getAuthor().getAvatarUrl() != null) {
+					Glide.with(itemView.getContext())
+							.load(issue.getAuthor().getAvatarUrl())
+							.diskCacheStrategy(DiskCacheStrategy.ALL)
+							.placeholder(R.drawable.ic_spinner)
+							.centerCrop()
+							.into(binding.avatar);
+				} else {
+					binding.avatar.setImageDrawable(
+							AvatarGenerator.getLetterAvatar(context, authorName, 28));
+				}
+			}
+			binding.authorName.setText(authorName);
+
+			binding.project.setText(
+					issue.getReferences() != null ? issue.getReferences().getFull() : "");
+
+			String titleText = "#" + issue.getIid() + " " + issue.getTitle();
+			Markdown.render(context, EmojiParser.parseToUnicode(titleText.trim()), binding.title);
+
+			binding.labelsContainer.removeAllViews();
+			if (issue.getLabels() != null && !issue.getLabels().isEmpty()) {
+				binding.labelsScroll.setVisibility(View.VISIBLE);
+				for (Object label : issue.getLabels()) {
+					int color = getLabelColor((String) label);
+					ImageView labelView = new ImageView(context);
+					labelView.setImageDrawable(
+							AvatarGenerator.getLabelDrawable(context, (String) label, color, 22));
+					int marginEnd = (int) (6 * context.getResources().getDisplayMetrics().density);
+					LinearLayout.LayoutParams params =
+							new LinearLayout.LayoutParams(
+									ViewGroup.LayoutParams.WRAP_CONTENT,
+									ViewGroup.LayoutParams.WRAP_CONTENT);
+					params.setMarginEnd(marginEnd);
+					labelView.setLayoutParams(params);
+					binding.labelsContainer.addView(labelView);
+				}
+			} else {
+				binding.labelsScroll.setVisibility(View.GONE);
+			}
+
+			binding.issueNotesCount.setText(String.valueOf(issue.getUserNotesCount()));
+
+			if (issue.getMilestone() != null && issue.getMilestone().getTitle() != null) {
+				binding.milestoneIcon.setVisibility(View.VISIBLE);
+				binding.milestoneText.setVisibility(View.VISIBLE);
+				binding.milestoneText.setText(issue.getMilestone().getTitle());
+			} else {
+				binding.milestoneIcon.setVisibility(View.GONE);
+				binding.milestoneText.setVisibility(View.GONE);
+			}
+		}
+
+		private static final int[] LABEL_COLORS = {
+			0xFFF44336, 0xFFE91E63, 0xFF9C27B0, 0xFF673AB7,
+			0xFF3F51B5, 0xFF2196F3, 0xFF03A9F4, 0xFF00BCD4,
+			0xFF009688, 0xFF4CAF50, 0xFF8BC34A, 0xFFCDDC39,
+			0xFFFFC107, 0xFFFF9800, 0xFFFF5722
+		};
+
+		private int getLabelColor(String label) {
+			int hash = Math.abs(label.hashCode());
+			return LABEL_COLORS[hash % LABEL_COLORS.length];
 		}
 	}
 }

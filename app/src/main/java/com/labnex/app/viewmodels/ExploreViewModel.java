@@ -6,6 +6,12 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import com.labnex.app.clients.RetrofitClient;
+import com.labnex.app.contexts.IssueContext;
+import com.labnex.app.contexts.MergeRequestContext;
+import com.labnex.app.contexts.ProjectsContext;
+import com.labnex.app.models.issues.Issues;
+import com.labnex.app.models.merge_requests.MergeRequests;
+import com.labnex.app.models.projects.Projects;
 import java.util.ArrayList;
 import java.util.List;
 import retrofit2.Call;
@@ -37,6 +43,8 @@ public class ExploreViewModel extends ViewModel {
 	private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
 	private final MutableLiveData<String> error = new MutableLiveData<>();
 	private final MutableLiveData<String> activeScope = new MutableLiveData<>(SCOPE_PROJECTS);
+	private final MutableLiveData<MergeRequestContext> navigateToMr = new MutableLiveData<>();
+	private final MutableLiveData<IssueContext> navigateToIssue = new MutableLiveData<>();
 
 	private String currentQuery = "";
 	private int currentPage = 1;
@@ -52,6 +60,14 @@ public class ExploreViewModel extends ViewModel {
 
 	public LiveData<String> getError() {
 		return error;
+	}
+
+	public LiveData<MergeRequestContext> getNavigateToMr() {
+		return navigateToMr;
+	}
+
+	public LiveData<IssueContext> getNavigateToIssue() {
+		return navigateToIssue;
 	}
 
 	public void setScope(String scope) {
@@ -158,5 +174,55 @@ public class ExploreViewModel extends ViewModel {
 						error.setValue(t.getMessage());
 					}
 				});
+	}
+
+	public void fetchAndNavigateMr(Context ctx, MergeRequests mr) {
+		RetrofitClient.getApiInterface(ctx)
+				.getProjectInfo(mr.getProjectId())
+				.enqueue(
+						new Callback<>() {
+							@Override
+							public void onResponse(
+									@NonNull Call<Projects> c, @NonNull Response<Projects> r) {
+								if (r.isSuccessful() && r.body() != null) {
+									ProjectsContext pc = new ProjectsContext(r.body(), ctx);
+									pc.saveToDB(ctx);
+									navigateToMr.setValue(new MergeRequestContext(mr, pc));
+								}
+							}
+
+							@Override
+							public void onFailure(
+									@NonNull Call<Projects> c, @NonNull Throwable t) {}
+						});
+	}
+
+	public void fetchAndNavigateIssue(Context ctx, Issues issue) {
+		RetrofitClient.getApiInterface(ctx)
+				.getProjectInfo(issue.getProjectId())
+				.enqueue(
+						new Callback<>() {
+							@Override
+							public void onResponse(
+									@NonNull Call<Projects> c, @NonNull Response<Projects> r) {
+								if (r.isSuccessful() && r.body() != null) {
+									ProjectsContext pc = new ProjectsContext(r.body(), ctx);
+									pc.saveToDB(ctx);
+									navigateToIssue.setValue(new IssueContext(issue, pc));
+								}
+							}
+
+							@Override
+							public void onFailure(
+									@NonNull Call<Projects> c, @NonNull Throwable t) {}
+						});
+	}
+
+	public void clearMrNavigation() {
+		navigateToMr.setValue(null);
+	}
+
+	public void clearIssueNavigation() {
+		navigateToIssue.setValue(null);
 	}
 }

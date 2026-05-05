@@ -1,143 +1,198 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.listitem.ListItemLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/linearLayoutFrame"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="@dimen/dimen6dp">
+    android:layout_height="wrap_content">
 
-    <com.google.android.material.card.MaterialCardView
+    <com.google.android.material.listitem.ListItemCardView
+        android:id="@+id/card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="?attr/materialCardViewElevatedStyle"
-        app:cardElevation="@dimen/dimen0dp">
+        android:layout_marginVertical="@dimen/dimen1dp"
+        android:checkable="false"
+        app:cardBackgroundColor="?attr/colorSurfaceContainerLow"
+        app:strokeWidth="0dp">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:foreground="?android:attr/selectableItemBackground"
-            android:padding="@dimen/dimen12dp"
-            android:orientation="vertical">
+            android:padding="@dimen/dimen8dp">
 
-            <LinearLayout
-                android:id="@+id/author_frame"
-                android:layout_width="match_parent"
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/state_card"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/avatar_frame"
-                    android:layout_height="@dimen/dimen36dp"
-                    android:layout_width="@dimen/dimen36dp"
-                    android:layout_marginEnd="@dimen/dimen10dp"
-                    app:strokeWidth="@dimen/dimen0dp"
-                    android:layout_gravity="top|center_horizontal"
-                    app:cardElevation="@dimen/dimen0dp">
-
-                    <ImageView
-                        android:id="@+id/avatar"
-                        android:layout_height="@dimen/dimen40dp"
-                        android:layout_width="@dimen/dimen40dp"
-                        android:scaleType="fitCenter"
-                        android:layout_gravity="center_vertical|center_horizontal"
-                        android:contentDescription="@string/projects"
-                        app:srcCompat="@drawable/ic_spinner" />
-
-                </com.google.android.material.card.MaterialCardView>
-
-                <LinearLayout
-                    android:id="@+id/title_frame"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/title"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal|center_vertical"
-                        android:textSize="@dimen/dimen16sp" />
-
-                    <TextView
-                        android:id="@+id/project"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal|center_vertical"
-                        android:alpha=".7"
-                        android:textSize="@dimen/dimen14sp" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <!-- comments_count/created frame -->
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/issue_created_at"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:alpha="0.6"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/state_card" />
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/avatar"
+                android:layout_width="@dimen/dimen40dp"
+                android:layout_height="@dimen/dimen40dp"
+                android:layout_marginTop="@dimen/dimen16dp"
+                android:src="@drawable/ic_spinner"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/state_card"
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Medium" />
+
+            <TextView
+                android:id="@+id/author_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dimen8dp"
+                android:layout_marginEnd="@dimen/dimen8dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                android:textColor="?attr/colorOnSurface"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/avatar"
+                app:layout_constraintTop_toTopOf="@id/avatar" />
+
+            <TextView
+                android:id="@+id/project"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dimen8dp"
+                android:alpha="0.8"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textAppearance="?attr/textAppearanceLabelMedium"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/avatar"
+                app:layout_constraintTop_toBottomOf="@id/author_name" />
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dimen12dp"
-                tools:ignore="UseCompoundDrawables">
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textAppearance="?attr/textAppearanceBodyLarge"
+                android:textColor="?attr/colorOnSurface"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/project" />
+
+            <HorizontalScrollView
+                android:id="@+id/labels_scroll"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen12dp"
+                android:scrollbars="none"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/title"
+                tools:visibility="visible">
 
                 <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="horizontal">
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        style="?attr/materialCardViewElevatedStyle"
-                        android:backgroundTint="?attr/inputBackgroundColor"
-                        app:cardElevation="@dimen/dimen0dp">
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:foreground="?android:attr/selectableItemBackground"
-                            android:paddingStart="@dimen/dimen12dp"
-                            android:paddingEnd="@dimen/dimen12dp"
-                            android:paddingTop="@dimen/dimen6dp"
-                            android:paddingBottom="@dimen/dimen6dp"
-                            android:orientation="horizontal">
-
-                            <ImageView
-                                android:layout_width="@dimen/dimen18dp"
-                                android:layout_height="@dimen/dimen18dp"
-                                android:contentDescription="@string/generic_img_copy"
-                                android:layout_gravity="center_vertical|center_horizontal"
-                                android:layout_marginEnd="@dimen/dimen6dp"
-                                android:src="@drawable/ic_comments" />
-
-                            <TextView
-                                android:id="@+id/issue_notes_count"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center_vertical|center_horizontal"
-                                android:textSize="@dimen/dimen14sp" />
-
-                        </LinearLayout>
-
-                    </com.google.android.material.card.MaterialCardView>
-
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/issue_created_at"
+                    android:id="@+id/labels_container"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical|center_horizontal"
-                    android:textSize="@dimen/dimen14sp" />
+                    android:orientation="horizontal" />
 
-            </LinearLayout>
-            <!-- comments_count/created frame -->
+            </HorizontalScrollView>
 
-        </LinearLayout>
+            <ImageView
+                android:id="@+id/comments_icon"
+                android:layout_width="@dimen/dimen14dp"
+                android:layout_height="@dimen/dimen14dp"
+                android:layout_marginTop="@dimen/dimen12dp"
+                android:contentDescription="@string/comment"
+                android:src="@drawable/ic_comments"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/labels_scroll"
+                app:tint="?attr/iconsColor" />
 
-    </com.google.android.material.card.MaterialCardView>
+            <TextView
+                android:id="@+id/issue_notes_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dimen4dp"
+                android:textAppearance="?attr/textAppearanceLabelSmall"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@id/comments_icon"
+                app:layout_constraintStart_toEndOf="@id/comments_icon"
+                app:layout_constraintTop_toTopOf="@id/comments_icon"
+                tools:text="5" />
 
-</LinearLayout>
+            <ImageView
+                android:id="@+id/milestone_icon"
+                android:layout_width="@dimen/dimen14dp"
+                android:layout_height="@dimen/dimen14dp"
+                android:layout_marginStart="@dimen/dimen12dp"
+                android:contentDescription="@string/milestone"
+                android:src="@drawable/ic_milestones"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/comments_icon"
+                app:layout_constraintStart_toEndOf="@id/issue_notes_count"
+                app:layout_constraintTop_toTopOf="@id/comments_icon"
+                app:tint="?attr/iconsColor"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/milestone_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dimen4dp"
+                android:textAppearance="?attr/textAppearanceLabelSmall"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/milestone_icon"
+                app:layout_constraintStart_toEndOf="@id/milestone_icon"
+                app:layout_constraintTop_toTopOf="@id/milestone_icon"
+                tools:text="v2.0"
+                tools:visibility="visible" />
+
+            <ImageView
+                android:id="@+id/tasks_icon"
+                android:layout_width="@dimen/dimen14dp"
+                android:layout_height="@dimen/dimen14dp"
+                android:layout_marginStart="@dimen/dimen12dp"
+                android:contentDescription="@string/tasks"
+                android:src="@drawable/ic_tasks"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/milestone_text"
+                app:layout_constraintStart_toEndOf="@id/milestone_text"
+                app:layout_constraintTop_toTopOf="@id/milestone_text"
+                app:tint="?attr/iconsColor"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/tasks_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dimen4dp"
+                android:textAppearance="?attr/textAppearanceLabelSmall"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/tasks_icon"
+                app:layout_constraintStart_toEndOf="@id/tasks_icon"
+                app:layout_constraintTop_toTopOf="@id/tasks_icon"
+                tools:text="10/15"
+                tools:visibility="visible" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.listitem.ListItemCardView>
+
+</com.google.android.material.listitem.ListItemLayout>

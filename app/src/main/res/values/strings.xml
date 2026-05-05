@@ -475,5 +475,6 @@
     <string name="apply">Apply</string>
     <string name="created">Created</string>
     <string name="updated">Updated</string>
+    <string name="tasks">Tasks</string>
     <!-- generic copy -->
 </resources>

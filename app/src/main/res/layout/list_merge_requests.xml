@@ -137,7 +137,7 @@
                 android:id="@+id/milestone_icon"
                 android:layout_width="@dimen/dimen14dp"
                 android:layout_height="@dimen/dimen14dp"
-                android:layout_marginStart="@dimen/dimen14dp"
+                android:layout_marginStart="@dimen/dimen12dp"
                 android:contentDescription="@string/milestone"
                 android:src="@drawable/ic_milestones"
                 android:visibility="gone"
