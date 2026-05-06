@@ -509,6 +509,15 @@ public class Utils {
 		}
 	}
 
+	public static void share(Context ctx, String url) {
+
+		Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+		sharingIntent.setType("text/plain");
+		sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, url);
+		sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, url);
+		ctx.startActivity(Intent.createChooser(sharingIntent, url));
+	}
+
 	public interface ProgressListener {
 
 		default void onActionStarted() {}

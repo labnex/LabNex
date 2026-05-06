@@ -2,6 +2,7 @@ package com.labnex.app.helpers;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -147,7 +148,17 @@ public class SyntaxHighlightedArea extends LinearLayout {
 	}
 
 	private Activity getActivity() {
-		return (Activity) getContext();
+		Context context = getContext();
+		if (context instanceof Activity) {
+			return (Activity) context;
+		}
+		while (context instanceof ContextWrapper) {
+			if (context instanceof Activity) {
+				return (Activity) context;
+			}
+			context = ((ContextWrapper) context).getBaseContext();
+		}
+		throw new IllegalStateException("No Activity found in context chain");
 	}
 
 	public String getContent() {

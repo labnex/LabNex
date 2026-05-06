@@ -2,45 +2,45 @@ package com.labnex.app.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.View;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.labnex.app.R;
 import com.labnex.app.adapters.SnippetsAdapter;
-import com.labnex.app.contexts.ProjectsContext;
-import com.labnex.app.database.models.UserAccount;
+import com.labnex.app.bottomsheets.ContentViewerBottomSheet;
 import com.labnex.app.databinding.ActivitySnippetsBinding;
+import com.labnex.app.helpers.EndlessRecyclerViewScrollListener;
+import com.labnex.app.helpers.Toasty;
+import com.labnex.app.helpers.UIHelper;
+import com.labnex.app.helpers.Utils;
+import com.labnex.app.models.snippets.SnippetsItem;
 import com.labnex.app.viewmodels.SnippetsViewModel;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author mmarif
  */
-public class SnippetsActivity extends BaseActivity {
+public class SnippetsActivity extends BaseActivity
+		implements SnippetsAdapter.OnSnippetClickListener {
 
 	private ActivitySnippetsBinding binding;
-	private SnippetsViewModel snippetsViewModel;
+	private SnippetsViewModel viewModel;
 	private SnippetsAdapter adapter;
-	private int page = 1;
-	private int resultLimit;
-	public ProjectsContext projectsContext;
-	private boolean isLoading = false;
 
 	private final ActivityResultLauncher<Intent> createSnippetLauncher =
 			registerForActivityResult(
 					new ActivityResultContracts.StartActivityForResult(),
 					result -> {
 						if (result.getResultCode() == RESULT_OK) {
-							page = 1;
-							adapter.clearAdapter();
-							binding.progressBar.setVisibility(View.VISIBLE);
-							binding.nothingFoundFrame.getRoot().setVisibility(View.GONE);
-							fetchSnippets();
+							viewModel.loadSnippets(ctx);
 						}
 					});
 
@@ -50,25 +50,15 @@ public class SnippetsActivity extends BaseActivity {
 		binding = ActivitySnippetsBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
-		projectsContext = ProjectsContext.fromIntent(getIntent());
-		resultLimit = getAccount().getMaxPageLimit();
+		UIHelper.applyEdgeToEdge(
+				this, binding.dockedToolbar, binding.recyclerView, binding.pullToRefresh, null);
 
-		snippetsViewModel = new ViewModelProvider(this).get(SnippetsViewModel.class);
+		viewModel = new ViewModelProvider(this).get(SnippetsViewModel.class);
+		viewModel.setResultLimit(getAccount().getMaxPageLimit());
 
-		binding.recyclerView.setHasFixedSize(true);
-		LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-		binding.recyclerView.setLayoutManager(layoutManager);
-		UserAccount userAccount = getAccount().getAccount();
-		adapter =
-				new SnippetsAdapter(
-						this, this, new ArrayList<>(), userAccount, binding.bottomAppBar);
-		binding.recyclerView.setAdapter(adapter);
+		int userId = getAccount().getUserId();
 
-		binding.progressBar.setVisibility(View.VISIBLE);
-		binding.nothingFoundFrame.getRoot().setVisibility(View.GONE);
-
-		binding.bottomAppBar.setNavigationOnClickListener(v -> finish());
-
+		binding.btnBack.setOnClickListener(v -> finish());
 		binding.newSnippet.setOnClickListener(
 				v -> {
 					Intent intent = new Intent(ctx, SnippetDetailActivity.class);
@@ -76,67 +66,196 @@ public class SnippetsActivity extends BaseActivity {
 					createSnippetLauncher.launch(intent);
 				});
 
-		binding.pullToRefresh.setOnRefreshListener(
-				() ->
-						new Handler(Looper.getMainLooper())
-								.postDelayed(
-										() -> {
-											page = 1;
-											adapter.clearAdapter();
-											binding.pullToRefresh.setRefreshing(false);
-											isLoading = false;
-											fetchSnippets();
-											binding.progressBar.setVisibility(View.VISIBLE);
-											binding.nothingFoundFrame
-													.getRoot()
-													.setVisibility(View.GONE);
-										},
-										250));
-
-		binding.recyclerView.addOnScrollListener(
-				new RecyclerView.OnScrollListener() {
-					@Override
-					public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-						super.onScrolled(recyclerView, dx, dy);
-						if (dy > 0) { // Scrolling down
-							int totalItems = adapter.getItemCount();
-							int lastVisibleItem = layoutManager.findLastVisibleItemPosition();
-							if (!isLoading
-									&& adapter.isMoreDataAvailable()
-									&& totalItems > 0
-									&& lastVisibleItem >= totalItems - 5) {
-								isLoading = true;
-								page += 1;
-								snippetsViewModel.loadMore(
-										SnippetsActivity.this,
-										resultLimit,
-										page,
-										adapter,
-										SnippetsActivity.this,
-										binding);
-								binding.progressBar.setVisibility(View.VISIBLE);
-							}
-						}
-					}
-				});
-
-		fetchSnippets();
+		setupRecyclerView(userId);
+		setupPullToRefresh();
+		observeViewModel();
+		viewModel.loadSnippets(ctx);
 	}
 
-	private void fetchSnippets() {
-		snippetsViewModel
-				.getSnippets(this, resultLimit, page, this, binding)
+	@Override
+	protected void onGlobalRefresh() {
+		viewModel.loadSnippets(ctx);
+	}
+
+	private void setupRecyclerView(int userId) {
+		adapter = new SnippetsAdapter(ctx, new ArrayList<>(), this, userId);
+		LinearLayoutManager layoutManager = new LinearLayoutManager(ctx);
+		binding.recyclerView.setLayoutManager(layoutManager);
+		binding.recyclerView.setAdapter(adapter);
+
+		EndlessRecyclerViewScrollListener scrollListener =
+				new EndlessRecyclerViewScrollListener(layoutManager) {
+					@Override
+					public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+						viewModel.loadNextPage(ctx);
+					}
+				};
+		binding.recyclerView.addOnScrollListener(scrollListener);
+	}
+
+	private void setupPullToRefresh() {
+		binding.pullToRefresh.setOnRefreshListener(() -> viewModel.loadSnippets(ctx));
+	}
+
+	private void observeViewModel() {
+		viewModel
+				.getSnippetList()
 				.observe(
 						this,
-						snippets -> {
-							if (snippets != null) {
-								adapter.updateList(snippets);
-								binding.nothingFoundFrame
-										.getRoot()
-										.setVisibility(
-												snippets.isEmpty() ? View.VISIBLE : View.GONE);
+						list -> {
+							if (Boolean.TRUE.equals(viewModel.getIsLoading().getValue())) return;
+							if (list == null || list.isEmpty()) {
+								binding.nothingFoundFrame.getRoot().setVisibility(View.VISIBLE);
+								binding.recyclerView.setVisibility(View.GONE);
+							} else {
+								binding.nothingFoundFrame.getRoot().setVisibility(View.GONE);
+								binding.recyclerView.setVisibility(View.VISIBLE);
+								adapter.updateList(list);
 							}
-							isLoading = false;
 						});
+
+		viewModel
+				.getError()
+				.observe(
+						this,
+						errorMsg -> {
+							if (errorMsg == null) return;
+							switch (errorMsg) {
+								case "auth_error":
+									Toasty.show(ctx, getString(R.string.not_authorized));
+									break;
+								case "access_forbidden_403":
+									Toasty.show(ctx, getString(R.string.access_forbidden_403));
+									break;
+								case "generic_error":
+									Toasty.show(ctx, getString(R.string.generic_error));
+									break;
+								case "deleted":
+									Toasty.show(ctx, getString(R.string.snippet_deleted));
+									break;
+								case "delete_error":
+									Toasty.show(ctx, getString(R.string.delete_snippet_error));
+									break;
+								default:
+									Toasty.show(ctx, errorMsg);
+									break;
+							}
+							viewModel.clearError();
+						});
+
+		viewModel
+				.getSnippetDetail()
+				.observe(
+						this,
+						snippet -> {
+							if (snippet == null) return;
+
+							String fileName = null;
+							String filePath = null;
+							String ref = "main";
+
+							if (snippet.getFiles() != null && !snippet.getFiles().isEmpty()) {
+								fileName = snippet.getFiles().get(0).getPath();
+								String rawUrl = snippet.getFiles().get(0).getRawUrl();
+								if (rawUrl != null && !rawUrl.isEmpty()) {
+									Pattern p = Pattern.compile(".*/raw/([^/]+)/(.+)");
+									Matcher m = p.matcher(rawUrl);
+									if (m.find()) {
+										ref = m.group(1);
+										filePath = m.group(2);
+									}
+								} else {
+									filePath = fileName;
+								}
+							} else if (snippet.getFileName() != null) {
+								fileName = snippet.getFileName();
+								filePath = fileName;
+							}
+
+							if (fileName != null) {
+								viewModel.loadSnippetFileContent(
+										ctx, snippet.getId(), ref, filePath, fileName);
+							}
+
+							viewModel.clearSnippetDetail();
+						});
+
+		viewModel
+				.getFileContent()
+				.observe(
+						this,
+						content -> {
+							if (content == null) return;
+
+							String ext = viewModel.getFileExtension().getValue();
+							if (ext == null) ext = "";
+							Utils.FileType type = Utils.getFileType(ext);
+							boolean isImage = type == Utils.FileType.IMAGE;
+							boolean isMarkdown =
+									"md".equalsIgnoreCase(ext) || "markdown".equalsIgnoreCase(ext);
+
+							List<ContentViewerBottomSheet.Feature> features = new ArrayList<>();
+							features.add(ContentViewerBottomSheet.Feature.SHOW_TITLE);
+
+							if (isImage) {
+								features.add(ContentViewerBottomSheet.Feature.IMAGE_PREVIEW);
+							} else {
+								features.add(ContentViewerBottomSheet.Feature.ALLOW_COPY);
+								features.add(ContentViewerBottomSheet.Feature.ALLOW_SHARE);
+								if (isMarkdown) {
+									features.add(ContentViewerBottomSheet.Feature.MARKDOWN_PREVIEW);
+								} else if (type == Utils.FileType.TEXT) {
+									features.add(ContentViewerBottomSheet.Feature.SYNTAX_HIGHLIGHT);
+								}
+							}
+
+							ContentViewerBottomSheet viewer =
+									ContentViewerBottomSheet.newInstance(
+											isImage ? null : content,
+											isImage ? content.getBytes() : null,
+											viewModel.getSnippetTitle(),
+											null,
+											isImage ? null : ext,
+											features.toArray(
+													new ContentViewerBottomSheet.Feature[0]));
+
+							viewer.show(getSupportFragmentManager(), "contentViewer");
+							viewModel.clearFileContent();
+						});
+
+		Observer<Boolean> loaderObserver =
+				loading -> {
+					boolean listLoading = Boolean.TRUE.equals(viewModel.getIsLoading().getValue());
+					boolean detailLoading =
+							Boolean.TRUE.equals(viewModel.getIsDetailLoading().getValue());
+
+					if (listLoading || detailLoading) {
+						binding.progressBar.setVisibility(View.VISIBLE);
+						binding.pullToRefresh.setRefreshing(false);
+					} else {
+						binding.progressBar.setVisibility(View.GONE);
+						binding.pullToRefresh.setRefreshing(false);
+					}
+				};
+
+		viewModel.getIsLoading().observe(this, loaderObserver);
+		viewModel.getIsDetailLoading().observe(this, loaderObserver);
+	}
+
+	@Override
+	public void onSnippetClick(SnippetsItem snippet) {
+		viewModel.loadSnippetDetail(ctx, snippet.getId());
+	}
+
+	@Override
+	public void onSnippetDelete(SnippetsItem snippet, int position) {
+		new MaterialAlertDialogBuilder(ctx)
+				.setTitle(R.string.delete_snippet)
+				.setMessage(R.string.delete_snippet_confirmation)
+				.setNeutralButton(R.string.cancel, null)
+				.setPositiveButton(
+						R.string.delete,
+						(dialog, which) -> viewModel.deleteSnippet(ctx, snippet.getId(), position))
+				.show();
 	}
 }

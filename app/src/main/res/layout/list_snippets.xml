@@ -1,157 +1,129 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.listitem.ListItemLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="@dimen/dimen6dp">
+    android:layout_height="wrap_content">
 
-    <com.google.android.material.card.MaterialCardView
+    <com.google.android.material.listitem.ListItemCardView
+        android:id="@+id/card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="?attr/materialCardViewElevatedStyle"
-        app:cardElevation="@dimen/dimen0dp">
+        android:layout_marginVertical="@dimen/dimen1dp"
+        android:checkable="false"
+        app:cardBackgroundColor="?attr/colorSurfaceContainerLow"
+        app:strokeWidth="0dp">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:foreground="?android:attr/selectableItemBackground"
-            android:padding="@dimen/dimen12dp"
-            android:orientation="vertical">
+            android:padding="@dimen/dimen8dp">
 
-            <LinearLayout
-                android:id="@+id/author_frame"
-                android:layout_width="match_parent"
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/snippet_avatar"
+                android:layout_width="@dimen/dimen40dp"
+                android:layout_height="@dimen/dimen40dp"
+                android:src="@drawable/ic_spinner"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Medium" />
+
+            <ImageView
+                android:id="@+id/snippet_lock_icon"
+                android:layout_width="@dimen/dimen16dp"
+                android:layout_height="@dimen/dimen16dp"
+                android:layout_marginStart="@dimen/dimen10dp"
+                android:contentDescription="@string/private_placeholder"
+                android:src="@drawable/ic_lock"
+                android:visibility="gone"
+                app:tint="?attr/iconsColor"
+                app:layout_constraintBottom_toBottomOf="@id/snippet_title"
+                app:layout_constraintStart_toEndOf="@id/snippet_avatar"
+                app:layout_constraintTop_toTopOf="@id/snippet_title" />
+
+            <TextView
+                android:id="@+id/snippet_title"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:layout_marginStart="@dimen/dimen10dp"
+                android:layout_marginEnd="@dimen/dimen8dp"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                android:textColor="?attr/colorOnSurface"
+                app:layout_constraintEnd_toStartOf="@id/btn_delete"
+                app:layout_constraintStart_toEndOf="@id/snippet_lock_icon"
+                app:layout_constraintTop_toTopOf="@id/snippet_avatar" />
 
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/avatar_frame"
-                    android:layout_width="@dimen/dimen36dp"
-                    android:layout_height="@dimen/dimen36dp"
-                    android:layout_marginEnd="@dimen/dimen10dp"
-                    app:strokeWidth="@dimen/dimen0dp"
-                    android:layout_gravity="top|center_horizontal"
-                    app:cardElevation="@dimen/dimen0dp">
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_delete"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/delete"
+                android:visibility="gone"
+                app:icon="@drawable/ic_trash"
+                app:iconTint="?attr/colorError"
+                app:layout_constraintBottom_toBottomOf="@id/snippet_author"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/snippet_author" />
 
-                    <ImageView
-                        android:id="@+id/snippet_avatar"
-                        android:layout_width="@dimen/dimen40dp"
-                        android:layout_height="@dimen/dimen40dp"
-                        android:scaleType="fitCenter"
-                        android:layout_gravity="center_vertical|center_horizontal"
-                        android:contentDescription="@string/generic_img_copy"
-                        app:srcCompat="@drawable/ic_spinner" />
-
-                </com.google.android.material.card.MaterialCardView>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal"
-                        tools:ignore="UseCompoundDrawables">
-
-                        <ImageView
-                            android:id="@+id/snippet_lock_icon"
-                            android:layout_width="@dimen/dimen18dp"
-                            android:layout_height="@dimen/dimen18dp"
-                            android:layout_marginEnd="@dimen/dimen6dp"
-                            android:contentDescription="@string/generic_img_copy"
-                            android:src="@drawable/ic_lock"
-                            android:visibility="gone" />
-
-                        <TextView
-                            android:id="@+id/snippet_title"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:textSize="@dimen/dimen16sp"
-                            android:maxLines="2"
-                            android:ellipsize="end" />
-
-                    </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/snippet_author"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:alpha=".7"
-                        android:textSize="@dimen/dimen14sp"
-                        android:maxLines="2"
-                        android:ellipsize="end" />
-
-                </LinearLayout>
-
-            </LinearLayout>
+            <TextView
+                android:id="@+id/snippet_author"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dimen10dp"
+                android:layout_marginTop="@dimen/dimen4dp"
+                android:alpha="0.8"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textAppearance="?attr/textAppearanceLabelSmall"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                app:layout_constraintEnd_toStartOf="@id/btn_delete"
+                app:layout_constraintStart_toEndOf="@id/snippet_avatar"
+                app:layout_constraintTop_toBottomOf="@id/snippet_title" />
 
             <TextView
                 android:id="@+id/snippet_description"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dimen12dp"
-                android:textSize="@dimen/dimen14sp"
-                android:maxLines="3"
                 android:ellipsize="end"
-                android:visibility="gone" />
+                android:maxLines="3"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/snippet_author" />
 
-            <LinearLayout
-                android:id="@+id/file_count_container"
+            <ImageView
+                android:id="@+id/file_count_icon"
+                android:layout_width="@dimen/dimen14dp"
+                android:layout_height="@dimen/dimen14dp"
+                android:layout_marginTop="@dimen/dimen12dp"
+                android:contentDescription="@string/file"
+                android:src="@drawable/ic_file"
+                android:visibility="gone"
+                app:tint="?attr/iconsColor"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/snippet_description" />
+
+            <TextView
+                android:id="@+id/file_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="@dimen/dimen8dp"
+                android:layout_marginStart="@dimen/dimen4dp"
+                android:textAppearance="?attr/textAppearanceLabelSmall"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textStyle="bold"
                 android:visibility="gone"
-                tools:ignore="UseCompoundDrawables">
+                app:layout_constraintBottom_toBottomOf="@id/file_count_icon"
+                app:layout_constraintStart_toEndOf="@id/file_count_icon"
+                app:layout_constraintTop_toTopOf="@id/file_count_icon" />
 
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="horizontal">
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-                    <ImageView
-                        android:id="@+id/file_icon"
-                        android:layout_width="@dimen/dimen18dp"
-                        android:layout_height="@dimen/dimen18dp"
-                        android:src="@drawable/ic_file"
-                        android:contentDescription="@string/file" />
+    </com.google.android.material.listitem.ListItemCardView>
 
-                    <TextView
-                        android:id="@+id/file_count"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/dimen4dp"
-                        android:textSize="@dimen/dimen14sp" />
-
-                </LinearLayout>
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <ImageView
-                    android:id="@+id/delete_snippet"
-                    android:layout_width="@dimen/dimen18dp"
-                    android:layout_height="@dimen/dimen18dp"
-                    android:layout_marginStart="@dimen/dimen8dp"
-                    android:src="@drawable/ic_trash"
-                    android:contentDescription="@string/delete"
-                    android:visibility="visible" />
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-    </com.google.android.material.card.MaterialCardView>
-
-</LinearLayout>
+</com.google.android.material.listitem.ListItemLayout>

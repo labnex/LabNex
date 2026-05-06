@@ -1,21 +1,17 @@
 package com.labnex.app.viewmodels;
 
-import android.app.Activity;
 import android.content.Context;
-import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-import com.google.android.material.bottomappbar.BottomAppBar;
-import com.labnex.app.R;
-import com.labnex.app.adapters.SnippetsAdapter;
 import com.labnex.app.clients.RetrofitClient;
-import com.labnex.app.databinding.ActivitySnippetsBinding;
-import com.labnex.app.helpers.Toasty;
 import com.labnex.app.models.snippets.SnippetsItem;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import okhttp3.ResponseBody;
+import org.apache.commons.io.FilenameUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -25,134 +21,222 @@ import retrofit2.Response;
  */
 public class SnippetsViewModel extends ViewModel {
 
-	private MutableLiveData<List<SnippetsItem>> mutableList;
-	private Call<List<SnippetsItem>> currentCall;
+	private final MutableLiveData<List<SnippetsItem>> snippetList = new MutableLiveData<>(null);
+	private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
+	private final MutableLiveData<String> error = new MutableLiveData<>();
+	private final MutableLiveData<SnippetsItem> snippetDetail = new MutableLiveData<>();
+	private final MutableLiveData<String> fileContent = new MutableLiveData<>();
+	private final MutableLiveData<String> fileExtension = new MutableLiveData<>();
+	private final MutableLiveData<Boolean> isDetailLoading = new MutableLiveData<>(false);
 
-	public LiveData<List<SnippetsItem>> getSnippets(
-			Context ctx,
-			int resultLimit,
-			int page,
-			Activity activity,
-			ActivitySnippetsBinding binding) {
+	private int currentPage = 1;
+	private int resultLimit;
+	private boolean isLastPage = false;
+	private boolean isLoadingMore = false;
+	private String snippetTitle;
 
-		mutableList = new MutableLiveData<>(null);
-		loadInitialList(ctx, resultLimit, page, activity, binding);
-		return mutableList;
+	public LiveData<List<SnippetsItem>> getSnippetList() {
+		return snippetList;
 	}
 
-	private void loadInitialList(
-			Context ctx,
-			int resultLimit,
-			int page,
-			Activity activity,
-			ActivitySnippetsBinding binding) {
+	public LiveData<Boolean> getIsLoading() {
+		return isLoading;
+	}
 
-		if (currentCall != null && !currentCall.isCanceled()) {
-			currentCall.cancel();
-		}
+	public LiveData<String> getError() {
+		return error;
+	}
 
-		currentCall = RetrofitClient.getApiInterface(ctx).getSnippets(resultLimit, page);
+	public LiveData<SnippetsItem> getSnippetDetail() {
+		return snippetDetail;
+	}
 
-		currentCall.enqueue(
+	public LiveData<String> getFileContent() {
+		return fileContent;
+	}
+
+	public LiveData<String> getFileExtension() {
+		return fileExtension;
+	}
+
+	public LiveData<Boolean> getIsDetailLoading() {
+		return isDetailLoading;
+	}
+
+	public void setResultLimit(int limit) {
+		this.resultLimit = limit;
+	}
+
+	public String getSnippetTitle() {
+		return snippetTitle;
+	}
+
+	public void loadSnippets(Context ctx) {
+		currentPage = 1;
+		isLastPage = false;
+		isLoadingMore = false;
+		isLoading.setValue(true);
+		fetch(ctx, 1);
+	}
+
+	public void loadNextPage(Context ctx) {
+		if (isLoadingMore || isLastPage) return;
+		isLoadingMore = true;
+		currentPage++;
+		fetch(ctx, currentPage);
+	}
+
+	private void fetch(Context ctx, int page) {
+		Call<List<SnippetsItem>> call =
+				RetrofitClient.getApiInterface(ctx).getSnippets(resultLimit, page);
+
+		call.enqueue(
 				new Callback<>() {
 					@Override
 					public void onResponse(
 							@NonNull Call<List<SnippetsItem>> call,
 							@NonNull Response<List<SnippetsItem>> response) {
-						if (!call.isCanceled()) {
-							if (response.isSuccessful() && response.body() != null) {
-								List<SnippetsItem> snippetsItems = response.body();
-								mutableList.postValue(snippetsItems);
-							} else {
-								mutableList.postValue(new ArrayList<>());
-								handleError(ctx, response.code(), activity, binding.bottomAppBar);
-							}
+						isLoading.setValue(false);
+						isLoadingMore = false;
+						if (response.isSuccessful()) {
+							String totalHeader = response.headers().get("x-total");
+							List<SnippetsItem> body = response.body();
+							List<SnippetsItem> current =
+									(page == 1)
+											? new ArrayList<>()
+											: snippetList.getValue() != null
+													? new ArrayList<>(snippetList.getValue())
+													: new ArrayList<>();
+							if (body != null) current.addAll(body);
+							snippetList.setValue(current);
+							checkLastPage(
+									body != null ? body.size() : 0, totalHeader, current.size());
+						} else {
+							if (page == 1) snippetList.setValue(new ArrayList<>());
+							if (response.code() == 401) error.setValue("auth_error");
+							else if (response.code() == 403) error.setValue("access_forbidden_403");
+							else error.setValue("generic_error");
 						}
-						binding.progressBar.setVisibility(View.GONE);
 					}
 
 					@Override
 					public void onFailure(
 							@NonNull Call<List<SnippetsItem>> call, @NonNull Throwable t) {
-						if (!call.isCanceled()) {
-							mutableList.postValue(new ArrayList<>());
-							Toasty.show(ctx, ctx.getString(R.string.generic_server_response_error));
-						}
-						binding.progressBar.setVisibility(View.GONE);
+						isLoading.setValue(false);
+						isLoadingMore = false;
+						if (page == 1) snippetList.setValue(new ArrayList<>());
+						error.setValue(t.getMessage());
 					}
 				});
 	}
 
-	public void loadMore(
-			Context ctx,
-			int resultLimit,
-			int page,
-			SnippetsAdapter adapter,
-			Activity activity,
-			ActivitySnippetsBinding binding) {
-
-		if (currentCall != null && !currentCall.isCanceled()) {
-			currentCall.cancel();
+	private void checkLastPage(int bodySize, String totalHeader, int fullListSize) {
+		if (bodySize < resultLimit) isLastPage = true;
+		else if (totalHeader != null) {
+			try {
+				if (fullListSize >= Integer.parseInt(totalHeader)) isLastPage = true;
+			} catch (NumberFormatException ignored) {
+			}
 		}
+	}
 
-		currentCall = RetrofitClient.getApiInterface(ctx).getSnippets(resultLimit, page);
+	public void clearError() {
+		error.setValue(null);
+	}
 
-		currentCall.enqueue(
-				new Callback<>() {
-					@Override
-					public void onResponse(
-							@NonNull Call<List<SnippetsItem>> call,
-							@NonNull Response<List<SnippetsItem>> response) {
-						if (!call.isCanceled()) {
-							if (response.isSuccessful() && response.body() != null) {
-								List<SnippetsItem> newSnippets = response.body();
-								List<SnippetsItem> currentList = mutableList.getValue();
-								if (currentList == null) {
-									currentList = new ArrayList<>();
-								}
-								if (!newSnippets.isEmpty()) {
-									currentList.addAll(newSnippets);
-									adapter.updateList(currentList);
-									mutableList.postValue(currentList);
+	public void deleteSnippet(Context ctx, int snippetId, int position) {
+		RetrofitClient.getApiInterface(ctx)
+				.deleteSnippet(snippetId)
+				.enqueue(
+						new Callback<>() {
+							@Override
+							public void onResponse(
+									@NonNull Call<Void> c, @NonNull Response<Void> r) {
+								if (r.isSuccessful()) {
+									List<SnippetsItem> current = snippetList.getValue();
+									if (current != null) {
+										current.remove(position);
+										snippetList.setValue(new ArrayList<>(current));
+									}
+									error.setValue("deleted");
 								} else {
-									adapter.setMoreDataAvailable(false);
+									error.setValue("delete_error");
 								}
-							} else {
-								handleError(ctx, response.code(), activity, binding.bottomAppBar);
 							}
-						}
-						binding.progressBar.setVisibility(View.GONE);
-					}
 
-					@Override
-					public void onFailure(
-							@NonNull Call<List<SnippetsItem>> call, @NonNull Throwable t) {
-						if (!call.isCanceled()) {
-							Toasty.show(ctx, ctx.getString(R.string.generic_server_response_error));
-						}
-						binding.progressBar.setVisibility(View.GONE);
-					}
-				});
+							@Override
+							public void onFailure(@NonNull Call<Void> c, @NonNull Throwable t) {
+								error.setValue("delete_error");
+							}
+						});
 	}
 
-	private void handleError(
-			Context ctx, int responseCode, Activity activity, BottomAppBar bottomAppBar) {
-		String message;
-		if (responseCode == 401) {
-			message = ctx.getString(R.string.not_authorized);
-		} else if (responseCode == 403) {
-			message = ctx.getString(R.string.access_forbidden_403);
-		} else {
-			message = ctx.getString(R.string.generic_error);
-		}
-		Toasty.show(ctx, message);
+	public void loadSnippetDetail(Context ctx, int snippetId) {
+		isDetailLoading.setValue(true);
+		RetrofitClient.getApiInterface(ctx)
+				.getSnippet(snippetId)
+				.enqueue(
+						new Callback<>() {
+							@Override
+							public void onResponse(
+									@NonNull Call<SnippetsItem> c,
+									@NonNull Response<SnippetsItem> r) {
+								isDetailLoading.setValue(false);
+								if (r.isSuccessful() && r.body() != null) {
+									snippetDetail.setValue(r.body());
+									snippetTitle = r.body().getTitle();
+								} else {
+									error.setValue("generic_error");
+								}
+							}
+
+							@Override
+							public void onFailure(
+									@NonNull Call<SnippetsItem> c, @NonNull Throwable t) {
+								isDetailLoading.setValue(false);
+								error.setValue(t.getMessage());
+							}
+						});
 	}
 
-	@Override
-	protected void onCleared() {
-		if (currentCall != null && !currentCall.isCanceled()) {
-			currentCall.cancel();
-		}
-		super.onCleared();
+	public void loadSnippetFileContent(
+			Context ctx, int snippetId, String ref, String filePath, String fileName) {
+		isDetailLoading.setValue(true);
+		fileExtension.setValue(FilenameUtils.getExtension(fileName));
+		RetrofitClient.getApiInterface(ctx)
+				.getSnippetFileContent(snippetId, ref, filePath)
+				.enqueue(
+						new Callback<>() {
+							@Override
+							public void onResponse(
+									@NonNull Call<ResponseBody> c,
+									@NonNull Response<ResponseBody> r) {
+								isDetailLoading.setValue(false);
+								String content = "";
+								if (r.isSuccessful() && r.body() != null) {
+									try {
+										content = r.body().string();
+									} catch (IOException e) {
+										content = "";
+									}
+								}
+								fileContent.setValue(content);
+							}
+
+							@Override
+							public void onFailure(
+									@NonNull Call<ResponseBody> c, @NonNull Throwable t) {
+								isDetailLoading.setValue(false);
+								error.setValue(t.getMessage());
+							}
+						});
+	}
+
+	public void clearSnippetDetail() {
+		snippetDetail.setValue(null);
+	}
+
+	public void clearFileContent() {
+		fileContent.setValue(null);
 	}
 }
