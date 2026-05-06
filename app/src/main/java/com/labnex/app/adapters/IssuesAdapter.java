@@ -2,17 +2,20 @@ package com.labnex.app.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.labnex.app.R;
 import com.labnex.app.databinding.ListIssuesBinding;
+import com.labnex.app.helpers.AppSettingsInit;
 import com.labnex.app.helpers.AvatarGenerator;
 import com.labnex.app.helpers.Markdown;
 import com.labnex.app.helpers.TimeHelper;
@@ -169,21 +172,37 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssuesHold
 			Markdown.render(context, EmojiParser.parseToUnicode(titleText.trim()), binding.title);
 
 			binding.labelsContainer.removeAllViews();
-			if (issue.getLabels() != null && !issue.getLabels().isEmpty()) {
+			boolean showLabels =
+					Boolean.parseBoolean(
+							AppSettingsInit.getSettingsValue(
+									context, AppSettingsInit.APP_SHOW_LABELS_IN_LISTS_KEY));
+			boolean showColors =
+					Boolean.parseBoolean(
+							AppSettingsInit.getSettingsValue(
+									context, AppSettingsInit.APP_SHOW_LABELS_COLORS_KEY));
+
+			if (showLabels && issue.getLabels() != null && !issue.getLabels().isEmpty()) {
 				binding.labelsScroll.setVisibility(View.VISIBLE);
-				for (Object label : issue.getLabels()) {
-					int color = getLabelColor((String) label);
-					ImageView labelView = new ImageView(context);
-					labelView.setImageDrawable(
-							AvatarGenerator.getLabelDrawable(context, (String) label, color, 22));
+				for (Object labelObj : issue.getLabels()) {
+					String labelName = (String) labelObj;
 					int marginEnd = (int) (6 * context.getResources().getDisplayMetrics().density);
-					LinearLayout.LayoutParams params =
-							new LinearLayout.LayoutParams(
-									ViewGroup.LayoutParams.WRAP_CONTENT,
-									ViewGroup.LayoutParams.WRAP_CONTENT);
-					params.setMarginEnd(marginEnd);
-					labelView.setLayoutParams(params);
-					binding.labelsContainer.addView(labelView);
+
+					if (showColors) {
+						int color = getLabelColor(labelName);
+						ImageView labelView = new ImageView(context);
+						labelView.setImageDrawable(
+								AvatarGenerator.getLabelDrawable(context, labelName, color, 22));
+						LinearLayout.LayoutParams params =
+								new LinearLayout.LayoutParams(
+										ViewGroup.LayoutParams.WRAP_CONTENT,
+										ViewGroup.LayoutParams.WRAP_CONTENT);
+						params.setMarginEnd(marginEnd);
+						labelView.setLayoutParams(params);
+						binding.labelsContainer.addView(labelView);
+					} else {
+						TextView labelView = getTextView(labelName, marginEnd);
+						binding.labelsContainer.addView(labelView);
+					}
 				}
 			} else {
 				binding.labelsScroll.setVisibility(View.GONE);
@@ -199,6 +218,31 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssuesHold
 				binding.milestoneIcon.setVisibility(View.GONE);
 				binding.milestoneText.setVisibility(View.GONE);
 			}
+		}
+
+		@NonNull private TextView getTextView(String labelName, int marginEnd) {
+			TextView labelView = new TextView(context);
+			labelView.setText(labelName);
+			labelView.setTextAppearance(
+					com.google.android.material.R.style.TextAppearance_Material3_LabelSmall);
+			int paddingH = (int) (12 * context.getResources().getDisplayMetrics().density);
+			int paddingV = (int) (4 * context.getResources().getDisplayMetrics().density);
+			labelView.setPadding(paddingH, paddingV, paddingH, paddingV);
+			labelView.setBackgroundResource(R.drawable.bg_label_outline);
+			TypedValue typedValue = new TypedValue();
+			context.getTheme()
+					.resolveAttribute(
+							com.google.android.material.R.attr.colorOnSurfaceVariant,
+							typedValue,
+							true);
+			labelView.setTextColor(typedValue.data);
+			LinearLayout.LayoutParams params =
+					new LinearLayout.LayoutParams(
+							ViewGroup.LayoutParams.WRAP_CONTENT,
+							ViewGroup.LayoutParams.WRAP_CONTENT);
+			params.setMarginEnd(marginEnd);
+			labelView.setLayoutParams(params);
+			return labelView;
 		}
 
 		private static final int[] LABEL_COLORS = {

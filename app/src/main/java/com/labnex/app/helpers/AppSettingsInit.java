@@ -20,6 +20,10 @@ public class AppSettingsInit {
 	public static String APP_BIOMETRIC_LIFE_CYCLE_DEFAULT = "false";
 	public static String APP_HOME_SCREEN_KEY = "app_home_screen";
 	public static String APP_HOME_SCREEN_DEFAULT = "0";
+	public static String APP_SHOW_LABELS_IN_LISTS_KEY = "app_show_labels_in_lists";
+	public static String APP_SHOW_LABELS_IN_LISTS_DEFAULT = "true";
+	public static String APP_SHOW_LABELS_COLORS_KEY = "app_show_labels_colors";
+	public static String APP_SHOW_LABELS_COLORS_DEFAULT = "true";
 
 	public static void initDefaultSettings(Context ctx) {
 
@@ -49,6 +53,19 @@ public class AppSettingsInit {
 		if (appSettingsApi.fetchSettingCountByKey(APP_HOME_SCREEN_KEY) == 0) {
 			appSettingsApi.insertNewSetting(
 					APP_HOME_SCREEN_KEY, APP_HOME_SCREEN_DEFAULT, APP_HOME_SCREEN_DEFAULT);
+		}
+
+		if (appSettingsApi.fetchSettingCountByKey(APP_SHOW_LABELS_IN_LISTS_KEY) == 0) {
+			appSettingsApi.insertNewSetting(
+					APP_SHOW_LABELS_IN_LISTS_KEY,
+					APP_SHOW_LABELS_IN_LISTS_DEFAULT,
+					APP_SHOW_LABELS_IN_LISTS_DEFAULT);
+		}
+		if (appSettingsApi.fetchSettingCountByKey(APP_SHOW_LABELS_COLORS_KEY) == 0) {
+			appSettingsApi.insertNewSetting(
+					APP_SHOW_LABELS_COLORS_KEY,
+					APP_SHOW_LABELS_COLORS_DEFAULT,
+					APP_SHOW_LABELS_COLORS_DEFAULT);
 		}
 	}
 

@@ -336,7 +336,8 @@
     <string name="order_by">Order by</string>
     <string name="newest_first">Newest first</string>
     <string name="oldest_first">Oldest first</string>
-
+    <string name="show_labels_in_lists">Show labels in issue/MR lists</string>
+    <string name="show_labels_colors">Color labels in lists (uses generated colors)</string>
 
     <!-- errors -->
     <string name="generic_error">An unexpected error occurred</string>

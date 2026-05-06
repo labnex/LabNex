@@ -176,6 +176,37 @@ public class AppSettingsActivity extends BaseActivity
 
 		initLanguageSelector();
 		initHomeScreenSelector();
+		initLabelsSettings();
+	}
+
+	private void initLabelsSettings() {
+		binding.sectionAll.switchShowLabels.setChecked(
+				Boolean.parseBoolean(
+						AppSettingsInit.getSettingsValue(
+								ctx, AppSettingsInit.APP_SHOW_LABELS_IN_LISTS_KEY)));
+
+		binding.sectionAll.switchShowLabels.setOnCheckedChangeListener(
+				(bv, isChecked) -> {
+					AppSettingsInit.updateSettingsValue(
+							ctx,
+							String.valueOf(isChecked),
+							AppSettingsInit.APP_SHOW_LABELS_IN_LISTS_KEY);
+					Toasty.show(this, getString(R.string.settings_saved));
+				});
+
+		binding.sectionAll.switchLabelsColors.setChecked(
+				Boolean.parseBoolean(
+						AppSettingsInit.getSettingsValue(
+								ctx, AppSettingsInit.APP_SHOW_LABELS_COLORS_KEY)));
+
+		binding.sectionAll.switchLabelsColors.setOnCheckedChangeListener(
+				(bv, isChecked) -> {
+					AppSettingsInit.updateSettingsValue(
+							ctx,
+							String.valueOf(isChecked),
+							AppSettingsInit.APP_SHOW_LABELS_COLORS_KEY);
+					Toasty.show(this, getString(R.string.settings_saved));
+				});
 	}
 
 	private void setupSecuritySection() {
