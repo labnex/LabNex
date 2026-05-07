@@ -89,7 +89,7 @@
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/remove"
                 app:icon="@drawable/ic_trash"
-                app:iconTint="?attr/iconsColor"
+                app:iconTint="?attr/colorError"
                 app:layout_constraintBottom_toBottomOf="@id/project_path"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/project_name" />

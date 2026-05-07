@@ -2,28 +2,36 @@ package com.labnex.app.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.lifecycle.Observer;
+import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.labnex.app.R;
 import com.labnex.app.adapters.SnippetsAdapter;
 import com.labnex.app.bottomsheets.ContentViewerBottomSheet;
 import com.labnex.app.databinding.ActivitySnippetsBinding;
+import com.labnex.app.databinding.BottomsheetSnippetFilesBinding;
+import com.labnex.app.databinding.ItemSnippetFileBinding;
 import com.labnex.app.helpers.EndlessRecyclerViewScrollListener;
+import com.labnex.app.helpers.FileIcon;
 import com.labnex.app.helpers.Toasty;
 import com.labnex.app.helpers.UIHelper;
 import com.labnex.app.helpers.Utils;
+import com.labnex.app.models.snippets.FilesItem;
 import com.labnex.app.models.snippets.SnippetsItem;
 import com.labnex.app.viewmodels.SnippetsViewModel;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Map;
+import org.apache.commons.io.FilenameUtils;
 
 /**
  * @author mmarif
@@ -144,107 +152,104 @@ public class SnippetsActivity extends BaseActivity
 						});
 
 		viewModel
-				.getSnippetDetail()
+				.getSingleViewerPayload()
 				.observe(
 						this,
-						snippet -> {
-							if (snippet == null) return;
-
-							String fileName = null;
-							String filePath = null;
-							String ref = "main";
-
-							if (snippet.getFiles() != null && !snippet.getFiles().isEmpty()) {
-								fileName = snippet.getFiles().get(0).getPath();
-								String rawUrl = snippet.getFiles().get(0).getRawUrl();
-								if (rawUrl != null && !rawUrl.isEmpty()) {
-									Pattern p = Pattern.compile(".*/raw/([^/]+)/(.+)");
-									Matcher m = p.matcher(rawUrl);
-									if (m.find()) {
-										ref = m.group(1);
-										filePath = m.group(2);
-									}
-								} else {
-									filePath = fileName;
-								}
-							} else if (snippet.getFileName() != null) {
-								fileName = snippet.getFileName();
-								filePath = fileName;
-							}
-
-							if (fileName != null) {
-								viewModel.loadSnippetFileContent(
-										ctx, snippet.getId(), ref, filePath, fileName);
-							}
-
-							viewModel.clearSnippetDetail();
+						payload -> {
+							if (payload == null) return;
+							openViewer(payload.content, payload.fileName);
+							viewModel.clearSingleViewerPayload();
 						});
 
 		viewModel
-				.getFileContent()
+				.getMultiFileList()
 				.observe(
 						this,
-						content -> {
-							if (content == null) return;
-
-							String ext = viewModel.getFileExtension().getValue();
-							if (ext == null) ext = "";
-							Utils.FileType type = Utils.getFileType(ext);
-							boolean isImage = type == Utils.FileType.IMAGE;
-							boolean isMarkdown =
-									"md".equalsIgnoreCase(ext) || "markdown".equalsIgnoreCase(ext);
-
-							List<ContentViewerBottomSheet.Feature> features = new ArrayList<>();
-							features.add(ContentViewerBottomSheet.Feature.SHOW_TITLE);
-
-							if (isImage) {
-								features.add(ContentViewerBottomSheet.Feature.IMAGE_PREVIEW);
-							} else {
-								features.add(ContentViewerBottomSheet.Feature.ALLOW_COPY);
-								features.add(ContentViewerBottomSheet.Feature.ALLOW_SHARE);
-								if (isMarkdown) {
-									features.add(ContentViewerBottomSheet.Feature.MARKDOWN_PREVIEW);
-								} else if (type == Utils.FileType.TEXT) {
-									features.add(ContentViewerBottomSheet.Feature.SYNTAX_HIGHLIGHT);
-								}
-							}
-
-							ContentViewerBottomSheet viewer =
-									ContentViewerBottomSheet.newInstance(
-											isImage ? null : content,
-											isImage ? content.getBytes() : null,
-											viewModel.getSnippetTitle(),
-											null,
-											isImage ? null : ext,
-											features.toArray(
-													new ContentViewerBottomSheet.Feature[0]));
-
-							viewer.show(getSupportFragmentManager(), "contentViewer");
-							viewModel.clearFileContent();
+						files -> {
+							if (files == null) return;
+							showFilePickerSheet(files);
+							viewModel.clearMultiFileList();
 						});
 
-		Observer<Boolean> loaderObserver =
-				loading -> {
-					boolean listLoading = Boolean.TRUE.equals(viewModel.getIsLoading().getValue());
-					boolean detailLoading =
-							Boolean.TRUE.equals(viewModel.getIsDetailLoading().getValue());
+		viewModel
+				.getIsLoading()
+				.observe(
+						this,
+						loading -> {
+							if (Boolean.TRUE.equals(loading)) {
+								binding.progressBar.setVisibility(View.VISIBLE);
+								binding.pullToRefresh.setRefreshing(false);
+							} else {
+								binding.progressBar.setVisibility(View.GONE);
+								binding.pullToRefresh.setRefreshing(false);
+							}
+						});
+	}
 
-					if (listLoading || detailLoading) {
-						binding.progressBar.setVisibility(View.VISIBLE);
-						binding.pullToRefresh.setRefreshing(false);
-					} else {
-						binding.progressBar.setVisibility(View.GONE);
-						binding.pullToRefresh.setRefreshing(false);
-					}
-				};
+	private void showFilePickerSheet(List<FilesItem> files) {
+		BottomSheetDialog dialog = new BottomSheetDialog(this);
+		BottomsheetSnippetFilesBinding fb =
+				BottomsheetSnippetFilesBinding.inflate(getLayoutInflater());
+		dialog.setContentView(fb.getRoot());
+		UIHelper.applySheetStyle(dialog, true);
 
-		viewModel.getIsLoading().observe(this, loaderObserver);
-		viewModel.getIsDetailLoading().observe(this, loaderObserver);
+		fb.filesList.setLayoutManager(new LinearLayoutManager(this));
+		fb.filesList.setAdapter(
+				new SnippetFilePickerAdapter(
+						files,
+						file -> {
+							dialog.dismiss();
+							viewModel.fetchMultiFileContent(
+									ctx, viewModel.getCurrentSnippet().getId(), file);
+						}));
+		dialog.show();
+	}
+
+	private void openViewer(String content, String fileName) {
+		String ext = FilenameUtils.getExtension(fileName);
+		Utils.FileType type = Utils.getFileType(ext);
+		boolean isImage = type == Utils.FileType.IMAGE;
+		boolean isMarkdown = "md".equalsIgnoreCase(ext) || "markdown".equalsIgnoreCase(ext);
+
+		List<ContentViewerBottomSheet.Feature> features = new ArrayList<>();
+		features.add(ContentViewerBottomSheet.Feature.SHOW_TITLE);
+		if (isImage) {
+			features.add(ContentViewerBottomSheet.Feature.IMAGE_PREVIEW);
+		} else {
+			features.add(ContentViewerBottomSheet.Feature.ALLOW_COPY);
+			features.add(ContentViewerBottomSheet.Feature.ALLOW_SHARE);
+			if (isMarkdown) {
+				features.add(ContentViewerBottomSheet.Feature.MARKDOWN_PREVIEW);
+				features.add(ContentViewerBottomSheet.Feature.START_IN_MARKDOWN);
+			} else if (type == Utils.FileType.TEXT) {
+				features.add(ContentViewerBottomSheet.Feature.SYNTAX_HIGHLIGHT);
+			}
+		}
+
+		SnippetsItem snippet = viewModel.getCurrentSnippet();
+		String title = snippet.getTitle();
+		String webUrl = snippet.getWebUrl();
+
+		Map<String, String> meta = new HashMap<>();
+		if (webUrl != null && !webUrl.isEmpty()) {
+			meta.put("URL", webUrl);
+		}
+
+		ContentViewerBottomSheet viewer =
+				ContentViewerBottomSheet.newInstance(
+						isImage ? null : content,
+						isImage ? content.getBytes() : null,
+						title,
+						null,
+						isImage ? null : ext,
+						meta,
+						features.toArray(new ContentViewerBottomSheet.Feature[0]));
+		viewer.show(getSupportFragmentManager(), "contentViewer");
 	}
 
 	@Override
 	public void onSnippetClick(SnippetsItem snippet) {
-		viewModel.loadSnippetDetail(ctx, snippet.getId());
+		viewModel.loadSnippetAndOpen(ctx, snippet.getId());
 	}
 
 	@Override
@@ -257,5 +262,53 @@ public class SnippetsActivity extends BaseActivity
 						R.string.delete,
 						(dialog, which) -> viewModel.deleteSnippet(ctx, snippet.getId(), position))
 				.show();
+	}
+
+	private static class SnippetFilePickerAdapter
+			extends RecyclerView.Adapter<SnippetFilePickerAdapter.Holder> {
+
+		interface OnFilePicked {
+			void onPicked(FilesItem file);
+		}
+
+		private final List<FilesItem> files;
+		private final OnFilePicked listener;
+
+		SnippetFilePickerAdapter(List<FilesItem> files, OnFilePicked listener) {
+			this.files = files;
+			this.listener = listener;
+		}
+
+		@NonNull @Override
+		public Holder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+			ItemSnippetFileBinding itemSnippetFileBinding =
+					ItemSnippetFileBinding.inflate(
+							LayoutInflater.from(parent.getContext()), parent, false);
+			return new Holder(itemSnippetFileBinding);
+		}
+
+		@Override
+		public void onBindViewHolder(@NonNull Holder holder, int position) {
+			FilesItem f = files.get(position);
+			holder.itemSnippetFileBinding.fileName.setText(f.getPath());
+			holder.itemSnippetFileBinding.fileIcon.setImageResource(
+					FileIcon.getIconResource(f.getPath(), "file"));
+			holder.itemView.setOnClickListener(v -> listener.onPicked(f));
+			holder.itemSnippetFileBinding.getRoot().updateAppearance(position, getItemCount());
+		}
+
+		@Override
+		public int getItemCount() {
+			return files.size();
+		}
+
+		static class Holder extends RecyclerView.ViewHolder {
+			ItemSnippetFileBinding itemSnippetFileBinding;
+
+			Holder(ItemSnippetFileBinding itemSnippetFileBinding) {
+				super(itemSnippetFileBinding.getRoot());
+				this.itemSnippetFileBinding = itemSnippetFileBinding;
+			}
+		}
 	}
 }

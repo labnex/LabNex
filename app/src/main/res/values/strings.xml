@@ -338,8 +338,13 @@
     <string name="oldest_first">Oldest first</string>
     <string name="show_labels_in_lists">Show labels in issue/MR lists</string>
     <string name="show_labels_colors">Color labels in lists (uses generated colors)</string>
-    <string name="copied_to_clipboard">Content copied to clipboard</string>
+    <string name="copied_to_clipboard">Copied to clipboard</string>
     <string name="image_load_error">Failed to load the image</string>
+    <string name="copy_content">Copy content</string>
+    <string name="share_url">Share URL</string>
+    <string name="share_content">Share content</string>
+    <string name="choose_what_to_share">Choose what to share</string>
+    <string name="choose_what_to_copy">Choose what to copy</string>
 
     <!-- errors -->
     <string name="generic_error">An unexpected error occurred</string>

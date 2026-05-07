@@ -68,7 +68,7 @@
             android:layout_height="wrap_content"
             android:contentDescription="@string/close"
             app:icon="@drawable/ic_close"
-            app:iconTint="?attr/iconsColor"
+            app:iconTint="?attr/colorError"
             app:layout_constraintBottom_toBottomOf="@id/sheet_title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/sheet_title" />

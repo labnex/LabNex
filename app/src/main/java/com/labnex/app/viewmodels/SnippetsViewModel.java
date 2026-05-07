@@ -6,12 +6,11 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import com.labnex.app.clients.RetrofitClient;
+import com.labnex.app.models.snippets.FilesItem;
 import com.labnex.app.models.snippets.SnippetsItem;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import okhttp3.ResponseBody;
-import org.apache.commons.io.FilenameUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -22,18 +21,16 @@ import retrofit2.Response;
 public class SnippetsViewModel extends ViewModel {
 
 	private final MutableLiveData<List<SnippetsItem>> snippetList = new MutableLiveData<>(null);
-	private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
+	private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
 	private final MutableLiveData<String> error = new MutableLiveData<>();
-	private final MutableLiveData<SnippetsItem> snippetDetail = new MutableLiveData<>();
-	private final MutableLiveData<String> fileContent = new MutableLiveData<>();
-	private final MutableLiveData<String> fileExtension = new MutableLiveData<>();
-	private final MutableLiveData<Boolean> isDetailLoading = new MutableLiveData<>(false);
+	private final MutableLiveData<ViewerPayload> singleViewerPayload = new MutableLiveData<>();
+	private final MutableLiveData<List<FilesItem>> multiFileList = new MutableLiveData<>();
 
 	private int currentPage = 1;
 	private int resultLimit;
 	private boolean isLastPage = false;
 	private boolean isLoadingMore = false;
-	private String snippetTitle;
+	private SnippetsItem currentSnippet;
 
 	public LiveData<List<SnippetsItem>> getSnippetList() {
 		return snippetList;
@@ -47,28 +44,20 @@ public class SnippetsViewModel extends ViewModel {
 		return error;
 	}
 
-	public LiveData<SnippetsItem> getSnippetDetail() {
-		return snippetDetail;
+	public LiveData<ViewerPayload> getSingleViewerPayload() {
+		return singleViewerPayload;
 	}
 
-	public LiveData<String> getFileContent() {
-		return fileContent;
-	}
-
-	public LiveData<String> getFileExtension() {
-		return fileExtension;
-	}
-
-	public LiveData<Boolean> getIsDetailLoading() {
-		return isDetailLoading;
+	public LiveData<List<FilesItem>> getMultiFileList() {
+		return multiFileList;
 	}
 
 	public void setResultLimit(int limit) {
 		this.resultLimit = limit;
 	}
 
-	public String getSnippetTitle() {
-		return snippetTitle;
+	public SnippetsItem getCurrentSnippet() {
+		return currentSnippet;
 	}
 
 	public void loadSnippets(Context ctx) {
@@ -89,7 +78,6 @@ public class SnippetsViewModel extends ViewModel {
 	private void fetch(Context ctx, int page) {
 		Call<List<SnippetsItem>> call =
 				RetrofitClient.getApiInterface(ctx).getSnippets(resultLimit, page);
-
 		call.enqueue(
 				new Callback<>() {
 					@Override
@@ -140,15 +128,11 @@ public class SnippetsViewModel extends ViewModel {
 		}
 	}
 
-	public void clearError() {
-		error.setValue(null);
-	}
-
 	public void deleteSnippet(Context ctx, int snippetId, int position) {
 		RetrofitClient.getApiInterface(ctx)
 				.deleteSnippet(snippetId)
 				.enqueue(
-						new Callback<>() {
+						new Callback<Void>() {
 							@Override
 							public void onResponse(
 									@NonNull Call<Void> c, @NonNull Response<Void> r) {
@@ -171,8 +155,8 @@ public class SnippetsViewModel extends ViewModel {
 						});
 	}
 
-	public void loadSnippetDetail(Context ctx, int snippetId) {
-		isDetailLoading.setValue(true);
+	public void loadSnippetAndOpen(Context ctx, int snippetId) {
+		isLoading.setValue(true);
 		RetrofitClient.getApiInterface(ctx)
 				.getSnippet(snippetId)
 				.enqueue(
@@ -181,11 +165,24 @@ public class SnippetsViewModel extends ViewModel {
 							public void onResponse(
 									@NonNull Call<SnippetsItem> c,
 									@NonNull Response<SnippetsItem> r) {
-								isDetailLoading.setValue(false);
 								if (r.isSuccessful() && r.body() != null) {
-									snippetDetail.setValue(r.body());
-									snippetTitle = r.body().getTitle();
+									SnippetsItem s = r.body();
+									currentSnippet = s;
+									List<FilesItem> files = s.getFiles();
+
+									if (files != null && files.size() == 1) {
+										fetchSingleFile(ctx, s.getId(), files.get(0));
+									} else if (files != null && files.size() > 1) {
+										isLoading.setValue(false);
+										multiFileList.setValue(files);
+									} else if (s.getFileName() != null) {
+										FilesItem f = new FilesItem();
+										f.setPath(s.getFileName());
+										f.setRawUrl(null);
+										fetchSingleFile(ctx, s.getId(), f);
+									}
 								} else {
+									isLoading.setValue(false);
 									error.setValue("generic_error");
 								}
 							}
@@ -193,16 +190,26 @@ public class SnippetsViewModel extends ViewModel {
 							@Override
 							public void onFailure(
 									@NonNull Call<SnippetsItem> c, @NonNull Throwable t) {
-								isDetailLoading.setValue(false);
+								isLoading.setValue(false);
 								error.setValue(t.getMessage());
 							}
 						});
 	}
 
-	public void loadSnippetFileContent(
-			Context ctx, int snippetId, String ref, String filePath, String fileName) {
-		isDetailLoading.setValue(true);
-		fileExtension.setValue(FilenameUtils.getExtension(fileName));
+	private void fetchSingleFile(Context ctx, int snippetId, FilesItem file) {
+		String fileName = file.getPath();
+		String rawUrl = file.getRawUrl();
+		String ref = "main";
+		String filePath = fileName;
+		if (rawUrl != null && !rawUrl.isEmpty()) {
+			java.util.regex.Pattern p = java.util.regex.Pattern.compile(".*/raw/([^/]+)/(.+)");
+			java.util.regex.Matcher m = p.matcher(rawUrl);
+			if (m.find()) {
+				ref = m.group(1);
+				filePath = m.group(2);
+			}
+		}
+
 		RetrofitClient.getApiInterface(ctx)
 				.getSnippetFileContent(snippetId, ref, filePath)
 				.enqueue(
@@ -211,32 +218,51 @@ public class SnippetsViewModel extends ViewModel {
 							public void onResponse(
 									@NonNull Call<ResponseBody> c,
 									@NonNull Response<ResponseBody> r) {
-								isDetailLoading.setValue(false);
 								String content = "";
 								if (r.isSuccessful() && r.body() != null) {
 									try {
+										isLoading.setValue(false);
 										content = r.body().string();
-									} catch (IOException e) {
+									} catch (Exception e) {
 										content = "";
 									}
 								}
-								fileContent.setValue(content);
+								singleViewerPayload.setValue(new ViewerPayload(content, fileName));
 							}
 
 							@Override
 							public void onFailure(
 									@NonNull Call<ResponseBody> c, @NonNull Throwable t) {
-								isDetailLoading.setValue(false);
-								error.setValue(t.getMessage());
+								isLoading.setValue(false);
+								singleViewerPayload.setValue(new ViewerPayload("", fileName));
 							}
 						});
 	}
 
-	public void clearSnippetDetail() {
-		snippetDetail.setValue(null);
+	public void clearSingleViewerPayload() {
+		singleViewerPayload.setValue(null);
 	}
 
-	public void clearFileContent() {
-		fileContent.setValue(null);
+	public void clearMultiFileList() {
+		multiFileList.setValue(null);
+	}
+
+	public void clearError() {
+		error.setValue(null);
+	}
+
+	public void fetchMultiFileContent(Context ctx, int snippetId, FilesItem file) {
+		isLoading.setValue(true);
+		fetchSingleFile(ctx, snippetId, file);
+	}
+
+	public static class ViewerPayload {
+		public String content;
+		public String fileName;
+
+		public ViewerPayload(String content, String fileName) {
+			this.content = content;
+			this.fileName = fileName;
+		}
 	}
 }

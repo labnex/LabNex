@@ -31,6 +31,12 @@ public class GenericMenuBottomSheet extends BottomSheetDialogFragment {
 	private String subtitle;
 	private OnMenuItemClickListener listener;
 
+	private OnMenuItemClickListener externalListener;
+
+	public void setOnMenuItemClickListener(OnMenuItemClickListener listener) {
+		this.externalListener = listener;
+	}
+
 	public interface OnMenuItemClickListener {
 		void onMenuItemClick(String id);
 	}
@@ -108,7 +114,9 @@ public class GenericMenuBottomSheet extends BottomSheetDialogFragment {
 
 			cardBinding.menuCard.setOnClickListener(
 					v -> {
-						if (listener != null) {
+						if (externalListener != null) {
+							externalListener.onMenuItemClick(item.getId());
+						} else if (listener != null) {
 							listener.onMenuItemClick(item.getId());
 						}
 						dismiss();

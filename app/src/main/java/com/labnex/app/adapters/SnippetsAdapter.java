@@ -12,6 +12,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.labnex.app.R;
 import com.labnex.app.databinding.ListSnippetsBinding;
 import com.labnex.app.helpers.AvatarGenerator;
+import com.labnex.app.helpers.FileIcon;
 import com.labnex.app.helpers.TimeHelper;
 import com.labnex.app.helpers.Toasty;
 import com.labnex.app.models.snippets.SnippetsItem;
@@ -141,19 +142,27 @@ public class SnippetsAdapter extends RecyclerView.Adapter<SnippetsAdapter.Snippe
 				binding.snippetDescription.setVisibility(View.GONE);
 			}
 
-			int fileCount = 0;
-			if (snippet.getFiles() != null && !snippet.getFiles().isEmpty()) {
-				fileCount = snippet.getFiles().size();
+			if (snippet.getFiles() != null && snippet.getFiles().size() == 1) {
+				String singleFileName = snippet.getFiles().get(0).getPath();
+				binding.fileNameIcon.setVisibility(View.VISIBLE);
+				binding.fileName.setVisibility(View.VISIBLE);
+				binding.fileNameIcon.setImageResource(
+						FileIcon.getIconResource(singleFileName, "file"));
+				binding.fileName.setText(singleFileName);
+			} else if (snippet.getFiles() != null && snippet.getFiles().size() > 1) {
+				binding.fileNameIcon.setVisibility(View.VISIBLE);
+				binding.fileName.setVisibility(View.VISIBLE);
+				binding.fileNameIcon.setImageResource(R.drawable.ic_file);
+				binding.fileName.setText(String.valueOf(snippet.getFiles().size()));
 			} else if (snippet.getFileName() != null && !snippet.getFileName().isEmpty()) {
-				fileCount = 1;
-			}
-			if (fileCount > 0) {
-				binding.fileCountIcon.setVisibility(View.VISIBLE);
-				binding.fileCount.setVisibility(View.VISIBLE);
-				binding.fileCount.setText(String.valueOf(fileCount));
+				binding.fileNameIcon.setVisibility(View.VISIBLE);
+				binding.fileName.setVisibility(View.VISIBLE);
+				binding.fileNameIcon.setImageResource(
+						FileIcon.getIconResource(snippet.getFileName(), "file"));
+				binding.fileName.setText(snippet.getFileName());
 			} else {
-				binding.fileCountIcon.setVisibility(View.GONE);
-				binding.fileCount.setVisibility(View.GONE);
+				binding.fileNameIcon.setVisibility(View.GONE);
+				binding.fileName.setVisibility(View.GONE);
 			}
 
 			boolean isOwner =
