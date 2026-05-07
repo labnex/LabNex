@@ -462,20 +462,23 @@ public interface ApiInterface {
 	Call<List<SnippetsItem>> getSnippets(@Query("per_page") int per_page, @Query("page") int page);
 
 	@GET("snippets/{id}") // get a snippet
-	Call<SnippetsItem> getSnippet(@Path("id") int id);
+	Call<SnippetsItem> getSnippet(@Path("id") long id);
 
 	@GET("snippets/{id}/files/{ref}/{file_path}/raw")
 	@Headers("Accept: text/plain")
 	Call<ResponseBody> getSnippetFileContent(
-			@Path("id") int id,
+			@Path("id") long id,
 			@Path(value = "ref", encoded = true) String ref,
 			@Path(value = "file_path", encoded = true) String filePath);
 
 	@DELETE("snippets/{id}")
-	Call<Void> deleteSnippet(@Path("id") int id);
+	Call<Void> deleteSnippet(@Path("id") long id);
 
 	@POST("snippets")
 	Call<SnippetsItem> createSnippet(@Body SnippetCreateModel model);
+
+	@PUT("snippets/{id}")
+	Call<SnippetsItem> updateSnippet(@Path("id") long id, @Body SnippetCreateModel model);
 
 	// Tags
 	@GET("projects/{id}/repository/tags")

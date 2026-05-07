@@ -51,19 +51,19 @@
                 android:maxLines="2"
                 android:textAppearance="?attr/textAppearanceTitleMedium"
                 android:textColor="?attr/colorOnSurface"
-                app:layout_constraintEnd_toStartOf="@id/btn_delete"
+                app:layout_constraintEnd_toStartOf="@id/btn_menu"
                 app:layout_constraintStart_toEndOf="@id/snippet_lock_icon"
                 app:layout_constraintTop_toTopOf="@id/snippet_avatar" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_delete"
+                android:id="@+id/btn_menu"
                 style="@style/Widget.Material3.Button.IconButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:contentDescription="@string/delete"
+                android:contentDescription="@string/menu"
                 android:visibility="gone"
-                app:icon="@drawable/ic_trash"
-                app:iconTint="?attr/colorError"
+                app:icon="@drawable/ic_menu"
+                app:iconTint="?attr/iconsColor"
                 app:layout_constraintBottom_toBottomOf="@id/snippet_author"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/snippet_author" />
@@ -79,7 +79,7 @@
                 android:maxLines="1"
                 android:textAppearance="?attr/textAppearanceLabelSmall"
                 android:textColor="?attr/colorOnSurfaceVariant"
-                app:layout_constraintEnd_toStartOf="@id/btn_delete"
+                app:layout_constraintEnd_toStartOf="@id/btn_menu"
                 app:layout_constraintStart_toEndOf="@id/snippet_avatar"
                 app:layout_constraintTop_toBottomOf="@id/snippet_title" />
 

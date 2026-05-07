@@ -5,11 +5,14 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+import com.labnex.app.bottomsheets.CreateSnippetBottomSheet;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.models.snippets.FilesItem;
+import com.labnex.app.models.snippets.SnippetCreateModel;
 import com.labnex.app.models.snippets.SnippetsItem;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -25,6 +28,8 @@ public class SnippetsViewModel extends ViewModel {
 	private final MutableLiveData<String> error = new MutableLiveData<>();
 	private final MutableLiveData<ViewerPayload> singleViewerPayload = new MutableLiveData<>();
 	private final MutableLiveData<List<FilesItem>> multiFileList = new MutableLiveData<>();
+	private final MutableLiveData<Boolean> isActionLoading = new MutableLiveData<>(false);
+	private final MutableLiveData<Boolean> actionSuccess = new MutableLiveData<>(false);
 
 	private int currentPage = 1;
 	private int resultLimit;
@@ -52,12 +57,24 @@ public class SnippetsViewModel extends ViewModel {
 		return multiFileList;
 	}
 
+	public LiveData<Boolean> getIsActionLoading() {
+		return isActionLoading;
+	}
+
+	public LiveData<Boolean> getActionSuccess() {
+		return actionSuccess;
+	}
+
 	public void setResultLimit(int limit) {
 		this.resultLimit = limit;
 	}
 
 	public SnippetsItem getCurrentSnippet() {
 		return currentSnippet;
+	}
+
+	public void clearActionSuccess() {
+		actionSuccess.setValue(false);
 	}
 
 	public void loadSnippets(Context ctx) {
@@ -128,11 +145,11 @@ public class SnippetsViewModel extends ViewModel {
 		}
 	}
 
-	public void deleteSnippet(Context ctx, int snippetId, int position) {
+	public void deleteSnippet(Context ctx, long snippetId, int position) {
 		RetrofitClient.getApiInterface(ctx)
 				.deleteSnippet(snippetId)
 				.enqueue(
-						new Callback<Void>() {
+						new Callback<>() {
 							@Override
 							public void onResponse(
 									@NonNull Call<Void> c, @NonNull Response<Void> r) {
@@ -155,7 +172,7 @@ public class SnippetsViewModel extends ViewModel {
 						});
 	}
 
-	public void loadSnippetAndOpen(Context ctx, int snippetId) {
+	public void loadSnippetAndOpen(Context ctx, long snippetId) {
 		isLoading.setValue(true);
 		RetrofitClient.getApiInterface(ctx)
 				.getSnippet(snippetId)
@@ -196,7 +213,7 @@ public class SnippetsViewModel extends ViewModel {
 						});
 	}
 
-	private void fetchSingleFile(Context ctx, int snippetId, FilesItem file) {
+	private void fetchSingleFile(Context ctx, long snippetId, FilesItem file) {
 		String fileName = file.getPath();
 		String rawUrl = file.getRawUrl();
 		String ref = "main";
@@ -239,6 +256,142 @@ public class SnippetsViewModel extends ViewModel {
 						});
 	}
 
+	public void createSnippet(
+			Context ctx,
+			String title,
+			String description,
+			String visibility,
+			List<SnippetCreateModel.File> files) {
+		isActionLoading.setValue(true);
+
+		SnippetCreateModel model = new SnippetCreateModel(title, description, visibility, files);
+		RetrofitClient.getApiInterface(ctx)
+				.createSnippet(model)
+				.enqueue(
+						new Callback<>() {
+							@Override
+							public void onResponse(
+									@NonNull Call<SnippetsItem> c,
+									@NonNull Response<SnippetsItem> r) {
+								isActionLoading.setValue(false);
+								if (r.isSuccessful()) {
+									actionSuccess.setValue(true);
+								} else if (r.code() == 401) {
+									error.setValue("auth_error");
+								} else if (r.code() == 403) {
+									error.setValue("access_forbidden_403");
+								} else {
+									error.setValue("generic_error");
+								}
+							}
+
+							@Override
+							public void onFailure(
+									@NonNull Call<SnippetsItem> c, @NonNull Throwable t) {
+								isActionLoading.setValue(false);
+								error.setValue(t.getMessage());
+							}
+						});
+	}
+
+	public void fetchSingleFileForEdit(
+			Context ctx,
+			long snippetId,
+			CreateSnippetBottomSheet.FileEntry entry,
+			Runnable onComplete) {
+		String ref = "main";
+		String filePath = entry.fileName;
+
+		RetrofitClient.getApiInterface(ctx)
+				.getSnippetFileContent(snippetId, ref, filePath)
+				.enqueue(
+						new Callback<>() {
+							@Override
+							public void onResponse(
+									@NonNull Call<ResponseBody> c,
+									@NonNull Response<ResponseBody> r) {
+								if (r.isSuccessful() && r.body() != null) {
+									try {
+										entry.content = r.body().string();
+									} catch (Exception e) {
+										entry.content = "";
+									}
+								}
+								onComplete.run();
+							}
+
+							@Override
+							public void onFailure(
+									@NonNull Call<ResponseBody> c, @NonNull Throwable t) {
+								onComplete.run();
+							}
+						});
+	}
+
+	public void updateSnippet(
+			Context ctx,
+			long snippetId,
+			String title,
+			String description,
+			String visibility,
+			List<SnippetCreateModel.File> newFiles,
+			List<String> originalFileNames) {
+		isActionLoading.setValue(true);
+
+		List<SnippetCreateModel.File> payload = new ArrayList<>();
+		Set<String> newNames = new java.util.HashSet<>();
+		for (SnippetCreateModel.File f : newFiles) {
+			newNames.add(f.getFilePath());
+		}
+
+		for (SnippetCreateModel.File f : newFiles) {
+			if (originalFileNames.contains(f.getFilePath())) {
+				payload.add(
+						new SnippetCreateModel.File(
+								"update", f.getFilePath(), f.getContent(), null));
+			} else {
+				payload.add(
+						new SnippetCreateModel.File(
+								"create", f.getFilePath(), f.getContent(), null));
+			}
+		}
+
+		for (String original : originalFileNames) {
+			if (!newNames.contains(original)) {
+				payload.add(new SnippetCreateModel.File("delete", original, null, null));
+			}
+		}
+
+		SnippetCreateModel model = new SnippetCreateModel(title, description, visibility, payload);
+		RetrofitClient.getApiInterface(ctx)
+				.updateSnippet(snippetId, model)
+				.enqueue(
+						new Callback<>() {
+							@Override
+							public void onResponse(
+									@NonNull Call<SnippetsItem> c,
+									@NonNull Response<SnippetsItem> r) {
+								isActionLoading.setValue(false);
+								if (r.isSuccessful()) {
+									actionSuccess.setValue(true);
+								} else if (r.code() == 401) {
+									error.setValue("auth_error");
+								} else if (r.code() == 403) {
+									error.setValue("access_forbidden_403");
+								} else {
+									error.setValue("generic_error");
+								}
+							}
+
+							@Override
+							public void onFailure(
+									@NonNull Call<SnippetsItem> c, @NonNull Throwable t) {
+								isActionLoading.setValue(false);
+								error.setValue(t.getMessage());
+							}
+						});
+	}
+
 	public void clearSingleViewerPayload() {
 		singleViewerPayload.setValue(null);
 	}
@@ -251,7 +404,7 @@ public class SnippetsViewModel extends ViewModel {
 		error.setValue(null);
 	}
 
-	public void fetchMultiFileContent(Context ctx, int snippetId, FilesItem file) {
+	public void fetchMultiFileContent(Context ctx, long snippetId, FilesItem file) {
 		isLoading.setValue(true);
 		fetchSingleFile(ctx, snippetId, file);
 	}

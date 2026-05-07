@@ -2,7 +2,9 @@ package com.labnex.app.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,6 +24,20 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesViewHol
 	private final Context ctx;
 	private List<Notes> notesList;
 	private final OnNoteClickListener listener;
+	private OnNoteInsertListener insertListener;
+	private boolean useSheetStyle = false;
+
+	public void setSheetStyle(boolean sheetStyle) {
+		this.useSheetStyle = sheetStyle;
+	}
+
+	public interface OnNoteInsertListener {
+		void onNoteSelected(String content);
+	}
+
+	public void setOnNoteInsertListener(OnNoteInsertListener listener) {
+		this.insertListener = listener;
+	}
 
 	public interface OnNoteClickListener {
 		void onNoteClick(Notes note);
@@ -58,6 +74,21 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesViewHol
 	public void onBindViewHolder(@NonNull NotesViewHolder holder, int position) {
 		holder.bind(notesList.get(position));
 		holder.binding.getRoot().updateAppearance(position, getItemCount());
+		TypedValue tv = new TypedValue();
+		if (useSheetStyle) {
+			holder.itemView
+					.getContext()
+					.getTheme()
+					.resolveAttribute(
+							com.google.android.material.R.attr.colorSurfaceContainerHigh, tv, true);
+		} else {
+			holder.itemView
+					.getContext()
+					.getTheme()
+					.resolveAttribute(
+							com.google.android.material.R.attr.colorSurfaceContainerLow, tv, true);
+		}
+		holder.binding.card.setCardBackgroundColor(tv.data);
 	}
 
 	@Override
@@ -76,7 +107,14 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesViewHol
 			itemView.setOnClickListener(
 					v -> {
 						int pos = getBindingAdapterPosition();
-						if (pos != RecyclerView.NO_POSITION && listener != null) {
+						if (pos == RecyclerView.NO_POSITION) return;
+
+						if (insertListener != null) {
+							Notes note = notesList.get(pos);
+							if (note.getContent() != null) {
+								insertListener.onNoteSelected(note.getContent());
+							}
+						} else if (listener != null) {
 							listener.onNoteClick(notesList.get(pos));
 						}
 					});
@@ -106,6 +144,8 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesViewHol
 				binding.datetime.setText(
 						ctx.getString(R.string.created_with, TimeHelper.formatTime(date)));
 			}
+
+			binding.btnDelete.setVisibility(insertListener != null ? View.GONE : View.VISIBLE);
 		}
 	}
 }

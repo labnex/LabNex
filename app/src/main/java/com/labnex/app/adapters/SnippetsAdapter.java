@@ -35,6 +35,8 @@ public class SnippetsAdapter extends RecyclerView.Adapter<SnippetsAdapter.Snippe
 		void onSnippetClick(SnippetsItem snippet);
 
 		void onSnippetDelete(SnippetsItem snippet, int position);
+
+		void onSnippetMenuClick(SnippetsItem snippet, int position);
 	}
 
 	public SnippetsAdapter(
@@ -90,11 +92,11 @@ public class SnippetsAdapter extends RecyclerView.Adapter<SnippetsAdapter.Snippe
 						}
 					});
 
-			binding.btnDelete.setOnClickListener(
+			binding.btnMenu.setOnClickListener(
 					v -> {
 						int pos = getBindingAdapterPosition();
 						if (pos != RecyclerView.NO_POSITION && listener != null) {
-							listener.onSnippetDelete(snippetsList.get(pos), pos);
+							listener.onSnippetMenuClick(snippetsList.get(pos), pos);
 						}
 					});
 		}
@@ -167,7 +169,7 @@ public class SnippetsAdapter extends RecyclerView.Adapter<SnippetsAdapter.Snippe
 
 			boolean isOwner =
 					snippet.getAuthor() != null && snippet.getAuthor().getId() == currentUserId;
-			binding.btnDelete.setVisibility(isOwner ? View.VISIBLE : View.GONE);
+			binding.btnMenu.setVisibility(isOwner ? View.VISIBLE : View.GONE);
 		}
 	}
 }

@@ -1,12 +1,9 @@
 package com.labnex.app.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -16,6 +13,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.labnex.app.R;
 import com.labnex.app.adapters.SnippetsAdapter;
 import com.labnex.app.bottomsheets.ContentViewerBottomSheet;
+import com.labnex.app.bottomsheets.CreateSnippetBottomSheet;
+import com.labnex.app.bottomsheets.GenericMenuBottomSheet;
 import com.labnex.app.databinding.ActivitySnippetsBinding;
 import com.labnex.app.databinding.BottomsheetSnippetFilesBinding;
 import com.labnex.app.databinding.ItemSnippetFileBinding;
@@ -24,6 +23,7 @@ import com.labnex.app.helpers.FileIcon;
 import com.labnex.app.helpers.Toasty;
 import com.labnex.app.helpers.UIHelper;
 import com.labnex.app.helpers.Utils;
+import com.labnex.app.models.app.GenericMenuItemModel;
 import com.labnex.app.models.snippets.FilesItem;
 import com.labnex.app.models.snippets.SnippetsItem;
 import com.labnex.app.viewmodels.SnippetsViewModel;
@@ -43,15 +43,6 @@ public class SnippetsActivity extends BaseActivity
 	private SnippetsViewModel viewModel;
 	private SnippetsAdapter adapter;
 
-	private final ActivityResultLauncher<Intent> createSnippetLauncher =
-			registerForActivityResult(
-					new ActivityResultContracts.StartActivityForResult(),
-					result -> {
-						if (result.getResultCode() == RESULT_OK) {
-							viewModel.loadSnippets(ctx);
-						}
-					});
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -69,9 +60,8 @@ public class SnippetsActivity extends BaseActivity
 		binding.btnBack.setOnClickListener(v -> finish());
 		binding.newSnippet.setOnClickListener(
 				v -> {
-					Intent intent = new Intent(ctx, SnippetDetailActivity.class);
-					intent.putExtra("MODE", "CREATE");
-					createSnippetLauncher.launch(intent);
+					CreateSnippetBottomSheet sheet = CreateSnippetBottomSheet.newInstance();
+					sheet.show(getSupportFragmentManager(), "createSnippetSheet");
 				});
 
 		setupRecyclerView(userId);
@@ -245,6 +235,61 @@ public class SnippetsActivity extends BaseActivity
 						meta,
 						features.toArray(new ContentViewerBottomSheet.Feature[0]));
 		viewer.show(getSupportFragmentManager(), "contentViewer");
+	}
+
+	@Override
+	public void onSnippetMenuClick(SnippetsItem snippet, int position) {
+		List<GenericMenuItemModel> items = new ArrayList<>();
+		items.add(
+				new GenericMenuItemModel(
+						"edit",
+						R.string.edit,
+						R.drawable.ic_edit,
+						com.google.android.material.R.attr.colorPrimaryContainer,
+						com.google.android.material.R.attr.colorOnPrimaryContainer));
+		items.add(
+				new GenericMenuItemModel(
+						"delete",
+						R.string.delete,
+						R.drawable.ic_trash,
+						com.google.android.material.R.attr.colorErrorContainer,
+						com.google.android.material.R.attr.colorOnErrorContainer));
+
+		GenericMenuBottomSheet sheet =
+				GenericMenuBottomSheet.newInstance(
+						snippet.getTitle(), getString(R.string.snippet), items);
+		sheet.setOnMenuItemClickListener(
+				id -> {
+					switch (id) {
+						case "edit":
+							openEditSnippet(snippet);
+							break;
+						case "delete":
+							onSnippetDelete(snippet, position);
+							break;
+					}
+				});
+		sheet.show(getSupportFragmentManager(), "snippetMenuSheet");
+	}
+
+	private void openEditSnippet(SnippetsItem snippet) {
+		List<CreateSnippetBottomSheet.FileEntry> files = new ArrayList<>();
+		if (snippet.getFiles() != null) {
+			for (FilesItem f : snippet.getFiles()) {
+				files.add(new CreateSnippetBottomSheet.FileEntry(f.getPath(), ""));
+			}
+		} else if (snippet.getFileName() != null) {
+			files.add(new CreateSnippetBottomSheet.FileEntry(snippet.getFileName(), ""));
+		}
+
+		CreateSnippetBottomSheet sheet =
+				CreateSnippetBottomSheet.newInstance(
+						snippet.getId(),
+						snippet.getTitle(),
+						snippet.getDescription() != null ? snippet.getDescription() : "",
+						snippet.getVisibility(),
+						files);
+		sheet.show(getSupportFragmentManager(), "editSnippetSheet");
 	}
 
 	@Override

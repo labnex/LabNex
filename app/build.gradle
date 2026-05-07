@@ -60,13 +60,9 @@ dependencies {
     implementation libs.constraintlayout
     implementation libs.lifecycle.livedata
     implementation libs.lifecycle.viewmodel
-    implementation libs.navigation.fragment
-    implementation libs.navigation.ui
     implementation libs.fragment
     implementation libs.appcompat
     implementation libs.material3
-    implementation libs.material3.window.size
-    implementation libs.viewpager2
     implementation libs.okhttp3
     implementation libs.gson
     implementation libs.retrofit2
@@ -100,13 +96,9 @@ dependencies {
     implementation libs.urlbuilder
     coreLibraryDesugaring libs.desugar.jdk.libs
     implementation libs.emoji.java
-    implementation libs.android.svg
-    implementation libs.android.gif.drawable
     implementation libs.stormpot
-    implementation libs.splashscreen
     implementation libs.photoview
     implementation libs.commons.io
-    implementation libs.commons.lang3
 
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit

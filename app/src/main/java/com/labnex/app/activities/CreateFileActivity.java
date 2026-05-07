@@ -480,10 +480,10 @@ public class CreateFileActivity extends BaseActivity
 
 	public void launchCodeEditorActivityForResult(String fileContent, String fileExtension) {
 
-		Intent intent = new Intent(this, CodeEditorActivity.class);
-		intent.putExtra("fileExtension", fileExtension);
-		intent.putExtra("fileContent", fileContent);
-		codeEditorActivityResultLauncher.launch(intent);
+		// Intent intent = new Intent(this, CodeEditorActivity.class);
+		// intent.putExtra("fileExtension", fileExtension);
+		// intent.putExtra("fileContent", fileContent);
+		// codeEditorActivityResultLauncher.launch(intent);
 	}
 
 	private void disableButton() {
