@@ -140,7 +140,7 @@ public class ProjectDetailActivity extends BaseActivity
 							new ProjectsContext(projectsContext.getProject(), ctx);
 					Intent intent = project.getIntent(ctx, MergeRequestsActivity.class);
 					intent.putExtra("source", "mr");
-					intent.putExtra("projectId", projectId);
+					intent.putExtra("id", projectId);
 					intent.putExtra("projectName", projectsContext.getProjectName());
 					intent.putExtra("path", projectsContext.getPath());
 					ctx.startActivity(intent);

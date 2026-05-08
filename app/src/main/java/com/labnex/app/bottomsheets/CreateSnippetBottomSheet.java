@@ -205,7 +205,7 @@ public class CreateSnippetBottomSheet extends BottomSheetDialogFragment {
 		Chip chip =
 				(Chip)
 						getLayoutInflater()
-								.inflate(R.layout.chip_item, binding.fileChipsGroup, false);
+								.inflate(R.layout.item_chip, binding.fileChipsGroup, false);
 		chip.setText(name.isEmpty() ? getString(R.string.untitled) : name);
 		chip.setCheckable(true);
 		chip.setChecked(index == selectedFileIndex);
