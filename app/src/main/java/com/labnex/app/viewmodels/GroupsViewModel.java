@@ -24,11 +24,8 @@ public class GroupsViewModel extends ViewModel {
 	private final MutableLiveData<String> error = new MutableLiveData<>();
 	private final MutableLiveData<Boolean> isActionLoading = new MutableLiveData<>(false);
 	private final MutableLiveData<Boolean> actionSuccess = new MutableLiveData<>(false);
-
-	private int currentPage = 1;
-	private int resultLimit;
-	private boolean isLastPage = false;
-	private boolean isLoadingMore = false;
+	private final MutableLiveData<GroupsItem> groupDetail = new MutableLiveData<>();
+	private final MutableLiveData<Boolean> isDetailLoading = new MutableLiveData<>(false);
 
 	public LiveData<List<GroupsItem>> getGroupsList() {
 		return groupsList;
@@ -49,6 +46,19 @@ public class GroupsViewModel extends ViewModel {
 	public LiveData<Boolean> getActionSuccess() {
 		return actionSuccess;
 	}
+
+	public LiveData<GroupsItem> getGroupDetail() {
+		return groupDetail;
+	}
+
+	public LiveData<Boolean> getIsDetailLoading() {
+		return isDetailLoading;
+	}
+
+	private int currentPage = 1;
+	private int resultLimit;
+	private boolean isLastPage = false;
+	private boolean isLoadingMore = false;
 
 	public void clearActionSuccess() {
 		actionSuccess.setValue(false);
@@ -71,6 +81,32 @@ public class GroupsViewModel extends ViewModel {
 		isLoadingMore = true;
 		currentPage++;
 		fetch(ctx, currentPage);
+	}
+
+	public void loadGroupDetail(Context ctx, long groupId) {
+		isDetailLoading.setValue(true);
+		RetrofitClient.getApiInterface(ctx)
+				.getGroup(groupId)
+				.enqueue(
+						new Callback<>() {
+							@Override
+							public void onResponse(
+									@NonNull Call<GroupsItem> c, @NonNull Response<GroupsItem> r) {
+								isDetailLoading.setValue(false);
+								if (r.isSuccessful() && r.body() != null) {
+									groupDetail.setValue(r.body());
+								} else {
+									error.setValue("generic_error");
+								}
+							}
+
+							@Override
+							public void onFailure(
+									@NonNull Call<GroupsItem> c, @NonNull Throwable t) {
+								isDetailLoading.setValue(false);
+								error.setValue(t.getMessage());
+							}
+						});
 	}
 
 	private void fetch(Context ctx, int page) {

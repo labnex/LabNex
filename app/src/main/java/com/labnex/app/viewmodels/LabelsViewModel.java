@@ -29,7 +29,7 @@ public class LabelsViewModel extends ViewModel {
 
 	public LiveData<List<Labels>> getLabels(
 			Context ctx,
-			int id,
+			long id,
 			int resultLimit,
 			int page,
 			Activity activity,
@@ -57,7 +57,7 @@ public class LabelsViewModel extends ViewModel {
 
 	public void loadInitialList(
 			Context ctx,
-			int id,
+			long id,
 			int resultLimit,
 			int page,
 			Activity activity,
@@ -147,7 +147,7 @@ public class LabelsViewModel extends ViewModel {
 
 	public void loadMore(
 			Context ctx,
-			int id,
+			long id,
 			int resultLimit,
 			int page,
 			LabelsAdapter adapter,

@@ -87,7 +87,7 @@ public interface ApiInterface {
 			@Query("page") int page);
 
 	@GET("groups/{id}") // get a group
-	Call<GroupsItem> getGroup(@Path("id") int id);
+	Call<GroupsItem> getGroup(@Path("id") long id);
 
 	@GET("groups/{id}/subgroups") // get sub groups
 	Call<List<GroupsItem>> getSubGroups(
@@ -105,7 +105,7 @@ public interface ApiInterface {
 
 	@GET("groups/{id}/labels") // get group labels
 	Call<List<Labels>> getGroupLabels(
-			@Path("id") int id,
+			@Path("id") long id,
 			@Query("with_counts") boolean with_counts,
 			@Query("per_page") int per_page,
 			@Query("page") int page);
@@ -114,7 +114,7 @@ public interface ApiInterface {
 	Call<Labels> createGroupLabel(@Path("id") int id, @Body CrudeLabel body);
 
 	@DELETE("groups/{id}/labels/{label_id}") // delete a group label
-	Call<Void> deleteGroupLabel(@Path("id") int id, @Path("label_id") int label_id);
+	Call<Void> deleteGroupLabel(@Path("id") long id, @Path("label_id") int label_id);
 
 	@PUT("groups/{id}/labels/{label_id}") // update a group label
 	Call<Labels> updateGroupLabel(
@@ -122,7 +122,7 @@ public interface ApiInterface {
 
 	@GET("groups/{id}/members") // get a group members
 	Call<List<User>> getGroupMembers(
-			@Path("id") int id, @Query("per_page") int per_page, @Query("page") int page);
+			@Path("id") long id, @Query("per_page") int per_page, @Query("page") int page);
 
 	@GET("groups/{id}/issues") // get group issues
 	Call<List<Issues>> getGroupIssues(

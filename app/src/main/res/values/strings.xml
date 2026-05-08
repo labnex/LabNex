@@ -500,5 +500,6 @@
     <string name="fullscreen">Fullscreen</string>
     <string name="untitled">Untitled</string>
     <string name="snippet">Snippet</string>
+    <string name="group">Group</string>
     <!-- generic copy -->
 </resources>

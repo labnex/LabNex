@@ -164,6 +164,7 @@ public class HomeFragment extends Fragment {
 						loading -> {
 							if (loading) {
 								binding.progressBar.setVisibility(View.VISIBLE);
+								binding.nestedScrollView.setVisibility(View.GONE);
 								binding.pullToRefresh.setRefreshing(false);
 							} else {
 								binding.progressBar.setVisibility(View.GONE);

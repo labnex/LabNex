@@ -1,7 +1,6 @@
 package com.labnex.app.bottomsheets;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -18,7 +17,6 @@ import com.labnex.app.R;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.databinding.BottomSheetLabelActionsBinding;
 import com.labnex.app.helpers.Toasty;
-import com.labnex.app.interfaces.BottomSheetListener;
 import com.labnex.app.models.labels.CrudeLabel;
 import com.labnex.app.models.labels.Labels;
 import com.skydoves.colorpickerview.ColorPickerDialog;
@@ -380,17 +378,5 @@ public class LabelActionsBottomSheet extends BottomSheetDialogFragment {
 		}
 
 		return dialog;
-	}
-
-	@Override
-	public void onAttach(@NonNull Context context) {
-
-		super.onAttach(context);
-
-		try {
-			BottomSheetListener bottomSheetListener = (BottomSheetListener) context;
-		} catch (ClassCastException e) {
-			throw new ClassCastException(context + " must implement BottomSheetListener");
-		}
 	}
 }

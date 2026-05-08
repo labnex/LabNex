@@ -31,7 +31,7 @@ public class LabelsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
 	private final Context context;
 	private List<Labels> list;
-	private final int groupId;
+	private final long groupId;
 	private OnLoadMoreListener loadMoreListener;
 	private boolean isLoading = false, isMoreDataAvailable = true;
 	private final BottomSheetGroupDetailBinding bottomSheetGroupDetailBinding;
@@ -40,7 +40,7 @@ public class LabelsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 	public LabelsAdapter(
 			Context ctx,
 			List<Labels> listMain,
-			int groupId,
+			long groupId,
 			BottomSheetGroupDetailBinding bottomSheetGroupDetailBinding) {
 		this.context = ctx;
 		this.list = listMain;
@@ -140,7 +140,7 @@ public class LabelsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 						bundle.putString("description", labels.getDescription().toString());
 						bundle.putString("color", labels.getColor());
 						bundle.putInt("id", labels.getId());
-						bundle.putInt("groupId", groupId);
+						bundle.putLong("groupId", groupId);
 
 						LabelActionsBottomSheet bottomSheet = new LabelActionsBottomSheet();
 						bottomSheet.setArguments(bundle);

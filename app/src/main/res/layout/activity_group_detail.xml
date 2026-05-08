@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rootLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorSurface">
+
+    <com.google.android.material.loadingindicator.LoadingIndicator
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:elevation="@dimen/dimen4dp"
+        app:indicatorSize="@dimen/dimen48dp"
+        app:trackThickness="@dimen/dimen4dp" />
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/dimen16dp"
+            android:paddingBottom="@dimen/dimen24dp">
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/info_frame"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:cardBackgroundColor="?attr/colorSurfaceContainerLow"
+                app:cardCornerRadius="@dimen/dimen20dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp"
+                tools:visibility="visible">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/dimen20dp">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/group_avatar"
+                        android:layout_width="@dimen/dimen56dp"
+                        android:layout_height="@dimen/dimen56dp"
+                        android:src="@drawable/ic_spinner"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Medium" />
+
+                    <TextView
+                        android:id="@+id/group_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dimen12dp"
+                        android:layout_marginEnd="@dimen/dimen4dp"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:textAppearance="?attr/textAppearanceTitleMedium"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textStyle="bold"
+                        app:layout_constrainedWidth="true"
+                        app:layout_constraintEnd_toStartOf="@id/visibility_icon"
+                        app:layout_constraintHorizontal_bias="0"
+                        app:layout_constraintStart_toEndOf="@id/group_avatar"
+                        app:layout_constraintTop_toTopOf="@id/group_avatar"
+                        app:layout_constraintWidth_max="wrap" />
+
+                    <ImageView
+                        android:id="@+id/visibility_icon"
+                        android:layout_width="@dimen/dimen16dp"
+                        android:layout_height="@dimen/dimen16dp"
+                        android:layout_marginStart="@dimen/dimen4dp"
+                        android:contentDescription="@string/visibility"
+                        app:layout_constraintBottom_toBottomOf="@id/group_name"
+                        app:layout_constraintStart_toEndOf="@id/group_name"
+                        app:layout_constraintTop_toTopOf="@id/group_name"
+                        app:tint="?attr/iconsColor" />
+
+                    <TextView
+                        android:id="@+id/group_path"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dimen12dp"
+                        android:alpha="0.7"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:textAppearance="?attr/textAppearanceLabelMedium"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/group_avatar"
+                        app:layout_constraintTop_toBottomOf="@id/group_name" />
+
+                    <TextView
+                        android:id="@+id/group_description"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dimen12dp"
+                        android:ellipsize="end"
+                        android:maxLines="4"
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:visibility="gone"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/group_avatar" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <include
+                android:id="@+id/group_actions"
+                layout="@layout/item_group_actions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/projects_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen24dp"
+                android:text="@string/projects"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen8dp"
+                android:nestedScrollingEnabled="false"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.dockedtoolbar.DockedToolbarLayout
+        android:id="@+id/docked_toolbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:backgroundTint="?attr/colorSurfaceContainerHighest"
+        app:layout_behavior="com.google.android.material.behavior.HideViewOnScrollBehavior"
+        app:paddingBottomSystemWindowInsets="false"
+        app:paddingLeftSystemWindowInsets="false"
+        app:paddingRightSystemWindowInsets="false"
+        app:paddingTopSystemWindowInsets="false"
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.RoundedDock">
+
+        <com.google.android.material.overflow.OverflowLinearLayout
+            android:id="@+id/dock_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_back"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/close"
+                android:minWidth="0dp"
+                android:paddingHorizontal="@dimen/dimen24dp"
+                app:icon="@drawable/ic_arrow_back" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_menu"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/menu"
+                android:minWidth="0dp"
+                android:paddingHorizontal="@dimen/dimen24dp"
+                app:icon="@drawable/ic_menu" />
+
+        </com.google.android.material.overflow.OverflowLinearLayout>
+
+    </com.google.android.material.dockedtoolbar.DockedToolbarLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

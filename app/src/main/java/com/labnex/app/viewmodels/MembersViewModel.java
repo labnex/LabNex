@@ -28,7 +28,7 @@ public class MembersViewModel extends ViewModel {
 
 	public LiveData<List<User>> getMembers(
 			Context ctx,
-			int id,
+			long id,
 			int resultLimit,
 			int page,
 			Activity activity,
@@ -56,7 +56,7 @@ public class MembersViewModel extends ViewModel {
 
 	public void loadInitialList(
 			Context ctx,
-			int id,
+			long id,
 			int resultLimit,
 			int page,
 			Activity activity,
@@ -146,7 +146,7 @@ public class MembersViewModel extends ViewModel {
 
 	public void loadMore(
 			Context ctx,
-			int id,
+			long id,
 			int resultLimit,
 			int page,
 			MembersAdapter adapter,

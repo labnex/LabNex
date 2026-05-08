@@ -1,215 +1,170 @@
 package com.labnex.app.activities;
 
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.labnex.app.R;
 import com.labnex.app.adapters.ProjectsAdapter;
+import com.labnex.app.bottomsheets.CreateGroupBottomSheet;
+import com.labnex.app.bottomsheets.GenericMenuBottomSheet;
 import com.labnex.app.bottomsheets.GroupDetailBottomSheet;
-import com.labnex.app.clients.RetrofitClient;
-import com.labnex.app.databinding.ActivityGroupDetailsBinding;
-import com.labnex.app.databinding.BottomSheetGroupActionsBinding;
-import com.labnex.app.helpers.TextDrawable.ColorGenerator;
-import com.labnex.app.helpers.TextDrawable.TextDrawable;
+import com.labnex.app.bottomsheets.LabelActionsBottomSheet;
+import com.labnex.app.databinding.ActivityGroupDetailBinding;
+import com.labnex.app.helpers.AvatarGenerator;
 import com.labnex.app.helpers.Toasty;
-import com.labnex.app.interfaces.BottomSheetListener;
+import com.labnex.app.helpers.UIHelper;
+import com.labnex.app.models.app.GenericMenuItemModel;
 import com.labnex.app.models.groups.GroupsItem;
+import com.labnex.app.viewmodels.GroupsViewModel;
 import com.labnex.app.viewmodels.ProjectsViewModel;
-import retrofit2.Call;
-import retrofit2.Callback;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author mmarif
  */
-public class GroupDetailActivity extends BaseActivity implements BottomSheetListener {
+public class GroupDetailActivity extends BaseActivity {
 
-	private ActivityGroupDetailsBinding binding;
-	private int groupId;
+	private ActivityGroupDetailBinding binding;
+	private GroupsViewModel groupsViewModel;
 	private ProjectsViewModel projectsViewModel;
 	private ProjectsAdapter projectsAdapter;
-	private final int page = 1;
-	private int resultLimit;
-	private BottomSheetGroupActionsBinding sheetBinding;
+	private long groupId;
+	private GroupsItem groupsItem;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-
 		super.onCreate(savedInstanceState);
-		binding = ActivityGroupDetailsBinding.inflate(getLayoutInflater());
+		binding = ActivityGroupDetailBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
-		resultLimit = getAccount().getMaxPageLimit();
+		UIHelper.applyEdgeToEdge(this, binding.dockedToolbar, binding.scrollView, null, null);
+
+		groupsViewModel = new ViewModelProvider(this).get(GroupsViewModel.class);
 		projectsViewModel = new ViewModelProvider(this).get(ProjectsViewModel.class);
+		projectsViewModel.setResultLimit(getAccount().getMaxPageLimit());
 
 		groupId = getIntent().getIntExtra("groupId", 0);
 
-		binding.recyclerView.setHasFixedSize(true);
-		binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
+		binding.btnBack.setOnClickListener(v -> finish());
+		showGroupMenu();
 
-		binding.bottomAppBar.setNavigationOnClickListener(bottomAppBar -> finish());
-
-		setupNavigationClickListener(binding.issuesMainFrame, IssuesActivity.class, groupId);
-
-		setupNavigationClickListener(
-				binding.mergeRequestsMainFrame, MergeRequestsActivity.class, groupId);
-
-		binding.bottomAppBar.setOnMenuItemClickListener(
-				menuItem -> {
-					if (menuItem.getItemId() == R.id.menu) {
-						showGroupActionsBottomSheet();
-						return true;
-					}
-					return false;
-				});
-
-		getGroupDetails();
-		getGroupProjects();
-	}
-
-	private void setupNavigationClickListener(View view, Class<?> targetActivity, int id) {
-		view.setOnClickListener(
+		binding.groupActions.issuesFrame.setOnClickListener(
 				v -> {
-					Intent intent = new Intent(ctx, targetActivity);
+					Intent intent = new Intent(ctx, IssuesActivity.class);
 					intent.putExtra("source", "group");
-					intent.putExtra("id", id);
-					ctx.startActivity(intent);
+					intent.putExtra("id", (int) groupId);
+					startActivity(intent);
 				});
-	}
 
-	private void showGroupActionsBottomSheet() {
-
-		sheetBinding =
-				BottomSheetGroupActionsBinding.inflate(LayoutInflater.from(this), null, false);
-		BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
-		bottomSheetDialog.setContentView(sheetBinding.getRoot());
-
-		sheetBinding.labelsItem.setOnClickListener(
+		binding.groupActions.mergeRequestsFrame.setOnClickListener(
 				v -> {
-					Bundle bsBundle = new Bundle();
-					bsBundle.putString("source", "labels");
-					bsBundle.putInt("groupId", groupId);
-					GroupDetailBottomSheet bottomSheet = new GroupDetailBottomSheet();
-					bottomSheet.setArguments(bsBundle);
-					bottomSheet.show(getSupportFragmentManager(), "groupDetailBottomSheet");
-					bottomSheetDialog.dismiss();
+					Intent intent = new Intent(ctx, MergeRequestsActivity.class);
+					intent.putExtra("source", "group");
+					intent.putExtra("id", (int) groupId);
+					startActivity(intent);
 				});
 
-		sheetBinding.membersItem.setOnClickListener(
+		binding.groupActions.labelsFrame.setOnClickListener(
 				v -> {
-					Bundle bsBundle = new Bundle();
-					bsBundle.putString("source", "members");
-					bsBundle.putInt("groupId", groupId);
+					Bundle args = new Bundle();
+					args.putString("source", "labels");
+					args.putLong("groupId", groupId);
 					GroupDetailBottomSheet bottomSheet = new GroupDetailBottomSheet();
-					bottomSheet.setArguments(bsBundle);
+					bottomSheet.setArguments(args);
 					bottomSheet.show(getSupportFragmentManager(), "groupDetailBottomSheet");
-					bottomSheetDialog.dismiss();
 				});
 
-		bottomSheetDialog.show();
-	}
-
-	private void getGroupDetails() {
-
-		Call<GroupsItem> call = RetrofitClient.getApiInterface(ctx).getGroup(groupId);
-
-		call.enqueue(
-				new Callback<>() {
-
-					@Override
-					public void onResponse(
-							@NonNull Call<GroupsItem> call,
-							@NonNull retrofit2.Response<GroupsItem> response) {
-
-						GroupsItem groupDetails = response.body();
-
-						if (response.isSuccessful()) {
-
-							if (response.code() == 200) {
-
-								assert groupDetails != null;
-
-								ColorGenerator generator = ColorGenerator.MATERIAL;
-								int color = generator.getColor(groupDetails.getName());
-								String firstCharacter =
-										String.valueOf(groupDetails.getName().charAt(0));
-
-								TextDrawable drawable =
-										TextDrawable.builder()
-												.beginConfig()
-												.useFont(Typeface.DEFAULT)
-												.fontSize(16)
-												.toUpperCase()
-												.width(28)
-												.height(28)
-												.endConfig()
-												.buildRoundRect(firstCharacter, color, 8);
-
-								binding.infoFrame.setVisibility(View.VISIBLE);
-								binding.progressBar.setVisibility(View.GONE);
-
-								binding.groupName.setText(groupDetails.getName());
-								binding.groupPath.setText(groupDetails.getFullPath());
-
-								if (!groupDetails.getDescription().isEmpty()) {
-									binding.groupDescription.setVisibility(View.VISIBLE);
-									binding.groupDescription.setText(groupDetails.getDescription());
-								}
-
-								if (!groupDetails.getVisibility().isEmpty()) {
-									binding.visibilityFrame.setVisibility(View.VISIBLE);
-									binding.groupVisibility.setText(
-											groupDetails.getVisibility().toUpperCase());
-								}
-
-								if (groupDetails.getAvatarUrl() != null) {
-
-									Glide.with(ctx)
-											.load(groupDetails.getAvatarUrl())
-											.diskCacheStrategy(DiskCacheStrategy.ALL)
-											.placeholder(R.drawable.ic_spinner)
-											.centerCrop()
-											.into(binding.groupAvatar);
-								} else {
-									binding.groupAvatar.setImageDrawable(drawable);
-								}
-							}
-						}
-					}
-
-					@Override
-					public void onFailure(@NonNull Call<GroupsItem> call, @NonNull Throwable t) {
-
-						binding.progressBar.setVisibility(View.GONE);
-						Toasty.show(ctx, getString(R.string.generic_server_response_error));
-					}
+		binding.groupActions.membersFrame.setOnClickListener(
+				v -> {
+					Bundle args = new Bundle();
+					args.putString("source", "members");
+					args.putLong("groupId", groupId);
+					GroupDetailBottomSheet bottomSheet = new GroupDetailBottomSheet();
+					bottomSheet.setArguments(args);
+					bottomSheet.show(getSupportFragmentManager(), "groupDetailBottomSheet");
 				});
+
+		setupProjectsList();
+		observeGroups();
+		observeProjects();
+
+		groupsViewModel.loadGroupDetail(ctx, (int) groupId);
+		projectsViewModel.loadProjects(ctx, "group", (int) groupId);
 	}
 
-	private void getGroupProjects() {
-		projectsViewModel.setResultLimit(resultLimit);
-		projectsViewModel.loadProjects(ctx, "group", groupId);
+	private void setupProjectsList() {
+		projectsAdapter = new ProjectsAdapter(ctx, new ArrayList<>(), "");
+		binding.recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
+		binding.recyclerView.setAdapter(projectsAdapter);
+	}
 
-		projectsViewModel
-				.getIsLoading()
+	private void observeGroups() {
+		groupsViewModel
+				.getIsDetailLoading()
 				.observe(
 						this,
 						loading -> {
-							if (Boolean.TRUE.equals(loading)) {
-								binding.progressBar.setVisibility(View.VISIBLE);
-								binding.recyclerView.setVisibility(View.GONE);
+							binding.progressBar.setVisibility(
+									Boolean.TRUE.equals(loading) ? View.VISIBLE : View.GONE);
+						});
+
+		groupsViewModel
+				.getGroupDetail()
+				.observe(
+						this,
+						group -> {
+							if (group == null) return;
+
+							groupsItem = group;
+							binding.infoFrame.setVisibility(View.VISIBLE);
+
+							if (group.getAvatarUrl() != null && !group.getAvatarUrl().isEmpty()) {
+								Glide.with(ctx)
+										.load(group.getAvatarUrl())
+										.diskCacheStrategy(DiskCacheStrategy.ALL)
+										.placeholder(R.drawable.ic_spinner)
+										.centerCrop()
+										.into(binding.groupAvatar);
 							} else {
-								binding.progressBar.setVisibility(View.GONE);
+								binding.groupAvatar.setImageDrawable(
+										AvatarGenerator.getLetterAvatar(ctx, group.getName(), 56));
+							}
+
+							binding.groupName.setText(group.getName());
+							binding.groupPath.setText(group.getFullPath());
+
+							if ("private".equalsIgnoreCase(group.getVisibility())) {
+								binding.visibilityIcon.setImageResource(R.drawable.ic_lock);
+								binding.visibilityIcon.setVisibility(View.VISIBLE);
+							} else {
+								binding.visibilityIcon.setVisibility(View.GONE);
+							}
+
+							if (group.getDescription() != null
+									&& !group.getDescription().isEmpty()) {
+								binding.groupDescription.setVisibility(View.VISIBLE);
+								binding.groupDescription.setText(group.getDescription());
 							}
 						});
 
+		groupsViewModel
+				.getError()
+				.observe(
+						this,
+						errorMsg -> {
+							if (errorMsg != null) {
+								Toasty.show(ctx, getString(R.string.generic_server_response_error));
+								groupsViewModel.clearError();
+							}
+						});
+	}
+
+	private void observeProjects() {
 		projectsViewModel
 				.getProjectsList()
 				.observe(
@@ -218,18 +173,9 @@ public class GroupDetailActivity extends BaseActivity implements BottomSheetList
 							if (Boolean.TRUE.equals(projectsViewModel.getIsLoading().getValue()))
 								return;
 
-							if (projects == null || projects.isEmpty()) {
-								binding.recyclerView.setVisibility(View.GONE);
-								return;
-							}
-
-							binding.groupProjectsFrame.setVisibility(View.VISIBLE);
-							binding.recyclerView.setVisibility(View.VISIBLE);
-
-							if (projectsAdapter == null) {
-								projectsAdapter = new ProjectsAdapter(ctx, projects, "");
-								binding.recyclerView.setAdapter(projectsAdapter);
-							} else {
+							if (projects != null && !projects.isEmpty()) {
+								binding.projectsHeader.setVisibility(View.VISIBLE);
+								binding.recyclerView.setVisibility(View.VISIBLE);
 								projectsAdapter.updateList(projects);
 							}
 						});
@@ -246,6 +192,51 @@ public class GroupDetailActivity extends BaseActivity implements BottomSheetList
 						});
 	}
 
-	@Override
-	public void onButtonClicked(String text) {}
+	private void showGroupMenu() {
+		binding.btnMenu.setOnClickListener(
+				v -> {
+					List<GenericMenuItemModel> items = new ArrayList<>();
+					items.add(
+							new GenericMenuItemModel(
+									"create_label",
+									R.string.create_new_label,
+									R.drawable.ic_add,
+									com.google.android.material.R.attr.colorPrimaryContainer,
+									com.google.android.material.R.attr.colorOnPrimaryContainer));
+					items.add(
+							new GenericMenuItemModel(
+									"edit_group",
+									R.string.edit_group,
+									R.drawable.ic_edit,
+									com.google.android.material.R.attr.colorSecondaryContainer,
+									com.google.android.material.R.attr.colorOnSecondaryContainer));
+
+					GenericMenuBottomSheet sheet =
+							GenericMenuBottomSheet.newInstance(
+									groupsItem.getName(), getString(R.string.group), items);
+					sheet.setOnMenuItemClickListener(
+							id -> {
+								switch (id) {
+									case "create_label":
+										Bundle bsBundle = new Bundle();
+										bsBundle.putString("source", "labels");
+										bsBundle.putLong("groupId", groupId);
+										LabelActionsBottomSheet bottomSheet =
+												new LabelActionsBottomSheet();
+										bottomSheet.setArguments(bsBundle);
+										bottomSheet.show(
+												getSupportFragmentManager(),
+												"labelActionsBottomSheet");
+										break;
+									case "edit_group":
+										CreateGroupBottomSheet.newInstance(groupsItem)
+												.show(
+														getSupportFragmentManager(),
+														"editGroupSheet");
+										break;
+								}
+							});
+					sheet.show(getSupportFragmentManager(), "groupMenuSheet");
+				});
+	}
 }
