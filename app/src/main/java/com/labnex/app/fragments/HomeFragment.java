@@ -163,10 +163,8 @@ public class HomeFragment extends Fragment {
 						getViewLifecycleOwner(),
 						loading -> {
 							if (loading) {
-								if (Boolean.FALSE.equals(viewModel.getHasLoadedOnce().getValue())) {
-									binding.progressBar.setVisibility(View.VISIBLE);
-									binding.nestedScrollView.setVisibility(View.GONE);
-								}
+								binding.progressBar.setVisibility(View.VISIBLE);
+								binding.pullToRefresh.setRefreshing(false);
 							} else {
 								binding.progressBar.setVisibility(View.GONE);
 								binding.nestedScrollView.setVisibility(View.VISIBLE);

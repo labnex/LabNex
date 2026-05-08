@@ -176,13 +176,16 @@ public class SnippetsActivity extends BaseActivity
 						});
 	}
 
-	private void showFilePickerSheet(List<FilesItem> files) {
+	private void showFilePickerSheet(SnippetsItem snippetsItem) {
 		BottomSheetDialog dialog = new BottomSheetDialog(this);
 		BottomsheetSnippetFilesBinding fb =
 				BottomsheetSnippetFilesBinding.inflate(getLayoutInflater());
 		dialog.setContentView(fb.getRoot());
 		UIHelper.applySheetStyle(dialog, true);
 
+		fb.sheetTitle.setText(snippetsItem.getTitle());
+
+		List<FilesItem> files = snippetsItem.getFiles();
 		fb.filesList.setLayoutManager(new LinearLayoutManager(this));
 		fb.filesList.setAdapter(
 				new SnippetFilePickerAdapter(

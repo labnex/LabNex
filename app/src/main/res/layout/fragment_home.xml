@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:visibility="gone"
         app:indicatorSize="@dimen/dimen48dp"
+        android:elevation="@dimen/dimen4dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

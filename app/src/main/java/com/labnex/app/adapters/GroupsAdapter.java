@@ -2,63 +2,62 @@ package com.labnex.app.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.color.MaterialColors;
 import com.labnex.app.R;
-import com.labnex.app.activities.GroupDetailActivity;
-import com.labnex.app.helpers.TextDrawable.ColorGenerator;
-import com.labnex.app.helpers.TextDrawable.TextDrawable;
+import com.labnex.app.databinding.ListGroupsBinding;
+import com.labnex.app.helpers.AvatarGenerator;
 import com.labnex.app.models.groups.GroupsItem;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author mmarif
  */
-public class GroupsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.GroupsHolder> {
 
 	private final Context context;
-	private List<GroupsItem> groupsList;
-	private OnLoadMoreListener loadMoreListener;
-	private boolean isLoading = false, isMoreDataAvailable = true;
+	private final List<GroupsItem> groupsList;
+	private final OnGroupClickListener listener;
 
-	public GroupsAdapter(Context ctx, List<GroupsItem> groupsListMain) {
+	public interface OnGroupClickListener {
+		void onGroupClick(GroupsItem group);
+
+		void onGroupMenuClick(GroupsItem group);
+	}
+
+	public GroupsAdapter(
+			Context ctx, List<GroupsItem> groupsListMain, OnGroupClickListener listener) {
 		this.context = ctx;
-		this.groupsList = groupsListMain;
+		this.groupsList = new ArrayList<>();
+		if (groupsListMain != null) this.groupsList.addAll(groupsListMain);
+		this.listener = listener;
+	}
+
+	@SuppressLint("NotifyDataSetChanged")
+	public void updateList(List<GroupsItem> newList) {
+		groupsList.clear();
+		if (newList != null) groupsList.addAll(newList);
+		notifyDataSetChanged();
 	}
 
 	@NonNull @Override
-	public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-		LayoutInflater inflater = LayoutInflater.from(context);
-		return new GroupsHolder(inflater.inflate(R.layout.list_groups, parent, false));
+	public GroupsHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+		ListGroupsBinding binding =
+				ListGroupsBinding.inflate(LayoutInflater.from(context), parent, false);
+		return new GroupsHolder(binding);
 	}
 
 	@Override
-	public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-		if (position >= getItemCount() - 1
-				&& isMoreDataAvailable
-				&& !isLoading
-				&& loadMoreListener != null) {
-			isLoading = true;
-			loadMoreListener.onLoadMore();
-		}
-
-		((GroupsHolder) holder).bindData(groupsList.get(position));
-	}
-
-	@Override
-	public int getItemViewType(int position) {
-		return position;
+	public void onBindViewHolder(@NonNull GroupsHolder holder, int position) {
+		holder.bind(groupsList.get(position));
+		holder.binding.getRoot().updateAppearance(position, getItemCount());
 	}
 
 	@Override
@@ -66,161 +65,81 @@ public class GroupsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 		return groupsList.size();
 	}
 
-	public void setMoreDataAvailable(boolean moreDataAvailable) {
-		isMoreDataAvailable = moreDataAvailable;
-		if (!isMoreDataAvailable) {
-			loadMoreListener.onLoadFinished();
-		}
-	}
+	public class GroupsHolder extends RecyclerView.ViewHolder {
 
-	@SuppressLint("NotifyDataSetChanged")
-	public void notifyDataChanged() {
-		notifyDataSetChanged();
-		isLoading = false;
-		loadMoreListener.onLoadFinished();
-	}
+		final ListGroupsBinding binding;
 
-	public void setLoadMoreListener(OnLoadMoreListener loadMoreListener) {
-		this.loadMoreListener = loadMoreListener;
-	}
-
-	public void updateList(List<GroupsItem> list) {
-		groupsList = list;
-		notifyDataChanged();
-	}
-
-	public abstract static class OnLoadMoreListener {
-
-		protected abstract void onLoadMore();
-
-		public void onLoadFinished() {}
-	}
-
-	public static class GroupsHolder extends RecyclerView.ViewHolder {
-
-		private final TextView groupName;
-		private final TextView groupId;
-		private final TextView groupDescription;
-		private final ImageView groupAvatar;
-		private GroupsItem groupsItem;
-		private final ImageView subgroupArrow;
-		private final MaterialCardView groupCard;
-
-		GroupsHolder(View itemView) {
-
-			super(itemView);
-			groupName = itemView.findViewById(R.id.group_name);
-			groupId = itemView.findViewById(R.id.group_id);
-			groupDescription = itemView.findViewById(R.id.group_description);
-			groupAvatar = itemView.findViewById(R.id.group_avatar);
-			subgroupArrow = itemView.findViewById(R.id.subgroup_arrow);
-			groupCard = itemView.findViewById(R.id.group_card);
+		GroupsHolder(ListGroupsBinding binding) {
+			super(binding.getRoot());
+			this.binding = binding;
 
 			itemView.setOnClickListener(
 					v -> {
-						Context context = v.getContext();
-						Intent intent = new Intent(context, GroupDetailActivity.class);
-						intent.putExtra("groupId", groupsItem.getId());
-						context.startActivity(intent);
+						int pos = getBindingAdapterPosition();
+						if (pos != RecyclerView.NO_POSITION && listener != null) {
+							listener.onGroupClick(groupsList.get(pos));
+						}
+					});
+
+			binding.btnMenu.setOnClickListener(
+					v -> {
+						int pos = getBindingAdapterPosition();
+						if (pos != RecyclerView.NO_POSITION && listener != null) {
+							listener.onGroupMenuClick(groupsList.get(pos));
+						}
 					});
 		}
 
-		void bindData(GroupsItem groupsItem) {
+		void bind(GroupsItem group) {
+			int level = group.getLevel();
 
-			this.groupsItem = groupsItem;
+			int baseColor =
+					MaterialColors.getColor(
+							binding.card,
+							com.google.android.material.R.attr.colorSurfaceContainerLow);
+			int primaryColor =
+					MaterialColors.getColor(
+							binding.card, com.google.android.material.R.attr.colorPrimaryContainer);
 
-			int level = groupsItem.getLevel();
-			positionArrowAndCard(level);
+			if (level > 0) {
+				float overlayAlpha = Math.min(0.2f, 0.05f * level);
+				int tieredColor = MaterialColors.layer(baseColor, primaryColor, overlayAlpha);
+				binding.card.setCardBackgroundColor(tieredColor);
 
-			ColorGenerator generator = ColorGenerator.MATERIAL;
-			int color = generator.getColor(groupsItem.getName());
-			String firstCharacter = String.valueOf(groupsItem.getFullName().charAt(0));
+				binding.pathBadge.setVisibility(View.VISIBLE);
+				binding.pathBadge.setText(getParentPath(group.getFullPath()));
+			} else {
+				binding.card.setCardBackgroundColor(baseColor);
+				binding.pathBadge.setVisibility(View.GONE);
+			}
 
-			TextDrawable drawable =
-					TextDrawable.builder()
-							.beginConfig()
-							.useFont(Typeface.DEFAULT)
-							.fontSize(16)
-							.toUpperCase()
-							.width(28)
-							.height(28)
-							.endConfig()
-							.buildRoundRect(firstCharacter, color, 8);
-
-			groupName.setText(groupsItem.getName());
-			groupId.setText(groupsItem.getFullPath());
-
-			if (groupsItem.getAvatarUrl() != null) {
-
-				Glide.with(itemView.getContext())
-						.load(groupsItem.getAvatarUrl())
+			if (group.getAvatarUrl() != null && !group.getAvatarUrl().isEmpty()) {
+				Glide.with(context)
+						.load(group.getAvatarUrl())
 						.diskCacheStrategy(DiskCacheStrategy.ALL)
 						.placeholder(R.drawable.ic_spinner)
 						.centerCrop()
-						.into(groupAvatar);
+						.into(binding.groupAvatar);
 			} else {
-				groupAvatar.setImageDrawable(drawable);
+				binding.groupAvatar.setImageDrawable(
+						AvatarGenerator.getLetterAvatar(context, group.getName(), 40));
 			}
 
-			if (!groupsItem.getDescription().isEmpty()) {
+			binding.groupName.setText(group.getName());
+			binding.groupId.setText(group.getFullPath());
 
-				groupDescription.setVisibility(View.VISIBLE);
-				groupDescription.setText(groupsItem.getDescription());
+			if (group.getDescription() != null && !group.getDescription().isEmpty()) {
+				binding.groupDescription.setVisibility(View.VISIBLE);
+				binding.groupDescription.setText(group.getDescription());
 			} else {
-				groupDescription.setVisibility(View.GONE);
+				binding.groupDescription.setVisibility(View.GONE);
 			}
 		}
 
-		private void positionArrowAndCard(int level) {
-			if (level > 0) {
-				subgroupArrow.setVisibility(View.VISIBLE);
-
-				int totalIndent = level * dpToPx(itemView.getContext(), 32);
-				int arrowOffset = totalIndent - dpToPx(itemView.getContext(), 24);
-
-				FrameLayout.LayoutParams arrowParams =
-						(FrameLayout.LayoutParams) subgroupArrow.getLayoutParams();
-				arrowParams.leftMargin = Math.max(0, arrowOffset);
-				subgroupArrow.setLayoutParams(arrowParams);
-
-				FrameLayout.LayoutParams cardParams =
-						(FrameLayout.LayoutParams) groupCard.getLayoutParams();
-				cardParams.leftMargin = totalIndent;
-				groupCard.setLayoutParams(cardParams);
-
-				adjustArrowAppearance(level);
-
-			} else {
-				subgroupArrow.setVisibility(View.GONE);
-				FrameLayout.LayoutParams cardParams =
-						(FrameLayout.LayoutParams) groupCard.getLayoutParams();
-				cardParams.leftMargin = 0;
-				groupCard.setLayoutParams(cardParams);
-			}
-		}
-
-		private void adjustArrowAppearance(int level) {
-			switch (level) {
-				case 1:
-					// First-level subgroup
-					subgroupArrow.setAlpha(.8f);
-					subgroupArrow.setRotation(0);
-					break;
-				case 2:
-					// Second-level
-					subgroupArrow.setAlpha(0.7f);
-					subgroupArrow.setRotation(0);
-					break;
-				default:
-					// Deeper levels
-					subgroupArrow.setAlpha(0.6f);
-					subgroupArrow.setRotation(0);
-					break;
-			}
-		}
-
-		private int dpToPx(Context context, int dp) {
-			return (int) (dp * context.getResources().getDisplayMetrics().density);
+		private String getParentPath(String fullPath) {
+			if (fullPath == null || !fullPath.contains("/")) return "";
+			int lastSlash = fullPath.lastIndexOf("/");
+			return fullPath.substring(0, lastSlash).replace("/", " / ").toUpperCase();
 		}
 	}
 }

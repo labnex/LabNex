@@ -11,6 +11,7 @@
         android:layout_width="@dimen/dimen24dp"
         android:layout_height="@dimen/dimen24dp"
         android:contentDescription="@string/generic_img_copy"
+        android:src="@drawable/ic_groups"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

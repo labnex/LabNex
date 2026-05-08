@@ -20,6 +20,34 @@ public class CreateGroup implements Serializable {
 	@SerializedName("visibility")
 	private String visibility;
 
+	@SerializedName("emails_enabled")
+	private boolean emailsEnabled;
+
+	@SerializedName("lfs_enabled")
+	private boolean lfsEnabled;
+
+	@SerializedName("mentions_disabled")
+	private boolean mentionsDisabled;
+
+	@SerializedName("parent_id")
+	private Long parentId;
+
+	public void setParentId(Long parentId) {
+		this.parentId = parentId;
+	}
+
+	public void setEmailsEnabled(boolean emailsEnabled) {
+		this.emailsEnabled = emailsEnabled;
+	}
+
+	public void setLfsEnabled(boolean lfsEnabled) {
+		this.lfsEnabled = lfsEnabled;
+	}
+
+	public void setMentionsDisabled(boolean mentionsDisabled) {
+		this.mentionsDisabled = mentionsDisabled;
+	}
+
 	public CreateGroup name(String name) {
 		this.name = name;
 		return this;

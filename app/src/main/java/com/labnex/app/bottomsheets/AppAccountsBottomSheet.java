@@ -106,27 +106,25 @@ public class AppAccountsBottomSheet extends BottomSheetDialogFragment
 
 	@Override
 	public void onAccountClick(UserAccount account) {
-		UserAccountsApi api = BaseApi.getInstance(requireContext(), UserAccountsApi.class);
+		Context ctx = requireContext();
+		UserAccountsApi api = BaseApi.getInstance(ctx, UserAccountsApi.class);
 		if (api == null) return;
 		UserAccount current = api.getAccountByName(account.getAccountName());
 		if (current != null
-				&& SharedPrefDB.getInstance(requireContext()).getInt("currentActiveAccountId")
+				&& SharedPrefDB.getInstance(ctx).getInt("currentActiveAccountId")
 						!= current.getAccountId()) {
-			if (Utils.switchToAccount(requireContext(), current)) {
+			if (Utils.switchToAccount(ctx, current)) {
 				dismiss();
 				new Handler()
 						.postDelayed(
 								() -> {
 									Intent i =
-											requireContext()
-													.getPackageManager()
+											ctx.getPackageManager()
 													.getLaunchIntentForPackage(
-															requireContext().getPackageName());
+															ctx.getPackageName());
 									if (i != null)
-										requireContext()
-												.startActivity(
-														Intent.makeRestartActivityTask(
-																i.getComponent()));
+										ctx.startActivity(
+												Intent.makeRestartActivityTask(i.getComponent()));
 									Runtime.getRuntime().exit(0);
 								},
 								150);

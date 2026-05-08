@@ -24,7 +24,7 @@ public class GroupsItem implements Serializable {
 	private String createdAt;
 
 	@SerializedName("mentions_disabled")
-	private Object mentionsDisabled;
+	private boolean mentionsDisabled;
 
 	@SerializedName("lock_duo_features_enabled")
 	private boolean lockDuoFeaturesEnabled;
@@ -42,7 +42,7 @@ public class GroupsItem implements Serializable {
 	private String wikiAccessLevel;
 
 	@SerializedName("emails_enabled")
-	private Object emailsEnabled;
+	private boolean emailsEnabled;
 
 	@SerializedName("id")
 	private int id;
@@ -52,9 +52,6 @@ public class GroupsItem implements Serializable {
 
 	@SerializedName("lfs_enabled")
 	private boolean lfsEnabled;
-
-	@SerializedName("emails_disabled")
-	private Object emailsDisabled;
 
 	@SerializedName("default_branch_protection_defaults")
 	private DefaultBranchProtectionDefaults defaultBranchProtectionDefaults;
@@ -123,10 +120,6 @@ public class GroupsItem implements Serializable {
 		return createdAt;
 	}
 
-	public Object getMentionsDisabled() {
-		return mentionsDisabled;
-	}
-
 	public boolean isLockDuoFeaturesEnabled() {
 		return lockDuoFeaturesEnabled;
 	}
@@ -147,10 +140,6 @@ public class GroupsItem implements Serializable {
 		return wikiAccessLevel;
 	}
 
-	public Object getEmailsEnabled() {
-		return emailsEnabled;
-	}
-
 	public int getId() {
 		return id;
 	}
@@ -163,8 +152,12 @@ public class GroupsItem implements Serializable {
 		return lfsEnabled;
 	}
 
-	public Object getEmailsDisabled() {
-		return emailsDisabled;
+	public boolean isMentionsDisabled() {
+		return mentionsDisabled;
+	}
+
+	public boolean isEmailsEnabled() {
+		return emailsEnabled;
 	}
 
 	public DefaultBranchProtectionDefaults getDefaultBranchProtectionDefaults() {

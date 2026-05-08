@@ -96,6 +96,9 @@ public interface ApiInterface {
 	@POST("groups") // create a group
 	Call<GroupsItem> createGroup(@Body CreateGroup body);
 
+	@PUT("groups/{id}") // update a group
+	Call<GroupsItem> updateGroup(@Path("id") long id, @Body CreateGroup body);
+
 	@GET("groups/{id}/projects") // get group projects
 	Call<List<Projects>> getGroupProjects(
 			@Path("id") int id, @Query("per_page") int per_page, @Query("page") int page);

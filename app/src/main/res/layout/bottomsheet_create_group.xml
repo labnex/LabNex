@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingHorizontal="@dimen/dimen16dp"
+        android:paddingTop="@dimen/dimen12dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
@@ -17,7 +18,7 @@
             style="@style/TextAppearance.Material3.HeadlineSmall"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/create_project"
+            android:text="@string/create_group"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/btn_close"
@@ -40,7 +41,7 @@
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dimen0dp"
+        android:layout_height="0dp"
         android:layout_marginTop="@dimen/dimen16dp"
         android:clipToPadding="false"
         android:paddingHorizontal="@dimen/dimen16dp"
@@ -54,17 +55,26 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/switch_subgroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen8dp"
+                android:checked="false"
+                android:text="@string/create_as_subgroup" />
+
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/namespace_layout"
+                android:id="@+id/parent_group_layout"
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dimen8dp"
-                android:hint="@string/namespace"
+                android:hint="@string/parent_group"
+                android:visibility="gone"
                 app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Medium">
 
                 <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                    android:id="@+id/namespace_input"
+                    android:id="@+id/parent_group_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="none" />
@@ -77,11 +87,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dimen8dp"
-                android:hint="@string/name"
+                android:hint="@string/group_name"
                 app:endIconMode="clear_text"
                 app:endIconTint="?attr/iconsColor"
                 app:counterEnabled="true"
-                app:counterMaxLength="100"
+                app:counterMaxLength="60"
                 app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Medium">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -89,7 +99,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="text|textCapSentences"
-                    android:maxLength="100"
+                    android:maxLength="60"
                     android:singleLine="true" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -117,56 +127,35 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/branch_layout"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/switch_emails"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dimen16dp"
-                android:hint="@string/default_branch"
-                app:endIconMode="clear_text"
-                app:endIconTint="?attr/iconsColor"
-                app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Medium">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/branch_input"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="text"
-                    android:text="@string/main"
-                    android:singleLine="true" />
-
-            </com.google.android.material.textfield.TextInputLayout>
+                android:checked="false"
+                android:text="@string/enable_email_notifications" />
 
             <com.google.android.material.materialswitch.MaterialSwitch
                 android:id="@+id/switch_lfs"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimen16dp"
+                android:layout_marginTop="@dimen/dimen4dp"
                 android:checked="false"
                 android:text="@string/enable_lfs" />
 
             <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@+id/switch_emails"
+                android:id="@+id/switch_mentions"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dimen4dp"
                 android:checked="false"
-                android:text="@string/enable_email_notifications" />
-
-            <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@+id/switch_readme"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimen4dp"
-                android:checked="false"
-                android:text="@string/initialize_with_readme" />
+                android:text="@string/disable_mentions" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dimen20dp"
-                android:text="@string/project_visibility"
+                android:text="@string/visibility"
                 android:textAppearance="?attr/textAppearanceBodyLarge"
                 android:textStyle="bold" />
 
@@ -188,6 +177,13 @@
                     android:text="@string/private_placeholder" />
 
                 <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_internal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checkable="true"
+                    android:text="@string/internal_placeholder" />
+
+                <com.google.android.material.chip.Chip
                     android:id="@+id/chip_public"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -202,7 +198,7 @@
                 android:layout_marginTop="@dimen/dimen32dp">
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_create"
+                    android:id="@+id/btn_submit"
                     style="@style/Widget.Material3.Button"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/dimen56dp"

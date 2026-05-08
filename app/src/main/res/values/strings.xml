@@ -39,6 +39,7 @@
     <string name="number_label" translatable="false">12</string>
     <string name="main" translatable="false">main</string>
     <string name="cursor_position_format" translatable="false">Ln %d, Col %d</string>
+    <string name="separator_dot" translatable="false">●</string>
     <!-- non translatable strings -->
 
     <string name="action_sign_in">Sign in</string>
@@ -349,6 +350,12 @@
     <string name="no_notes">No notes found</string>
     <string name="edit_snippet">Edit snippet</string>
     <string name="snippet_updated">Snippet updated</string>
+    <string name="group_updated">Group updated</string>
+    <string name="create_group">Create Group</string>
+    <string name="edit_group">Edit group</string>
+    <string name="disable_mentions">Disable mentions</string>
+    <string name="create_as_subgroup">Create as subgroup</string>
+    <string name="parent_group">Parent group</string>
 
     <!-- errors -->
     <string name="generic_error">An unexpected error occurred</string>
@@ -470,7 +477,6 @@
     <string name="languages">Languages</string>
     <string name="backup">Backup</string>
     <string name="there">there</string>
-    <string name="separator_dot" translatable="false">●</string>
     <string name="plan">plan</string>
     <string name="total">Total</string>
     <string name="users">Users</string>

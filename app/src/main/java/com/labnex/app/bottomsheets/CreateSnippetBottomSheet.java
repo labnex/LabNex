@@ -111,6 +111,18 @@ public class CreateSnippetBottomSheet extends BottomSheetDialogFragment {
 		binding.btnSubmit.setOnClickListener(v -> submitSnippet());
 		observeViewModel();
 
+		binding.descriptionInput.setOnTouchListener(
+				(v, event) -> {
+					if (event.getAction() == MotionEvent.ACTION_DOWN) {
+						v.getParent().requestDisallowInterceptTouchEvent(true);
+					} else if (event.getAction() == MotionEvent.ACTION_UP
+							|| event.getAction() == MotionEvent.ACTION_CANCEL) {
+						v.getParent().requestDisallowInterceptTouchEvent(false);
+						v.performClick();
+					}
+					return false;
+				});
+
 		if (isEditMode && getArguments() != null) {
 			binding.sheetTitle.setText(R.string.edit_snippet);
 			binding.btnSubmit.setText(R.string.update);

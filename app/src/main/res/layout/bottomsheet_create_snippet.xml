@@ -90,14 +90,13 @@
                 app:counterMaxLength="250"
                 app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Medium">
 
-                <com.google.android.material.textfield.TextInputEditText
+                <com.labnex.app.views.AccessibleEditText
                     android:id="@+id/description_input"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="@dimen/dimen140dp"
                     android:gravity="top"
                     android:inputType="textMultiLine|textCapSentences"
-                    android:maxLength="250"
-                    android:minLines="3" />
+                    android:maxLength="250" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -221,8 +220,7 @@
                         android:layout_height="@dimen/dimen160dp"
                         android:gravity="top"
                         android:inputType="textMultiLine"
-                        android:paddingTop="@dimen/dimen36dp"
-                        android:scrollbars="vertical" />
+                        android:paddingTop="@dimen/dimen36dp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 

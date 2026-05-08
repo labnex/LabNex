@@ -3,6 +3,7 @@ package com.labnex.app.bottomsheets;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -43,6 +44,18 @@ public class CreateProjectBottomSheet extends BottomSheetDialogFragment {
 				((BaseActivity) requireActivity()).getAccount().getUserInfo().getUsername());
 
 		binding.btnClose.setOnClickListener(v -> dismiss());
+
+		binding.descriptionInput.setOnTouchListener(
+				(v, event) -> {
+					if (event.getAction() == MotionEvent.ACTION_DOWN) {
+						v.getParent().requestDisallowInterceptTouchEvent(true);
+					} else if (event.getAction() == MotionEvent.ACTION_UP
+							|| event.getAction() == MotionEvent.ACTION_CANCEL) {
+						v.getParent().requestDisallowInterceptTouchEvent(false);
+						v.performClick();
+					}
+					return false;
+				});
 
 		binding.btnCreate.setOnClickListener(
 				v -> {

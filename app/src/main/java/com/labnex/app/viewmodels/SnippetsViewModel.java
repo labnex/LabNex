@@ -27,7 +27,7 @@ public class SnippetsViewModel extends ViewModel {
 	private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
 	private final MutableLiveData<String> error = new MutableLiveData<>();
 	private final MutableLiveData<ViewerPayload> singleViewerPayload = new MutableLiveData<>();
-	private final MutableLiveData<List<FilesItem>> multiFileList = new MutableLiveData<>();
+	private final MutableLiveData<SnippetsItem> multiFileList = new MutableLiveData<>();
 	private final MutableLiveData<Boolean> isActionLoading = new MutableLiveData<>(false);
 	private final MutableLiveData<Boolean> actionSuccess = new MutableLiveData<>(false);
 
@@ -53,7 +53,7 @@ public class SnippetsViewModel extends ViewModel {
 		return singleViewerPayload;
 	}
 
-	public LiveData<List<FilesItem>> getMultiFileList() {
+	public LiveData<SnippetsItem> getMultiFileList() {
 		return multiFileList;
 	}
 
@@ -191,7 +191,7 @@ public class SnippetsViewModel extends ViewModel {
 										fetchSingleFile(ctx, s.getId(), files.get(0));
 									} else if (files != null && files.size() > 1) {
 										isLoading.setValue(false);
-										multiFileList.setValue(files);
+										multiFileList.setValue(s);
 									} else if (s.getFileName() != null) {
 										FilesItem f = new FilesItem();
 										f.setPath(s.getFileName());
