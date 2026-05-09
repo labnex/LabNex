@@ -49,7 +49,6 @@ public class MergeRequestsActivity extends BaseActivity
 				this, binding.dockedToolbar, binding.recyclerView, binding.pullToRefresh, null);
 
 		viewModel = new ViewModelProvider(this).get(MergeRequestsViewModel.class);
-		viewModel.setResultLimit(getAccount().getMaxPageLimit());
 
 		source = getIntent().getStringExtra("source");
 		id = getIntent().getIntExtra("id", 0);

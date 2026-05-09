@@ -9,6 +9,8 @@ import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.contexts.IssueContext;
 import com.labnex.app.contexts.MergeRequestContext;
 import com.labnex.app.contexts.ProjectsContext;
+import com.labnex.app.helpers.ApiResponseHandler;
+import com.labnex.app.helpers.Constants;
 import com.labnex.app.models.issues.Issues;
 import com.labnex.app.models.merge_requests.MergeRequests;
 import com.labnex.app.models.projects.Projects;
@@ -48,7 +50,7 @@ public class ExploreViewModel extends ViewModel {
 
 	private String currentQuery = "";
 	private int currentPage = 1;
-	private int resultLimit;
+	private final int resultLimit = Constants.getResultLimit();
 
 	public LiveData<SearchResult> getSearchResult() {
 		return searchResult;
@@ -76,10 +78,6 @@ public class ExploreViewModel extends ViewModel {
 
 	public String getScope() {
 		return activeScope.getValue();
-	}
-
-	public void setResultLimit(int limit) {
-		this.resultLimit = limit;
 	}
 
 	public void search(Context ctx, String query) {
@@ -156,9 +154,7 @@ public class ExploreViewModel extends ViewModel {
 						} else if (!response.isSuccessful() && isNewSearch) {
 							searchResult.setValue(
 									new SearchResult(requestScope, new ArrayList<>()));
-							if (response.code() == 401) error.setValue("auth_error");
-							else if (response.code() == 403) error.setValue("access_forbidden_403");
-							else error.setValue("generic_error");
+							error.setValue(ApiResponseHandler.getErrorMessageStatic(response));
 						}
 						isLoading.setValue(false);
 					}

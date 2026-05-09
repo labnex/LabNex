@@ -372,7 +372,7 @@
     <string name="version_unsupported_old">Unsupported old version (%1$s) of GitLab detected. Please update to the latest stable version. If you continue, some features may not work.</string>
     <string name="version_unsupported_new">New GitLab version detected! Please update LabNex!</string>
     <string name="version_alert_dialog_header">Unsupported version of GitLab</string>
-    <string name="not_authorized">Not authorized. Check your credentials and try again</string>
+    <string name="not_authorized">Not authorized. You may not be allowed to perform this action or check your credentials and try again</string>
     <string name="generic_server_response_error">We cannot reach the server at the moment. Please check again later</string>
     <string name="generic_api_error">GitLab has returned an error. Code %1$d</string>
     <string name="authorization_error">Authorization Error</string>
@@ -388,6 +388,7 @@
     <string name="issue_detail_not_available">Issue details not available</string>
     <string name="mr_detail_not_available">Merge request details not available</string>
     <string name="project_info_not_available">Project information not available</string>
+    <string name="not_found">Resource not found</string>
     <!-- errors -->
 
     <!-- generic copy -->

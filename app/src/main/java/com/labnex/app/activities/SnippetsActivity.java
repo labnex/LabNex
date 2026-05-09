@@ -53,7 +53,6 @@ public class SnippetsActivity extends BaseActivity
 				this, binding.dockedToolbar, binding.recyclerView, binding.pullToRefresh, null);
 
 		viewModel = new ViewModelProvider(this).get(SnippetsViewModel.class);
-		viewModel.setResultLimit(getAccount().getMaxPageLimit());
 
 		int userId = getAccount().getUserId();
 

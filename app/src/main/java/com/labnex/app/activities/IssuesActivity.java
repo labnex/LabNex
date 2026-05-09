@@ -47,7 +47,6 @@ public class IssuesActivity extends BaseActivity implements IssuesAdapter.OnIssu
 				this, binding.dockedToolbar, binding.recyclerView, binding.pullToRefresh, null);
 
 		viewModel = new ViewModelProvider(this).get(IssuesViewModel.class);
-		viewModel.setResultLimit(getAccount().getMaxPageLimit());
 
 		source = getIntent().getStringExtra("source");
 		id = getIntent().getIntExtra("id", 0);

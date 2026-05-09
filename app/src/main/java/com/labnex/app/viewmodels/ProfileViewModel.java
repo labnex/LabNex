@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import com.labnex.app.clients.RetrofitClient;
+import com.labnex.app.helpers.ApiResponseHandler;
 import com.labnex.app.models.user.User;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -46,21 +47,21 @@ public class ProfileViewModel extends ViewModel {
 		RetrofitClient.getApiInterface(ctx)
 				.getCurrentUser()
 				.enqueue(
-						new Callback<User>() {
+						new Callback<>() {
 							@Override
 							public void onResponse(
-									@NonNull Call<User> call, @NonNull Response<User> response) {
-								if (response.isSuccessful() && response.body() != null) {
-									userInfo.setValue(response.body());
+									@NonNull Call<User> c, @NonNull Response<User> r) {
+								if (r.isSuccessful() && r.body() != null) {
+									userInfo.setValue(r.body());
 									fetchPublicProfile(ctx, userId);
 								} else {
 									isLoading.setValue(false);
-									error.setValue("private_fetch_error");
+									error.setValue(ApiResponseHandler.getErrorMessageStatic(r));
 								}
 							}
 
 							@Override
-							public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
+							public void onFailure(@NonNull Call<User> c, @NonNull Throwable t) {
 								isLoading.setValue(false);
 								error.setValue(t.getMessage());
 							}
@@ -71,20 +72,20 @@ public class ProfileViewModel extends ViewModel {
 		RetrofitClient.getApiInterface(ctx)
 				.getSingleUser(userId)
 				.enqueue(
-						new Callback<User>() {
+						new Callback<>() {
 							@Override
 							public void onResponse(
-									@NonNull Call<User> call, @NonNull Response<User> response) {
+									@NonNull Call<User> c, @NonNull Response<User> r) {
 								isLoading.setValue(false);
-								if (response.isSuccessful() && response.body() != null) {
-									userInfo.setValue(response.body());
+								if (r.isSuccessful() && r.body() != null) {
+									userInfo.setValue(r.body());
 								} else {
-									error.setValue("public_fetch_error");
+									error.setValue(ApiResponseHandler.getErrorMessageStatic(r));
 								}
 							}
 
 							@Override
-							public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
+							public void onFailure(@NonNull Call<User> c, @NonNull Throwable t) {
 								isLoading.setValue(false);
 								error.setValue(t.getMessage());
 							}

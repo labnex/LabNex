@@ -8,6 +8,8 @@ import androidx.lifecycle.ViewModel;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.contexts.IssueContext;
 import com.labnex.app.contexts.ProjectsContext;
+import com.labnex.app.helpers.ApiResponseHandler;
+import com.labnex.app.helpers.Constants;
 import com.labnex.app.models.issues.Issues;
 import com.labnex.app.models.projects.Projects;
 import java.util.ArrayList;
@@ -34,7 +36,7 @@ public class IssuesViewModel extends ViewModel {
 	private String currentOrderBy = "created_at";
 	private String currentSort = "desc";
 	private int currentPage = 1;
-	private int resultLimit;
+	private final int resultLimit = Constants.getResultLimit();
 	private boolean isLastPage = false;
 	private boolean isLoadingMore = false;
 
@@ -76,10 +78,6 @@ public class IssuesViewModel extends ViewModel {
 
 	public void setCurrentSort(String sort) {
 		this.currentSort = sort;
-	}
-
-	public void setResultLimit(int limit) {
-		this.resultLimit = limit;
 	}
 
 	public void fetchAndNavigateIssue(Context ctx, Issues issue) {
@@ -162,33 +160,32 @@ public class IssuesViewModel extends ViewModel {
 				new Callback<>() {
 					@Override
 					public void onResponse(
-							@NonNull Call<List<Issues>> call,
-							@NonNull Response<List<Issues>> response) {
-						isLoading.setValue(false);
+							@NonNull Call<List<Issues>> c, @NonNull Response<List<Issues>> r) {
+						ApiResponseHandler.handleFetch(
+								r,
+								isLoading,
+								() -> {
+									String totalHeader = r.headers().get("x-total");
+									List<Issues> body = r.body();
+									List<Issues> current =
+											(page == 1)
+													? new ArrayList<>()
+													: issueList.getValue() != null
+															? new ArrayList<>(issueList.getValue())
+															: new ArrayList<>();
+									if (body != null) current.addAll(body);
+									issueList.setValue(current);
+									checkLastPage(
+											body != null ? body.size() : 0,
+											totalHeader,
+											current.size());
+								},
+								error);
 						isLoadingMore = false;
-						if (response.isSuccessful()) {
-							String totalHeader = response.headers().get("x-total");
-							List<Issues> body = response.body();
-							List<Issues> current =
-									(page == 1)
-											? new ArrayList<>()
-											: issueList.getValue() != null
-													? new ArrayList<>(issueList.getValue())
-													: new ArrayList<>();
-							if (body != null) current.addAll(body);
-							issueList.setValue(current);
-							checkLastPage(
-									body != null ? body.size() : 0, totalHeader, current.size());
-						} else {
-							if (page == 1) issueList.setValue(new ArrayList<>());
-							if (response.code() == 401) error.setValue("auth_error");
-							else if (response.code() == 403) error.setValue("access_forbidden_403");
-							else error.setValue("generic_error");
-						}
 					}
 
 					@Override
-					public void onFailure(@NonNull Call<List<Issues>> call, @NonNull Throwable t) {
+					public void onFailure(@NonNull Call<List<Issues>> c, @NonNull Throwable t) {
 						isLoading.setValue(false);
 						isLoadingMore = false;
 						if (page == 1) issueList.setValue(new ArrayList<>());

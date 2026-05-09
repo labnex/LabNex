@@ -8,6 +8,8 @@ import androidx.lifecycle.ViewModel;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.contexts.MergeRequestContext;
 import com.labnex.app.contexts.ProjectsContext;
+import com.labnex.app.helpers.ApiResponseHandler;
+import com.labnex.app.helpers.Constants;
 import com.labnex.app.models.merge_requests.MergeRequests;
 import com.labnex.app.models.projects.Projects;
 import java.util.ArrayList;
@@ -47,16 +49,12 @@ public class MergeRequestsViewModel extends ViewModel {
 	private String currentState;
 	private String currentSearch;
 	private int currentPage = 1;
-	private int resultLimit;
+	private final int resultLimit = Constants.getResultLimit();
 	private boolean isLastPage = false;
 	private boolean isLoadingMore = false;
 	private String currentScope = "created_by_me";
 	private String currentOrderBy = "created_at";
 	private String currentSort = "desc";
-
-	public void setResultLimit(int limit) {
-		this.resultLimit = limit;
-	}
 
 	public String getCurrentScope() {
 		return currentScope;
@@ -168,34 +166,34 @@ public class MergeRequestsViewModel extends ViewModel {
 				new Callback<>() {
 					@Override
 					public void onResponse(
-							@NonNull Call<List<MergeRequests>> call,
-							@NonNull Response<List<MergeRequests>> response) {
-						isLoading.setValue(false);
+							@NonNull Call<List<MergeRequests>> c,
+							@NonNull Response<List<MergeRequests>> r) {
+						ApiResponseHandler.handleFetch(
+								r,
+								isLoading,
+								() -> {
+									String totalHeader = r.headers().get("x-total");
+									List<MergeRequests> body = r.body();
+									List<MergeRequests> current =
+											(page == 1)
+													? new ArrayList<>()
+													: mrList.getValue() != null
+															? new ArrayList<>(mrList.getValue())
+															: new ArrayList<>();
+									if (body != null) current.addAll(body);
+									mrList.setValue(current);
+									checkLastPage(
+											body != null ? body.size() : 0,
+											totalHeader,
+											current.size());
+								},
+								error);
 						isLoadingMore = false;
-						if (response.isSuccessful()) {
-							String totalHeader = response.headers().get("x-total");
-							List<MergeRequests> body = response.body();
-							List<MergeRequests> current =
-									(page == 1)
-											? new ArrayList<>()
-											: mrList.getValue() != null
-													? new ArrayList<>(mrList.getValue())
-													: new ArrayList<>();
-							if (body != null) current.addAll(body);
-							mrList.setValue(current);
-							checkLastPage(
-									body != null ? body.size() : 0, totalHeader, current.size());
-						} else {
-							if (page == 1) mrList.setValue(new ArrayList<>());
-							if (response.code() == 401) error.setValue("auth_error");
-							else if (response.code() == 403) error.setValue("access_forbidden_403");
-							else error.setValue("generic_error");
-						}
 					}
 
 					@Override
 					public void onFailure(
-							@NonNull Call<List<MergeRequests>> call, @NonNull Throwable t) {
+							@NonNull Call<List<MergeRequests>> c, @NonNull Throwable t) {
 						isLoading.setValue(false);
 						isLoadingMore = false;
 						if (page == 1) mrList.setValue(new ArrayList<>());

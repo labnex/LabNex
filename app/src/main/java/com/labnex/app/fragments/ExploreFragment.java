@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.labnex.app.R;
-import com.labnex.app.activities.BaseActivity;
 import com.labnex.app.activities.IssueDetailActivity;
 import com.labnex.app.activities.MergeRequestDetailActivity;
 import com.labnex.app.activities.ProfileActivity;
@@ -60,9 +59,6 @@ public class ExploreFragment extends Fragment {
 		binding = FragmentExploreBinding.inflate(inflater, container, false);
 		ctx = requireContext();
 		viewModel = new ViewModelProvider(this).get(ExploreViewModel.class);
-
-		int resultLimit = ((BaseActivity) requireActivity()).getAccount().getMaxPageLimit();
-		viewModel.setResultLimit(resultLimit);
 
 		setupRecyclerView();
 		observeViewModel();

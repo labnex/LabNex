@@ -6,6 +6,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import com.labnex.app.clients.RetrofitClient;
+import com.labnex.app.helpers.ApiResponseHandler;
+import com.labnex.app.helpers.Constants;
 import com.labnex.app.models.events.Events;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +36,7 @@ public class ActivitiesViewModel extends ViewModel {
 	private String currentFilter = FILTER_ALL;
 
 	private int currentPage = 1;
-	private int resultLimit;
+	private final int resultLimit = Constants.getResultLimit();
 	private boolean isLastPage = false;
 	private boolean isLoadingMore = false;
 
@@ -54,10 +56,6 @@ public class ActivitiesViewModel extends ViewModel {
 		return currentFilter;
 	}
 
-	public void setResultLimit(int limit) {
-		this.resultLimit = limit;
-	}
-
 	public void setFilter(String filter) {
 		if (filter.equals(currentFilter)) return;
 		currentFilter = filter;
@@ -70,7 +68,6 @@ public class ActivitiesViewModel extends ViewModel {
 		isLoading.setValue(true);
 
 		String targetType = FILTER_ALL.equals(currentFilter) ? null : currentFilter;
-
 		Call<List<Events>> call =
 				RetrofitClient.getApiInterface(ctx).getEvents(resultLimit, currentPage, targetType);
 
@@ -78,25 +75,29 @@ public class ActivitiesViewModel extends ViewModel {
 				new Callback<>() {
 					@Override
 					public void onResponse(
-							@NonNull Call<List<Events>> call,
-							@NonNull Response<List<Events>> response) {
-						isLoading.setValue(false);
-						if (response.isSuccessful()) {
-							String totalHeader = response.headers().get("x-total");
-							checkLastPage(
-									response.body() != null ? response.body().size() : 0,
-									totalHeader);
-							events.setValue(
-									response.body() != null ? response.body() : new ArrayList<>());
-						} else {
-							events.setValue(new ArrayList<>());
-							handleError(response.code());
-						}
+							@NonNull Call<List<Events>> c, @NonNull Response<List<Events>> r) {
+						ApiResponseHandler.handleFetch(
+								r,
+								isLoading,
+								() -> {
+									String totalHeader = r.headers().get("x-total");
+									List<Events> body = r.body();
+									List<Events> current = new ArrayList<>();
+									if (body != null) current.addAll(body);
+									events.setValue(current);
+									checkLastPage(
+											body != null ? body.size() : 0,
+											totalHeader,
+											current.size());
+								},
+								error);
+						isLoadingMore = false;
 					}
 
 					@Override
-					public void onFailure(@NonNull Call<List<Events>> call, @NonNull Throwable t) {
+					public void onFailure(@NonNull Call<List<Events>> c, @NonNull Throwable t) {
 						isLoading.setValue(false);
+						isLoadingMore = false;
 						events.setValue(new ArrayList<>());
 						error.setValue(t.getMessage());
 					}
@@ -109,7 +110,6 @@ public class ActivitiesViewModel extends ViewModel {
 		currentPage++;
 
 		String targetType = FILTER_ALL.equals(currentFilter) ? null : currentFilter;
-
 		Call<List<Events>> call =
 				RetrofitClient.getApiInterface(ctx).getEvents(resultLimit, currentPage, targetType);
 
@@ -117,45 +117,36 @@ public class ActivitiesViewModel extends ViewModel {
 				new Callback<>() {
 					@Override
 					public void onResponse(
-							@NonNull Call<List<Events>> call,
-							@NonNull Response<List<Events>> response) {
+							@NonNull Call<List<Events>> c, @NonNull Response<List<Events>> r) {
 						isLoadingMore = false;
-						if (response.isSuccessful() && response.body() != null) {
+						if (r.isSuccessful() && r.body() != null) {
 							List<Events> current = events.getValue();
 							if (current == null) current = new ArrayList<>();
-							current.addAll(response.body());
+							current.addAll(r.body());
 							events.setValue(current);
-
-							String totalHeader = response.headers().get("x-total");
-							checkLastPage(response.body().size(), totalHeader);
+							String totalHeader = r.headers().get("x-total");
+							checkLastPage(r.body().size(), totalHeader, current.size());
+						} else {
+							error.setValue(ApiResponseHandler.getErrorMessageStatic(r));
 						}
 					}
 
 					@Override
-					public void onFailure(@NonNull Call<List<Events>> call, @NonNull Throwable t) {
+					public void onFailure(@NonNull Call<List<Events>> c, @NonNull Throwable t) {
 						isLoadingMore = false;
 						error.setValue(t.getMessage());
 					}
 				});
 	}
 
-	private void checkLastPage(int bodySize, String totalHeader) {
-		if (bodySize < resultLimit) {
-			isLastPage = true;
-		} else if (totalHeader != null) {
+	private void checkLastPage(int bodySize, String totalHeader, int fullListSize) {
+		if (bodySize < resultLimit) isLastPage = true;
+		else if (totalHeader != null) {
 			try {
-				int total = Integer.parseInt(totalHeader);
-				List<Events> current = events.getValue();
-				if (current != null && current.size() >= total) isLastPage = true;
+				if (fullListSize >= Integer.parseInt(totalHeader)) isLastPage = true;
 			} catch (NumberFormatException ignored) {
 			}
 		}
-	}
-
-	private void handleError(int code) {
-		if (code == 401) error.setValue("auth_error");
-		else if (code == 403) error.setValue("access_forbidden_403");
-		else error.setValue("generic_error");
 	}
 
 	public void clearError() {

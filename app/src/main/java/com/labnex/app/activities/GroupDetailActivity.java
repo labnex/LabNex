@@ -35,6 +35,7 @@ public class GroupDetailActivity extends BaseActivity {
 	private ProjectsAdapter projectsAdapter;
 	private long groupId;
 	private GroupsItem groupsItem;
+	private final String type = "group";
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -46,7 +47,6 @@ public class GroupDetailActivity extends BaseActivity {
 
 		groupsViewModel = new ViewModelProvider(this).get(GroupsViewModel.class);
 		projectsViewModel = new ViewModelProvider(this).get(ProjectsViewModel.class);
-		projectsViewModel.setResultLimit(getAccount().getMaxPageLimit());
 
 		groupId = getIntent().getIntExtra("groupId", 0);
 
@@ -94,7 +94,7 @@ public class GroupDetailActivity extends BaseActivity {
 		observeProjects();
 
 		groupsViewModel.loadGroupDetail(ctx, (int) groupId);
-		projectsViewModel.loadProjects(ctx, "group", (int) groupId);
+		projectsViewModel.loadProjects(ctx, type, (int) groupId);
 	}
 
 	private void setupProjectsList() {
@@ -157,10 +157,25 @@ public class GroupDetailActivity extends BaseActivity {
 				.observe(
 						this,
 						errorMsg -> {
-							if (errorMsg != null) {
-								Toasty.show(ctx, getString(R.string.generic_server_response_error));
-								groupsViewModel.clearError();
+							if (errorMsg == null) return;
+							switch (errorMsg) {
+								case "auth_error":
+									Toasty.show(ctx, getString(R.string.not_authorized));
+									break;
+								case "access_forbidden_403":
+									Toasty.show(ctx, getString(R.string.access_forbidden_403));
+									break;
+								case "not_found":
+									Toasty.show(ctx, getString(R.string.not_found));
+									break;
+								case "generic_error":
+									Toasty.show(ctx, getString(R.string.generic_error));
+									break;
+								default:
+									Toasty.show(ctx, errorMsg);
+									break;
 							}
+							groupsViewModel.clearError();
 						});
 	}
 
@@ -186,7 +201,6 @@ public class GroupDetailActivity extends BaseActivity {
 						this,
 						errorMsg -> {
 							if (errorMsg != null) {
-								Toasty.show(ctx, getString(R.string.generic_server_response_error));
 								projectsViewModel.clearError();
 							}
 						});
@@ -229,14 +243,23 @@ public class GroupDetailActivity extends BaseActivity {
 												"labelActionsBottomSheet");
 										break;
 									case "edit_group":
-										CreateGroupBottomSheet.newInstance(groupsItem)
-												.show(
-														getSupportFragmentManager(),
-														"editGroupSheet");
+										if (groupsItem != null) {
+											groupsViewModel.clearActionSuccess();
+											CreateGroupBottomSheet.newInstance(groupsItem)
+													.show(
+															getSupportFragmentManager(),
+															"editGroupSheet");
+										}
 										break;
 								}
 							});
 					sheet.show(getSupportFragmentManager(), "groupMenuSheet");
 				});
+	}
+
+	@Override
+	protected void onGlobalRefresh() {
+		groupsViewModel.loadGroupDetail(ctx, groupId);
+		projectsViewModel.loadProjects(ctx, type, (int) groupId);
 	}
 }

@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.database.api.BaseApi;
 import com.labnex.app.database.api.UserAccountsApi;
+import com.labnex.app.helpers.ApiResponseHandler;
 import com.labnex.app.helpers.SharedPrefDB;
 import com.labnex.app.models.metadata.Metadata;
 import com.labnex.app.models.personal_access_tokens.PersonalAccessTokens;
@@ -42,57 +43,55 @@ public class MainActivityViewModel extends ViewModel {
 	}
 
 	public void checkPersonalAccessToken(Context ctx) {
-		Call<PersonalAccessTokens> call =
-				RetrofitClient.getApiInterface(ctx).getPersonalAccessTokenInfo();
+		RetrofitClient.getApiInterface(ctx)
+				.getPersonalAccessTokenInfo()
+				.enqueue(
+						new Callback<>() {
+							@Override
+							public void onResponse(
+									@NonNull Call<PersonalAccessTokens> c,
+									@NonNull Response<PersonalAccessTokens> r) {
+								tokenCheckResult.setValue(r.code());
+							}
 
-		call.enqueue(
-				new Callback<>() {
-					@Override
-					public void onResponse(
-							@NonNull Call<PersonalAccessTokens> call,
-							@NonNull Response<PersonalAccessTokens> response) {
-						tokenCheckResult.setValue(response.code());
-					}
-
-					@Override
-					public void onFailure(
-							@NonNull Call<PersonalAccessTokens> call, @NonNull Throwable t) {
-						error.setValue(t.getMessage());
-					}
-				});
+							@Override
+							public void onFailure(
+									@NonNull Call<PersonalAccessTokens> c, @NonNull Throwable t) {
+								error.setValue(t.getMessage());
+							}
+						});
 	}
 
 	public void fetchGitlabVersion(Context ctx) {
-		Call<Metadata> callVersion = RetrofitClient.getApiInterface(ctx).getMetadata();
-		callVersion.enqueue(
-				new Callback<>() {
-					@Override
-					public void onResponse(
-							@NonNull Call<Metadata> callVersion,
-							@NonNull Response<Metadata> responseVersion) {
-						if (responseVersion.code() == 200 && responseVersion.body() != null) {
-							String version = responseVersion.body().getVersion();
-
-							SharedPrefDB sharedPrefDB = SharedPrefDB.getInstance(ctx);
-							UserAccountsApi userAccountsApi =
-									BaseApi.getInstance(ctx, UserAccountsApi.class);
-
-							if (userAccountsApi != null) {
-								userAccountsApi.updateServerVersion(
-										version, sharedPrefDB.getInt("currentActiveAccountId"));
+		RetrofitClient.getApiInterface(ctx)
+				.getMetadata()
+				.enqueue(
+						new Callback<>() {
+							@Override
+							public void onResponse(
+									@NonNull Call<Metadata> c, @NonNull Response<Metadata> r) {
+								if (r.isSuccessful() && r.body() != null) {
+									String version = r.body().getVersion();
+									SharedPrefDB sharedPrefDB = SharedPrefDB.getInstance(ctx);
+									UserAccountsApi api =
+											BaseApi.getInstance(ctx, UserAccountsApi.class);
+									if (api != null) {
+										api.updateServerVersion(
+												version,
+												sharedPrefDB.getInt("currentActiveAccountId"));
+									}
+									serverVersion.setValue(version);
+								} else {
+									error.setValue(ApiResponseHandler.getErrorMessageStatic(r));
+								}
+								versionCheckDone.setValue(true);
 							}
 
-							serverVersion.setValue(version);
-						}
-						versionCheckDone.setValue(true);
-					}
-
-					@Override
-					public void onFailure(
-							@NonNull Call<Metadata> callVersion, @NonNull Throwable t) {
-						error.setValue(t.getMessage());
-						versionCheckDone.setValue(true);
-					}
-				});
+							@Override
+							public void onFailure(@NonNull Call<Metadata> c, @NonNull Throwable t) {
+								error.setValue(t.getMessage());
+								versionCheckDone.setValue(true);
+							}
+						});
 	}
 }

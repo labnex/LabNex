@@ -6,7 +6,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import com.labnex.app.clients.RetrofitClient;
-import com.labnex.app.helpers.AppUIStateManager;
+import com.labnex.app.helpers.ApiResponseHandler;
 import com.labnex.app.models.groups.GroupsItem;
 import com.labnex.app.models.projects.CrudeProject;
 import com.labnex.app.models.projects.Projects;
@@ -70,36 +70,22 @@ public class CreateProjectViewModel extends ViewModel {
 		project.setEmailsEnabled(emailsEnabled);
 		if (namespaceId != null) project.setNamespaceId(namespaceId);
 
-		Call<Projects> call = RetrofitClient.getApiInterface(ctx).createProject(project);
+		RetrofitClient.getApiInterface(ctx)
+				.createProject(project)
+				.enqueue(
+						new Callback<>() {
+							@Override
+							public void onResponse(
+									@NonNull Call<Projects> c, @NonNull Response<Projects> r) {
+								ApiResponseHandler.handleAction(r, isLoading, isSuccess, error);
+							}
 
-		call.enqueue(
-				new Callback<>() {
-					@Override
-					public void onResponse(
-							@NonNull Call<Projects> call, @NonNull Response<Projects> response) {
-						isLoading.setValue(false);
-						if (response.code() == 201) {
-							isSuccess.setValue(true);
-							AppUIStateManager.refreshData();
-						} else if (response.code() == 401) {
-							error.setValue("auth_error");
-						} else if (response.code() == 403) {
-							error.setValue("access_forbidden_403");
-						} else {
-							error.setValue("generic_error");
-						}
-					}
-
-					@Override
-					public void onFailure(@NonNull Call<Projects> call, @NonNull Throwable t) {
-						isLoading.setValue(false);
-						error.setValue(t.getMessage());
-					}
-				});
-	}
-
-	public void clearError() {
-		error.setValue(null);
+							@Override
+							public void onFailure(@NonNull Call<Projects> c, @NonNull Throwable t) {
+								isLoading.setValue(false);
+								error.setValue(t.getMessage());
+							}
+						});
 	}
 
 	public void loadNamespaces(Context ctx, int userId, String username) {
@@ -112,35 +98,38 @@ public class CreateProjectViewModel extends ViewModel {
 		personal.kind = "user";
 		list.add(personal);
 
-		Call<List<GroupsItem>> call =
-				RetrofitClient.getApiInterface(ctx).getGroups(false, null, null, 100, 1);
-
-		call.enqueue(
-				new Callback<>() {
-					@Override
-					public void onResponse(
-							@NonNull Call<List<GroupsItem>> call,
-							@NonNull Response<List<GroupsItem>> response) {
-						isLoadingNamespaces.setValue(false);
-						if (response.isSuccessful() && response.body() != null) {
-							for (GroupsItem g : response.body()) {
-								NamespaceItem item = new NamespaceItem();
-								item.id = g.getId();
-								item.fullPath = g.getFullPath();
-								item.kind = "group";
-								list.add(item);
+		RetrofitClient.getApiInterface(ctx)
+				.getGroups(false, null, null, 100, 1)
+				.enqueue(
+						new Callback<>() {
+							@Override
+							public void onResponse(
+									@NonNull Call<List<GroupsItem>> c,
+									@NonNull Response<List<GroupsItem>> r) {
+								isLoadingNamespaces.setValue(false);
+								if (r.isSuccessful() && r.body() != null) {
+									for (GroupsItem g : r.body()) {
+										NamespaceItem item = new NamespaceItem();
+										item.id = g.getId();
+										item.fullPath = g.getFullPath();
+										item.kind = "group";
+										list.add(item);
+									}
+								}
+								namespaces.setValue(list);
 							}
-						}
-						namespaces.setValue(list);
-					}
 
-					@Override
-					public void onFailure(
-							@NonNull Call<List<GroupsItem>> call, @NonNull Throwable t) {
-						isLoadingNamespaces.setValue(false);
-						namespaces.setValue(list);
-					}
-				});
+							@Override
+							public void onFailure(
+									@NonNull Call<List<GroupsItem>> c, @NonNull Throwable t) {
+								isLoadingNamespaces.setValue(false);
+								namespaces.setValue(list);
+							}
+						});
+	}
+
+	public void clearError() {
+		error.setValue(null);
 	}
 
 	public static class NamespaceItem {

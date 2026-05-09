@@ -8,12 +8,8 @@ import androidx.lifecycle.ViewModel;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.database.api.BaseApi;
 import com.labnex.app.database.api.ProjectsApi;
+import com.labnex.app.helpers.ApiResponseHandler;
 import com.labnex.app.helpers.AppUIStateManager;
-import com.labnex.app.models.groups.GroupsItem;
-import com.labnex.app.models.issues.Issues;
-import com.labnex.app.models.merge_requests.MergeRequests;
-import com.labnex.app.models.projects.Projects;
-import com.labnex.app.models.snippets.SnippetsItem;
 import com.labnex.app.models.user.User;
 import java.util.List;
 import retrofit2.Call;
@@ -123,31 +119,26 @@ public class HomeViewModel extends ViewModel {
 
 	private void fetchUserInfo(Context ctx) {
 		Call<User> call = RetrofitClient.getApiInterface(ctx).getCurrentUser();
-
 		call.enqueue(
 				new Callback<>() {
 					@Override
-					public void onResponse(
-							@NonNull Call<User> call, @NonNull Response<User> response) {
-						if (response.isSuccessful()
-								&& response.code() == 200
-								&& response.body() != null) {
-							User user = response.body();
+					public void onResponse(@NonNull Call<User> c, @NonNull Response<User> r) {
+						if (r.isSuccessful() && r.body() != null) {
+							User user = r.body();
 							userInfo.setValue(user);
 							cachedUserId = user.getId();
 							pendingCalls++;
 							fetchStarredCount(ctx);
-						} else if (response.code() == 401) {
-							error.setValue("auth_error");
-							starredCount.setValue(0);
 						} else {
+							if (r.code() == 401) error.setValue("auth_error");
+							else error.setValue(ApiResponseHandler.getErrorMessageStatic(r));
 							starredCount.setValue(0);
 						}
 						onCallComplete();
 					}
 
 					@Override
-					public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
+					public void onFailure(@NonNull Call<User> c, @NonNull Throwable t) {
 						error.setValue(t.getMessage());
 						starredCount.setValue(0);
 						onCallComplete();
@@ -156,54 +147,13 @@ public class HomeViewModel extends ViewModel {
 	}
 
 	private void fetchProjectsCount(Context ctx) {
-		Call<List<Projects>> call = RetrofitClient.getApiInterface(ctx).getProjects(1, 1);
-
-		call.enqueue(
-				new Callback<>() {
-					@Override
-					public void onResponse(
-							@NonNull Call<List<Projects>> call,
-							@NonNull Response<List<Projects>> response) {
-						projectsCount.setValue(
-								response.isSuccessful()
-										? parseTotalHeader(response.headers().get("x-total"))
-										: 0);
-						onCallComplete();
-					}
-
-					@Override
-					public void onFailure(
-							@NonNull Call<List<Projects>> call, @NonNull Throwable t) {
-						projectsCount.setValue(0);
-						onCallComplete();
-					}
-				});
+		RetrofitClient.getApiInterface(ctx).getProjects(1, 1).enqueue(countCallback(projectsCount));
 	}
 
 	private void fetchGroupsCount(Context ctx) {
-		Call<List<GroupsItem>> call =
-				RetrofitClient.getApiInterface(ctx).getGroups(false, null, null, 1, 1);
-
-		call.enqueue(
-				new Callback<>() {
-					@Override
-					public void onResponse(
-							@NonNull Call<List<GroupsItem>> call,
-							@NonNull Response<List<GroupsItem>> response) {
-						groupsCount.setValue(
-								response.isSuccessful()
-										? parseTotalHeader(response.headers().get("x-total"))
-										: 0);
-						onCallComplete();
-					}
-
-					@Override
-					public void onFailure(
-							@NonNull Call<List<GroupsItem>> call, @NonNull Throwable t) {
-						groupsCount.setValue(0);
-						onCallComplete();
-					}
-				});
+		RetrofitClient.getApiInterface(ctx)
+				.getGroups(false, null, null, 1, 1)
+				.enqueue(countCallback(groupsCount));
 	}
 
 	private void fetchStarredCount(Context ctx) {
@@ -212,107 +162,42 @@ public class HomeViewModel extends ViewModel {
 			onCallComplete();
 			return;
 		}
-
-		Call<List<Projects>> call =
-				RetrofitClient.getApiInterface(ctx).getStarredProjects(cachedUserId, 1, 1);
-
-		call.enqueue(
-				new Callback<>() {
-					@Override
-					public void onResponse(
-							@NonNull Call<List<Projects>> call,
-							@NonNull Response<List<Projects>> response) {
-						starredCount.setValue(
-								response.isSuccessful()
-										? parseTotalHeader(response.headers().get("x-total"))
-										: 0);
-						onCallComplete();
-					}
-
-					@Override
-					public void onFailure(
-							@NonNull Call<List<Projects>> call, @NonNull Throwable t) {
-						starredCount.setValue(0);
-						onCallComplete();
-					}
-				});
+		RetrofitClient.getApiInterface(ctx)
+				.getStarredProjects(cachedUserId, 1, 1)
+				.enqueue(countCallback(starredCount));
 	}
 
 	private void fetchIssuesCount(Context ctx) {
-		Call<List<Issues>> call =
-				RetrofitClient.getApiInterface(ctx).getIssues(null, "opened", null, 1, 1);
-
-		call.enqueue(
-				new Callback<>() {
-					@Override
-					public void onResponse(
-							@NonNull Call<List<Issues>> call,
-							@NonNull Response<List<Issues>> response) {
-						issuesCount.setValue(
-								response.isSuccessful()
-										? parseTotalHeader(response.headers().get("x-total"))
-										: 0);
-						onCallComplete();
-					}
-
-					@Override
-					public void onFailure(@NonNull Call<List<Issues>> call, @NonNull Throwable t) {
-						issuesCount.setValue(0);
-						onCallComplete();
-					}
-				});
+		RetrofitClient.getApiInterface(ctx)
+				.getIssues(null, "opened", null, 1, 1)
+				.enqueue(countCallback(issuesCount));
 	}
 
 	private void fetchMergeRequestsCount(Context ctx) {
-		Call<List<MergeRequests>> call =
-				RetrofitClient.getApiInterface(ctx)
-						.getMergeRequests(null, "opened", null, null, null, 1, 1);
-
-		call.enqueue(
-				new Callback<>() {
-					@Override
-					public void onResponse(
-							@NonNull Call<List<MergeRequests>> call,
-							@NonNull Response<List<MergeRequests>> response) {
-						mergeRequestsCount.setValue(
-								response.isSuccessful()
-										? parseTotalHeader(response.headers().get("x-total"))
-										: 0);
-						onCallComplete();
-					}
-
-					@Override
-					public void onFailure(
-							@NonNull Call<List<MergeRequests>> call, @NonNull Throwable t) {
-						mergeRequestsCount.setValue(0);
-						onCallComplete();
-					}
-				});
+		RetrofitClient.getApiInterface(ctx)
+				.getMergeRequests(null, "opened", null, null, null, 1, 1)
+				.enqueue(countCallback(mergeRequestsCount));
 	}
 
 	private void fetchSnippetsCount(Context ctx) {
-		Call<List<SnippetsItem>> call = RetrofitClient.getApiInterface(ctx).getSnippets(1, 1);
+		RetrofitClient.getApiInterface(ctx).getSnippets(1, 1).enqueue(countCallback(snippetsCount));
+	}
 
-		call.enqueue(
-				new Callback<>() {
-					@Override
-					public void onResponse(
-							@NonNull Call<List<SnippetsItem>> call,
-							@NonNull Response<List<SnippetsItem>> response) {
-						snippetsCount.setValue(
-								response.isSuccessful()
-										? parseTotalHeader(response.headers().get("x-total"))
-										: 0);
-						onCallComplete();
-					}
+	private <T> Callback<List<T>> countCallback(MutableLiveData<Integer> target) {
+		return new Callback<>() {
+			@Override
+			public void onResponse(@NonNull Call<List<T>> c, @NonNull Response<List<T>> r) {
+				target.setValue(
+						r.isSuccessful() ? parseTotalHeader(r.headers().get("x-total")) : 0);
+				onCallComplete();
+			}
 
-					@Override
-					public void onFailure(
-							@NonNull Call<List<SnippetsItem>> call, @NonNull Throwable t) {
-						snippetsCount.setValue(0);
-						onCallComplete();
-					}
-				});
+			@Override
+			public void onFailure(@NonNull Call<List<T>> c, @NonNull Throwable t) {
+				target.setValue(0);
+				onCallComplete();
+			}
+		};
 	}
 
 	private int parseTotalHeader(String header) {
@@ -331,7 +216,6 @@ public class HomeViewModel extends ViewModel {
 		if (pendingCalls <= 0) {
 			isLoading.setValue(false);
 			hasLoadedOnce.setValue(true);
-
 			if (isRefreshing) {
 				AppUIStateManager.invalidateUI();
 				isRefreshing = false;

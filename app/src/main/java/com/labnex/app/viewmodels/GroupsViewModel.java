@@ -6,6 +6,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import com.labnex.app.clients.RetrofitClient;
+import com.labnex.app.helpers.ApiResponseHandler;
+import com.labnex.app.helpers.Constants;
 import com.labnex.app.models.groups.CreateGroup;
 import com.labnex.app.models.groups.GroupsItem;
 import java.util.ArrayList;
@@ -56,16 +58,12 @@ public class GroupsViewModel extends ViewModel {
 	}
 
 	private int currentPage = 1;
-	private int resultLimit;
+	private final int resultLimit = Constants.getResultLimit();
 	private boolean isLastPage = false;
 	private boolean isLoadingMore = false;
 
 	public void clearActionSuccess() {
 		actionSuccess.setValue(false);
-	}
-
-	public void setResultLimit(int limit) {
-		this.resultLimit = limit;
 	}
 
 	public void loadGroups(Context ctx) {
@@ -92,12 +90,11 @@ public class GroupsViewModel extends ViewModel {
 							@Override
 							public void onResponse(
 									@NonNull Call<GroupsItem> c, @NonNull Response<GroupsItem> r) {
-								isDetailLoading.setValue(false);
-								if (r.isSuccessful() && r.body() != null) {
-									groupDetail.setValue(r.body());
-								} else {
-									error.setValue("generic_error");
-								}
+								ApiResponseHandler.handleFetch(
+										r,
+										isDetailLoading,
+										() -> groupDetail.setValue(r.body()),
+										error);
 							}
 
 							@Override
@@ -119,27 +116,27 @@ public class GroupsViewModel extends ViewModel {
 					public void onResponse(
 							@NonNull Call<List<GroupsItem>> call,
 							@NonNull Response<List<GroupsItem>> response) {
-						isLoading.setValue(false);
+						ApiResponseHandler.handleFetch(
+								response,
+								isLoading,
+								() -> {
+									String totalHeader = response.headers().get("x-total");
+									List<GroupsItem> body = response.body();
+									List<GroupsItem> current =
+											(page == 1)
+													? new ArrayList<>()
+													: groupsList.getValue() != null
+															? new ArrayList<>(groupsList.getValue())
+															: new ArrayList<>();
+									if (body != null) current.addAll(body);
+									groupsList.setValue(current);
+									checkLastPage(
+											body != null ? body.size() : 0,
+											totalHeader,
+											current.size());
+								},
+								error);
 						isLoadingMore = false;
-						if (response.isSuccessful()) {
-							String totalHeader = response.headers().get("x-total");
-							List<GroupsItem> body = response.body();
-							List<GroupsItem> current =
-									(page == 1)
-											? new ArrayList<>()
-											: groupsList.getValue() != null
-													? new ArrayList<>(groupsList.getValue())
-													: new ArrayList<>();
-							if (body != null) current.addAll(body);
-							groupsList.setValue(current);
-							checkLastPage(
-									body != null ? body.size() : 0, totalHeader, current.size());
-						} else {
-							if (page == 1) groupsList.setValue(new ArrayList<>());
-							if (response.code() == 401) error.setValue("auth_error");
-							else if (response.code() == 403) error.setValue("access_forbidden_403");
-							else error.setValue("generic_error");
-						}
 					}
 
 					@Override
@@ -176,16 +173,8 @@ public class GroupsViewModel extends ViewModel {
 							@Override
 							public void onResponse(
 									@NonNull Call<GroupsItem> c, @NonNull Response<GroupsItem> r) {
-								isActionLoading.setValue(false);
-								if (r.code() == 201) {
-									actionSuccess.setValue(true);
-								} else if (r.code() == 401) {
-									error.setValue("auth_error");
-								} else if (r.code() == 403) {
-									error.setValue("access_forbidden_403");
-								} else {
-									error.setValue("generic_error");
-								}
+								ApiResponseHandler.handleAction(
+										r, isActionLoading, actionSuccess, error);
 							}
 
 							@Override
@@ -206,16 +195,8 @@ public class GroupsViewModel extends ViewModel {
 							@Override
 							public void onResponse(
 									@NonNull Call<GroupsItem> c, @NonNull Response<GroupsItem> r) {
-								isActionLoading.setValue(false);
-								if (r.code() == 200) {
-									actionSuccess.setValue(true);
-								} else if (r.code() == 401) {
-									error.setValue("auth_error");
-								} else if (r.code() == 403) {
-									error.setValue("access_forbidden_403");
-								} else {
-									error.setValue("generic_error");
-								}
+								ApiResponseHandler.handleAction(
+										r, isActionLoading, actionSuccess, error);
 							}
 
 							@Override

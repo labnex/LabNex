@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import com.labnex.app.clients.RetrofitClient;
+import com.labnex.app.helpers.ApiResponseHandler;
 import com.labnex.app.models.todo.ToDoItem;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,61 +55,61 @@ public class TodoViewModel extends ViewModel {
 
 	public void loadTodos(Context ctx) {
 		isLoading.setValue(true);
+		RetrofitClient.getApiInterface(ctx)
+				.getAllTodos()
+				.enqueue(
+						new Callback<>() {
+							@Override
+							public void onResponse(
+									@NonNull Call<List<ToDoItem>> c,
+									@NonNull Response<List<ToDoItem>> r) {
+								ApiResponseHandler.handleFetch(
+										r,
+										isLoading,
+										() -> {
+											allTodos.setValue(r.body());
+											applyFilter();
+										},
+										error);
+							}
 
-		Call<List<ToDoItem>> call = RetrofitClient.getApiInterface(ctx).getAllTodos();
-		call.enqueue(
-				new Callback<>() {
-					@Override
-					public void onResponse(
-							@NonNull Call<List<ToDoItem>> call,
-							@NonNull Response<List<ToDoItem>> response) {
-						isLoading.setValue(false);
-						if (response.isSuccessful() && response.body() != null) {
-							allTodos.setValue(response.body());
-							applyFilter();
-						} else {
-							allTodos.setValue(new ArrayList<>());
-							filteredTodos.setValue(null);
-							error.setValue("generic_error");
-						}
-					}
-
-					@Override
-					public void onFailure(
-							@NonNull Call<List<ToDoItem>> call, @NonNull Throwable t) {
-						isLoading.setValue(false);
-						allTodos.setValue(new ArrayList<>());
-						filteredTodos.setValue(null);
-						error.setValue(t.getMessage());
-					}
-				});
+							@Override
+							public void onFailure(
+									@NonNull Call<List<ToDoItem>> c, @NonNull Throwable t) {
+								isLoading.setValue(false);
+								allTodos.setValue(new ArrayList<>());
+								filteredTodos.setValue(null);
+								error.setValue(t.getMessage());
+							}
+						});
 	}
 
 	public void markAsDone(Context ctx, long todoId) {
-		Call<ToDoItem> call = RetrofitClient.getApiInterface(ctx).markTodoAsDone((int) todoId);
-		call.enqueue(
-				new Callback<>() {
-					@Override
-					public void onResponse(
-							@NonNull Call<ToDoItem> call, @NonNull Response<ToDoItem> response) {
-						if (response.isSuccessful()) {
-							List<ToDoItem> current = allTodos.getValue();
-							if (current != null) {
-								current.removeIf(todo -> todo.getId() == todoId);
-								allTodos.setValue(current);
-								applyFilter();
+		RetrofitClient.getApiInterface(ctx)
+				.markTodoAsDone((int) todoId)
+				.enqueue(
+						new Callback<>() {
+							@Override
+							public void onResponse(
+									@NonNull Call<ToDoItem> c, @NonNull Response<ToDoItem> r) {
+								if (r.isSuccessful()) {
+									List<ToDoItem> current = allTodos.getValue();
+									if (current != null) {
+										current.removeIf(todo -> todo.getId() == todoId);
+										allTodos.setValue(current);
+										applyFilter();
+									}
+									error.setValue("marked_done");
+								} else {
+									error.setValue(ApiResponseHandler.getErrorMessageStatic(r));
+								}
 							}
-							error.setValue("marked_done");
-						} else {
-							error.setValue("generic_error");
-						}
-					}
 
-					@Override
-					public void onFailure(@NonNull Call<ToDoItem> call, @NonNull Throwable t) {
-						error.setValue(t.getMessage());
-					}
-				});
+							@Override
+							public void onFailure(@NonNull Call<ToDoItem> c, @NonNull Throwable t) {
+								error.setValue(t.getMessage());
+							}
+						});
 	}
 
 	private void applyFilter() {

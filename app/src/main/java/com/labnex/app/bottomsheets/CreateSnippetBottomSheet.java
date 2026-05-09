@@ -421,6 +421,9 @@ public class CreateSnippetBottomSheet extends BottomSheetDialogFragment {
 											requireContext(),
 											getString(R.string.access_forbidden_403));
 									break;
+								case "not_found":
+									Toasty.show(requireContext(), getString(R.string.not_found));
+									break;
 								case "generic_error":
 									Toasty.show(
 											requireContext(), getString(R.string.generic_error));

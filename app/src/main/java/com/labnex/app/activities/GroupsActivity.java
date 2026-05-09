@@ -40,7 +40,6 @@ public class GroupsActivity extends BaseActivity {
 				this, binding.dockedToolbar, binding.recyclerView, binding.pullToRefresh, null);
 
 		viewModel = new ViewModelProvider(this).get(GroupsViewModel.class);
-		viewModel.setResultLimit(getAccount().getMaxPageLimit());
 
 		binding.btnBack.setOnClickListener(v -> finish());
 
@@ -178,6 +177,9 @@ public class GroupsActivity extends BaseActivity {
 									break;
 								case "access_forbidden_403":
 									Toasty.show(ctx, getString(R.string.access_forbidden_403));
+									break;
+								case "not_found":
+									Toasty.show(ctx, getString(R.string.not_found));
 									break;
 								case "generic_error":
 									Toasty.show(ctx, getString(R.string.generic_error));

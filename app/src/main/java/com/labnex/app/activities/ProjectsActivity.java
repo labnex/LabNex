@@ -37,7 +37,6 @@ public class ProjectsActivity extends BaseActivity {
 
 		viewModel = new ViewModelProvider(this).get(ProjectsViewModel.class);
 
-		viewModel.setResultLimit(getAccount().getMaxPageLimit());
 		userId = getAccount().getUserId();
 
 		if (getIntent().getStringExtra("source") != null) {
