@@ -28,7 +28,7 @@ public class MembersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 	private OnLoadMoreListener loadMoreListener;
 	private boolean isLoading = false, isMoreDataAvailable = true;
 
-	public MembersAdapter(Context ctx, List<User> listMain, int groupId) {
+	public MembersAdapter(Context ctx, List<User> listMain, long groupId) {
 		this.context = ctx;
 		this.list = listMain;
 		// this.groupId = groupId;

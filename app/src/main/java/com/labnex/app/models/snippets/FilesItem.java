@@ -21,4 +21,12 @@ public class FilesItem implements Serializable {
 	public String getRawUrl() {
 		return rawUrl;
 	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+
+	public void setRawUrl(String rawUrl) {
+		this.rawUrl = rawUrl;
+	}
 }

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingHorizontal="@dimen/dimen12dp"
+    android:paddingVertical="@dimen/dimen10dp"
+    android:visibility="gone"
+    tools:visibility="visible"
+    tools:ignore="UseCompoundDrawables">
+
+    <ImageView
+        android:id="@+id/detail_icon"
+        android:layout_width="@dimen/dimen20dp"
+        android:layout_height="@dimen/dimen20dp"
+        android:contentDescription="@string/generic_img_copy"
+        app:tint="?attr/iconsColor"
+        tools:src="@drawable/ic_location" />
+
+    <TextView
+        android:id="@+id/detail_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dimen12dp"
+        android:autoLink="all"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:textIsSelectable="true"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
+        android:textColor="?attr/colorOnSurface"
+        android:layout_weight="1"
+        tools:text="San Francisco, CA" />
+
+</LinearLayout>

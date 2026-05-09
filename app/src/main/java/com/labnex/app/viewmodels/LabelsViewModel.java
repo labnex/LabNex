@@ -13,7 +13,7 @@ import com.labnex.app.adapters.ProjectLabelsAdapter;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.databinding.BottomSheetGroupDetailBinding;
 import com.labnex.app.databinding.BottomSheetProjectLabelsBinding;
-import com.labnex.app.helpers.Snackbar;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.models.labels.Labels;
 import java.util.List;
 import retrofit2.Call;
@@ -29,7 +29,7 @@ public class LabelsViewModel extends ViewModel {
 
 	public LiveData<List<Labels>> getLabels(
 			Context ctx,
-			int id,
+			long id,
 			int resultLimit,
 			int page,
 			Activity activity,
@@ -57,7 +57,7 @@ public class LabelsViewModel extends ViewModel {
 
 	public void loadInitialList(
 			Context ctx,
-			int id,
+			long id,
 			int resultLimit,
 			int page,
 			Activity activity,
@@ -79,24 +79,15 @@ public class LabelsViewModel extends ViewModel {
 						} else if (response.code() == 401) {
 
 							binding.bottomSheetGroupLabels.progressBar.setVisibility(View.GONE);
-							Snackbar.info(
-									ctx,
-									binding.bottomSheetGroupLabels.getRoot(),
-									ctx.getString(R.string.not_authorized));
+							Toasty.show(ctx, ctx.getString(R.string.not_authorized));
 						} else if (response.code() == 403) {
 
 							binding.bottomSheetGroupLabels.progressBar.setVisibility(View.GONE);
-							Snackbar.info(
-									ctx,
-									binding.bottomSheetGroupLabels.getRoot(),
-									ctx.getString(R.string.access_forbidden_403));
+							Toasty.show(ctx, ctx.getString(R.string.access_forbidden_403));
 						} else {
 
 							binding.bottomSheetGroupLabels.progressBar.setVisibility(View.GONE);
-							Snackbar.info(
-									ctx,
-									binding.bottomSheetGroupLabels.getRoot(),
-									ctx.getString(R.string.generic_error));
+							Toasty.show(ctx, ctx.getString(R.string.generic_error));
 						}
 					}
 
@@ -104,10 +95,7 @@ public class LabelsViewModel extends ViewModel {
 					public void onFailure(@NonNull Call<List<Labels>> call, @NonNull Throwable t) {
 
 						binding.bottomSheetGroupLabels.progressBar.setVisibility(View.GONE);
-						Snackbar.info(
-								ctx,
-								binding.bottomSheetGroupLabels.getRoot(),
-								ctx.getString(R.string.generic_server_response_error));
+						Toasty.show(ctx, ctx.getString(R.string.generic_server_response_error));
 					}
 				});
 	}
@@ -136,20 +124,15 @@ public class LabelsViewModel extends ViewModel {
 						} else if (response.code() == 401) {
 
 							binding.progressBar.setVisibility(View.GONE);
-							Snackbar.info(
-									ctx, binding.getRoot(), ctx.getString(R.string.not_authorized));
+							Toasty.show(ctx, ctx.getString(R.string.not_authorized));
 						} else if (response.code() == 403) {
 
 							binding.progressBar.setVisibility(View.GONE);
-							Snackbar.info(
-									ctx,
-									binding.getRoot(),
-									ctx.getString(R.string.access_forbidden_403));
+							Toasty.show(ctx, ctx.getString(R.string.access_forbidden_403));
 						} else {
 
 							binding.progressBar.setVisibility(View.GONE);
-							Snackbar.info(
-									ctx, binding.getRoot(), ctx.getString(R.string.generic_error));
+							Toasty.show(ctx, ctx.getString(R.string.generic_error));
 						}
 					}
 
@@ -157,17 +140,14 @@ public class LabelsViewModel extends ViewModel {
 					public void onFailure(@NonNull Call<List<Labels>> call, @NonNull Throwable t) {
 
 						binding.progressBar.setVisibility(View.GONE);
-						Snackbar.info(
-								ctx,
-								binding.getRoot(),
-								ctx.getString(R.string.generic_server_response_error));
+						Toasty.show(ctx, ctx.getString(R.string.generic_server_response_error));
 					}
 				});
 	}
 
 	public void loadMore(
 			Context ctx,
-			int id,
+			long id,
 			int resultLimit,
 			int page,
 			LabelsAdapter adapter,
@@ -199,24 +179,15 @@ public class LabelsViewModel extends ViewModel {
 						} else if (response.code() == 401) {
 
 							binding.bottomSheetGroupLabels.progressBar.setVisibility(View.GONE);
-							Snackbar.info(
-									ctx,
-									binding.bottomSheetGroupLabels.getRoot(),
-									ctx.getString(R.string.not_authorized));
+							Toasty.show(ctx, ctx.getString(R.string.not_authorized));
 						} else if (response.code() == 403) {
 
 							binding.bottomSheetGroupLabels.progressBar.setVisibility(View.GONE);
-							Snackbar.info(
-									ctx,
-									binding.bottomSheetGroupLabels.getRoot(),
-									ctx.getString(R.string.access_forbidden_403));
+							Toasty.show(ctx, ctx.getString(R.string.access_forbidden_403));
 						} else {
 
 							binding.bottomSheetGroupLabels.progressBar.setVisibility(View.GONE);
-							Snackbar.info(
-									ctx,
-									binding.bottomSheetGroupLabels.getRoot(),
-									ctx.getString(R.string.generic_error));
+							Toasty.show(ctx, ctx.getString(R.string.generic_error));
 						}
 					}
 
@@ -224,10 +195,7 @@ public class LabelsViewModel extends ViewModel {
 					public void onFailure(@NonNull Call<List<Labels>> call, @NonNull Throwable t) {
 
 						binding.bottomSheetGroupLabels.progressBar.setVisibility(View.GONE);
-						Snackbar.info(
-								ctx,
-								binding.bottomSheetGroupLabels.getRoot(),
-								ctx.getString(R.string.generic_server_response_error));
+						Toasty.show(ctx, ctx.getString(R.string.generic_server_response_error));
 					}
 				});
 	}
@@ -266,20 +234,15 @@ public class LabelsViewModel extends ViewModel {
 						} else if (response.code() == 401) {
 
 							binding.progressBar.setVisibility(View.GONE);
-							Snackbar.info(
-									ctx, binding.getRoot(), ctx.getString(R.string.not_authorized));
+							Toasty.show(ctx, ctx.getString(R.string.not_authorized));
 						} else if (response.code() == 403) {
 
 							binding.progressBar.setVisibility(View.GONE);
-							Snackbar.info(
-									ctx,
-									binding.getRoot(),
-									ctx.getString(R.string.access_forbidden_403));
+							Toasty.show(ctx, ctx.getString(R.string.access_forbidden_403));
 						} else {
 
 							binding.progressBar.setVisibility(View.GONE);
-							Snackbar.info(
-									ctx, binding.getRoot(), ctx.getString(R.string.generic_error));
+							Toasty.show(ctx, ctx.getString(R.string.generic_error));
 						}
 					}
 
@@ -287,10 +250,7 @@ public class LabelsViewModel extends ViewModel {
 					public void onFailure(@NonNull Call<List<Labels>> call, @NonNull Throwable t) {
 
 						binding.progressBar.setVisibility(View.GONE);
-						Snackbar.info(
-								ctx,
-								binding.getRoot(),
-								ctx.getString(R.string.generic_server_response_error));
+						Toasty.show(ctx, ctx.getString(R.string.generic_server_response_error));
 					}
 				});
 	}

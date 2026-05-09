@@ -22,6 +22,7 @@ gen/
 out/
 
 # Gradle files
+gradle/gradle-daemon-jvm.properties
 .gradle/
 build/
 

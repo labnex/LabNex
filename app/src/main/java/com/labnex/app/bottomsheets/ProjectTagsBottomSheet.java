@@ -17,7 +17,7 @@ import com.labnex.app.R;
 import com.labnex.app.activities.BaseActivity;
 import com.labnex.app.adapters.ProjectTagsAdapter;
 import com.labnex.app.databinding.BottomSheetProjectTagsBinding;
-import com.labnex.app.helpers.Snackbar;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.viewmodels.TagsViewModel;
 
 /**
@@ -69,7 +69,7 @@ public class ProjectTagsBottomSheet extends BottomSheetDialogFragment
 	@Override
 	public void updateDataListener(String str) {
 		if (str.equalsIgnoreCase("created")) {
-			Snackbar.info(requireContext(), binding.tagsLayout, getString(R.string.tag_created));
+			Toasty.show(requireContext(), getString(R.string.tag_created));
 		}
 		adapter.clearAdapter();
 		page = 1;

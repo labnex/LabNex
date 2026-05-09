@@ -16,7 +16,7 @@ import com.labnex.app.R;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.databinding.BottomSheetCommentOnIssueBinding;
 import com.labnex.app.helpers.Markdown;
-import com.labnex.app.helpers.Snackbar;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.interfaces.BottomSheetListener;
 import com.labnex.app.models.notes.CreateNote;
 import com.labnex.app.models.notes.Notes;
@@ -114,10 +114,7 @@ public class CommentOnIssueBottomSheet extends BottomSheetDialogFragment {
 												.getText()
 												.toString());
 							} else {
-								Snackbar.info(
-										requireContext(),
-										bottomSheetCommentOnIssueBinding.mainBsFrame,
-										getString(R.string.comment_is_empty));
+								Toasty.show(requireContext(), getString(R.string.comment_is_empty));
 							}
 						});
 			} else if (Objects.requireNonNull(requireArguments().getString("source"))
@@ -139,10 +136,7 @@ public class CommentOnIssueBottomSheet extends BottomSheetDialogFragment {
 												.getText()
 												.toString());
 							} else {
-								Snackbar.info(
-										requireContext(),
-										bottomSheetCommentOnIssueBinding.mainBsFrame,
-										getString(R.string.comment_is_empty));
+								Toasty.show(requireContext(), getString(R.string.comment_is_empty));
 							}
 						});
 			}
@@ -177,24 +171,15 @@ public class CommentOnIssueBottomSheet extends BottomSheetDialogFragment {
 						} else if (response.code() == 401) {
 
 							enableButton();
-							Snackbar.info(
-									requireContext(),
-									bottomSheetCommentOnIssueBinding.mainBsFrame,
-									getString(R.string.not_authorized));
+							Toasty.show(requireContext(), getString(R.string.not_authorized));
 						} else if (response.code() == 403) {
 
 							enableButton();
-							Snackbar.info(
-									requireContext(),
-									bottomSheetCommentOnIssueBinding.mainBsFrame,
-									getString(R.string.access_forbidden_403));
+							Toasty.show(requireContext(), getString(R.string.access_forbidden_403));
 						} else {
 
 							enableButton();
-							Snackbar.info(
-									requireContext(),
-									bottomSheetCommentOnIssueBinding.mainBsFrame,
-									getString(R.string.generic_error));
+							Toasty.show(requireContext(), getString(R.string.generic_error));
 						}
 					}
 
@@ -202,9 +187,8 @@ public class CommentOnIssueBottomSheet extends BottomSheetDialogFragment {
 					public void onFailure(@NonNull Call<Notes> call, @NonNull Throwable t) {
 
 						enableButton();
-						Snackbar.info(
+						Toasty.show(
 								requireContext(),
-								bottomSheetCommentOnIssueBinding.mainBsFrame,
 								getString(R.string.generic_server_response_error));
 					}
 				});
@@ -234,24 +218,15 @@ public class CommentOnIssueBottomSheet extends BottomSheetDialogFragment {
 						} else if (response.code() == 401) {
 
 							enableButton();
-							Snackbar.info(
-									requireContext(),
-									bottomSheetCommentOnIssueBinding.mainBsFrame,
-									getString(R.string.not_authorized));
+							Toasty.show(requireContext(), getString(R.string.not_authorized));
 						} else if (response.code() == 403) {
 
 							enableButton();
-							Snackbar.info(
-									requireContext(),
-									bottomSheetCommentOnIssueBinding.mainBsFrame,
-									getString(R.string.access_forbidden_403));
+							Toasty.show(requireContext(), getString(R.string.access_forbidden_403));
 						} else {
 
 							enableButton();
-							Snackbar.info(
-									requireContext(),
-									bottomSheetCommentOnIssueBinding.mainBsFrame,
-									getString(R.string.generic_error));
+							Toasty.show(requireContext(), getString(R.string.generic_error));
 						}
 					}
 
@@ -259,9 +234,8 @@ public class CommentOnIssueBottomSheet extends BottomSheetDialogFragment {
 					public void onFailure(@NonNull Call<Notes> call, @NonNull Throwable t) {
 
 						enableButton();
-						Snackbar.info(
+						Toasty.show(
 								requireContext(),
-								bottomSheetCommentOnIssueBinding.mainBsFrame,
 								getString(R.string.generic_server_response_error));
 					}
 				});

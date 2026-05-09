@@ -1,18 +1,16 @@
 package com.labnex.app.viewmodels;
 
-import android.app.Activity;
 import android.content.Context;
-import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-import com.labnex.app.R;
-import com.labnex.app.adapters.GroupsAdapter;
 import com.labnex.app.clients.RetrofitClient;
-import com.labnex.app.databinding.ActivityGroupsBinding;
-import com.labnex.app.helpers.Snackbar;
+import com.labnex.app.helpers.ApiResponseHandler;
+import com.labnex.app.helpers.Constants;
+import com.labnex.app.models.groups.CreateGroup;
 import com.labnex.app.models.groups.GroupsItem;
+import java.util.ArrayList;
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -23,121 +21,190 @@ import retrofit2.Response;
  */
 public class GroupsViewModel extends ViewModel {
 
-	private MutableLiveData<List<GroupsItem>> groupsList;
+	private final MutableLiveData<List<GroupsItem>> groupsList = new MutableLiveData<>(null);
+	private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
+	private final MutableLiveData<String> error = new MutableLiveData<>();
+	private final MutableLiveData<Boolean> isActionLoading = new MutableLiveData<>(false);
+	private final MutableLiveData<Boolean> actionSuccess = new MutableLiveData<>(false);
+	private final MutableLiveData<GroupsItem> groupDetail = new MutableLiveData<>();
+	private final MutableLiveData<Boolean> isDetailLoading = new MutableLiveData<>(false);
 
-	public LiveData<List<GroupsItem>> getGroups(
-			Context ctx,
-			int resultLimit,
-			int page,
-			Activity activity,
-			ActivityGroupsBinding binding) {
-
-		groupsList = new MutableLiveData<>();
-		loadGroupsList(ctx, resultLimit, page, activity, binding);
-
+	public LiveData<List<GroupsItem>> getGroupsList() {
 		return groupsList;
 	}
 
-	public void loadGroupsList(
-			Context ctx,
-			int resultLimit,
-			int page,
-			Activity activity,
-			ActivityGroupsBinding binding) {
+	public LiveData<Boolean> getIsLoading() {
+		return isLoading;
+	}
 
+	public LiveData<String> getError() {
+		return error;
+	}
+
+	public LiveData<Boolean> getIsActionLoading() {
+		return isActionLoading;
+	}
+
+	public LiveData<Boolean> getActionSuccess() {
+		return actionSuccess;
+	}
+
+	public LiveData<GroupsItem> getGroupDetail() {
+		return groupDetail;
+	}
+
+	public LiveData<Boolean> getIsDetailLoading() {
+		return isDetailLoading;
+	}
+
+	private int currentPage = 1;
+	private final int resultLimit = Constants.getResultLimit();
+	private boolean isLastPage = false;
+	private boolean isLoadingMore = false;
+
+	public void clearActionSuccess() {
+		actionSuccess.setValue(false);
+	}
+
+	public void loadGroups(Context ctx) {
+		currentPage = 1;
+		isLastPage = false;
+		isLoadingMore = false;
+		isLoading.setValue(true);
+		fetch(ctx, 1);
+	}
+
+	public void loadNextPage(Context ctx) {
+		if (isLoadingMore || isLastPage) return;
+		isLoadingMore = true;
+		currentPage++;
+		fetch(ctx, currentPage);
+	}
+
+	public void loadGroupDetail(Context ctx, long groupId) {
+		isDetailLoading.setValue(true);
+		RetrofitClient.getApiInterface(ctx)
+				.getGroup(groupId)
+				.enqueue(
+						new Callback<>() {
+							@Override
+							public void onResponse(
+									@NonNull Call<GroupsItem> c, @NonNull Response<GroupsItem> r) {
+								ApiResponseHandler.handleFetch(
+										r,
+										isDetailLoading,
+										() -> groupDetail.setValue(r.body()),
+										error);
+							}
+
+							@Override
+							public void onFailure(
+									@NonNull Call<GroupsItem> c, @NonNull Throwable t) {
+								isDetailLoading.setValue(false);
+								error.setValue(t.getMessage());
+							}
+						});
+	}
+
+	private void fetch(Context ctx, int page) {
 		Call<List<GroupsItem>> call =
-				RetrofitClient.getApiInterface(ctx).getGroups(true, "id", "asc", 100, page);
+				RetrofitClient.getApiInterface(ctx).getGroups(true, "id", "asc", resultLimit, page);
 
 		call.enqueue(
 				new Callback<>() {
-
 					@Override
 					public void onResponse(
 							@NonNull Call<List<GroupsItem>> call,
 							@NonNull Response<List<GroupsItem>> response) {
-
-						if (response.isSuccessful()) {
-							groupsList.postValue(response.body());
-						} else if (response.code() == 401) {
-
-							binding.progressBar.setVisibility(View.GONE);
-							Snackbar.info(
-									ctx, binding.getRoot(), ctx.getString(R.string.not_authorized));
-						} else if (response.code() == 403) {
-
-							binding.progressBar.setVisibility(View.GONE);
-							Snackbar.info(
-									ctx,
-									binding.getRoot(),
-									ctx.getString(R.string.access_forbidden_403));
-						} else {
-
-							binding.progressBar.setVisibility(View.GONE);
-							Snackbar.info(
-									ctx, binding.getRoot(), ctx.getString(R.string.generic_error));
-						}
+						ApiResponseHandler.handleFetch(
+								response,
+								isLoading,
+								() -> {
+									String totalHeader = response.headers().get("x-total");
+									List<GroupsItem> body = response.body();
+									List<GroupsItem> current =
+											(page == 1)
+													? new ArrayList<>()
+													: groupsList.getValue() != null
+															? new ArrayList<>(groupsList.getValue())
+															: new ArrayList<>();
+									if (body != null) current.addAll(body);
+									groupsList.setValue(current);
+									checkLastPage(
+											body != null ? body.size() : 0,
+											totalHeader,
+											current.size());
+								},
+								error);
+						isLoadingMore = false;
 					}
 
 					@Override
 					public void onFailure(
 							@NonNull Call<List<GroupsItem>> call, @NonNull Throwable t) {
-						Snackbar.info(
-								ctx,
-								activity.findViewById(android.R.id.content),
-								binding.getRoot().findViewById(R.id.bottom_app_bar),
-								ctx.getString(R.string.generic_server_response_error));
+						isLoading.setValue(false);
+						isLoadingMore = false;
+						if (page == 1) groupsList.setValue(new ArrayList<>());
+						error.setValue(t.getMessage());
 					}
 				});
 	}
 
-	public void loadMoreGroups(
-			Context ctx,
-			int resultLimit,
-			int page,
-			GroupsAdapter adapter,
-			Activity activity,
-			ActivityGroupsBinding binding) {
+	private void checkLastPage(int bodySize, String totalHeader, int fullListSize) {
+		if (bodySize < resultLimit) isLastPage = true;
+		else if (totalHeader != null) {
+			try {
+				if (fullListSize >= Integer.parseInt(totalHeader)) isLastPage = true;
+			} catch (NumberFormatException ignored) {
+			}
+		}
+	}
 
-		Call<List<GroupsItem>> call =
-				RetrofitClient.getApiInterface(ctx).getGroups(true, "id", "asc", 100, page);
+	public void clearError() {
+		error.setValue(null);
+	}
 
-		call.enqueue(
-				new Callback<>() {
-
-					@Override
-					public void onResponse(
-							@NonNull Call<List<GroupsItem>> call,
-							@NonNull Response<List<GroupsItem>> response) {
-
-						if (response.isSuccessful()) {
-							List<GroupsItem> list = groupsList.getValue();
-							assert list != null;
-							assert response.body() != null;
-
-							if (!response.body().isEmpty()) {
-								list.addAll(response.body());
-								adapter.updateList(list);
-							} else {
-								adapter.setMoreDataAvailable(false);
+	public void createGroup(Context ctx, CreateGroup group) {
+		isActionLoading.setValue(true);
+		RetrofitClient.getApiInterface(ctx)
+				.createGroup(group)
+				.enqueue(
+						new Callback<>() {
+							@Override
+							public void onResponse(
+									@NonNull Call<GroupsItem> c, @NonNull Response<GroupsItem> r) {
+								ApiResponseHandler.handleAction(
+										r, isActionLoading, actionSuccess, error);
 							}
-						} else {
-							Snackbar.info(
-									ctx,
-									activity.findViewById(android.R.id.content),
-									binding.getRoot().findViewById(R.id.bottom_app_bar),
-									ctx.getString(R.string.generic_error));
-						}
-					}
 
-					@Override
-					public void onFailure(
-							@NonNull Call<List<GroupsItem>> call, @NonNull Throwable t) {
-						Snackbar.info(
-								ctx,
-								activity.findViewById(android.R.id.content),
-								binding.getRoot().findViewById(R.id.bottom_app_bar),
-								ctx.getString(R.string.generic_server_response_error));
-					}
-				});
+							@Override
+							public void onFailure(
+									@NonNull Call<GroupsItem> c, @NonNull Throwable t) {
+								isActionLoading.setValue(false);
+								error.setValue(t.getMessage());
+							}
+						});
+	}
+
+	public void updateGroup(Context ctx, long groupId, CreateGroup group) {
+		isActionLoading.setValue(true);
+		RetrofitClient.getApiInterface(ctx)
+				.updateGroup(groupId, group)
+				.enqueue(
+						new Callback<>() {
+							@Override
+							public void onResponse(
+									@NonNull Call<GroupsItem> c, @NonNull Response<GroupsItem> r) {
+								ApiResponseHandler.handleAction(
+										r, isActionLoading, actionSuccess, error);
+							}
+
+							@Override
+							public void onFailure(
+									@NonNull Call<GroupsItem> c, @NonNull Throwable t) {
+								isActionLoading.setValue(false);
+								error.setValue(t.getMessage());
+							}
+						});
 	}
 }

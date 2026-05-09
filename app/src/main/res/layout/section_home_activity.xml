@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_65"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.65" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/activities_frame"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen72dp"
+        app:cardBackgroundColor="?attr/colorSurfaceContainerLow"
+        app:cardCornerRadius="@dimen/dimen24dp"
+        app:cardElevation="0dp"
+        app:strokeWidth="@dimen/dimen0dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/dimen16dp">
+
+            <ImageView
+                android:id="@+id/activities_icon"
+                android:layout_width="@dimen/dimen24dp"
+                android:layout_height="@dimen/dimen24dp"
+                android:contentDescription="@string/generic_img_copy"
+                android:src="@drawable/ic_activities"
+                app:tint="?attr/iconsColor"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dimen12dp"
+                android:text="@string/activities"
+                android:textColor="?attr/colorOnSurface"
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/activities_icon"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/activities_subtitle"
+                android:alpha=".7"
+                android:textColor="?attr/colorOnSurface"
+                android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/issues_frame"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dimen16dp"
+        android:layout_marginEnd="@dimen/dimen8dp"
+        app:cardBackgroundColor="?attr/colorSurfaceVariant"
+        app:cardCornerRadius="@dimen/dimen24dp"
+        app:cardElevation="0dp"
+        app:strokeWidth="@dimen/dimen0dp"
+        app:layout_constraintEnd_toStartOf="@id/guideline_65"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/activities_frame">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/dimen16dp">
+
+            <ImageView
+                android:id="@+id/issues_icon"
+                android:layout_width="@dimen/dimen32dp"
+                android:layout_height="@dimen/dimen32dp"
+                android:contentDescription="@string/generic_img_copy"
+                android:src="@drawable/ic_issues_home"
+                app:tint="?attr/iconsColor"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dimen8dp"
+                android:layout_marginEnd="@dimen/dimen8dp"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/issues_chip"
+                app:layout_constraintStart_toEndOf="@id/issues_icon"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/issues"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textAppearance="@style/TextAppearance.Material3.TitleMedium" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/issues_subtitle"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                    android:alpha="0.7" />
+
+            </LinearLayout>
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/issues_chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/number_label"
+                android:clickable="false"
+                android:focusable="false"
+                app:chipBackgroundColor="?attr/colorSurface"
+                app:chipStrokeColor="?attr/colorSurface"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/merge_requests_frame"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dimen16dp"
+        android:layout_marginEnd="@dimen/dimen8dp"
+        app:cardBackgroundColor="?attr/colorSurfaceVariant"
+        app:cardCornerRadius="@dimen/dimen24dp"
+        app:cardElevation="0dp"
+        app:strokeWidth="@dimen/dimen0dp"
+        app:layout_constraintEnd_toStartOf="@id/guideline_65"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/issues_frame">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/dimen16dp">
+
+            <ImageView
+                android:id="@+id/mr_icon"
+                android:layout_width="@dimen/dimen32dp"
+                android:layout_height="@dimen/dimen32dp"
+                android:contentDescription="@string/generic_img_copy"
+                android:src="@drawable/ic_merge_request_home"
+                app:tint="?attr/iconsColor"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dimen8dp"
+                android:layout_marginEnd="@dimen/dimen8dp"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/mr_chip"
+                app:layout_constraintStart_toEndOf="@id/mr_icon"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/merge_requests"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textAppearance="@style/TextAppearance.Material3.TitleMedium" />
+
+            </LinearLayout>
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/mr_chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/number_label"
+                android:clickable="false"
+                android:focusable="false"
+                app:chipBackgroundColor="?attr/colorSurface"
+                app:chipStrokeColor="?attr/colorOutline"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/snippet_frame"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/dimen8dp"
+        app:cardBackgroundColor="?attr/colorSurfaceVariant"
+        app:cardCornerRadius="@dimen/dimen24dp"
+        app:cardElevation="0dp"
+        app:strokeWidth="@dimen/dimen0dp"
+        app:layout_constraintBottom_toBottomOf="@id/merge_requests_frame"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/guideline_65"
+        app:layout_constraintTop_toTopOf="@id/issues_frame">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/dimen16dp">
+
+            <ImageView
+                android:id="@+id/snippet_icon"
+                android:layout_width="@dimen/dimen28dp"
+                android:layout_height="@dimen/dimen28dp"
+                android:contentDescription="@string/generic_img_copy"
+                android:src="@drawable/ic_snippet_home"
+                app:tint="?attr/iconsColor"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/snippet_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen12dp"
+                android:layout_marginStart="@dimen/dimen4dp"
+                android:layout_marginEnd="@dimen/dimen4dp"
+                android:text="@string/snippets"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/snippet_icon" />
+
+            <TextView
+                android:id="@+id/snippet_subtitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen4dp"
+                android:layout_marginStart="@dimen/dimen4dp"
+                android:layout_marginEnd="@dimen/dimen4dp"
+                android:text="@string/snippets_subtitle"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                android:alpha="0.7"
+                android:gravity="center"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/snippet_title" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/snippet_chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/number_label"
+                android:clickable="false"
+                android:focusable="false"
+                app:chipBackgroundColor="?attr/colorSurface"
+                app:chipStrokeColor="?attr/colorOutline"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

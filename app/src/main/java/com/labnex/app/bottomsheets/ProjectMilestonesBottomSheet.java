@@ -18,7 +18,7 @@ import com.labnex.app.R;
 import com.labnex.app.activities.BaseActivity;
 import com.labnex.app.adapters.ProjectMilestonesAdapter;
 import com.labnex.app.databinding.BottomSheetProjectMilestonesBinding;
-import com.labnex.app.helpers.Snackbar;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.interfaces.BottomSheetListener;
 import com.labnex.app.viewmodels.MilestonesViewModel;
 
@@ -77,10 +77,7 @@ public class ProjectMilestonesBottomSheet extends BottomSheetDialogFragment
 	public void updateDataListener(String str) {
 
 		if (str.equalsIgnoreCase("created")) {
-			Snackbar.info(
-					requireContext(),
-					bottomSheetProjectMilestonesBinding.mainLayout,
-					getString(R.string.milestone_created));
+			Toasty.show(requireContext(), getString(R.string.milestone_created));
 		}
 
 		adapter.clearAdapter();

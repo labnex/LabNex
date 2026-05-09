@@ -29,15 +29,45 @@ public class SnippetCreateModel {
 	}
 
 	public static class File {
+
 		@SerializedName("file_path")
 		private String filePath;
 
 		@SerializedName("content")
 		private String content;
 
+		@SerializedName("action")
+		private String action;
+
+		@SerializedName("previous_path")
+		private String previousPath;
+
 		public File(String filePath, String content) {
 			this.filePath = filePath;
 			this.content = content;
+		}
+
+		public File(String action, String filePath, String content, String previousPath) {
+			this.action = action;
+			this.filePath = filePath;
+			this.content = content;
+			this.previousPath = previousPath;
+		}
+
+		public String getFilePath() {
+			return filePath;
+		}
+
+		public String getContent() {
+			return content;
+		}
+
+		public String getAction() {
+			return action;
+		}
+
+		public String getPreviousPath() {
+			return previousPath;
 		}
 	}
 }

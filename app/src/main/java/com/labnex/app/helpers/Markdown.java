@@ -1,7 +1,6 @@
 package com.labnex.app.helpers;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.text.Spanned;
@@ -462,9 +461,7 @@ public class Markdown {
 															view.getContext().startActivity(i);*/
 														} else {
 															Utils.openUrlInBrowser(
-																	view.getContext(),
-																	new Activity(),
-																	link);
+																	view.getContext(), link);
 														}
 													});
 											super.configureConfiguration(builder);

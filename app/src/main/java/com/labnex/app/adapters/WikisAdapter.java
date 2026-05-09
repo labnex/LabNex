@@ -15,7 +15,7 @@ import com.labnex.app.R;
 import com.labnex.app.bottomsheets.WikiActionsBottomSheet;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.databinding.BottomSheetProjectWikisBinding;
-import com.labnex.app.helpers.Snackbar;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.models.wikis.Wiki;
 import java.util.List;
 import retrofit2.Call;
@@ -184,31 +184,27 @@ public class WikisAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 								if (response.code() == 204) {
 
 									updateAdapter(position);
-									Snackbar.info(
+									Toasty.show(
 											context,
-											binding.getRoot(),
 											context.getResources()
 													.getString(R.string.wiki_page_deleted));
 
 								} else if (response.code() == 401) {
 
-									Snackbar.info(
+									Toasty.show(
 											context,
-											binding.getRoot(),
 											context.getResources()
 													.getString(R.string.not_authorized));
 								} else if (response.code() == 403) {
 
-									Snackbar.info(
+									Toasty.show(
 											context,
-											binding.getRoot(),
 											context.getResources()
 													.getString(R.string.access_forbidden_403));
 								} else {
 
-									Snackbar.info(
+									Toasty.show(
 											context,
-											binding.getRoot(),
 											context.getResources()
 													.getString(R.string.generic_error));
 								}
@@ -217,9 +213,8 @@ public class WikisAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 							@Override
 							public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
 
-								Snackbar.info(
+								Toasty.show(
 										context,
-										binding.getRoot(),
 										context.getResources()
 												.getString(R.string.generic_server_response_error));
 							}

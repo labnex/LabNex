@@ -11,7 +11,7 @@ import com.labnex.app.R;
 import com.labnex.app.adapters.ProjectTagsAdapter;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.databinding.BottomSheetProjectTagsBinding;
-import com.labnex.app.helpers.Snackbar;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.models.tags.TagsItem;
 import java.util.List;
 import retrofit2.Call;
@@ -65,10 +65,8 @@ public class TagsViewModel extends ViewModel {
 					public void onFailure(
 							@NonNull Call<List<TagsItem>> call, @NonNull Throwable t) {
 						binding.progressBar.setVisibility(View.GONE);
-						Snackbar.info(
-								context,
-								binding.getRoot(),
-								context.getString(R.string.generic_server_response_error));
+						Toasty.show(
+								context, context.getString(R.string.generic_server_response_error));
 					}
 				});
 	}
@@ -110,10 +108,8 @@ public class TagsViewModel extends ViewModel {
 					public void onFailure(
 							@NonNull Call<List<TagsItem>> call, @NonNull Throwable t) {
 						binding.progressBar.setVisibility(View.GONE);
-						Snackbar.info(
-								context,
-								binding.getRoot(),
-								context.getString(R.string.generic_server_response_error));
+						Toasty.show(
+								context, context.getString(R.string.generic_server_response_error));
 					}
 				});
 	}
@@ -126,6 +122,6 @@ public class TagsViewModel extends ViewModel {
 					case 403 -> R.string.access_forbidden_403;
 					default -> R.string.generic_error;
 				};
-		Snackbar.info(context, binding.getRoot(), context.getString(message));
+		Toasty.show(context, context.getString(message));
 	}
 }

@@ -1,7 +1,6 @@
 package com.labnex.app.bottomsheets;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,8 +18,7 @@ import com.labnex.app.activities.BaseActivity;
 import com.labnex.app.adapters.LabelsAdapter;
 import com.labnex.app.adapters.MembersAdapter;
 import com.labnex.app.databinding.BottomSheetGroupDetailBinding;
-import com.labnex.app.helpers.Snackbar;
-import com.labnex.app.interfaces.BottomSheetListener;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.viewmodels.LabelsViewModel;
 import com.labnex.app.viewmodels.MembersViewModel;
 import java.util.Objects;
@@ -39,7 +37,7 @@ public class GroupDetailBottomSheet extends BottomSheetDialogFragment
 	private MembersAdapter membersAdapter;
 	private int page = 1;
 	private int resultLimit;
-	private int groupId;
+	private long groupId;
 
 	@Nullable @Override
 	public View onCreateView(
@@ -53,7 +51,7 @@ public class GroupDetailBottomSheet extends BottomSheetDialogFragment
 		labelsViewModel = new ViewModelProvider(this).get(LabelsViewModel.class);
 		membersViewModel = new ViewModelProvider(this).get(MembersViewModel.class);
 
-		groupId = requireArguments().getInt("groupId", 0);
+		groupId = requireArguments().getLong("groupId", 0);
 		resultLimit = ((BaseActivity) requireContext()).getAccount().getMaxPageLimit();
 
 		bottomSheetGroupDetailBinding.bottomSheetGroupLabels.closeBs.setOnClickListener(
@@ -78,7 +76,7 @@ public class GroupDetailBottomSheet extends BottomSheetDialogFragment
 								v1 -> {
 									Bundle bsBundle = new Bundle();
 									bsBundle.putString("source", "labels");
-									bsBundle.putInt("groupId", groupId);
+									bsBundle.putLong("groupId", groupId);
 									LabelActionsBottomSheet bottomSheet =
 											new LabelActionsBottomSheet();
 									bottomSheet.setArguments(bsBundle);
@@ -116,16 +114,10 @@ public class GroupDetailBottomSheet extends BottomSheetDialogFragment
 	public void updateDataListener(String str) {
 
 		if (str.equalsIgnoreCase("created")) {
-			Snackbar.info(
-					requireContext(),
-					bottomSheetGroupDetailBinding.bottomSheetGroupLabels.labelsLayout,
-					getString(R.string.label_created));
+			Toasty.show(requireContext(), getString(R.string.label_created));
 		}
 		if (str.equalsIgnoreCase("updated")) {
-			Snackbar.info(
-					requireContext(),
-					bottomSheetGroupDetailBinding.bottomSheetGroupLabels.labelsLayout,
-					getString(R.string.label_updated));
+			Toasty.show(requireContext(), getString(R.string.label_updated));
 		}
 
 		adapter.clearAdapter();
@@ -306,17 +298,5 @@ public class GroupDetailBottomSheet extends BottomSheetDialogFragment
 		}
 
 		return dialog;
-	}
-
-	@Override
-	public void onAttach(@NonNull Context context) {
-
-		super.onAttach(context);
-
-		try {
-			BottomSheetListener bottomSheetListener = (BottomSheetListener) context;
-		} catch (ClassCastException e) {
-			throw new ClassCastException(context + " must implement BottomSheetListener");
-		}
 	}
 }

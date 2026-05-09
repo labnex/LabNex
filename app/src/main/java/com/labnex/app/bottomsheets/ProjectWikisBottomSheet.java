@@ -18,7 +18,7 @@ import com.labnex.app.R;
 import com.labnex.app.activities.BaseActivity;
 import com.labnex.app.adapters.WikisAdapter;
 import com.labnex.app.databinding.BottomSheetProjectWikisBinding;
-import com.labnex.app.helpers.Snackbar;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.interfaces.BottomSheetListener;
 import com.labnex.app.viewmodels.WikisViewModel;
 
@@ -78,16 +78,10 @@ public class ProjectWikisBottomSheet extends BottomSheetDialogFragment
 	public void updateDataListener(String str) {
 
 		if (str.equalsIgnoreCase("created")) {
-			Snackbar.info(
-					requireContext(),
-					bottomSheetProjectWikisBinding.mainLayout,
-					getString(R.string.wiki_page_created));
+			Toasty.show(requireContext(), getString(R.string.wiki_page_created));
 		}
 		if (str.equalsIgnoreCase("updated")) {
-			Snackbar.info(
-					requireContext(),
-					bottomSheetProjectWikisBinding.mainLayout,
-					getString(R.string.wiki_page_updated));
+			Toasty.show(requireContext(), getString(R.string.wiki_page_updated));
 		}
 
 		adapter.clearAdapter();

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_gradient_tile"
+    android:padding="@dimen/dimen20dp">
+
+    <TextView
+        android:id="@+id/hi_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/dimen16dp"
+        android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+        android:textColor="?attr/colorOnPrimaryContainer"
+        app:layout_constraintEnd_toStartOf="@id/profile_picture_layout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/username_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:alpha=".8"
+        android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+        android:textColor="?attr/colorOnPrimaryContainer"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@id/hi_text"
+        app:layout_constraintStart_toStartOf="@id/hi_text"
+        app:layout_constraintTop_toBottomOf="@id/hi_text" />
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/profile_picture_layout"
+        android:layout_width="@dimen/dimen48dp"
+        android:layout_height="@dimen/dimen48dp"
+        android:src="@drawable/ic_spinner"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Medium" />
+
+    <com.google.android.material.chip.Chip
+        android:id="@+id/chip_followers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dimen12dp"
+        android:clickable="false"
+        android:focusable="false"
+        android:textColor="?attr/colorOnPrimary"
+        app:chipBackgroundColor="?attr/colorPrimary"
+        app:chipStrokeColor="@android:color/transparent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/username_text" />
+
+    <com.google.android.material.chip.Chip
+        android:id="@+id/chip_following"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dimen8dp"
+        android:clickable="false"
+        android:focusable="false"
+        android:textColor="?attr/colorOnSecondaryContainer"
+        app:chipBackgroundColor="?attr/colorSecondaryContainer"
+        app:chipStrokeColor="@android:color/transparent"
+        app:layout_constraintStart_toEndOf="@id/chip_followers"
+        app:layout_constraintTop_toTopOf="@id/chip_followers" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

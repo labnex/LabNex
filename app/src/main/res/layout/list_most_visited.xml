@@ -1,66 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<com.google.android.material.listitem.ListItemLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/most_visited_frame"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:gravity="center_vertical"
-    android:paddingVertical="@dimen/dimen8dp"
-    android:paddingHorizontal="@dimen/dimen20dp"
-    android:background="?attr/selectableItemBackground">
+    android:layout_height="wrap_content">
 
-    <!-- Avatar/icon -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/avatar_container"
-        android:layout_width="@dimen/dimen40dp"
-        android:layout_height="@dimen/dimen40dp"
-        app:cardCornerRadius="@dimen/dimen8dp"
-        app:cardElevation="@dimen/dimen0dp"
-        style="?attr/materialCardViewElevatedStyle"
-        app:strokeWidth="@dimen/dimen0dp"
-        android:backgroundTint="?attr/homeIconsBackgroundColor">
-
-        <ImageView
-            android:id="@+id/avatar"
-            android:layout_width="@dimen/dimen32dp"
-            android:layout_height="@dimen/dimen32dp"
-            android:layout_gravity="center_horizontal|center_vertical"
-            android:contentDescription="@string/generic_img_copy"
-            tools:src="@drawable/ic_spinner"/>
-
-    </com.google.android.material.card.MaterialCardView>
-
-    <!-- Text content -->
-    <LinearLayout
-        android:layout_width="0dp"
+    <com.google.android.material.listitem.ListItemCardView
+        android:id="@+id/card"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:layout_marginStart="@dimen/dimen16dp">
+        android:layout_marginVertical="@dimen/dimen1dp"
+        android:checkable="false"
+        app:cardBackgroundColor="?attr/colorSurfaceContainerLow"
+        app:strokeWidth="0dp">
 
-        <TextView
-            android:id="@+id/project_name"
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:text="@string/projects"
-            android:textSize="@dimen/dimen16sp"
-            android:maxLines="1"
-            android:ellipsize="end"/>
+            android:padding="@dimen/dimen8dp">
 
-        <TextView
-            android:id="@+id/project_path"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="group/subgroup/project"
-            android:textSize="@dimen/dimen14sp"
-            android:maxLines="1"
-            android:ellipsize="middle"
-            android:alpha="0.8"
-            android:layout_marginTop="@dimen/dimen2dp"/>
+            <ImageView
+                android:id="@+id/visit_icon"
+                android:layout_width="@dimen/dimen16dp"
+                android:layout_height="@dimen/dimen16dp"
+                android:contentDescription="@string/most_visited"
+                android:src="@drawable/ic_trending"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="?attr/iconsColor" />
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/visit_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dimen4dp"
+                android:textAppearance="?attr/textAppearanceLabelMedium"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                app:layout_constraintBottom_toBottomOf="@id/visit_icon"
+                app:layout_constraintStart_toEndOf="@id/visit_icon"
+                app:layout_constraintTop_toTopOf="@id/visit_icon" />
 
-</LinearLayout>
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/avatar"
+                android:layout_width="@dimen/dimen40dp"
+                android:layout_height="@dimen/dimen40dp"
+                android:layout_marginTop="@dimen/dimen8dp"
+                android:src="@drawable/ic_spinner"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/visit_icon"
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Medium" />
+
+            <TextView
+                android:id="@+id/project_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dimen12dp"
+                android:layout_marginEnd="@dimen/dimen8dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                android:textColor="?attr/colorOnSurface"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@id/btn_remove"
+                app:layout_constraintStart_toEndOf="@id/avatar"
+                app:layout_constraintTop_toTopOf="@id/avatar"
+                tools:text="awesome-project" />
+
+            <TextView
+                android:id="@+id/project_path"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dimen12dp"
+                android:alpha="0.7"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textAppearance="?attr/textAppearanceLabelMedium"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                app:layout_constraintEnd_toStartOf="@id/btn_remove"
+                app:layout_constraintStart_toEndOf="@id/avatar"
+                app:layout_constraintTop_toBottomOf="@id/project_name"
+                tools:text="labnex / awesome-project" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_remove"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/remove"
+                app:icon="@drawable/ic_trash"
+                app:iconTint="?attr/colorError"
+                app:layout_constraintBottom_toBottomOf="@id/project_path"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/project_name" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.listitem.ListItemCardView>
+
+</com.google.android.material.listitem.ListItemLayout>

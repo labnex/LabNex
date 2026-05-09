@@ -1,20 +1,18 @@
 package com.labnex.app.fragments;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import com.google.android.material.chip.Chip;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.labnex.app.R;
 import com.labnex.app.activities.IssueDetailActivity;
 import com.labnex.app.activities.IssuesActivity;
@@ -26,14 +24,16 @@ import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.contexts.IssueContext;
 import com.labnex.app.contexts.MergeRequestContext;
 import com.labnex.app.contexts.ProjectsContext;
+import com.labnex.app.databinding.BottomsheetTodoFilterBinding;
 import com.labnex.app.databinding.FragmentTodoBinding;
-import com.labnex.app.helpers.Snackbar;
+import com.labnex.app.helpers.Toasty;
+import com.labnex.app.helpers.UIHelper;
 import com.labnex.app.models.issues.Issues;
 import com.labnex.app.models.merge_requests.MergeRequests;
+import com.labnex.app.models.projects.Projects;
 import com.labnex.app.models.todo.ToDoItem;
 import com.labnex.app.viewmodels.TodoViewModel;
 import java.util.ArrayList;
-import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -43,38 +43,71 @@ import retrofit2.Response;
  */
 public class TodoFragment extends Fragment {
 
-	private TodoViewModel todoViewModel;
-	private Context ctx;
 	private FragmentTodoBinding binding;
+	private Context ctx;
+	private TodoViewModel viewModel;
 	private TodoAdapter adapter;
-	private final List<ToDoItem> todoList = new ArrayList<>();
-	private final String[] filterTypes = {"All", "Issues", "Merge Requests"};
-	private String selectedFilter = "All";
+	private boolean isFirstLoad = true;
 
 	@Override
+	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+		View dock = requireActivity().findViewById(R.id.docked_toolbar);
+		UIHelper.applyInsets(view, dock, binding.recyclerView, binding.pullToRefresh, null);
+	}
+
+	@Nullable @Override
 	public View onCreateView(
-			@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		ctx = requireContext();
+			@NonNull LayoutInflater inflater,
+			@Nullable ViewGroup container,
+			@Nullable Bundle savedInstanceState) {
 		binding = FragmentTodoBinding.inflate(inflater, container, false);
+		ctx = requireContext();
+		viewModel = new ViewModelProvider(this).get(TodoViewModel.class);
 
 		setupRecyclerView();
-		setupChipFilters();
 		setupPullToRefresh();
-
-		todoViewModel = new ViewModelProvider(requireActivity()).get(TodoViewModel.class);
-
-		setupObservers();
-		loadTodos();
+		observeViewModel();
 
 		return binding.getRoot();
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		if (!isHidden() && isFirstLoad) {
+			lazyLoad();
+		}
+	}
+
+	@Override
+	public void onHiddenChanged(boolean hidden) {
+		super.onHiddenChanged(hidden);
+		if (!hidden && isFirstLoad) {
+			lazyLoad();
+		}
+	}
+
+	private void lazyLoad() {
+		isFirstLoad = false;
+		viewModel.loadTodos(ctx);
+	}
+
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		binding = null;
+	}
+
+	public void openContextMenu() {
+		showFilterBottomSheet();
 	}
 
 	private void setupRecyclerView() {
 		adapter =
 				new TodoAdapter(
 						ctx,
-						todoList,
-						false,
+						new ArrayList<>(),
 						new TodoAdapter.OnTodoClickListener() {
 							@Override
 							public void onTodoClick(ToDoItem todo) {
@@ -83,394 +116,253 @@ public class TodoFragment extends Fragment {
 
 							@Override
 							public void onTodoMarkAsDone(ToDoItem todo) {
-								markTodoAsDone(todo.getId());
+								viewModel.markAsDone(ctx, todo.getId());
 							}
 						});
-
-		binding.recyclerView.setHasFixedSize(true);
 		binding.recyclerView.setLayoutManager(new LinearLayoutManager(ctx));
 		binding.recyclerView.setAdapter(adapter);
 	}
 
-	@SuppressLint("NotifyDataSetChanged")
-	private void setupChipFilters() {
-		LayoutInflater inflater = LayoutInflater.from(ctx);
-
-		for (String filterType : filterTypes) {
-			Chip chip = (Chip) inflater.inflate(R.layout.chip_item, binding.filterChips, false);
-			chip.setText(filterType);
-			chip.setCheckable(true);
-			chip.setClickable(true);
-
-			if ("All".equals(filterType)) {
-				chip.setChecked(true);
-			}
-
-			chip.setOnClickListener(
-					v -> {
-						selectedFilter = filterType;
-						todoList.clear();
-						adapter.notifyDataSetChanged();
-						loadTodos();
-						binding.progressBar.setVisibility(View.VISIBLE);
-					});
-
-			binding.filterChips.addView(chip);
-		}
-	}
-
-	@SuppressLint("NotifyDataSetChanged")
 	private void setupPullToRefresh() {
-		binding.pullToRefresh.setOnRefreshListener(
-				() ->
-						new Handler(Looper.getMainLooper())
-								.postDelayed(
-										() -> {
-											todoList.clear();
-											adapter.notifyDataSetChanged();
-											loadTodos();
-											binding.pullToRefresh.setRefreshing(false);
-										},
-										250));
+		binding.pullToRefresh.setOnRefreshListener(() -> viewModel.loadTodos(ctx));
 	}
 
-	@SuppressLint("NotifyDataSetChanged")
-	private void setupObservers() {
-		todoViewModel
-				.getTodoList()
+	private void showFilterBottomSheet() {
+		BottomSheetDialog dialog = new BottomSheetDialog(ctx);
+		BottomsheetTodoFilterBinding fb = BottomsheetTodoFilterBinding.inflate(getLayoutInflater());
+		dialog.setContentView(fb.getRoot());
+		UIHelper.applySheetStyle(dialog, true);
+
+		String current = viewModel.getFilter();
+		fb.chipAll.setChecked(TodoViewModel.FILTER_ALL.equals(current));
+		fb.chipIssues.setChecked(TodoViewModel.FILTER_ISSUES.equals(current));
+		fb.chipMr.setChecked(TodoViewModel.FILTER_MERGE_REQUESTS.equals(current));
+
+		fb.chipAll.setOnClickListener(
+				v -> {
+					viewModel.setFilter(TodoViewModel.FILTER_ALL);
+					dialog.dismiss();
+				});
+		fb.chipIssues.setOnClickListener(
+				v -> {
+					viewModel.setFilter(TodoViewModel.FILTER_ISSUES);
+					dialog.dismiss();
+				});
+		fb.chipMr.setOnClickListener(
+				v -> {
+					viewModel.setFilter(TodoViewModel.FILTER_MERGE_REQUESTS);
+					dialog.dismiss();
+				});
+
+		dialog.show();
+	}
+
+	private void observeViewModel() {
+		viewModel
+				.getIsLoading()
 				.observe(
 						getViewLifecycleOwner(),
-						allTodos -> {
-							if (allTodos != null && !allTodos.isEmpty()) {
-								List<ToDoItem> filteredItems = applyFilter(allTodos);
-								todoList.clear();
-								todoList.addAll(filteredItems);
-								adapter.notifyDataSetChanged();
-
-								if (todoList.isEmpty()) {
-									binding.nothingFoundFrame.getRoot().setVisibility(View.VISIBLE);
-									binding.recyclerView.setVisibility(View.GONE);
-								} else {
-									binding.nothingFoundFrame.getRoot().setVisibility(View.GONE);
-									binding.recyclerView.setVisibility(View.VISIBLE);
-								}
+						loading -> {
+							if (Boolean.TRUE.equals(loading)) {
+								binding.progressBar.setVisibility(View.VISIBLE);
+								binding.recyclerView.setVisibility(View.GONE);
+								binding.nothingFoundFrame.getRoot().setVisibility(View.GONE);
+							} else {
+								binding.progressBar.setVisibility(View.GONE);
+								binding.pullToRefresh.setRefreshing(false);
 							}
 						});
 
-		todoViewModel
-				.getRemovedTodoId()
+		viewModel
+				.getFilteredTodos()
 				.observe(
 						getViewLifecycleOwner(),
-						todoId -> {
-							if (todoId != null && todoId > 0) {
-								for (int i = 0; i < todoList.size(); i++) {
-									if (todoList.get(i).getId() == todoId) {
-										todoList.remove(i);
-										adapter.notifyItemRemoved(i);
-										break;
-									}
-								}
+						todos -> {
+							if (Boolean.TRUE.equals(viewModel.getIsLoading().getValue())) return;
 
-								todoViewModel.clearRemovedTodo();
+							if (todos == null) {
+								return;
+							}
 
-								if (todoList.isEmpty()) {
-									binding.nothingFoundFrame.getRoot().setVisibility(View.VISIBLE);
-									binding.recyclerView.setVisibility(View.GONE);
-								}
+							if (todos.isEmpty()) {
+								binding.nothingFoundFrame.getRoot().setVisibility(View.VISIBLE);
+								binding.recyclerView.setVisibility(View.GONE);
+							} else {
+								binding.nothingFoundFrame.getRoot().setVisibility(View.GONE);
+								binding.recyclerView.setVisibility(View.VISIBLE);
+								adapter.updateList(todos);
 							}
 						});
-	}
 
-	private void loadTodos() {
-		binding.progressBar.setVisibility(View.VISIBLE);
-
-		Call<List<ToDoItem>> call = RetrofitClient.getApiInterface(ctx).getAllTodos();
-		call.enqueue(
-				new Callback<>() {
-					@SuppressLint("NotifyDataSetChanged")
-					@Override
-					public void onResponse(
-							@NonNull Call<List<ToDoItem>> call,
-							@NonNull Response<List<ToDoItem>> response) {
-						binding.progressBar.setVisibility(View.GONE);
-
-						if (response.isSuccessful() && response.body() != null) {
-							List<ToDoItem> newItems = response.body();
-							todoViewModel.setTodoList(newItems);
-						} else {
-							showError(getString(R.string.generic_server_response_error));
-							binding.nothingFoundFrame.getRoot().setVisibility(View.VISIBLE);
-							binding.recyclerView.setVisibility(View.GONE);
-						}
-					}
-
-					@Override
-					public void onFailure(
-							@NonNull Call<List<ToDoItem>> call, @NonNull Throwable t) {
-						binding.progressBar.setVisibility(View.GONE);
-						showError(getString(R.string.generic_server_response_error));
-						binding.nothingFoundFrame.getRoot().setVisibility(View.VISIBLE);
-						binding.recyclerView.setVisibility(View.GONE);
-					}
-				});
-	}
-
-	private List<ToDoItem> applyFilter(List<ToDoItem> items) {
-		if ("All".equals(selectedFilter)) {
-			return items;
-		} else if ("Issues".equals(selectedFilter)) {
-			List<ToDoItem> filtered = new ArrayList<>();
-			for (ToDoItem item : items) {
-				if ("Issue".equalsIgnoreCase(item.getTargetType())) {
-					filtered.add(item);
-				}
-			}
-			return filtered;
-		} else if ("Merge Requests".equals(selectedFilter)) {
-			List<ToDoItem> filtered = new ArrayList<>();
-			for (ToDoItem item : items) {
-				if ("MergeRequest".equalsIgnoreCase(item.getTargetType())) {
-					filtered.add(item);
-				}
-			}
-			return filtered;
-		}
-		return items;
-	}
-
-	private void markTodoAsDone(long todoId) {
-		Call<ToDoItem> call = RetrofitClient.getApiInterface(ctx).markTodoAsDone((int) todoId);
-		call.enqueue(
-				new Callback<>() {
-					@Override
-					public void onResponse(
-							@NonNull Call<ToDoItem> call, @NonNull Response<ToDoItem> response) {
-						if (response.isSuccessful()) {
-							todoViewModel.removeTodo(todoId);
-
-							Snackbar.info(
-									requireActivity(),
-									requireActivity().findViewById(R.id.nav_view),
-									getString(R.string.todo_marked_done));
-						} else {
-							showError(getString(R.string.generic_server_response_error));
-						}
-					}
-
-					@Override
-					public void onFailure(@NonNull Call<ToDoItem> call, @NonNull Throwable t) {
-						showError(getString(R.string.generic_server_response_error));
-					}
-				});
+		viewModel
+				.getError()
+				.observe(
+						getViewLifecycleOwner(),
+						errorMsg -> {
+							if (errorMsg == null) return;
+							switch (errorMsg) {
+								case "marked_done":
+									Toasty.show(ctx, getString(R.string.todo_marked_done));
+									break;
+								case "generic_error":
+									Toasty.show(
+											ctx, getString(R.string.generic_server_response_error));
+									break;
+								default:
+									Toasty.show(ctx, errorMsg);
+									break;
+							}
+							viewModel.clearError();
+						});
 	}
 
 	private void navigateToTodoTarget(ToDoItem todo) {
-		if (todo.getTargetType().equalsIgnoreCase("MergeRequest") && todo.getTarget() != null) {
+		String type = todo.getTargetType();
+		if ("MergeRequest".equalsIgnoreCase(type) && todo.getTarget() != null)
 			navigateToMergeRequest(todo);
-		} else if (todo.getTargetType().equalsIgnoreCase("Issue") && todo.getTarget() != null) {
-			navigateToIssue(todo);
-		} else {
-			if (todo.getTargetUrl() != null) {
-				Intent browserIntent =
-						new Intent(Intent.ACTION_VIEW, Uri.parse(todo.getTargetUrl()));
-				startActivity(browserIntent);
-			}
-		}
+		else if ("Issue".equalsIgnoreCase(type) && todo.getTarget() != null) navigateToIssue(todo);
+		else if (todo.getTargetUrl() != null)
+			startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(todo.getTargetUrl())));
 	}
 
 	private void navigateToMergeRequest(ToDoItem todo) {
-		fetchProjectAndOpenMergeRequest(todo);
+		if (todo.getProject() == null) {
+			showError();
+			return;
+		}
+		RetrofitClient.getApiInterface(ctx)
+				.getProjectInfo(todo.getProject().getId())
+				.enqueue(
+						new ProjectCallback() {
+							@Override
+							void onSuccess(Projects p) {
+								fetchAndOpenMergeRequest(p, todo);
+							}
+						});
 	}
 
 	private void navigateToIssue(ToDoItem todo) {
-		fetchProjectAndOpenIssue(todo);
-	}
-
-	private void fetchProjectAndOpenMergeRequest(ToDoItem todo) {
 		if (todo.getProject() == null) {
-			showError(getString(R.string.project_info_not_available));
+			showError();
 			return;
 		}
-
-		Call<com.labnex.app.models.projects.Projects> call =
-				RetrofitClient.getApiInterface(ctx).getProjectInfo(todo.getProject().getId());
-
-		call.enqueue(
-				new Callback<>() {
-					@Override
-					public void onResponse(
-							@NonNull Call<com.labnex.app.models.projects.Projects> call,
-							@NonNull Response<com.labnex.app.models.projects.Projects> response) {
-						if (response.isSuccessful() && response.body() != null) {
-							com.labnex.app.models.projects.Projects project = response.body();
-							fetchAndOpenSpecificMergeRequest(project, todo);
-						} else {
-							showError(getString(R.string.generic_server_response_error));
-						}
-					}
-
-					@Override
-					public void onFailure(
-							@NonNull Call<com.labnex.app.models.projects.Projects> call,
-							@NonNull Throwable t) {
-						showError(getString(R.string.generic_server_response_error));
-					}
-				});
+		RetrofitClient.getApiInterface(ctx)
+				.getProjectInfo(todo.getProject().getId())
+				.enqueue(
+						new ProjectCallback() {
+							@Override
+							void onSuccess(Projects p) {
+								fetchAndOpenIssue(p, todo);
+							}
+						});
 	}
 
-	private void fetchProjectAndOpenIssue(ToDoItem todo) {
-		if (todo.getProject() == null) {
-			showError(getString(R.string.project_info_not_available));
-			return;
-		}
-
-		Call<com.labnex.app.models.projects.Projects> call =
-				RetrofitClient.getApiInterface(ctx).getProjectInfo(todo.getProject().getId());
-
-		call.enqueue(
-				new Callback<>() {
-					@Override
-					public void onResponse(
-							@NonNull Call<com.labnex.app.models.projects.Projects> call,
-							@NonNull Response<com.labnex.app.models.projects.Projects> response) {
-						if (response.isSuccessful() && response.body() != null) {
-							com.labnex.app.models.projects.Projects project = response.body();
-							fetchAndOpenSpecificIssue(project, todo);
-						} else {
-							showError(getString(R.string.generic_server_response_error));
-						}
-					}
-
-					@Override
-					public void onFailure(
-							@NonNull Call<com.labnex.app.models.projects.Projects> call,
-							@NonNull Throwable t) {
-						showError(getString(R.string.generic_server_response_error));
-					}
-				});
-	}
-
-	private void fetchAndOpenSpecificMergeRequest(
-			com.labnex.app.models.projects.Projects project, ToDoItem todo) {
+	private void fetchAndOpenMergeRequest(Projects project, ToDoItem todo) {
 		if (todo.getTarget() == null) {
-			showError(getString(R.string.mr_detail_not_available));
+			showError();
 			return;
 		}
+		RetrofitClient.getApiInterface(ctx)
+				.getMergeRequest(project.getId(), todo.getTarget().getIid())
+				.enqueue(
+						new Callback<>() {
+							@Override
+							public void onResponse(
+									@NonNull Call<MergeRequests> c,
+									@NonNull Response<MergeRequests> r) {
+								if (r.isSuccessful() && r.body() != null)
+									openMergeRequest(project, r.body());
+								else goToProjectSection(project, "merge_request");
+							}
 
-		Call<MergeRequests> call =
-				RetrofitClient.getApiInterface(ctx)
-						.getMergeRequest(project.getId(), todo.getTarget().getIid());
-
-		call.enqueue(
-				new Callback<>() {
-					@Override
-					public void onResponse(
-							@NonNull Call<MergeRequests> call,
-							@NonNull Response<MergeRequests> response) {
-						if (response.isSuccessful() && response.body() != null) {
-							MergeRequests mergeRequest = response.body();
-							createBackStackAndOpenMergeRequest(project, mergeRequest);
-						} else {
-							goToProjectWithSection(project, "merge_request");
-						}
-					}
-
-					@Override
-					public void onFailure(@NonNull Call<MergeRequests> call, @NonNull Throwable t) {
-						goToProjectWithSection(project, "merge_request");
-					}
-				});
+							@Override
+							public void onFailure(
+									@NonNull Call<MergeRequests> c, @NonNull Throwable t) {
+								goToProjectSection(project, "merge_request");
+							}
+						});
 	}
 
-	private void fetchAndOpenSpecificIssue(
-			com.labnex.app.models.projects.Projects project, ToDoItem todo) {
+	private void fetchAndOpenIssue(Projects project, ToDoItem todo) {
 		if (todo.getTarget() == null) {
-			showError(getString(R.string.issue_detail_not_available));
+			showError();
 			return;
 		}
+		RetrofitClient.getApiInterface(ctx)
+				.getIssue(project.getId(), todo.getTarget().getIid())
+				.enqueue(
+						new Callback<>() {
+							@Override
+							public void onResponse(
+									@NonNull Call<Issues> c, @NonNull Response<Issues> r) {
+								if (r.isSuccessful() && r.body() != null)
+									openIssue(project, r.body());
+								else goToProjectSection(project, "issue");
+							}
 
-		Call<Issues> call =
-				RetrofitClient.getApiInterface(ctx)
-						.getIssue(project.getId(), todo.getTarget().getIid());
-
-		call.enqueue(
-				new Callback<>() {
-					@Override
-					public void onResponse(
-							@NonNull Call<Issues> call, @NonNull Response<Issues> response) {
-						if (response.isSuccessful() && response.body() != null) {
-							Issues issue = response.body();
-							createBackStackAndOpenIssue(project, issue);
-						} else {
-							goToProjectWithSection(project, "issue");
-						}
-					}
-
-					@Override
-					public void onFailure(@NonNull Call<Issues> call, @NonNull Throwable t) {
-						goToProjectWithSection(project, "issue");
-					}
-				});
+							@Override
+							public void onFailure(@NonNull Call<Issues> c, @NonNull Throwable t) {
+								goToProjectSection(project, "issue");
+							}
+						});
 	}
 
-	private void createBackStackAndOpenIssue(
-			com.labnex.app.models.projects.Projects project, Issues issue) {
-		ProjectsContext projectContext = new ProjectsContext(project, ctx);
-		projectContext.saveToDB(ctx);
-
-		Intent projectIntent = projectContext.getIntent(ctx, ProjectDetailActivity.class);
-		projectIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-		ctx.startActivity(projectIntent);
-
-		Intent issuesIntent = new Intent(ctx, IssuesActivity.class);
-		issuesIntent.putExtra("project", projectContext);
-		issuesIntent.putExtra("source", "project");
-		issuesIntent.putExtra("id", projectContext.getProjectId());
-		ctx.startActivity(issuesIntent);
-
-		IssueContext issueContext = new IssueContext(issue, projectContext);
-		Intent issueDetailIntent = issueContext.getIntent(ctx, IssueDetailActivity.class);
-		ctx.startActivity(issueDetailIntent);
+	private void openMergeRequest(Projects project, MergeRequests mr) {
+		ProjectsContext pc = new ProjectsContext(project, ctx);
+		pc.saveToDB(ctx);
+		ctx.startActivity(
+				pc.getIntent(ctx, ProjectDetailActivity.class)
+						.setFlags(
+								Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
+		Intent list = new Intent(ctx, MergeRequestsActivity.class);
+		list.putExtra("project", pc);
+		list.putExtra("source", "mr");
+		list.putExtra("projectId", pc.getProjectId());
+		ctx.startActivity(list);
+		ctx.startActivity(
+				new MergeRequestContext(mr, pc).getIntent(ctx, MergeRequestDetailActivity.class));
 	}
 
-	private void createBackStackAndOpenMergeRequest(
-			com.labnex.app.models.projects.Projects project, MergeRequests mergeRequest) {
-		ProjectsContext projectContext = new ProjectsContext(project, ctx);
-		projectContext.saveToDB(ctx);
-
-		Intent projectIntent = projectContext.getIntent(ctx, ProjectDetailActivity.class);
-		projectIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-		ctx.startActivity(projectIntent);
-
-		Intent mrIntent = new Intent(ctx, MergeRequestsActivity.class);
-		mrIntent.putExtra("project", projectContext);
-		mrIntent.putExtra("source", "mr");
-		mrIntent.putExtra("projectId", projectContext.getProjectId());
-		ctx.startActivity(mrIntent);
-
-		MergeRequestContext mrContext = new MergeRequestContext(mergeRequest, projectContext);
-		Intent mrDetailIntent = mrContext.getIntent(ctx, MergeRequestDetailActivity.class);
-		ctx.startActivity(mrDetailIntent);
+	private void openIssue(Projects project, Issues issue) {
+		ProjectsContext pc = new ProjectsContext(project, ctx);
+		pc.saveToDB(ctx);
+		ctx.startActivity(
+				pc.getIntent(ctx, ProjectDetailActivity.class)
+						.setFlags(
+								Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
+		Intent list = new Intent(ctx, IssuesActivity.class);
+		list.putExtra("project", pc);
+		list.putExtra("source", "project");
+		list.putExtra("id", pc.getProjectId());
+		ctx.startActivity(list);
+		ctx.startActivity(new IssueContext(issue, pc).getIntent(ctx, IssueDetailActivity.class));
 	}
 
-	private void goToProjectWithSection(
-			com.labnex.app.models.projects.Projects project, String sectionType) {
-		ProjectsContext projectContext = new ProjectsContext(project, ctx);
-		projectContext.saveToDB(ctx);
-
-		Intent projectIntent = projectContext.getIntent(ctx, ProjectDetailActivity.class);
-		projectIntent.putExtra("goToSection", "yes");
-		projectIntent.putExtra("goToSectionType", sectionType);
-		ctx.startActivity(projectIntent);
+	private void goToProjectSection(Projects project, String section) {
+		ProjectsContext pc = new ProjectsContext(project, ctx);
+		pc.saveToDB(ctx);
+		Intent i = pc.getIntent(ctx, ProjectDetailActivity.class);
+		i.putExtra("goToSection", "yes");
+		i.putExtra("goToSectionType", section);
+		ctx.startActivity(i);
 	}
 
-	private void showError(String message) {
-		Snackbar.info(requireActivity(), requireActivity().findViewById(R.id.nav_view), message);
+	private void showError() {
+		Toasty.show(ctx, getString(R.string.generic_server_response_error));
 	}
 
-	@Override
-	public void onDestroyView() {
-		super.onDestroyView();
-		binding = null;
+	private abstract class ProjectCallback implements Callback<Projects> {
+		@Override
+		public void onResponse(@NonNull Call<Projects> c, @NonNull Response<Projects> r) {
+			if (r.isSuccessful() && r.body() != null) onSuccess(r.body());
+			else showError();
+		}
+
+		@Override
+		public void onFailure(@NonNull Call<Projects> c, @NonNull Throwable t) {
+			showError();
+		}
+
+		abstract void onSuccess(Projects project);
 	}
 }

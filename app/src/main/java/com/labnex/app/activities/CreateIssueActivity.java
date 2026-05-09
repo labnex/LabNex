@@ -6,7 +6,7 @@ import com.labnex.app.R;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.contexts.ProjectsContext;
 import com.labnex.app.databinding.ActivityCreateIssueBinding;
-import com.labnex.app.helpers.Snackbar;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.helpers.api.TemplateFetcher;
 import com.labnex.app.models.issues.CrudeIssue;
 import com.labnex.app.models.issues.Issues;
@@ -63,10 +63,7 @@ public class CreateIssueActivity extends BaseActivity {
 					if (title.isEmpty()) {
 
 						enableButton();
-						Snackbar.info(
-								CreateIssueActivity.this,
-								binding.bottomAppBar,
-								getString(R.string.title_required));
+						Toasty.show(ctx, getString(R.string.title_required));
 						return;
 					}
 
@@ -97,24 +94,15 @@ public class CreateIssueActivity extends BaseActivity {
 						} else if (response.code() == 401) {
 
 							enableButton();
-							Snackbar.info(
-									CreateIssueActivity.this,
-									binding.bottomAppBar,
-									getString(R.string.not_authorized));
+							Toasty.show(ctx, getString(R.string.not_authorized));
 						} else if (response.code() == 403) {
 
 							enableButton();
-							Snackbar.info(
-									CreateIssueActivity.this,
-									binding.bottomAppBar,
-									getString(R.string.access_forbidden_403));
+							Toasty.show(ctx, getString(R.string.access_forbidden_403));
 						} else {
 
 							enableButton();
-							Snackbar.info(
-									CreateIssueActivity.this,
-									binding.bottomAppBar,
-									getString(R.string.generic_error));
+							Toasty.show(ctx, getString(R.string.generic_error));
 						}
 					}
 
@@ -122,10 +110,7 @@ public class CreateIssueActivity extends BaseActivity {
 					public void onFailure(@NonNull Call<Issues> call, @NonNull Throwable t) {
 
 						enableButton();
-						Snackbar.info(
-								CreateIssueActivity.this,
-								binding.bottomAppBar,
-								getString(R.string.generic_server_response_error));
+						Toasty.show(ctx, getString(R.string.generic_server_response_error));
 					}
 				});
 	}

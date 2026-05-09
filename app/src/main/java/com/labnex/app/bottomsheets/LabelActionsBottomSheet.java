@@ -1,7 +1,6 @@
 package com.labnex.app.bottomsheets;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -17,8 +16,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.labnex.app.R;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.databinding.BottomSheetLabelActionsBinding;
-import com.labnex.app.helpers.Snackbar;
-import com.labnex.app.interfaces.BottomSheetListener;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.models.labels.CrudeLabel;
 import com.labnex.app.models.labels.Labels;
 import com.skydoves.colorpickerview.ColorPickerDialog;
@@ -129,10 +127,7 @@ public class LabelActionsBottomSheet extends BottomSheetDialogFragment {
 						if (title.isEmpty()) {
 
 							enableButton();
-							Snackbar.info(
-									requireContext(),
-									bottomSheetLabelActionsBinding.mainBsFrame,
-									getString(R.string.label_title_empty));
+							Toasty.show(requireContext(), getString(R.string.label_title_empty));
 							return;
 						}
 
@@ -178,10 +173,7 @@ public class LabelActionsBottomSheet extends BottomSheetDialogFragment {
 						if (title.isEmpty()) {
 
 							enableButton();
-							Snackbar.info(
-									requireContext(),
-									bottomSheetLabelActionsBinding.mainBsFrame,
-									getString(R.string.label_title_empty));
+							Toasty.show(requireContext(), getString(R.string.label_title_empty));
 							return;
 						}
 
@@ -264,24 +256,15 @@ public class LabelActionsBottomSheet extends BottomSheetDialogFragment {
 						} else if (response.code() == 401) {
 
 							enableButton();
-							Snackbar.info(
-									requireContext(),
-									bottomSheetLabelActionsBinding.mainBsFrame,
-									getString(R.string.not_authorized));
+							Toasty.show(requireContext(), getString(R.string.not_authorized));
 						} else if (response.code() == 403) {
 
 							enableButton();
-							Snackbar.info(
-									requireContext(),
-									bottomSheetLabelActionsBinding.mainBsFrame,
-									getString(R.string.access_forbidden_403));
+							Toasty.show(requireContext(), getString(R.string.access_forbidden_403));
 						} else {
 
 							enableButton();
-							Snackbar.info(
-									requireContext(),
-									bottomSheetLabelActionsBinding.mainBsFrame,
-									getString(R.string.generic_error));
+							Toasty.show(requireContext(), getString(R.string.generic_error));
 						}
 					}
 
@@ -290,9 +273,8 @@ public class LabelActionsBottomSheet extends BottomSheetDialogFragment {
 
 						enableButton();
 						labelColor = "";
-						Snackbar.info(
+						Toasty.show(
 								requireContext(),
-								bottomSheetLabelActionsBinding.mainBsFrame,
 								getString(R.string.generic_server_response_error));
 					}
 				});
@@ -331,24 +313,15 @@ public class LabelActionsBottomSheet extends BottomSheetDialogFragment {
 						} else if (response.code() == 401) {
 
 							enableButton();
-							Snackbar.info(
-									requireContext(),
-									bottomSheetLabelActionsBinding.mainBsFrame,
-									getString(R.string.not_authorized));
+							Toasty.show(requireContext(), getString(R.string.not_authorized));
 						} else if (response.code() == 403) {
 
 							enableButton();
-							Snackbar.info(
-									requireContext(),
-									bottomSheetLabelActionsBinding.mainBsFrame,
-									getString(R.string.access_forbidden_403));
+							Toasty.show(requireContext(), getString(R.string.access_forbidden_403));
 						} else {
 
 							enableButton();
-							Snackbar.info(
-									requireContext(),
-									bottomSheetLabelActionsBinding.mainBsFrame,
-									getString(R.string.generic_error));
+							Toasty.show(requireContext(), getString(R.string.generic_error));
 						}
 					}
 
@@ -357,9 +330,8 @@ public class LabelActionsBottomSheet extends BottomSheetDialogFragment {
 
 						enableButton();
 						labelColor = "";
-						Snackbar.info(
+						Toasty.show(
 								requireContext(),
-								bottomSheetLabelActionsBinding.mainBsFrame,
 								getString(R.string.generic_server_response_error));
 					}
 				});
@@ -406,17 +378,5 @@ public class LabelActionsBottomSheet extends BottomSheetDialogFragment {
 		}
 
 		return dialog;
-	}
-
-	@Override
-	public void onAttach(@NonNull Context context) {
-
-		super.onAttach(context);
-
-		try {
-			BottomSheetListener bottomSheetListener = (BottomSheetListener) context;
-		} catch (ClassCastException e) {
-			throw new ClassCastException(context + " must implement BottomSheetListener");
-		}
 	}
 }

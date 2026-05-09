@@ -10,7 +10,7 @@ import com.google.android.material.bottomappbar.BottomAppBar;
 import com.labnex.app.R;
 import com.labnex.app.adapters.FilesAdapter;
 import com.labnex.app.clients.RetrofitClient;
-import com.labnex.app.helpers.Snackbar;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.models.repository.Tree;
 import java.util.ArrayList;
 import java.util.List;
@@ -77,34 +77,22 @@ public class FilesViewModel extends ViewModel {
 							}
 						} else if (response.code() == 401) {
 
-							Snackbar.info(
-									ctx, activity.findViewById(android.R.id.content),
-									bottomAppBar, ctx.getString(R.string.not_authorized));
+							Toasty.show(ctx, ctx.getString(R.string.not_authorized));
 							mutableList.postValue(new ArrayList<>());
 						} else if (response.code() == 403) {
 
-							Snackbar.info(
-									ctx,
-									activity.findViewById(android.R.id.content),
-									bottomAppBar,
-									ctx.getString(R.string.access_forbidden_403));
+							Toasty.show(ctx, ctx.getString(R.string.access_forbidden_403));
 							mutableList.postValue(new ArrayList<>());
 						} else {
 
-							Snackbar.info(
-									ctx, activity.findViewById(android.R.id.content),
-									bottomAppBar, ctx.getString(R.string.generic_error));
+							Toasty.show(ctx, ctx.getString(R.string.generic_error));
 							mutableList.postValue(new ArrayList<>());
 						}
 					}
 
 					@Override
 					public void onFailure(@NonNull Call<List<Tree>> call, @NonNull Throwable t) {
-						Snackbar.info(
-								ctx,
-								activity.findViewById(android.R.id.content),
-								bottomAppBar,
-								ctx.getString(R.string.generic_server_response_error));
+						Toasty.show(ctx, ctx.getString(R.string.generic_server_response_error));
 						mutableList.postValue(new ArrayList<>());
 					}
 				});
@@ -151,22 +139,14 @@ public class FilesViewModel extends ViewModel {
 							}
 							adapter.notifyLoadFinished();
 						} else {
-							Snackbar.info(
-									ctx,
-									activity.findViewById(android.R.id.content),
-									bottomAppBar,
-									ctx.getString(R.string.generic_error));
+							Toasty.show(ctx, ctx.getString(R.string.generic_error));
 							adapter.notifyLoadFinished();
 						}
 					}
 
 					@Override
 					public void onFailure(@NonNull Call<List<Tree>> call, @NonNull Throwable t) {
-						Snackbar.info(
-								ctx,
-								activity.findViewById(android.R.id.content),
-								bottomAppBar,
-								ctx.getString(R.string.generic_server_response_error));
+						Toasty.show(ctx, ctx.getString(R.string.generic_server_response_error));
 						adapter.notifyLoadFinished();
 					}
 				});

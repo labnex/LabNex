@@ -2,6 +2,7 @@ package com.labnex.app.helpers;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -47,19 +48,37 @@ public class SyntaxHighlightedArea extends LinearLayout {
 	}
 
 	public void setup() {
-
 		theme = Theme.getDefaultTheme(getContext());
 
-		sourceView = new TextView(getContext());
+		TypedValue bgValue = new TypedValue();
+		getContext()
+				.getTheme()
+				.resolveAttribute(
+						com.google.android.material.R.attr.colorSurfaceContainerLow, bgValue, true);
+		int backgroundColor = bgValue.data;
 
+		TypedValue textValue = new TypedValue();
+		getContext()
+				.getTheme()
+				.resolveAttribute(
+						com.google.android.material.R.attr.colorOnSurface, textValue, true);
+		int textColor = textValue.data;
+
+		TypedValue lineValue = new TypedValue();
+		getContext()
+				.getTheme()
+				.resolveAttribute(
+						com.google.android.material.R.attr.colorOutlineVariant, lineValue, true);
+		int lineColor = lineValue.data;
+
+		sourceView = new TextView(getContext());
 		sourceView.setLayoutParams(
 				new ViewGroup.LayoutParams(
 						ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 		sourceView.setTypeface(
 				Typeface.createFromAsset(getContext().getAssets(), "fonts/hackregular.ttf"));
 		sourceView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-		sourceView.setTextColor(
-				getContext().getResources().getColor(theme.getDefaultColor(), null));
+		sourceView.setTextColor(textColor);
 		sourceView.setTextIsSelectable(true);
 
 		int padding = Utils.getPixelsFromDensity(getContext(), 5);
@@ -72,7 +91,6 @@ public class SyntaxHighlightedArea extends LinearLayout {
 		horizontalScrollView.addView(sourceView);
 
 		linesView = new LinesView(getContext());
-
 		linesView.setLayoutParams(
 				new LinearLayout.LayoutParams(
 						ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -81,17 +99,14 @@ public class SyntaxHighlightedArea extends LinearLayout {
 				0,
 				Utils.getPixelsFromDensity(getContext(), 6),
 				0);
-
 		linesView.getPaint().setTypeface(sourceView.getTypeface());
 		linesView.getPaint().setTextSize(sourceView.getTextSize());
-
-		linesView.setBackgroundColor(
-				getContext().getResources().getColor(theme.getBackgroundColor(), null));
-		linesView.setTextColor(getContext().getResources().getColor(theme.getDefaultColor(), null));
-		linesView.setLineColor(getContext().getResources().getColor(theme.getDefaultColor(), null));
+		linesView.setBackgroundColor(backgroundColor);
+		linesView.setTextColor(textColor);
+		linesView.setLineColor(lineColor);
 
 		setOrientation(HORIZONTAL);
-		setBackgroundColor(getContext().getResources().getColor(theme.getBackgroundColor(), null));
+		setBackgroundColor(backgroundColor);
 		addView(linesView);
 		addView(horizontalScrollView);
 	}
@@ -147,7 +162,17 @@ public class SyntaxHighlightedArea extends LinearLayout {
 	}
 
 	private Activity getActivity() {
-		return (Activity) getContext();
+		Context context = getContext();
+		if (context instanceof Activity) {
+			return (Activity) context;
+		}
+		while (context instanceof ContextWrapper) {
+			if (context instanceof Activity) {
+				return (Activity) context;
+			}
+			context = ((ContextWrapper) context).getBaseContext();
+		}
+		throw new IllegalStateException("No Activity found in context chain");
 	}
 
 	public String getContent() {

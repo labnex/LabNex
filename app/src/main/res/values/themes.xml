@@ -1,6 +1,7 @@
 <resources>
     <!-- System default - light -->
     <style name="AppTheme" parent="Theme.Material3.Light.NoActionBar">
+        <item name="primaryBackgroundColor">@color/md_theme_primaryContainer</item>
         <item name="android:statusBarColor">@color/md_theme_background</item>
         <item name="android:navigationBarColor">@color/md_theme_inverseOnSurface</item>
         <item name="android:windowLightStatusBar">true</item>
@@ -50,6 +51,7 @@
         <item name="colorSurfaceContainer">@color/md_theme_surfaceContainer</item>
         <item name="colorSurfaceContainerHigh">@color/md_theme_surfaceContainerHigh</item>
         <item name="colorSurfaceContainerHighest">@color/md_theme_surfaceContainerHighest</item>
+        <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
 
         <item name="iconsColor">@color/md_system_default_icons_color</item>
         <item name="textColor">@color/md_system_default_icons_color</item>
@@ -66,6 +68,7 @@
 
     <!-- Light theme -->
     <style name="AppThemeLight" parent="Theme.Material3.Light.NoActionBar">
+        <item name="primaryBackgroundColor">@color/md_theme_primaryContainer_light</item>
         <item name="android:statusBarColor">@color/md_theme_background_light</item>
         <item name="android:navigationBarColor">@color/md_theme_inverseOnSurface_light</item>
         <item name="android:windowLightStatusBar">true</item>
@@ -115,6 +118,7 @@
         <item name="colorSurfaceContainer">@color/md_theme_surfaceContainer_light</item>
         <item name="colorSurfaceContainerHigh">@color/md_theme_surfaceContainerHigh_light</item>
         <item name="colorSurfaceContainerHighest">@color/md_theme_surfaceContainerHighest_light</item>
+        <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
 
         <item name="isDark">0</item>
         <item name="iconsColor">@color/md_light_theme_icons_color</item>
@@ -132,6 +136,7 @@
 
     <!-- Dark theme -->
     <style name="AppThemeDark" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="primaryBackgroundColor">@color/md_theme_primaryContainer_dark</item>
         <item name="android:statusBarColor">@color/md_theme_background_dark</item>
         <item name="android:navigationBarColor">@color/md_theme_inverseOnSurface_dark</item>
         <item name="android:windowLightStatusBar">false</item>
@@ -181,6 +186,7 @@
         <item name="colorSurfaceContainer">@color/md_theme_surfaceContainer_dark</item>
         <item name="colorSurfaceContainerHigh">@color/md_theme_surfaceContainerHigh_dark</item>
         <item name="colorSurfaceContainerHighest">@color/md_theme_surfaceContainerHighest_dark</item>
+        <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
 
         <item name="isDark">1</item>
         <item name="iconsColor">@color/md_dark_theme_icons_color</item>
@@ -221,22 +227,6 @@
         <item name="cornerSizeBottomLeft">@dimen/dimen16dp</item>
     </style>
     <!-- custom material button -->
-
-    <!-- card top corners rounded -->
-    <style name="ShapeAppearance.Card.TopRounded" parent="ShapeAppearance.Material3.SmallComponent">
-        <item name="cornerSizeTopLeft">@dimen/dimen16dp</item>
-        <item name="cornerSizeTopRight">@dimen/dimen16dp</item>
-        <item name="cornerSizeBottomLeft">@dimen/dimen4dp</item>
-        <item name="cornerSizeBottomRight">@dimen/dimen4dp</item>
-    </style>
-
-    <!-- card bottom corners rounded -->
-    <style name="ShapeAppearance.Card.BottomRounded" parent="ShapeAppearance.Material3.SmallComponent">
-        <item name="cornerSizeTopLeft">@dimen/dimen4dp</item>
-        <item name="cornerSizeTopRight">@dimen/dimen4dp</item>
-        <item name="cornerSizeBottomLeft">@dimen/dimen16dp</item>
-        <item name="cornerSizeBottomRight">@dimen/dimen16dp</item>
-    </style>
 
     <style name="CustomChipFilter" parent="Widget.Material3.Chip.Filter">
         <item name="chipBackgroundColor">@color/md_theme_outlineVariant_light</item>

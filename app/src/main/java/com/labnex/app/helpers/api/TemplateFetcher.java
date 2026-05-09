@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.labnex.app.R;
 import com.labnex.app.clients.RetrofitClient;
-import com.labnex.app.helpers.Snackbar;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.models.templates.Template;
 import com.labnex.app.models.templates.Templates;
 import java.util.ArrayList;
@@ -92,10 +92,7 @@ public class TemplateFetcher {
 									});
 						} else {
 
-							Snackbar.info(
-									context,
-									snackbarAnchorView,
-									context.getString(R.string.generic_error));
+							Toasty.show(context, context.getString(R.string.generic_error));
 						}
 					}
 
@@ -103,10 +100,8 @@ public class TemplateFetcher {
 					public void onFailure(
 							@NonNull Call<List<Templates>> call, @NonNull Throwable t) {
 
-						Snackbar.info(
-								context,
-								snackbarAnchorView,
-								context.getString(R.string.generic_server_response_error));
+						Toasty.show(
+								context, context.getString(R.string.generic_server_response_error));
 					}
 				});
 	}
@@ -147,10 +142,7 @@ public class TemplateFetcher {
 							String content = response.body().getContent();
 							descriptionEditText.setText(content);
 						} else if (!call.isCanceled()) {
-							Snackbar.info(
-									context,
-									snackbarAnchorView,
-									context.getString(R.string.generic_error));
+							Toasty.show(context, context.getString(R.string.generic_error));
 						}
 					}
 
@@ -161,9 +153,8 @@ public class TemplateFetcher {
 							enableButton.run();
 						}
 						if (!call.isCanceled()) {
-							Snackbar.info(
+							Toasty.show(
 									context,
-									snackbarAnchorView,
 									context.getString(R.string.generic_server_response_error));
 						}
 					}

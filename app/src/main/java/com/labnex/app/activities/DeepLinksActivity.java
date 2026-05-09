@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 import com.labnex.app.R;
 import com.labnex.app.clients.RetrofitClient;
@@ -16,15 +15,16 @@ import com.labnex.app.database.api.BaseApi;
 import com.labnex.app.database.api.UserAccountsApi;
 import com.labnex.app.database.models.UserAccount;
 import com.labnex.app.databinding.ActivityDeeplinksBinding;
+import com.labnex.app.helpers.UIHelper;
 import com.labnex.app.helpers.Utils;
 import com.labnex.app.models.issues.Issues;
 import com.labnex.app.models.merge_requests.MergeRequests;
 import com.labnex.app.models.projects.Projects;
 import com.labnex.app.models.user.User;
-import com.labnex.app.views.LoadingDotsTextView;
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * @author @mmarif
@@ -35,8 +35,6 @@ public class DeepLinksActivity extends BaseActivity {
 	private boolean accountFound = false;
 	private Intent mainIntent;
 	private Uri data;
-	private LinearLayout loadingContainer;
-	private LoadingDotsTextView fetchDataText;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -45,10 +43,9 @@ public class DeepLinksActivity extends BaseActivity {
 		viewBinding = ActivityDeeplinksBinding.inflate(getLayoutInflater());
 		setContentView(viewBinding.getRoot());
 
-		mainIntent = new Intent(ctx, MainActivity.class);
+		UIHelper.applyEdgeToEdge(this, null, null, null, null);
 
-		loadingContainer = viewBinding.loadingContainer;
-		fetchDataText = viewBinding.fetchData;
+		mainIntent = new Intent(ctx, MainActivity.class);
 
 		Intent intent = getIntent();
 		data = intent.getData();
@@ -77,20 +74,11 @@ public class DeepLinksActivity extends BaseActivity {
 	}
 
 	private void showLoading() {
-		runOnUiThread(
-				() -> {
-					loadingContainer.setVisibility(View.VISIBLE);
-					fetchDataText.startAnimation();
-					fetchDataText.setAnimationDelay(300);
-				});
+		runOnUiThread(() -> viewBinding.progressBar.setVisibility(View.VISIBLE));
 	}
 
 	private void hideLoading() {
-		runOnUiThread(
-				() -> {
-					loadingContainer.setVisibility(View.GONE);
-					fetchDataText.stopAnimation();
-				});
+		runOnUiThread(() -> viewBinding.progressBar.setVisibility(View.GONE));
 	}
 
 	private void checkAccountExists() {
@@ -172,7 +160,6 @@ public class DeepLinksActivity extends BaseActivity {
 
 	private void fetchAndOpenSpecificIssue(Projects project, int issueIid) {
 		Call<Issues> call = RetrofitClient.getApiInterface(ctx).getIssue(project.getId(), issueIid);
-		viewBinding.fetchData.setVisibility(View.VISIBLE);
 
 		call.enqueue(
 				new Callback<>() {
@@ -205,7 +192,6 @@ public class DeepLinksActivity extends BaseActivity {
 		Call<MergeRequests> call =
 				RetrofitClient.getApiInterface(ctx)
 						.getMergeRequest(project.getId(), mergeRequestIid);
-		viewBinding.fetchData.setVisibility(View.VISIBLE);
 
 		call.enqueue(
 				new Callback<>() {
@@ -306,7 +292,7 @@ public class DeepLinksActivity extends BaseActivity {
 		Intent mrIntent = new Intent(ctx, MergeRequestsActivity.class);
 		mrIntent.putExtra("project", projectContext);
 		mrIntent.putExtra("source", "mr");
-		mrIntent.putExtra("projectId", projectContext.getProjectId());
+		mrIntent.putExtra("id", projectContext.getProjectId());
 		ctx.startActivity(mrIntent);
 
 		MergeRequestContext mrContext = new MergeRequestContext(mergeRequest, projectContext);
@@ -322,7 +308,6 @@ public class DeepLinksActivity extends BaseActivity {
 
 		Call<Projects> call =
 				RetrofitClient.getApiInterface(ctx).getProjectByPath(projectPathWithNamespace);
-		viewBinding.fetchData.setVisibility(View.VISIBLE);
 
 		call.enqueue(
 				new Callback<>() {
@@ -348,30 +333,31 @@ public class DeepLinksActivity extends BaseActivity {
 	}
 
 	private void loadUserInfo(Runnable onSuccess) {
+		showLoading();
 		Call<User> call = RetrofitClient.getApiInterface(ctx).getCurrentUser();
 		call.enqueue(
 				new Callback<>() {
 					@Override
-					public void onResponse(
-							@NonNull Call<User> call, @NonNull retrofit2.Response<User> response) {
-						if (response.isSuccessful()
-								&& response.code() == 200
-								&& response.body() != null) {
-							User userDetails = response.body();
+					public void onResponse(@NonNull Call<User> c, @NonNull Response<User> r) {
+						if (r.isSuccessful() && r.code() == 200 && r.body() != null) {
 							CoreApplication app = (CoreApplication) getApplication();
 							if (app.currentAccount != null) {
-								app.currentAccount.setUserInfo(userDetails);
+								app.currentAccount.setUserInfo(r.body());
+								hideLoading();
 								onSuccess.run();
 							} else {
+								hideLoading();
 								fallbackToMainActivity();
 							}
 						} else {
+							hideLoading();
 							fallbackToMainActivity();
 						}
 					}
 
 					@Override
-					public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
+					public void onFailure(@NonNull Call<User> c, @NonNull Throwable t) {
+						hideLoading();
 						fallbackToMainActivity();
 					}
 				});
@@ -440,8 +426,5 @@ public class DeepLinksActivity extends BaseActivity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		if (fetchDataText != null) {
-			fetchDataText.stopAnimation();
-		}
 	}
 }

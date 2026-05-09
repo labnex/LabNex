@@ -1,6 +1,7 @@
 <resources>
     <!-- System default - dark -->
     <style name="AppTheme" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="primaryBackgroundColor">@color/md_theme_primaryContainer</item>
         <item name="android:statusBarColor">@color/md_theme_background</item>
         <item name="android:navigationBarColor">@color/md_theme_inverseOnSurface</item>
         <item name="colorPrimary">@color/md_theme_primary</item>
@@ -60,6 +61,7 @@
         <item name="inputBsDividerColor">@color/md_system_input_divider_color</item>
         <item name="chipStyle">@style/CustomChipFilterDark</item>
         <item name="homeIconsBackgroundColor">@color/md_theme_inverseOnSurface_dark</item>
+        <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
     </style>
     <!-- System default - dark -->
 </resources>

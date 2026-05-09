@@ -20,6 +20,8 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.util.Base64;
 import android.util.TypedValue;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.core.content.pm.PackageInfoCompat;
@@ -262,7 +264,7 @@ public class Utils {
 		return chooserIntent;
 	}
 
-	public static void openUrlInBrowser(Context ctx, Activity activity, String url) {
+	public static void openUrlInBrowser(Context ctx, String url) {
 
 		Intent i;
 		i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
@@ -271,13 +273,13 @@ public class Utils {
 		try {
 			Intent browserIntent = wrapBrowserIntent(ctx, i);
 			if (browserIntent == null) {
-				Snackbar.info(activity, ctx.getString(R.string.generic_error));
+				Toasty.show(ctx, ctx.getString(R.string.generic_error));
 			}
 			ctx.startActivity(browserIntent);
 		} catch (ActivityNotFoundException e) {
-			Snackbar.info(activity, ctx.getString(R.string.browserOpenFailed));
+			Toasty.show(ctx, ctx.getString(R.string.browserOpenFailed));
 		} catch (Exception e) {
-			Snackbar.info(activity, ctx.getString(R.string.generic_error));
+			Toasty.show(ctx, ctx.getString(R.string.generic_error));
 		}
 	}
 
@@ -319,8 +321,7 @@ public class Utils {
 		return context.createConfigurationContext(config);
 	}
 
-	public static void copyToClipboard(
-			Context ctx, Activity activity, CharSequence data, String message) {
+	public static void copyToClipboard(Context ctx, CharSequence data, String message) {
 
 		ClipboardManager clipboard =
 				(ClipboardManager)
@@ -330,7 +331,7 @@ public class Utils {
 		ClipData clip = ClipData.newPlainText(data, data);
 		clipboard.setPrimaryClip(clip);
 
-		Snackbar.info(activity, activity.findViewById(R.id.bottom_app_bar), message);
+		Toasty.show(ctx, message);
 	}
 
 	/** pretty number formatter: 1200 = 1.2k */
@@ -489,6 +490,32 @@ public class Utils {
 		}
 
 		progressListener.onActionFinished();
+	}
+
+	public static void hideKeyboard(Activity activity) {
+		if (activity != null && activity.getCurrentFocus() != null) {
+			InputMethodManager imm =
+					(InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+			imm.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+		}
+	}
+
+	public static void showKeyboard(Activity activity, View view) {
+		if (activity != null && view != null) {
+			view.requestFocus();
+			InputMethodManager imm =
+					(InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+			imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
+		}
+	}
+
+	public static void share(Context ctx, String url) {
+
+		Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+		sharingIntent.setType("text/plain");
+		sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, url);
+		sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, url);
+		ctx.startActivity(Intent.createChooser(sharingIntent, url));
 	}
 
 	public interface ProgressListener {

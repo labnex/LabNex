@@ -1,15 +1,19 @@
 package com.labnex.app.bottomsheets;
 
+import android.app.Dialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.labnex.app.R;
-import com.labnex.app.helpers.Snackbar;
+import com.labnex.app.databinding.BottomsheetBackupBinding;
+import com.labnex.app.helpers.Toasty;
+import com.labnex.app.helpers.UIHelper;
 
 /**
  * @author mmarif
@@ -22,6 +26,7 @@ public class BackupBottomSheet extends BottomSheetDialogFragment {
 		void onImport();
 	}
 
+	private BottomsheetBackupBinding binding;
 	private BackupCallback callback;
 
 	public static BackupBottomSheet newInstance(BackupCallback callback) {
@@ -35,12 +40,9 @@ public class BackupBottomSheet extends BottomSheetDialogFragment {
 			@NonNull LayoutInflater inflater,
 			@Nullable ViewGroup container,
 			@Nullable Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.bottom_sheet_backup, container, false);
+		binding = BottomsheetBackupBinding.inflate(inflater, container, false);
 
-		View exportButton = view.findViewById(R.id.export_button);
-		View importButton = view.findViewById(R.id.import_button);
-
-		exportButton.setOnClickListener(
+		binding.exportButton.setOnClickListener(
 				v ->
 						new MaterialAlertDialogBuilder(requireContext())
 								.setTitle(R.string.backup_dialog_title)
@@ -48,35 +50,17 @@ public class BackupBottomSheet extends BottomSheetDialogFragment {
 								.setPositiveButton(
 										R.string.export_button,
 										(dialog, which) -> {
-											if (callback != null) {
-												callback.onExport();
-											} else {
-												requireActivity()
-														.findViewById(R.id.nav_view)
-														.post(
-																() ->
-																		Snackbar.info(
-																				requireActivity(),
-																				requireActivity()
-																						.findViewById(
-																								R.id
-																										.nav_view),
-																				getString(
-																						R.string
-																								.backup_failed)));
-											}
-											dialog.dismiss();
+											if (callback != null) callback.onExport();
+											else
+												Toasty.show(
+														requireContext(),
+														getString(R.string.backup_failed));
 											dismiss();
 										})
-								.setNeutralButton(
-										R.string.cancel,
-										(dialog, which) -> {
-											dialog.dismiss();
-											dismiss();
-										})
+								.setNeutralButton(R.string.cancel, (dialog, which) -> dismiss())
 								.show());
 
-		importButton.setOnClickListener(
+		binding.importButton.setOnClickListener(
 				v ->
 						new MaterialAlertDialogBuilder(requireContext())
 								.setTitle(R.string.import_dialog_title)
@@ -84,34 +68,31 @@ public class BackupBottomSheet extends BottomSheetDialogFragment {
 								.setPositiveButton(
 										R.string.import_button,
 										(dialog, which) -> {
-											if (callback != null) {
-												callback.onImport();
-											} else {
-												requireActivity()
-														.findViewById(R.id.nav_view)
-														.post(
-																() ->
-																		Snackbar.info(
-																				requireActivity(),
-																				requireActivity()
-																						.findViewById(
-																								R.id
-																										.nav_view),
-																				getString(
-																						R.string
-																								.import_failed)));
-											}
-											dialog.dismiss();
+											if (callback != null) callback.onImport();
+											else
+												Toasty.show(
+														requireContext(),
+														getString(R.string.import_failed));
 											dismiss();
 										})
-								.setNeutralButton(
-										R.string.cancel,
-										(dialog, which) -> {
-											dialog.dismiss();
-											dismiss();
-										})
+								.setNeutralButton(R.string.cancel, (dialog, which) -> dismiss())
 								.show());
 
-		return view;
+		return binding.getRoot();
+	}
+
+	@Override
+	public void onStart() {
+		super.onStart();
+		Dialog dialog = getDialog();
+		if (dialog instanceof BottomSheetDialog) {
+			UIHelper.applySheetStyle((BottomSheetDialog) dialog, true);
+		}
+	}
+
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		binding = null;
 	}
 }

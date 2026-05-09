@@ -3,21 +3,16 @@ package com.labnex.app.adapters;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Typeface;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
-import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import com.labnex.app.R;
 import com.labnex.app.activities.ProjectDetailActivity;
 import com.labnex.app.contexts.ProjectsContext;
 import com.labnex.app.database.models.Projects;
-import com.labnex.app.helpers.TextDrawable.TextDrawable;
+import com.labnex.app.databinding.ListMostVisitedBinding;
+import com.labnex.app.helpers.AvatarGenerator;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,104 +21,91 @@ import java.util.List;
 public class MostVisitedAdapter
 		extends RecyclerView.Adapter<MostVisitedAdapter.MostVisitedViewHolder> {
 
-	private final List<Projects> mostVisitedList;
 	private final Context ctx;
+	private final List<Projects> list;
+	private final OnRemoveClickListener removeListener;
 
-	public MostVisitedAdapter(Context ctx, List<Projects> projectsList) {
-		this.ctx = ctx;
-		this.mostVisitedList = projectsList;
+	public interface OnRemoveClickListener {
+		void onRemove(Projects project, int position);
 	}
 
-	public static class MostVisitedViewHolder extends RecyclerView.ViewHolder {
+	public MostVisitedAdapter(
+			Context ctx, List<Projects> list, OnRemoveClickListener removeListener) {
+		this.ctx = ctx;
+		this.list = new ArrayList<>(list);
+		this.removeListener = removeListener;
+	}
 
-		private Projects projects;
+	@SuppressLint("NotifyDataSetChanged")
+	public void updateList(List<Projects> newList) {
+		list.clear();
+		list.addAll(newList);
+		notifyDataSetChanged();
+	}
 
-		private final ImageView avatar;
-		private final TextView projectName;
-		private final TextView projectPath;
-
-		private MostVisitedViewHolder(View itemView) {
-
-			super(itemView);
-
-			avatar = itemView.findViewById(R.id.avatar);
-			projectName = itemView.findViewById(R.id.project_name);
-			projectPath = itemView.findViewById(R.id.project_path);
-
-			itemView.setOnClickListener(
-					v -> {
-						Context context = v.getContext();
-						ProjectsContext project =
-								new ProjectsContext(
-										projects.getProjectName(),
-										projects.getProjectPath(),
-										projects.getProjectId(),
-										context);
-						Intent intent = project.getIntent(context, ProjectDetailActivity.class);
-						intent.putExtra("source", "most_visited");
-						context.startActivity(intent);
-					});
-		}
+	public void removeItem(int position) {
+		list.remove(position);
+		notifyItemRemoved(position);
+		notifyItemRangeChanged(position, list.size());
 	}
 
 	@NonNull @Override
 	public MostVisitedViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-		View v =
-				LayoutInflater.from(parent.getContext())
-						.inflate(R.layout.list_most_visited, parent, false);
-		return new MostVisitedViewHolder(v);
+		ListMostVisitedBinding binding =
+				ListMostVisitedBinding.inflate(LayoutInflater.from(ctx), parent, false);
+		return new MostVisitedViewHolder(binding);
 	}
 
 	@Override
 	public void onBindViewHolder(@NonNull MostVisitedViewHolder holder, int position) {
-
-		Projects currentItem = mostVisitedList.get(position);
-		holder.projects = currentItem;
-
-		TypedValue typedValue = new TypedValue();
-		ctx.getTheme().resolveAttribute(R.attr.homeIconsBackgroundColor, typedValue, true);
-		@ColorInt int backgroundColor = typedValue.data;
-		int textColor = getColorFromAttr(ctx, R.attr.iconsColor);
-
-		String firstCharacter = "P";
-		if (currentItem.getProjectName() != null && !currentItem.getProjectName().isEmpty()) {
-			firstCharacter = String.valueOf(currentItem.getProjectName().charAt(0)).toUpperCase();
-		}
-
-		TextDrawable drawable =
-				TextDrawable.builder()
-						.beginConfig()
-						.useFont(Typeface.DEFAULT)
-						.textColor(textColor)
-						.fontSize(20)
-						.width(32)
-						.height(32)
-						.bold()
-						.toUpperCase()
-						.endConfig()
-						.buildRoundRect(
-								firstCharacter,
-								backgroundColor,
-								(int) ctx.getResources().getDimension(R.dimen.dimen8dp));
-
-		holder.avatar.setImageDrawable(drawable);
-		holder.projectName.setText(currentItem.getProjectName());
-		holder.projectPath.setText(currentItem.getProjectPath());
+		holder.bind(list.get(position));
+		holder.binding.getRoot().updateAppearance(position, getItemCount());
 	}
 
 	@Override
 	public int getItemCount() {
-		return mostVisitedList.size();
+		return list.size();
 	}
 
-	@SuppressLint("NotifyDataSetChanged")
-	public void notifyDataChanged() {
-		notifyDataSetChanged();
-	}
+	public class MostVisitedViewHolder extends RecyclerView.ViewHolder {
 
-	private int getColorFromAttr(Context context, int attr) {
-		TypedValue typedValue = new TypedValue();
-		context.getTheme().resolveAttribute(attr, typedValue, true);
-		return typedValue.data;
+		final ListMostVisitedBinding binding;
+		private Projects current;
+
+		MostVisitedViewHolder(ListMostVisitedBinding binding) {
+			super(binding.getRoot());
+			this.binding = binding;
+
+			itemView.setOnClickListener(
+					v -> {
+						if (current == null) return;
+						ProjectsContext pc =
+								new ProjectsContext(
+										current.getProjectName(),
+										current.getProjectPath(),
+										current.getProjectId(),
+										ctx);
+						Intent intent = pc.getIntent(ctx, ProjectDetailActivity.class);
+						intent.putExtra("source", "most_visited");
+						ctx.startActivity(intent);
+					});
+
+			binding.btnRemove.setOnClickListener(
+					v -> {
+						int pos = getBindingAdapterPosition();
+						if (pos != RecyclerView.NO_POSITION && removeListener != null) {
+							removeListener.onRemove(current, pos);
+						}
+					});
+		}
+
+		void bind(Projects project) {
+			current = project;
+			binding.projectName.setText(project.getProjectName());
+			binding.projectPath.setText(project.getProjectPath());
+			binding.avatar.setImageDrawable(
+					AvatarGenerator.getLetterAvatar(ctx, project.getProjectName(), 40));
+			binding.visitCount.setText(String.valueOf(project.getMostVisited()));
+		}
 	}
 }

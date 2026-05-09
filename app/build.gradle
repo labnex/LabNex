@@ -1,16 +1,16 @@
 plugins {
     alias(libs.plugins.android.application)
-    id "com.diffplug.spotless" version "8.2.0"
+    id "com.diffplug.spotless" version "8.4.0"
 }
 
 android {
     namespace = 'com.labnex.app'
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId "com.labnex.app"
         minSdk = 26
-        targetSdk = 36
+        targetSdk = 37
         versionCode 795
         versionName "8.0.0-dev"
 
@@ -32,8 +32,14 @@ android {
     }
 
     buildTypes {
+        debug {
+            applicationIdSuffix = ".debug"
+            debuggable = true
+        }
+
         release {
             minifyEnabled false
+            //noinspection NotShrinkingResources
             shrinkResources = false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
@@ -54,13 +60,9 @@ dependencies {
     implementation libs.constraintlayout
     implementation libs.lifecycle.livedata
     implementation libs.lifecycle.viewmodel
-    implementation libs.navigation.fragment
-    implementation libs.navigation.ui
     implementation libs.fragment
     implementation libs.appcompat
     implementation libs.material3
-    implementation libs.material3.window.size
-    implementation libs.viewpager2
     implementation libs.okhttp3
     implementation libs.gson
     implementation libs.retrofit2
@@ -94,13 +96,9 @@ dependencies {
     implementation libs.urlbuilder
     coreLibraryDesugaring libs.desugar.jdk.libs
     implementation libs.emoji.java
-    implementation libs.android.svg
-    implementation libs.android.gif.drawable
     implementation libs.stormpot
-    implementation libs.splashscreen
     implementation libs.photoview
     implementation libs.commons.io
-    implementation libs.commons.lang3
 
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit

@@ -87,7 +87,7 @@ public interface ApiInterface {
 			@Query("page") int page);
 
 	@GET("groups/{id}") // get a group
-	Call<GroupsItem> getGroup(@Path("id") int id);
+	Call<GroupsItem> getGroup(@Path("id") long id);
 
 	@GET("groups/{id}/subgroups") // get sub groups
 	Call<List<GroupsItem>> getSubGroups(
@@ -96,13 +96,16 @@ public interface ApiInterface {
 	@POST("groups") // create a group
 	Call<GroupsItem> createGroup(@Body CreateGroup body);
 
+	@PUT("groups/{id}") // update a group
+	Call<GroupsItem> updateGroup(@Path("id") long id, @Body CreateGroup body);
+
 	@GET("groups/{id}/projects") // get group projects
 	Call<List<Projects>> getGroupProjects(
 			@Path("id") int id, @Query("per_page") int per_page, @Query("page") int page);
 
 	@GET("groups/{id}/labels") // get group labels
 	Call<List<Labels>> getGroupLabels(
-			@Path("id") int id,
+			@Path("id") long id,
 			@Query("with_counts") boolean with_counts,
 			@Query("per_page") int per_page,
 			@Query("page") int page);
@@ -111,7 +114,7 @@ public interface ApiInterface {
 	Call<Labels> createGroupLabel(@Path("id") int id, @Body CrudeLabel body);
 
 	@DELETE("groups/{id}/labels/{label_id}") // delete a group label
-	Call<Void> deleteGroupLabel(@Path("id") int id, @Path("label_id") int label_id);
+	Call<Void> deleteGroupLabel(@Path("id") long id, @Path("label_id") int label_id);
 
 	@PUT("groups/{id}/labels/{label_id}") // update a group label
 	Call<Labels> updateGroupLabel(
@@ -119,7 +122,7 @@ public interface ApiInterface {
 
 	@GET("groups/{id}/members") // get a group members
 	Call<List<User>> getGroupMembers(
-			@Path("id") int id, @Query("per_page") int per_page, @Query("page") int page);
+			@Path("id") long id, @Query("per_page") int per_page, @Query("page") int page);
 
 	@GET("groups/{id}/issues") // get group issues
 	Call<List<Issues>> getGroupIssues(
@@ -135,9 +138,11 @@ public interface ApiInterface {
 			@Path("id") int groupId,
 			@Query("state") String state,
 			@Query("search") String search,
+			@Query("scope") String scope,
+			@Query("sort") String sort,
+			@Query("order_by") String orderBy,
 			@Query("per_page") int perPage,
-			@Query("page") int page,
-			@Query("scope") String scope);
+			@Query("page") int page);
 
 	// Project endpoints
 	@GET("projects/{id}") // get a single project details
@@ -272,6 +277,8 @@ public interface ApiInterface {
 			@Path("id") int id,
 			@Query("state") String state,
 			@Query("search") String search,
+			@Query("sort") String sort,
+			@Query("order_by") String orderBy,
 			@Query("per_page") int per_page,
 			@Query("page") int page);
 
@@ -313,6 +320,8 @@ public interface ApiInterface {
 			@Query("scope") String scope,
 			@Query("state") String state,
 			@Query("search") String search,
+			@Query("sort") String sort,
+			@Query("order_by") String orderBy,
 			@Query("per_page") int per_page,
 			@Query("page") int page);
 
@@ -391,25 +400,25 @@ public interface ApiInterface {
 			@Query("page") int page,
 			@Query("target_type") String targetType);
 
-	@GET("search?scope=projects&sort=asc&order_by=created_at") // search for projects
+	@GET("search?scope=projects&sort=desc&order_by=created_at") // search for projects
 	Call<List<Projects>> searchProjects(
 			@Query("search") String search,
 			@Query("per_page") int per_page,
 			@Query("page") int page);
 
-	@GET("search?scope=issues&sort=asc&order_by=created_at") // search for issues
+	@GET("search?scope=issues&sort=desc&order_by=created_at") // search for issues
 	Call<List<Issues>> searchIssues(
 			@Query("search") String search,
 			@Query("per_page") int per_page,
 			@Query("page") int page);
 
-	@GET("search?scope=merge_requests&sort=asc&order_by=created_at") // search for mr
+	@GET("search?scope=merge_requests&sort=desc&order_by=created_at") // search for mr
 	Call<List<MergeRequests>> searchMergeRequests(
 			@Query("search") String search,
 			@Query("per_page") int per_page,
 			@Query("page") int page);
 
-	@GET("search?scope=users&sort=asc&order_by=created_at") // search for users
+	@GET("search?scope=users&sort=desc&order_by=created_at") // search for users
 	Call<List<User>> searchUsers(
 			@Query("search") String search,
 			@Query("per_page") int per_page,
@@ -456,20 +465,23 @@ public interface ApiInterface {
 	Call<List<SnippetsItem>> getSnippets(@Query("per_page") int per_page, @Query("page") int page);
 
 	@GET("snippets/{id}") // get a snippet
-	Call<SnippetsItem> getSnippet(@Path("id") int id);
+	Call<SnippetsItem> getSnippet(@Path("id") long id);
 
 	@GET("snippets/{id}/files/{ref}/{file_path}/raw")
 	@Headers("Accept: text/plain")
 	Call<ResponseBody> getSnippetFileContent(
-			@Path("id") int id,
+			@Path("id") long id,
 			@Path(value = "ref", encoded = true) String ref,
 			@Path(value = "file_path", encoded = true) String filePath);
 
 	@DELETE("snippets/{id}")
-	Call<Void> deleteSnippet(@Path("id") int id);
+	Call<Void> deleteSnippet(@Path("id") long id);
 
 	@POST("snippets")
 	Call<SnippetsItem> createSnippet(@Body SnippetCreateModel model);
+
+	@PUT("snippets/{id}")
+	Call<SnippetsItem> updateSnippet(@Path("id") long id, @Body SnippetCreateModel model);
 
 	// Tags
 	@GET("projects/{id}/repository/tags")

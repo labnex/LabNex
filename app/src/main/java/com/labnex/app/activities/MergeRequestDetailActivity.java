@@ -30,10 +30,10 @@ import com.labnex.app.contexts.ProjectsContext;
 import com.labnex.app.databinding.ActivityMergeRequestDetailBinding;
 import com.labnex.app.databinding.BottomSheetMergeRequestActionsBinding;
 import com.labnex.app.helpers.Markdown;
-import com.labnex.app.helpers.Snackbar;
 import com.labnex.app.helpers.TextDrawable.ColorGenerator;
 import com.labnex.app.helpers.TextDrawable.TextDrawable;
 import com.labnex.app.helpers.TimeUtils;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.helpers.Utils;
 import com.labnex.app.interfaces.BottomSheetListener;
 import com.labnex.app.models.approvals.Approvals;
@@ -393,7 +393,6 @@ public class MergeRequestDetailActivity extends BaseActivity
 				v -> {
 					Utils.copyToClipboard(
 							ctx,
-							MergeRequestDetailActivity.this,
 							mergeRequestContext.getMergeRequest().getWebUrl(),
 							getString(R.string.copy_url_message));
 					bottomSheetDialog.dismiss();
@@ -401,10 +400,7 @@ public class MergeRequestDetailActivity extends BaseActivity
 
 		sheetBinding.openInBrowserItem.setOnClickListener(
 				v -> {
-					Utils.openUrlInBrowser(
-							this,
-							MergeRequestDetailActivity.this,
-							mergeRequestContext.getMergeRequest().getWebUrl());
+					Utils.openUrlInBrowser(this, mergeRequestContext.getMergeRequest().getWebUrl());
 					bottomSheetDialog.dismiss();
 				});
 
@@ -415,10 +411,7 @@ public class MergeRequestDetailActivity extends BaseActivity
 	public void updateDataListener(String str) {
 
 		if (str.equalsIgnoreCase("created")) {
-			Snackbar.info(
-					MergeRequestDetailActivity.this,
-					activityMergeRequestDetailBinding.bottomAppBar,
-					getString(R.string.comment_posted));
+			Toasty.show(ctx, getString(R.string.comment_posted));
 		}
 
 		issueNotesAdapter.clearAdapter();
@@ -460,39 +453,24 @@ public class MergeRequestDetailActivity extends BaseActivity
 						if (response.code() == 200) {
 
 							sheetBinding.closeItemCard.setVisibility(View.GONE);
-							MergeRequestsActivity.updateMergeRequestList = true;
-							Snackbar.info(
-									MergeRequestDetailActivity.this,
-									activityMergeRequestDetailBinding.bottomAppBar,
-									ctx.getString(R.string.mr_closed));
+							// MergeRequestsActivity.updateMergeRequestList = true;
+							Toasty.show(ctx, getString(R.string.mr_closed));
 						} else if (response.code() == 401) {
 
-							Snackbar.info(
-									MergeRequestDetailActivity.this,
-									activityMergeRequestDetailBinding.bottomAppBar,
-									getString(R.string.not_authorized));
+							Toasty.show(ctx, getString(R.string.not_authorized));
 						} else if (response.code() == 403) {
 
-							Snackbar.info(
-									MergeRequestDetailActivity.this,
-									activityMergeRequestDetailBinding.bottomAppBar,
-									getString(R.string.access_forbidden_403));
+							Toasty.show(ctx, getString(R.string.access_forbidden_403));
 						} else {
 
-							Snackbar.info(
-									MergeRequestDetailActivity.this,
-									activityMergeRequestDetailBinding.bottomAppBar,
-									getString(R.string.generic_error));
+							Toasty.show(ctx, getString(R.string.generic_error));
 						}
 					}
 
 					@Override
 					public void onFailure(@NonNull Call<MergeRequests> call, @NonNull Throwable t) {
 
-						Snackbar.info(
-								MergeRequestDetailActivity.this,
-								activityMergeRequestDetailBinding.bottomAppBar,
-								getString(R.string.generic_server_response_error));
+						Toasty.show(ctx, getString(R.string.generic_server_response_error));
 					}
 				});
 	}
@@ -517,56 +495,32 @@ public class MergeRequestDetailActivity extends BaseActivity
 
 						if (response.code() == 200) {
 
-							MergeRequestsActivity.updateMergeRequestList = true;
-							Snackbar.info(
-									MergeRequestDetailActivity.this,
-									activityMergeRequestDetailBinding.bottomAppBar,
-									ctx.getString(R.string.merge_request_merged_text));
+							// MergeRequestsActivity.updateMergeRequestList = true;
+							Toasty.show(ctx, getString(R.string.merge_request_merged_text));
 						} else if (response.code() == 401) {
 
-							Snackbar.info(
-									MergeRequestDetailActivity.this,
-									activityMergeRequestDetailBinding.bottomAppBar,
-									ctx.getString(R.string.not_authorized));
+							Toasty.show(ctx, getString(R.string.not_authorized));
 						} else if (response.code() == 403) {
 
-							Snackbar.info(
-									MergeRequestDetailActivity.this,
-									activityMergeRequestDetailBinding.bottomAppBar,
-									ctx.getString(R.string.access_forbidden_403));
+							Toasty.show(ctx, getString(R.string.access_forbidden_403));
 						} else if (response.code() == 405) {
 
-							Snackbar.info(
-									MergeRequestDetailActivity.this,
-									activityMergeRequestDetailBinding.bottomAppBar,
-									ctx.getString(R.string.merge_error_405));
+							Toasty.show(ctx, getString(R.string.merge_error_405));
 						} else if (response.code() == 409) {
 
-							Snackbar.info(
-									MergeRequestDetailActivity.this,
-									activityMergeRequestDetailBinding.bottomAppBar,
-									ctx.getString(R.string.merge_error_409));
+							Toasty.show(ctx, getString(R.string.merge_error_409));
 						} else if (response.code() == 422) {
 
-							Snackbar.info(
-									MergeRequestDetailActivity.this,
-									activityMergeRequestDetailBinding.bottomAppBar,
-									ctx.getString(R.string.merge_error_422));
+							Toasty.show(ctx, getString(R.string.merge_error_422));
 						} else {
 
-							Snackbar.info(
-									MergeRequestDetailActivity.this,
-									activityMergeRequestDetailBinding.bottomAppBar,
-									ctx.getString(R.string.generic_error));
+							Toasty.show(ctx, getString(R.string.generic_error));
 						}
 					}
 
 					@Override
 					public void onFailure(@NonNull Call<MergeRequests> call, @NonNull Throwable t) {
-						Snackbar.info(
-								MergeRequestDetailActivity.this,
-								activityMergeRequestDetailBinding.bottomAppBar,
-								ctx.getString(R.string.generic_server_response_error));
+						Toasty.show(ctx, getString(R.string.generic_server_response_error));
 					}
 				});
 	}
@@ -849,17 +803,12 @@ public class MergeRequestDetailActivity extends BaseActivity
 
 																						refreshNotes();
 																					} else {
-																						Snackbar
-																								.info(
-																										ctx,
-																										findViewById(
-																												R
-																														.id
-																														.bottom_app_bar),
-																										getString(
-																												R
-																														.string
-																														.mr_approve_failed));
+																						Toasty.show(
+																								ctx,
+																								getString(
+																										R
+																												.string
+																												.mr_approve_failed));
 																					}
 																				}
 

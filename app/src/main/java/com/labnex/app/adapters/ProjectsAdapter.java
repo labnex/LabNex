@@ -3,26 +3,23 @@ package com.labnex.app.adapters;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.labnex.app.R;
 import com.labnex.app.activities.ProjectDetailActivity;
 import com.labnex.app.contexts.ProjectsContext;
-import com.labnex.app.helpers.TextDrawable.ColorGenerator;
-import com.labnex.app.helpers.TextDrawable.TextDrawable;
-import com.labnex.app.helpers.TimeUtils;
+import com.labnex.app.databinding.ListProjectsBinding;
+import com.labnex.app.helpers.AvatarGenerator;
+import com.labnex.app.helpers.TimeHelper;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.helpers.Utils;
 import com.labnex.app.models.projects.Projects;
-import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -30,43 +27,32 @@ import java.util.Locale;
 /**
  * @author mmarif
  */
-public class ProjectsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class ProjectsAdapter extends RecyclerView.Adapter<ProjectsAdapter.ProjectsHolder> {
 
 	private final Context context;
-	private List<Projects> projectsList;
-	private OnLoadMoreListener loadMoreListener;
-	private boolean isLoading = false, isMoreDataAvailable = true;
+	private final List<Projects> projectsList;
 	private final String source;
 
 	public ProjectsAdapter(Context ctx, List<Projects> projectsListMain, String source) {
 		this.context = ctx;
-		this.projectsList = projectsListMain;
+		this.projectsList = new ArrayList<>();
+		if (projectsListMain != null) {
+			this.projectsList.addAll(projectsListMain);
+		}
 		this.source = source;
 	}
 
 	@NonNull @Override
-	public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-		LayoutInflater inflater = LayoutInflater.from(context);
-		return new ProjectsAdapter.ProjectsHolder(
-				inflater.inflate(R.layout.list_projects, parent, false));
+	public ProjectsHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+		ListProjectsBinding binding =
+				ListProjectsBinding.inflate(LayoutInflater.from(context), parent, false);
+		return new ProjectsHolder(binding);
 	}
 
 	@Override
-	public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-		if (position >= getItemCount() - 1
-				&& isMoreDataAvailable
-				&& !isLoading
-				&& loadMoreListener != null) {
-			isLoading = true;
-			loadMoreListener.onLoadMore();
-		}
-
-		((ProjectsAdapter.ProjectsHolder) holder).bindData(projectsList.get(position));
-	}
-
-	@Override
-	public int getItemViewType(int position) {
-		return position;
+	public void onBindViewHolder(@NonNull ProjectsHolder holder, int position) {
+		holder.bindData(projectsList.get(position));
+		holder.binding.getRoot().updateAppearance(position, getItemCount());
 	}
 
 	@Override
@@ -74,144 +60,88 @@ public class ProjectsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 		return projectsList.size();
 	}
 
-	public void setMoreDataAvailable(boolean moreDataAvailable) {
-		isMoreDataAvailable = moreDataAvailable;
-		if (!isMoreDataAvailable) {
-			loadMoreListener.onLoadFinished();
-		}
-	}
-
-	public void clearAdapter() {
+	@SuppressLint("NotifyDataSetChanged")
+	public void updateList(List<Projects> list) {
 		projectsList.clear();
+		if (list != null) {
+			projectsList.addAll(list);
+		}
+		notifyDataSetChanged();
 	}
 
 	@SuppressLint("NotifyDataSetChanged")
-	public void notifyDataChanged() {
+	public void clearAdapter() {
+		projectsList.clear();
 		notifyDataSetChanged();
-		isLoading = false;
-		loadMoreListener.onLoadFinished();
-	}
-
-	public void setLoadMoreListener(OnLoadMoreListener loadMoreListener) {
-		this.loadMoreListener = loadMoreListener;
-	}
-
-	public void updateList(List<Projects> list) {
-		projectsList = list;
-		notifyDataChanged();
-	}
-
-	public abstract static class OnLoadMoreListener {
-
-		protected abstract void onLoadMore();
-
-		public void onLoadFinished() {}
 	}
 
 	public class ProjectsHolder extends RecyclerView.ViewHolder {
 
-		private final TextView projectName;
-		private final TextView projectPath;
-		private final TextView projectDescription;
-		private final ImageView projectAvatar;
-		private final TextView projectStars;
-		private final ImageView projectStarsIcon;
-		private final TextView projectForks;
-		private final TextView projectUpdatedAt;
-		private Projects projects;
+		final ListProjectsBinding binding;
 
-		ProjectsHolder(View itemView) {
-
-			super(itemView);
-			projectName = itemView.findViewById(R.id.project_name);
-			projectPath = itemView.findViewById(R.id.project_path);
-			projectDescription = itemView.findViewById(R.id.project_description);
-			projectAvatar = itemView.findViewById(R.id.project_avatar);
-			projectStars = itemView.findViewById(R.id.project_stars);
-			projectStarsIcon = itemView.findViewById(R.id.project_stars_icon);
-			projectForks = itemView.findViewById(R.id.project_forks);
-			projectUpdatedAt = itemView.findViewById(R.id.project_updated_at);
+		ProjectsHolder(ListProjectsBinding binding) {
+			super(binding.getRoot());
+			this.binding = binding;
 
 			itemView.setOnClickListener(
 					v -> {
-						Context context = v.getContext();
-						ProjectsContext project = new ProjectsContext(projects, context);
-						project.saveToDB(context);
-						Intent intent = project.getIntent(context, ProjectDetailActivity.class);
+						int pos = getBindingAdapterPosition();
+						if (pos == RecyclerView.NO_POSITION) return;
+						Projects projects = projectsList.get(pos);
+						ProjectsContext projectCtx = new ProjectsContext(projects, context);
+						projectCtx.saveToDB(context);
+						Intent intent = projectCtx.getIntent(context, ProjectDetailActivity.class);
 						context.startActivity(intent);
 					});
 		}
 
 		void bindData(Projects projects) {
+			binding.projectName.setText(projects.getName());
+			binding.projectPath.setText(projects.getPathWithNamespace());
 
-			this.projects = projects;
-			Locale locale = context.getResources().getConfiguration().getLocales().get(0);
-
-			ColorGenerator generator = ColorGenerator.MATERIAL;
-			int color = generator.getColor(projects.getName());
-			String firstCharacter = String.valueOf(projects.getName().charAt(0));
-
-			TextDrawable drawable =
-					TextDrawable.builder()
-							.beginConfig()
-							.useFont(Typeface.DEFAULT)
-							.fontSize(16)
-							.toUpperCase()
-							.width(28)
-							.height(28)
-							.endConfig()
-							.buildRoundRect(firstCharacter, color, 8);
-
-			projectName.setText(projects.getName());
-			projectPath.setText(projects.getPathWithNamespace());
-
-			if (source.equalsIgnoreCase("starred")) {
-				projectStarsIcon.setImageDrawable(
-						ContextCompat.getDrawable(context, R.drawable.ic_star_filled));
-			}
-			projectStars.setText(
-					context.getResources()
-							.getQuantityString(
-									R.plurals.project_stars,
-									projects.getStarCount(),
-									Utils.numberFormatter(projects.getStarCount())));
-			projectForks.setText(
-					context.getResources()
-							.getQuantityString(
-									R.plurals.project_forks,
-									projects.getForksCount(),
-									Utils.numberFormatter(projects.getForksCount())));
-			if (projects.getUpdatedAt() != null) {
-				String modifiedTime =
-						TimeUtils.formatTime(
-								Date.from(
-										OffsetDateTime.parse(projects.getUpdatedAt()).toInstant()),
-								locale);
-				projectUpdatedAt.setText(modifiedTime);
+			if (projects.getVisibility() != null
+					&& !"public".equalsIgnoreCase(projects.getVisibility())) {
+				binding.visibilityIcon.setVisibility(View.VISIBLE);
 			} else {
-				projectUpdatedAt.setVisibility(View.GONE);
+				binding.visibilityIcon.setVisibility(View.GONE);
 			}
 
 			if (projects.getAvatarUrl() != null
-					&& projects.getVisibility() != null
-					&& projects.getVisibility().equalsIgnoreCase("public")) {
-
+					&& "public".equalsIgnoreCase(projects.getVisibility())) {
 				Glide.with(itemView.getContext())
 						.load(projects.getAvatarUrl())
 						.diskCacheStrategy(DiskCacheStrategy.ALL)
 						.placeholder(R.drawable.ic_spinner)
 						.centerCrop()
-						.into(projectAvatar);
+						.into(binding.projectAvatar);
 			} else {
-				projectAvatar.setImageDrawable(drawable);
+				binding.projectAvatar.setImageDrawable(
+						AvatarGenerator.getLetterAvatar(context, projects.getName(), 40));
 			}
 
 			if (projects.getDescription() != null && !projects.getDescription().isEmpty()) {
-
-				projectDescription.setVisibility(View.VISIBLE);
-				projectDescription.setText(projects.getDescription());
+				binding.projectDescription.setVisibility(View.VISIBLE);
+				binding.projectDescription.setText(projects.getDescription());
 			} else {
-				projectDescription.setVisibility(View.GONE);
+				binding.projectDescription.setVisibility(View.GONE);
+			}
+
+			if ("starred".equalsIgnoreCase(source)) {
+				binding.projectStarsIcon.setImageResource(R.drawable.ic_star_filled);
+			}
+
+			binding.projectStars.setText(Utils.numberFormatter(projects.getStarCount()));
+			binding.projectForks.setText(Utils.numberFormatter(projects.getForksCount()));
+			binding.projectOpenIssues.setText(Utils.numberFormatter(projects.getOpenIssuesCount()));
+
+			if (projects.getLastActivityAt() != null) {
+				Date date = TimeHelper.parseIso8601(projects.getLastActivityAt());
+				binding.projectUpdatedAt.setText(TimeHelper.formatTime(date));
+				binding.projectUpdatedAt.setOnClickListener(
+						v ->
+								Toasty.show(
+										context,
+										TimeHelper.getFullDateTime(date, Locale.getDefault())));
 			}
 		}
 	}

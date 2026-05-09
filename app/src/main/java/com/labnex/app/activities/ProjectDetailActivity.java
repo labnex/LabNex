@@ -34,9 +34,9 @@ import com.labnex.app.contexts.ProjectsContext;
 import com.labnex.app.databinding.ActivityProjectDetailBinding;
 import com.labnex.app.databinding.BottomSheetProjectMenuBinding;
 import com.labnex.app.helpers.Markdown;
-import com.labnex.app.helpers.Snackbar;
 import com.labnex.app.helpers.TextDrawable.ColorGenerator;
 import com.labnex.app.helpers.TextDrawable.TextDrawable;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.helpers.Utils;
 import com.labnex.app.interfaces.BottomSheetListener;
 import com.labnex.app.models.branches.Branches;
@@ -140,7 +140,7 @@ public class ProjectDetailActivity extends BaseActivity
 							new ProjectsContext(projectsContext.getProject(), ctx);
 					Intent intent = project.getIntent(ctx, MergeRequestsActivity.class);
 					intent.putExtra("source", "mr");
-					intent.putExtra("projectId", projectId);
+					intent.putExtra("id", projectId);
 					intent.putExtra("projectName", projectsContext.getProjectName());
 					intent.putExtra("path", projectsContext.getPath());
 					ctx.startActivity(intent);
@@ -282,10 +282,7 @@ public class ProjectDetailActivity extends BaseActivity
 							String ref = refInput.getText().toString().trim();
 
 							if (newBranch.isEmpty() || ref.isEmpty()) {
-								Snackbar.info(
-										this,
-										binding.bottomAppBar,
-										getString(R.string.branch_ref_required));
+								Toasty.show(ctx, getString(R.string.branch_ref_required));
 							} else {
 								createBranch(newBranch, ref, dialog);
 							}
@@ -306,10 +303,7 @@ public class ProjectDetailActivity extends BaseActivity
 
 						if (response.isSuccessful() && response.code() == 201) {
 
-							Snackbar.info(
-									ProjectDetailActivity.this,
-									findViewById(R.id.bottom_app_bar),
-									getString(R.string.branch_created, branch));
+							Toasty.show(ctx, getString(R.string.branch_created, branch));
 							dialog.dismiss();
 						} else {
 
@@ -340,20 +334,14 @@ public class ProjectDetailActivity extends BaseActivity
 								errorMessage = getString(R.string.generic_error);
 							}
 
-							Snackbar.info(
-									ProjectDetailActivity.this,
-									findViewById(R.id.bottom_app_bar),
-									errorMessage);
+							Toasty.show(ctx, errorMessage);
 						}
 					}
 
 					@Override
 					public void onFailure(@NonNull Call<Branches> call, @NonNull Throwable t) {
 
-						Snackbar.info(
-								ProjectDetailActivity.this,
-								findViewById(R.id.bottom_app_bar),
-								getString(R.string.generic_server_response_error));
+						Toasty.show(ctx, getString(R.string.generic_server_response_error));
 					}
 				});
 	}
@@ -492,7 +480,6 @@ public class ProjectDetailActivity extends BaseActivity
 													projectId ->
 															Utils.copyToClipboard(
 																	ctx,
-																	ProjectDetailActivity.this,
 																	String.valueOf(
 																			projectDetails.getId()),
 																	getString(
@@ -502,7 +489,6 @@ public class ProjectDetailActivity extends BaseActivity
 													web ->
 															Utils.copyToClipboard(
 																	ctx,
-																	ProjectDetailActivity.this,
 																	projectDetails.getWebUrl(),
 																	getString(
 																			R.string
@@ -511,7 +497,6 @@ public class ProjectDetailActivity extends BaseActivity
 													https ->
 															Utils.copyToClipboard(
 																	ctx,
-																	ProjectDetailActivity.this,
 																	projectDetails
 																			.getHttpUrlToRepo(),
 																	getString(
@@ -521,7 +506,6 @@ public class ProjectDetailActivity extends BaseActivity
 													ssh ->
 															Utils.copyToClipboard(
 																	ctx,
-																	ProjectDetailActivity.this,
 																	projectDetails
 																			.getSshUrlToRepo(),
 																	getString(
@@ -574,10 +558,7 @@ public class ProjectDetailActivity extends BaseActivity
 
 					@Override
 					public void onFailure(@NonNull Call<Projects> call, @NonNull Throwable t) {
-						Snackbar.info(
-								ProjectDetailActivity.this,
-								findViewById(R.id.bottom_app_bar),
-								getString(R.string.generic_server_response_error));
+						Toasty.show(ctx, getString(R.string.generic_server_response_error));
 					}
 				});
 	}
@@ -618,10 +599,7 @@ public class ProjectDetailActivity extends BaseActivity
 
 					@Override
 					public void onFailure(@NonNull Call<FileContents> call, @NonNull Throwable t) {
-						Snackbar.info(
-								ProjectDetailActivity.this,
-								findViewById(R.id.bottom_app_bar),
-								getString(R.string.generic_server_response_error));
+						Toasty.show(ctx, getString(R.string.generic_server_response_error));
 					}
 				});
 	}
@@ -667,10 +645,7 @@ public class ProjectDetailActivity extends BaseActivity
 					@Override
 					public void onFailure(
 							@NonNull Call<List<Projects>> call, @NonNull Throwable t) {
-						Snackbar.info(
-								ProjectDetailActivity.this,
-								findViewById(R.id.bottom_app_bar),
-								getString(R.string.generic_server_response_error));
+						Toasty.show(ctx, getString(R.string.generic_server_response_error));
 					}
 				});
 	}
@@ -690,10 +665,7 @@ public class ProjectDetailActivity extends BaseActivity
 
 							if (response.code() == 201) {
 
-								Snackbar.info(
-										ProjectDetailActivity.this,
-										findViewById(R.id.bottom_app_bar),
-										getString(R.string.project_starred));
+								Toasty.show(ctx, getString(R.string.project_starred));
 
 								binding.starAProject.setVisibility(View.GONE);
 								binding.unstarAProject.setVisibility(View.VISIBLE);
@@ -703,10 +675,7 @@ public class ProjectDetailActivity extends BaseActivity
 
 					@Override
 					public void onFailure(@NonNull Call<Projects> call, @NonNull Throwable t) {
-						Snackbar.info(
-								ProjectDetailActivity.this,
-								findViewById(R.id.bottom_app_bar),
-								getString(R.string.generic_server_response_error));
+						Toasty.show(ctx, getString(R.string.generic_server_response_error));
 					}
 				});
 	}
@@ -726,10 +695,7 @@ public class ProjectDetailActivity extends BaseActivity
 
 							if (response.code() == 201) {
 
-								Snackbar.info(
-										ProjectDetailActivity.this,
-										findViewById(R.id.bottom_app_bar),
-										getString(R.string.project_unstarred));
+								Toasty.show(ctx, getString(R.string.project_unstarred));
 
 								binding.starAProject.setVisibility(View.VISIBLE);
 								binding.unstarAProject.setVisibility(View.GONE);
@@ -739,10 +705,7 @@ public class ProjectDetailActivity extends BaseActivity
 
 					@Override
 					public void onFailure(@NonNull Call<Projects> call, @NonNull Throwable t) {
-						Snackbar.info(
-								ProjectDetailActivity.this,
-								findViewById(R.id.bottom_app_bar),
-								getString(R.string.generic_server_response_error));
+						Toasty.show(ctx, getString(R.string.generic_server_response_error));
 					}
 				});
 	}

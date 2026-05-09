@@ -1,4 +1,4 @@
-[![License: GPL v3](https://raw.githubusercontent.com/labnex/LabNex/main/assets/license.svg)](https://www.gnu.org/licenses/gpl-3.0) [![Release](https://img.shields.io/github/v/release/labnex/LabNex?display_name=release&label=release)](https://github.com/labnex/LabNex/releases) [![Crowdin](https://badges.crowdin.net/labnex/localized.svg)](https://crowdin.com/project/labnex)
+[![License: GPL v3](https://raw.githubusercontent.com/labnex/LabNex/main/assets/license.svg)](https://spdx.org/licenses/GPL-3.0-only.html) [![Release](https://img.shields.io/github/v/release/labnex/LabNex?display_name=release&label=release)](https://github.com/labnex/LabNex/releases) [![Crowdin](https://badges.crowdin.net/labnex/localized.svg)](https://crowdin.com/project/labnex)
 
 [<img alt="Become a Patreon" src="https://raw.githubusercontent.com/labnex/LabNex/main/assets/patreon.png" height="80"/>](https://www.patreon.com/mmarif)
 
@@ -55,6 +55,10 @@ JSON Configuration:
 }
 ```
 
+## Self-signed certificates
+
+LabNex supports self-signed certificates. You can read more [here](https://github.com/labnex/LabNex/wiki/FAQ#does-labnex-support-self-signed-certificates).
+
 ## Development
 
 - [Building from source](https://github.com/labnex/LabNex/wiki/Building)
@@ -86,7 +90,6 @@ Thanks to all open-source libraries, contributors, and donors for your support.
 
 - [Fediverse - mastodon.social/@mmarif](https://mastodon.social/@mmarif)
 - [Bluesky](https://bsky.app/profile/mmarif.bsky.social)
-- [X profile](https://x.com/mmarif08)
 
 ## Support LabNex
 

@@ -1,61 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.listitem.ListItemLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="@dimen/dimen6dp"
-    android:orientation="vertical">
+    android:layout_height="wrap_content">
 
-    <com.google.android.material.card.MaterialCardView
+    <com.google.android.material.listitem.ListItemCardView
+        android:id="@+id/card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="?attr/materialCardViewElevatedStyle"
-        app:cardElevation="@dimen/dimen0dp">
+        android:layout_marginVertical="@dimen/dimen1dp"
+        android:checkable="false"
+        app:cardBackgroundColor="?attr/colorSurfaceContainerLow"
+        app:strokeWidth="0dp">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/dimen12dp"
-            android:foreground="?android:attr/selectableItemBackgroundBorderless"
-            android:orientation="vertical">
+            android:padding="@dimen/dimen8dp">
 
             <TextView
                 android:id="@+id/content"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="3"
+                android:textAppearance="?attr/textAppearanceBodyLarge"
+                android:textColor="?attr/colorOnSurface"
+                app:layout_constraintEnd_toStartOf="@id/btn_delete"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_delete"
+                style="@style/Widget.Material3.Button.IconButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/dimen16sp" />
+                android:contentDescription="@string/delete"
+                app:icon="@drawable/ic_trash"
+                app:iconTint="?attr/colorError"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-            <LinearLayout
-                android:id="@+id/note_info_frame"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/datetime"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimen16dp"
-                android:orientation="horizontal"
-                tools:ignore="UseCompoundDrawables">
+                android:layout_marginTop="@dimen/dimen8dp"
+                android:textAppearance="?attr/textAppearanceLabelSmall"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:alpha="0.7"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/content" />
 
-                <TextView
-                    android:id="@+id/datetime"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:layout_weight="1"
-                    android:textSize="@dimen/dimen12sp" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <ImageView
-                    android:id="@+id/delete_note"
-                    android:layout_width="@dimen/dimen20dp"
-                    android:layout_height="@dimen/dimen20dp"
-                    android:layout_marginStart="@dimen/dimen4dp"
-                    android:layout_marginEnd="@dimen/dimen2dp"
-                    android:contentDescription="@string/generic_img_copy"
-                    app:srcCompat="@drawable/ic_trash"
-                    app:tint="?attr/iconsColor" />
+    </com.google.android.material.listitem.ListItemCardView>
 
-            </LinearLayout>
-
-        </LinearLayout>
-
-    </com.google.android.material.card.MaterialCardView>
-
-</LinearLayout>
+</com.google.android.material.listitem.ListItemLayout>

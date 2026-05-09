@@ -15,11 +15,13 @@ public class CoreApplication extends Application {
 
 	public AccountContext currentAccount;
 	private SharedPrefDB sharedPrefDB;
+	private static CoreApplication instance;
 
 	@Override
 	public void onCreate() {
 
 		super.onCreate();
+		instance = this;
 
 		Context appCtx = getApplicationContext();
 		sharedPrefDB = SharedPrefDB.getInstance(appCtx);
@@ -31,6 +33,10 @@ public class CoreApplication extends Application {
 
 		AppSettingsInit.updateSettingsValue(
 				getApplicationContext(), "false", AppSettingsInit.APP_BIOMETRIC_LIFE_CYCLE_KEY);
+	}
+
+	public static CoreApplication getInstance() {
+		return instance;
 	}
 
 	@Override

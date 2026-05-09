@@ -2,157 +2,185 @@ package com.labnex.app.activities;
 
 import android.os.Bundle;
 import android.view.View;
-import androidx.annotation.NonNull;
+import androidx.lifecycle.ViewModelProvider;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.labnex.app.R;
-import com.labnex.app.clients.RetrofitClient;
+import com.labnex.app.database.api.BaseApi;
+import com.labnex.app.database.api.UserAccountsApi;
+import com.labnex.app.database.models.UserAccount;
 import com.labnex.app.databinding.ActivityProfileBinding;
+import com.labnex.app.databinding.ItemProfileDetailBinding;
 import com.labnex.app.helpers.Markdown;
-import com.labnex.app.helpers.Snackbar;
+import com.labnex.app.helpers.TimeHelper;
+import com.labnex.app.helpers.Toasty;
+import com.labnex.app.helpers.UIHelper;
+import com.labnex.app.helpers.Utils;
 import com.labnex.app.models.user.User;
+import com.labnex.app.viewmodels.ProfileViewModel;
 import com.vdurmont.emoji.EmojiParser;
-import retrofit2.Call;
-import retrofit2.Callback;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * @author mmarif
  */
 public class ProfileActivity extends BaseActivity {
 
-	ActivityProfileBinding binding;
-	private int userId;
+	private ActivityProfileBinding binding;
+	private ProfileViewModel viewModel;
+	private UserAccountsApi userAccountsApi;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-
 		super.onCreate(savedInstanceState);
 		binding = ActivityProfileBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
-		binding.bottomAppBar.setNavigationOnClickListener(bottomAppBar -> finish());
+		UIHelper.applyEdgeToEdge(this, binding.dockedToolbar, binding.mainView, null, null);
 
-		userId = getIntent().getIntExtra("userId", 0);
+		viewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
+		userAccountsApi = BaseApi.getInstance(ctx, UserAccountsApi.class);
 
-		getUserMeta();
+		int profileUserId = getIntent().getIntExtra("userId", 0);
+
+		binding.btnBack.setOnClickListener(v -> finish());
+
+		observeViewModel();
+		initLoading(profileUserId);
 	}
 
-	private void getUserMeta() {
+	private void initLoading(int profileUserId) {
+		int activeAccountId = sharedPrefDB.getInt("currentActiveAccountId", 0);
 
-		Call<User> call = RetrofitClient.getApiInterface(ctx).getSingleUser(userId);
+		UserAccount activeAccount = userAccountsApi.getAccountById(activeAccountId);
 
-		call.enqueue(
-				new Callback<>() {
+		int myUserId = 0;
+		if (activeAccount != null) {
+			myUserId = activeAccount.getUserId();
+		}
 
-					@Override
-					public void onResponse(
-							@NonNull Call<User> call, @NonNull retrofit2.Response<User> response) {
+		viewModel.loadUser(ctx, profileUserId, myUserId);
+	}
 
-						User user = response.body();
+	private void observeViewModel() {
+		viewModel
+				.getIsLoading()
+				.observe(
+						this,
+						loading -> {
+							int showView = Boolean.TRUE.equals(loading) ? View.VISIBLE : View.GONE;
+							binding.progressBar.setVisibility(showView);
+							binding.mainView.setAlpha(showView);
+						});
 
-						if (response.isSuccessful()) {
+		viewModel
+				.getUserInfo()
+				.observe(
+						this,
+						user -> {
+							if (user != null) populateUI(user);
+						});
 
-							if (response.code() == 200) {
-
-								assert user != null;
-
-								Glide.with(ctx)
-										.load(user.getAvatarUrl())
-										.diskCacheStrategy(DiskCacheStrategy.ALL)
-										.placeholder(R.drawable.ic_spinner)
-										.centerCrop()
-										.into(binding.userAvatar);
-
-								binding.username.setText(
-										getString(
-												R.string.username_with_at_sign,
-												user.getUsername()));
-								binding.fullname.setText(user.getFullName());
-
-								if (user.getPublicEmail() != null) {
-									if (!user.getPublicEmail().isEmpty()) {
-										binding.userEmail.setVisibility(View.VISIBLE);
-										binding.userEmail.setText(user.getPublicEmail());
-									}
-								}
-
-								if (user.getPronouns() != null) {
-									if (!user.getPronouns().isEmpty()) {
-										binding.pronouns.setVisibility(View.VISIBLE);
-										binding.pronouns.setText(user.getPronouns());
-									}
-								}
-
-								binding.followers.setText(
-										getString(
-												R.string.user_followers,
-												String.valueOf(user.getFollowers())));
-								binding.following.setText(
-										getString(
-												R.string.user_following,
-												String.valueOf(user.getFollowing())));
-
-								if (user.getWebsiteUrl() != null) {
-									if (!user.getWebsiteUrl().isEmpty()) {
-										binding.websiteUrlInfo.setVisibility(View.VISIBLE);
-										binding.websiteUrl.setText(user.getWebsiteUrl());
-									}
-								}
-
-								if (user.getDiscord() != null && !user.getDiscord().isEmpty()
-										|| user.getLinkedin() != null
-												&& !user.getLinkedin().isEmpty()
-										|| user.getTwitter() != null
-												&& !user.getTwitter().isEmpty()) {
-									binding.socialInfo.setVisibility(View.VISIBLE);
-
-									if (user.getDiscord() != null && !user.getDiscord().isEmpty()) {
-										binding.discord.setVisibility(View.VISIBLE);
-										binding.discord.setText(
-												getString(
-														R.string.discord_user_profile_link,
-														user.getDiscord()));
-									}
-
-									if (user.getLinkedin() != null
-											&& !user.getLinkedin().isEmpty()) {
-										binding.linkedin.setVisibility(View.VISIBLE);
-										binding.linkedin.setText(user.getLinkedin());
-									}
-
-									if (user.getTwitter() != null && !user.getTwitter().isEmpty()) {
-										binding.twitter.setVisibility(View.VISIBLE);
-										binding.twitter.setText(user.getTwitter());
-									}
-								}
-
-								if (user.getLocation() != null) {
-									if (!user.getLocation().isEmpty()) {
-										binding.locationInfo.setVisibility(View.VISIBLE);
-										binding.location.setText(user.getLocation());
-									}
-								}
-
-								if (user.getBio() != null) {
-									if (!user.getBio().isEmpty()) {
-										binding.userBioInfo.setVisibility(View.VISIBLE);
-										Markdown.render(
-												ctx,
-												EmojiParser.parseToUnicode(user.getBio().trim()),
-												binding.userBio);
-									}
-								}
+		viewModel
+				.getError()
+				.observe(
+						this,
+						errorMsg -> {
+							if (errorMsg != null) {
+								Toasty.show(ctx, getString(R.string.generic_server_response_error));
+								viewModel.clearError();
 							}
-						}
-					}
+						});
+	}
 
-					@Override
-					public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
-						Snackbar.info(
-								ProfileActivity.this,
-								findViewById(R.id.bottom_app_bar),
-								getString(R.string.generic_server_response_error));
-					}
-				});
+	private void populateUI(User user) {
+		Glide.with(ctx)
+				.load(user.getAvatarUrl())
+				.diskCacheStrategy(DiskCacheStrategy.ALL)
+				.placeholder(R.drawable.ic_spinner)
+				.centerCrop()
+				.into(binding.userAvatar);
+
+		binding.fullname.setText(user.getFullName());
+		binding.username.setText(getString(R.string.username_with_at_sign, user.getUsername()));
+
+		if (user.getFollowers() > 0 || user.getFollowing() > 0) {
+			binding.socialMetricsCard.setVisibility(View.VISIBLE);
+			binding.followers.setText(
+					getString(R.string.user_followers, Utils.numberFormatter(user.getFollowers())));
+			binding.following.setText(
+					getString(R.string.user_following, Utils.numberFormatter(user.getFollowing())));
+		} else {
+			binding.socialMetricsCard.setVisibility(View.GONE);
+		}
+
+		if (user.getJobTitle() != null && !user.getJobTitle().isEmpty()) {
+			binding.chipJobTitle.setVisibility(View.VISIBLE);
+			binding.chipJobTitle.setText(user.getJobTitle());
+		}
+
+		binding.chipAdmin.setVisibility(user.isIsAdmin() ? View.VISIBLE : View.GONE);
+
+		if (user.getBio() != null && !user.getBio().trim().isEmpty()) {
+			binding.userBioInfo.setVisibility(View.VISIBLE);
+			Markdown.render(ctx, EmojiParser.parseToUnicode(user.getBio().trim()), binding.userBio);
+		} else {
+			binding.userBioInfo.setVisibility(View.GONE);
+		}
+
+		setDetail(binding.detailLocation, R.drawable.ic_location, user.getLocation());
+		setDetail(binding.detailWebsite, R.drawable.ic_browser, user.getWebsiteUrl());
+		setDetail(binding.detailEmail, R.drawable.ic_email, user.getPublicEmail());
+		setDetail(binding.detailPronouns, R.drawable.ic_person, user.getPronouns());
+
+		if (user.getCreatedAt() != null) {
+			Date d = TimeHelper.parseIso8601(user.getCreatedAt());
+			setDetail(
+					binding.detailJoined,
+					R.drawable.ic_calendar,
+					getString(
+							R.string.member_since,
+							TimeHelper.getAbsoluteDate(d, Locale.getDefault())));
+		}
+
+		boolean hasSocial = setupSocialLinks(user);
+		binding.socialLinksCard.setVisibility(hasSocial ? View.VISIBLE : View.GONE);
+	}
+
+	private boolean setupSocialLinks(User user) {
+		boolean hasDiscord = false;
+		boolean hasLinkedin = false;
+		boolean hasTwitter = false;
+
+		if (user.getDiscord() != null && !user.getDiscord().isEmpty()) {
+			setDetail(
+					binding.detailDiscord,
+					R.drawable.ic_discord,
+					getString(R.string.discord_user_profile_link, user.getDiscord()));
+			hasDiscord = true;
+		}
+
+		if (user.getLinkedin() != null && !user.getLinkedin().isEmpty()) {
+			setDetail(binding.detailLinkedin, R.drawable.ic_linkedin, user.getLinkedin());
+			hasLinkedin = true;
+		}
+
+		if (user.getTwitter() != null && !user.getTwitter().isEmpty()) {
+			setDetail(binding.detailTwitter, R.drawable.ic_x, user.getTwitter());
+			hasTwitter = true;
+		}
+
+		return hasDiscord || hasLinkedin || hasTwitter;
+	}
+
+	private void setDetail(ItemProfileDetailBinding b, int icon, String text) {
+		if (text == null || text.isEmpty()) {
+			b.getRoot().setVisibility(View.GONE);
+			return;
+		}
+		b.getRoot().setVisibility(View.VISIBLE);
+		b.detailIcon.setImageResource(icon);
+		b.detailText.setText(text);
 	}
 }

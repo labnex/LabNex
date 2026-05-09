@@ -20,39 +20,47 @@ public class CrudeProject implements Serializable {
 	@SerializedName("visibility")
 	private String visibility;
 
-	public CrudeProject name(String name) {
-		this.name = name;
-		return this;
-	}
+	@SerializedName("namespace_id")
+	private Integer namespaceId;
+
+	@SerializedName("default_branch")
+	private String defaultBranch;
+
+	@SerializedName("lfs_enabled")
+	private boolean lfsEnabled;
+
+	@SerializedName("emails_enabled")
+	private boolean emailsEnabled;
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public CrudeProject description(String description) {
-		this.description = description;
-		return this;
 	}
 
 	public void setDescription(String description) {
 		this.description = description;
 	}
 
-	public CrudeProject initializeWithReadme(boolean initializeWithReadme) {
-		this.initializeWithReadme = initializeWithReadme;
-		return this;
-	}
-
 	public void setInitializeWithReadme(boolean initializeWithReadme) {
 		this.initializeWithReadme = initializeWithReadme;
 	}
 
-	public CrudeProject visibility(String visibility) {
-		this.visibility = visibility;
-		return this;
-	}
-
 	public void setVisibility(String visibility) {
 		this.visibility = visibility;
+	}
+
+	public void setNamespaceId(Integer namespaceId) {
+		this.namespaceId = namespaceId;
+	}
+
+	public void setDefaultBranch(String defaultBranch) {
+		this.defaultBranch = defaultBranch;
+	}
+
+	public void setLfsEnabled(boolean lfsEnabled) {
+		this.lfsEnabled = lfsEnabled;
+	}
+
+	public void setEmailsEnabled(boolean emailsEnabled) {
+		this.emailsEnabled = emailsEnabled;
 	}
 }

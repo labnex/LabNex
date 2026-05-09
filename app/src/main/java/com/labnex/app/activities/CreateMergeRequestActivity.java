@@ -10,7 +10,7 @@ import com.labnex.app.contexts.ProjectsContext;
 import com.labnex.app.database.api.BaseApi;
 import com.labnex.app.database.api.ProjectsApi;
 import com.labnex.app.databinding.ActivityCreateMergeRequestBinding;
-import com.labnex.app.helpers.Snackbar;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.helpers.api.TemplateFetcher;
 import com.labnex.app.interfaces.BottomSheetListener;
 import com.labnex.app.models.merge_requests.CrudeMergeRequest;
@@ -128,28 +128,19 @@ public class CreateMergeRequestActivity extends BaseActivity
 					if (title.isEmpty()) {
 
 						enableButton();
-						Snackbar.info(
-								CreateMergeRequestActivity.this,
-								binding.bottomAppBar,
-								getString(R.string.title_required));
+						Toasty.show(ctx, getString(R.string.title_required));
 						return;
 					}
 					if (targetBranch.isEmpty() || sourceBranch.isEmpty()) {
 
 						enableButton();
-						Snackbar.info(
-								CreateMergeRequestActivity.this,
-								binding.bottomAppBar,
-								getString(R.string.source_target_branch_empty_error));
+						Toasty.show(ctx, getString(R.string.source_target_branch_empty_error));
 						return;
 					}
 					if (targetBranch.equalsIgnoreCase(sourceBranch)) {
 
 						enableButton();
-						Snackbar.info(
-								CreateMergeRequestActivity.this,
-								binding.bottomAppBar,
-								getString(R.string.mr_branches_are_same));
+						Toasty.show(ctx, getString(R.string.mr_branches_are_same));
 						return;
 					}
 
@@ -202,31 +193,19 @@ public class CreateMergeRequestActivity extends BaseActivity
 						} else if (response.code() == 401) {
 
 							enableButton();
-							Snackbar.info(
-									CreateMergeRequestActivity.this,
-									binding.bottomAppBar,
-									getString(R.string.not_authorized));
+							Toasty.show(ctx, getString(R.string.not_authorized));
 						} else if (response.code() == 403) {
 
 							enableButton();
-							Snackbar.info(
-									CreateMergeRequestActivity.this,
-									binding.bottomAppBar,
-									getString(R.string.access_forbidden_403));
+							Toasty.show(ctx, getString(R.string.access_forbidden_403));
 						} else if (response.code() == 409) {
 
 							enableButton();
-							Snackbar.info(
-									CreateMergeRequestActivity.this,
-									binding.bottomAppBar,
-									getString(R.string.merge_request_exists));
+							Toasty.show(ctx, getString(R.string.merge_request_exists));
 						} else {
 
 							enableButton();
-							Snackbar.info(
-									CreateMergeRequestActivity.this,
-									binding.bottomAppBar,
-									getString(R.string.generic_error));
+							Toasty.show(ctx, getString(R.string.generic_error));
 						}
 					}
 
@@ -234,10 +213,7 @@ public class CreateMergeRequestActivity extends BaseActivity
 					public void onFailure(@NonNull Call<MergeRequests> call, @NonNull Throwable t) {
 
 						enableButton();
-						Snackbar.info(
-								CreateMergeRequestActivity.this,
-								binding.bottomAppBar,
-								getString(R.string.generic_server_response_error));
+						Toasty.show(ctx, getString(R.string.generic_server_response_error));
 					}
 				});
 	}

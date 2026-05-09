@@ -28,10 +28,10 @@ import com.labnex.app.contexts.IssueContext;
 import com.labnex.app.databinding.ActivityIssueDetailBinding;
 import com.labnex.app.databinding.BottomSheetIssueActionsBinding;
 import com.labnex.app.helpers.Markdown;
-import com.labnex.app.helpers.Snackbar;
 import com.labnex.app.helpers.TextDrawable.ColorGenerator;
 import com.labnex.app.helpers.TextDrawable.TextDrawable;
 import com.labnex.app.helpers.TimeUtils;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.helpers.Utils;
 import com.labnex.app.interfaces.BottomSheetListener;
 import com.labnex.app.models.issues.CrudeIssue;
@@ -298,7 +298,6 @@ public class IssueDetailActivity extends BaseActivity
 				v -> {
 					Utils.copyToClipboard(
 							ctx,
-							IssueDetailActivity.this,
 							issue.getIssue().getWebUrl(),
 							getString(R.string.copy_url_message));
 					bottomSheetDialog.dismiss();
@@ -306,8 +305,7 @@ public class IssueDetailActivity extends BaseActivity
 
 		sheetBinding.openInBrowserItem.setOnClickListener(
 				v -> {
-					Utils.openUrlInBrowser(
-							this, IssueDetailActivity.this, issue.getIssue().getWebUrl());
+					Utils.openUrlInBrowser(this, issue.getIssue().getWebUrl());
 					bottomSheetDialog.dismiss();
 				});
 
@@ -318,10 +316,7 @@ public class IssueDetailActivity extends BaseActivity
 	public void updateDataListener(String str) {
 
 		if (str.equalsIgnoreCase("created")) {
-			Snackbar.info(
-					IssueDetailActivity.this,
-					activityIssueDetailBinding.bottomAppBar,
-					getString(R.string.comment_posted));
+			Toasty.show(ctx, getString(R.string.comment_posted));
 		}
 
 		issueNotesAdapter.clearAdapter();
@@ -362,39 +357,24 @@ public class IssueDetailActivity extends BaseActivity
 						if (response.code() == 200) {
 
 							sheetBinding.closeItemCard.setVisibility(View.GONE);
-							IssuesActivity.updateIssuesList = true;
-							Snackbar.info(
-									IssueDetailActivity.this,
-									activityIssueDetailBinding.bottomAppBar,
-									ctx.getString(R.string.issue_closed));
+							// IssuesActivity.updateIssuesList = true;
+							Toasty.show(ctx, getString(R.string.issue_closed));
 						} else if (response.code() == 401) {
 
-							Snackbar.info(
-									IssueDetailActivity.this,
-									activityIssueDetailBinding.bottomAppBar,
-									getString(R.string.not_authorized));
+							Toasty.show(ctx, getString(R.string.not_authorized));
 						} else if (response.code() == 403) {
 
-							Snackbar.info(
-									IssueDetailActivity.this,
-									activityIssueDetailBinding.bottomAppBar,
-									getString(R.string.access_forbidden_403));
+							Toasty.show(ctx, getString(R.string.access_forbidden_403));
 						} else {
 
-							Snackbar.info(
-									IssueDetailActivity.this,
-									activityIssueDetailBinding.bottomAppBar,
-									getString(R.string.generic_error));
+							Toasty.show(ctx, getString(R.string.generic_error));
 						}
 					}
 
 					@Override
 					public void onFailure(@NonNull Call<Issues> call, @NonNull Throwable t) {
 
-						Snackbar.info(
-								IssueDetailActivity.this,
-								activityIssueDetailBinding.bottomAppBar,
-								getString(R.string.generic_server_response_error));
+						Toasty.show(ctx, getString(R.string.generic_server_response_error));
 					}
 				});
 	}

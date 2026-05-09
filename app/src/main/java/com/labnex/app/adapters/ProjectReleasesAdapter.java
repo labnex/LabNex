@@ -19,10 +19,10 @@ import com.labnex.app.activities.ProfileActivity;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.databinding.BottomSheetProjectReleasesBinding;
 import com.labnex.app.helpers.Markdown;
-import com.labnex.app.helpers.Snackbar;
 import com.labnex.app.helpers.TextDrawable.ColorGenerator;
 import com.labnex.app.helpers.TextDrawable.TextDrawable;
 import com.labnex.app.helpers.TimeUtils;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.models.release.Releases;
 import com.vdurmont.emoji.EmojiParser;
 import java.time.OffsetDateTime;
@@ -236,31 +236,27 @@ public class ProjectReleasesAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 								if (response.code() == 200) {
 
 									updateAdapter(position);
-									Snackbar.info(
+									Toasty.show(
 											context,
-											binding.getRoot(),
 											context.getResources()
 													.getString(R.string.release_deleted));
 
 								} else if (response.code() == 401) {
 
-									Snackbar.info(
+									Toasty.show(
 											context,
-											binding.getRoot(),
 											context.getResources()
 													.getString(R.string.not_authorized));
 								} else if (response.code() == 403) {
 
-									Snackbar.info(
+									Toasty.show(
 											context,
-											binding.getRoot(),
 											context.getResources()
 													.getString(R.string.access_forbidden_403));
 								} else {
 
-									Snackbar.info(
+									Toasty.show(
 											context,
-											binding.getRoot(),
 											context.getResources()
 													.getString(R.string.generic_error));
 								}
@@ -269,9 +265,8 @@ public class ProjectReleasesAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 							@Override
 							public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
 
-								Snackbar.info(
+								Toasty.show(
 										context,
-										binding.getRoot(),
 										context.getResources()
 												.getString(R.string.generic_server_response_error));
 							}

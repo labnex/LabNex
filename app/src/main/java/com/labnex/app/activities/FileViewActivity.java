@@ -24,7 +24,7 @@ import com.labnex.app.databinding.ActivityFileViewBinding;
 import com.labnex.app.databinding.BottomSheetFileActionsBinding;
 import com.labnex.app.helpers.Constants;
 import com.labnex.app.helpers.Markdown;
-import com.labnex.app.helpers.Snackbar;
+import com.labnex.app.helpers.Toasty;
 import com.labnex.app.helpers.Utils;
 import com.labnex.app.models.repository.FileContents;
 import com.labnex.app.models.repository.Tree;
@@ -258,16 +258,10 @@ public class FileViewActivity extends BaseActivity implements CreateFileActivity
 	public void createFileDataListener(String str, String branch) {
 
 		if (str.equalsIgnoreCase("updated")) {
-			Snackbar.info(
-					FileViewActivity.this,
-					binding.bottomAppBar,
-					getString(R.string.file_update, branch));
+			Toasty.show(ctx, getString(R.string.file_update));
 			getFileContents();
 		} else if (str.equalsIgnoreCase("deleted")) {
-			Snackbar.info(
-					FileViewActivity.this,
-					binding.bottomAppBar,
-					getString(R.string.delete_file_via_branch, branch));
+			Toasty.show(ctx, getString(R.string.delete_file_via_branch));
 		}
 	}
 
@@ -449,10 +443,7 @@ public class FileViewActivity extends BaseActivity implements CreateFileActivity
 													errorMessage =
 															getString(R.string.generic_error);
 												}
-												Snackbar.info(
-														FileViewActivity.this,
-														binding.bottomAppBar,
-														errorMessage);
+												Toasty.show(ctx, errorMessage);
 											});
 								}
 							} catch (IOException ignored) {

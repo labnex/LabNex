@@ -1,98 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.listitem.ListItemLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/rootContainer"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="@dimen/dimen6dp">
+    android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/subgroup_arrow"
-        android:layout_width="24dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="@dimen/dimen4dp"
-        android:visibility="gone"
-        app:srcCompat="@drawable/ic_arrow_corner_down_right"
-        app:tint="?attr/colorOnSurfaceVariant"
-        android:layout_gravity="center_vertical|start"/>
-
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/group_card"
+    <com.google.android.material.listitem.ListItemCardView
+        android:id="@+id/card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="?attr/materialCardViewElevatedStyle"
-        app:cardElevation="@dimen/dimen0dp">
+        android:checkable="false"
+        android:layout_marginVertical="@dimen/dimen1dp"
+        app:cardBackgroundColor="?attr/colorSurfaceContainerLow"
+        app:strokeWidth="0dp">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:foreground="?android:attr/selectableItemBackground"
-            android:padding="@dimen/dimen12dp"
-            android:orientation="vertical">
+            android:padding="@dimen/dimen8dp">
 
-            <LinearLayout
-                android:id="@+id/info_frame"
-                android:layout_width="match_parent"
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/group_avatar"
+                android:layout_width="@dimen/dimen40dp"
+                android:layout_height="@dimen/dimen40dp"
+                android:src="@drawable/ic_spinner"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Medium" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/text_anchor"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="54dp" />
 
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/group_avatar_frame"
-                    android:layout_height="@dimen/dimen36dp"
-                    android:layout_width="@dimen/dimen36dp"
-                    android:layout_marginEnd="@dimen/dimen10dp"
-                    app:strokeWidth="@dimen/dimen0dp"
-                    android:layout_gravity="center_vertical|center_horizontal"
-                    app:cardElevation="@dimen/dimen0dp">
+            <TextView
+                android:id="@+id/path_badge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_label_outline"
+                android:paddingHorizontal="@dimen/dimen8dp"
+                android:paddingVertical="@dimen/dimen4dp"
+                android:textAppearance="?attr/textAppearanceLabelSmall"
+                android:textColor="?attr/colorPrimary"
+                android:visibility="gone"
+                android:maxLines="1"
+                android:ellipsize="end"
+                app:layout_constraintStart_toStartOf="@id/text_anchor"
+                app:layout_constraintTop_toTopOf="@id/group_avatar" />
 
-                    <ImageView
-                        android:id="@+id/group_avatar"
-                        android:layout_height="@dimen/dimen40dp"
-                        android:layout_width="@dimen/dimen40dp"
-                        android:scaleType="fitCenter"
-                        android:layout_gravity="center_vertical|center_horizontal"
-                        android:contentDescription="@string/groups"
-                        app:srcCompat="@drawable/ic_spinner" />
+            <TextView
+                android:id="@+id/group_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen4dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                android:textColor="?attr/colorOnSurface"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/text_anchor"
+                app:layout_constraintTop_toBottomOf="@id/path_badge"
+                app:layout_goneMarginTop="0dp" />
 
-                </com.google.android.material.card.MaterialCardView>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_menu"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/menu"
+                app:icon="@drawable/ic_menu"
+                app:iconTint="?attr/iconsColor"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/group_name" />
 
-                <LinearLayout
-                    android:id="@+id/group_name_frame"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/group_name"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal|center_vertical"
-                        android:textSize="@dimen/dimen16sp" />
-
-                    <TextView
-                        android:id="@+id/group_id"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal|center_vertical"
-                        android:alpha=".7"
-                        android:textSize="@dimen/dimen14sp" />
-
-                </LinearLayout>
-
-            </LinearLayout>
+            <TextView
+                android:id="@+id/group_id"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen4dp"
+                android:alpha="0.7"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textAppearance="?attr/textAppearanceLabelMedium"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/text_anchor"
+                app:layout_constraintTop_toBottomOf="@id/group_name" />
 
             <TextView
                 android:id="@+id/group_description"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:layout_marginTop="@dimen/dimen8dp"
-                android:textSize="@dimen/dimen14sp" />
+                android:layout_marginTop="@dimen/dimen12dp"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:alpha="0.8"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/group_id" />
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </com.google.android.material.card.MaterialCardView>
+    </com.google.android.material.listitem.ListItemCardView>
 
-</FrameLayout>
+</com.google.android.material.listitem.ListItemLayout>

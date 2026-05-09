@@ -1,13 +1,19 @@
 <resources>
     <!-- non translatable strings -->
     <string name="app_name" translatable="false">LabNex</string>
-    <string name="app_version_build" translatable="false">%1$s / %2$d</string>
+    <string name="version_display" translatable="false">LabNex %1$s | GitLab %2$s</string>
     <string name="support_link_patreon" translatable="false">https://www.patreon.com/mmarif</string>
     <string name="crowd_in_link" translatable="false">https://crowdin.com/project/labnex</string>
     <string name="app_website_link" translatable="false">https://labnex.app</string>
     <string name="source_code_link" translatable="false">https://github.com/labnex/LabNex</string>
     <string name="support_text_patreon" translatable="false">Patreon</string>
     <string name="crowd_in_text" translatable="false">Crowdin</string>
+    <string name="gitnex" translatable="false">GitNex</string>
+    <string name="gitnex_link" translatable="false">https://gitnex.com</string>
+    <string name="oceannex" translatable="false">OceanNex</string>
+    <string name="oceannex_link" translatable="false">https://oceannex.swatian.com</string>
+    <string name="nexnode" translatable="false">NexNode</string>
+    <string name="nexnode_link" translatable="false">https://nexnode.swatian.com</string>
 
     <string name="gitlab" translatable="false">GitLab</string>
     <string name="private_placeholder" translatable="false">Private</string>
@@ -29,7 +35,11 @@
     <string name="light" translatable="false">Light</string>
     <string name="dynamic" translatable="false">Dynamic</string>
     <string name="theme_system" translatable="false">System</string>
-    <string name="where_to_get_token_message" translatable="false"><![CDATA[• Log in to your account on your instance (GitLab, framagit, etc.).<br>• Click on your user profile picture, then go to Preferences.<br>• In the left side menu, click on Personal access tokens.<br>• Click on Add new token button.<br>• Enter token name and choose expiration date as long as possible.<br>• Check all of the scopes.<br><br>Once created, copy and paste or type the token in Personal access token input field.]]></string>
+    <string name="where_to_get_token_message" translatable="false"><![CDATA[• Log in to your account on your instance (GitLab, framagit, etc.).<br>• Click on your user profile picture, then go to Preferences.<br>• In the left side menu, click on Personal access tokens.<br>• Click on Add new token button.<br>• Enter token name and choose expiration date as long as possible.<br>• Check all the scopes.<br><br>Once created, copy and paste or type the token in Personal access token input field.]]></string>
+    <string name="number_label" translatable="false">12</string>
+    <string name="main" translatable="false">main</string>
+    <string name="cursor_position_format" translatable="false">Ln %d, Col %d</string>
+    <string name="separator_dot" translatable="false">●</string>
     <!-- non translatable strings -->
 
     <string name="action_sign_in">Sign in</string>
@@ -37,7 +47,7 @@
     <string name="welcome_back">Welcome back</string>
     <string name="login_failed">Login failed</string>
     <string name="all_good">You\'re all caught up</string>
-    <string name="most_visited">Most visited</string>
+    <string name="most_visited">Most visited projects</string>
     <string name="gitlab_link">GitLab URL</string>
     <string name="gitlab_link_help">i.e., gitlab.com (do not add https, http is not supported by LabNex)</string>
     <string name="personal_access_token">Personal access token</string>
@@ -60,7 +70,7 @@
     <string name="biometric_not_supported">No biometric features available on this device</string>
     <string name="biometric_not_available">Biometric features are currently unavailable</string>
     <string name="enroll_biometric">Enroll biometric from phone settings</string>
-    <string name="nothing_found">Nothing here at the moment</string>
+    <string name="nothing_found">There is no data to display at the moment.</string>
     <string name="created_with">Created %1$s</string>
     <string name="updated_with">Updated %1$s</string>
     <plurals name="note_delete_message">
@@ -75,7 +85,6 @@
     <string name="gitlab_saas_message_extra">On GitLab SaaS, you must use the GitLab UI to create groups without a parent group.</string>
     <string name="group_created">New group created</string>
     <string name="starred_projects">Starred projects</string>
-    <string name="most_visited_empty_message">You haven\'t visited any projects yet. Explore projects to list them here.</string>
     <string name="archived_project">This is an archived project. Repository and other project resources are read-only.</string>
     <string name="project_starred">The project has been starred successfully</string>
     <string name="project_unstarred">The project has been unstarred successfully</string>
@@ -135,8 +144,8 @@
     <string name="branch_ref_required">Branch name and ref are required</string>
     <string name="branch_created">"Branch %1$s created successfully"</string>
     <string name="source_target_branch_empty_error">Both the target and source branches are required</string>
-    <string name="user_followers">Followers %1$s</string>
-    <string name="user_following">Following %1$s</string>
+    <string name="user_followers">%s followers</string>
+    <string name="user_following">%s following</string>
     <string name="remove_source_branch">Remove source branch</string>
     <string name="create_branch">Create branch</string>
     <string name="squash_commits">Squash all commits</string>
@@ -158,8 +167,6 @@
     <string name="activity_created_wiki_page">\@%1$s created wiki page</string>
     <string name="activity_created_project">\@%1$s created project</string>
     <string name="activity_updated_wiki_page">\@%1$s updated wiki page</string>
-
-    <!-- merge requests -->
     <string name="activity_mr_approvals">Approvals: %1$d / %2$d</string>
     <string name="activity_mr_not_eligible">You can not approve this merge request</string>
     <string name="mr_approve_failed">Approval failed. You are probably not authorized to approve this merge request.</string>
@@ -182,7 +189,6 @@
     <string name="mr_created">Merge request created successfully</string>
     <string name="merge_requests">Merge requests</string>
     <string name="mr_branches_are_same">Target and source branches cannot be the same</string>
-
     <string name="revoke_approval">Revoke approval</string>
     <string name="files_ref">Files - ref:%1$s</string>
     <string name="exclude_files_in_fileviewer">This file type/size is not supported by the file viewer. You can download it to your phone instead.</string>
@@ -193,7 +199,6 @@
     <string name="file_viewer_notification_description_finished">Downloaded %1$s</string>
     <string name="file_viewer_notification_title_failed">Download failed</string>
     <string name="file_viewer_notification_description_failed">Couldn\'t download %1$s</string>
-    <string name="delete_all_most_visited_dialog_message">This will delete all projects added to Most Visited. Press Clear to remove them.</string>
     <string name="create_file">Create file</string>
     <string name="filename">File name</string>
     <string name="filename_hint">with directory: app/config.json</string>
@@ -272,20 +277,6 @@
     <string name="go_to_app">Go to App</string>
     <string name="how_to_get_access_token">How to get access token</string>
     <string name="fetching_data">Fetching data</string>
-    <string name="active_today">Active today</string>
-    <string name="active_yesterday">Active yesterday</string>
-    <plurals name="active_days_ago">
-        <item quantity="one">Active %d day ago</item>
-        <item quantity="other">Active %d days ago</item>
-    </plurals>
-    <plurals name="active_weeks_ago">
-        <item quantity="one">Active %d week ago</item>
-        <item quantity="other">Active %d weeks ago</item>
-    </plurals>
-    <plurals name="active_months_ago">
-        <item quantity="one">Active %d month ago</item>
-        <item quantity="other">Active %d months ago</item>
-    </plurals>
     <string name="member_since">Member since %s</string>
     <string name="todo_list">To-Do List</string>
     <string name="todo_empty_message">All caught up! No pending todos.</string>
@@ -298,6 +289,73 @@
     <string name="todo_action_approval_required">Approval required</string>
     <string name="todo_action_unmergeable">Cannot be merged</string>
     <string name="todo_action_directly_addressed">Directly addressed</string>
+    <string name="time_in_moments">in moments</string>
+    <string name="time_in_minute">in %d minute</string>
+    <string name="time_in_minutes">in %d minutes</string>
+    <string name="time_in_hour">in %d hour</string>
+    <string name="time_in_hours">in %d hours</string>
+    <string name="time_in_day">in %d day</string>
+    <string name="time_in_days">in %d days</string>
+    <string name="time_in_month">in %d month</string>
+    <string name="time_in_months">in %d months</string>
+    <string name="time_in_year">in %d year</string>
+    <string name="time_in_years">in %d years</string>
+    <string name="time_moments_ago">moments ago</string>
+    <string name="time_minute_ago">%d minute ago</string>
+    <string name="time_minutes_ago">%d minutes ago</string>
+    <string name="time_hour_ago">%d hour ago</string>
+    <string name="time_hours_ago">%d hours ago</string>
+    <string name="time_day_ago">%d day ago</string>
+    <string name="time_days_ago">%d days ago</string>
+    <string name="time_month_ago">%d month ago</string>
+    <string name="time_months_ago">%d months ago</string>
+    <string name="time_year_ago">%d year ago</string>
+    <string name="time_years_ago">%d years ago</string>
+    <string name="most_visited_subtitle">Projects that you frequently visited</string>
+    <string name="notes_subtitle">Take some quick notes</string>
+    <string name="settings_subtitle">Theme, language, backup &amp; more</string>
+    <string name="activities_subtitle">Recent account activity</string>
+    <string name="issues_subtitle">Manage issues</string>
+    <string name="mr_subtitle">Manage merge requests</string>
+    <string name="snippets_subtitle">Browse snippets</string>
+    <string name="good_morning">Good morning</string>
+    <string name="good_afternoon">Good afternoon</string>
+    <string name="good_evening">Good evening</string>
+    <string name="nothing_found_title">Nothing here</string>
+    <string name="explore_search_subtitle">Search across projects, issues, merge requests, and users</string>
+    <string name="namespace">Namespace</string>
+    <string name="default_branch">Default branch</string>
+    <string name="enable_lfs">Enable LFS</string>
+    <string name="enable_email_notifications">Enable email notifications</string>
+    <string name="remove_all_projects">Remove all projects</string>
+    <string name="remove_all_projects_message">This will remove all most visited projects from the list.</string>
+    <string name="all_projects_removed">All projects removed</string>
+    <string name="project_removed">Project removed</string>
+    <string name="take_notes">Take notes</string>
+    <string name="scope_created_by_me">Created by me</string>
+    <string name="scope_assigned_to_me">Assigned to me</string>
+    <string name="scope_review_for_me">Review requested</string>
+    <string name="order_by">Order by</string>
+    <string name="newest_first">Newest first</string>
+    <string name="oldest_first">Oldest first</string>
+    <string name="show_labels_in_lists">Show labels in issue/MR lists</string>
+    <string name="show_labels_colors">Color labels in lists (uses generated colors)</string>
+    <string name="copied_to_clipboard">Copied to clipboard</string>
+    <string name="image_load_error">Failed to load the image</string>
+    <string name="copy_content">Copy content</string>
+    <string name="share_url">Share URL</string>
+    <string name="share_content">Share content</string>
+    <string name="choose_what_to_share">Choose what to share</string>
+    <string name="choose_what_to_copy">Choose what to copy</string>
+    <string name="no_notes">No notes found</string>
+    <string name="edit_snippet">Edit snippet</string>
+    <string name="snippet_updated">Snippet updated</string>
+    <string name="group_updated">Group updated</string>
+    <string name="create_group">Create Group</string>
+    <string name="edit_group">Edit group</string>
+    <string name="disable_mentions">Disable mentions</string>
+    <string name="create_as_subgroup">Create as subgroup</string>
+    <string name="parent_group">Parent group</string>
 
     <!-- errors -->
     <string name="generic_error">An unexpected error occurred</string>
@@ -314,7 +372,7 @@
     <string name="version_unsupported_old">Unsupported old version (%1$s) of GitLab detected. Please update to the latest stable version. If you continue, some features may not work.</string>
     <string name="version_unsupported_new">New GitLab version detected! Please update LabNex!</string>
     <string name="version_alert_dialog_header">Unsupported version of GitLab</string>
-    <string name="not_authorized">Not authorized. Check your credentials and try again</string>
+    <string name="not_authorized">Not authorized. You may not be allowed to perform this action or check your credentials and try again</string>
     <string name="generic_server_response_error">We cannot reach the server at the moment. Please check again later</string>
     <string name="generic_api_error">GitLab has returned an error. Code %1$d</string>
     <string name="authorization_error">Authorization Error</string>
@@ -330,6 +388,7 @@
     <string name="issue_detail_not_available">Issue details not available</string>
     <string name="mr_detail_not_available">Merge request details not available</string>
     <string name="project_info_not_available">Project information not available</string>
+    <string name="not_found">Resource not found</string>
     <!-- errors -->
 
     <!-- generic copy -->
@@ -419,7 +478,29 @@
     <string name="languages">Languages</string>
     <string name="backup">Backup</string>
     <string name="there">there</string>
-    <string name="separator_dot" translatable="false">●</string>
     <string name="plan">plan</string>
+    <string name="total">Total</string>
+    <string name="users">Users</string>
+    <string name="reset">Reset</string>
+    <string name="all">All</string>
+    <string name="epics">Epics</string>
+    <string name="admin">Admin</string>
+    <string name="stars">Stars</string>
+    <string name="bio">Bio</string>
+    <string name="milestone">Milestone</string>
+    <string name="state">State</string>
+    <string name="scope">Scope</string>
+    <string name="sort">Sort</string>
+    <string name="apply">Apply</string>
+    <string name="created">Created</string>
+    <string name="updated">Updated</string>
+    <string name="tasks">Tasks</string>
+    <string name="share">Share</string>
+    <string name="markdown">Markdown</string>
+    <string name="collapse">Collapse</string>
+    <string name="fullscreen">Fullscreen</string>
+    <string name="untitled">Untitled</string>
+    <string name="snippet">Snippet</string>
+    <string name="group">Group</string>
     <!-- generic copy -->
 </resources>

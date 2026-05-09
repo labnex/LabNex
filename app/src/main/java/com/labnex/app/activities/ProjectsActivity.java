@@ -1,159 +1,147 @@
 package com.labnex.app.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.View;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.labnex.app.R;
 import com.labnex.app.adapters.ProjectsAdapter;
+import com.labnex.app.bottomsheets.CreateProjectBottomSheet;
 import com.labnex.app.databinding.ActivityProjectsBinding;
-import com.labnex.app.helpers.Snackbar;
+import com.labnex.app.helpers.EndlessRecyclerViewScrollListener;
+import com.labnex.app.helpers.Toasty;
+import com.labnex.app.helpers.UIHelper;
 import com.labnex.app.viewmodels.ProjectsViewModel;
-import java.util.Objects;
+import java.util.ArrayList;
 
 /**
  * @author mmarif
  */
-public class ProjectsActivity extends BaseActivity
-		implements CreateProjectActivity.UpdateInterface {
+public class ProjectsActivity extends BaseActivity {
 
 	private ActivityProjectsBinding binding;
-	private ProjectsViewModel projectsViewModel;
+	private ProjectsViewModel viewModel;
 	private ProjectsAdapter adapter;
-	private int page = 1;
-	private int resultLimit;
-	private int userId;
 	private String source;
+	private int userId;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-
 		super.onCreate(savedInstanceState);
 		binding = ActivityProjectsBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
-		projectsViewModel = new ViewModelProvider(this).get(ProjectsViewModel.class);
+		UIHelper.applyEdgeToEdge(
+				this, binding.dockedToolbar, binding.recyclerView, binding.pullToRefresh, null);
 
-		CreateProjectActivity.setUpdateListener(this);
+		viewModel = new ViewModelProvider(this).get(ProjectsViewModel.class);
 
-		resultLimit = getAccount().getMaxPageLimit();
 		userId = getAccount().getUserId();
 
 		if (getIntent().getStringExtra("source") != null) {
-
 			source = getIntent().getStringExtra("source");
-
-			if (Objects.requireNonNull(source).equalsIgnoreCase("starred")) {
-				binding.projectsText.setText(R.string.starred_projects);
-			}
-
-			if (Objects.requireNonNull(source).equalsIgnoreCase("forks")) {
-				binding.newProject.setVisibility(View.GONE);
-				binding.projectsText.setText(R.string.forks);
+			if ("forks".equalsIgnoreCase(source)) {
+				binding.dockContainer.removeView(binding.addNew);
 				userId = getIntent().getIntExtra("projectId", 0);
 			}
 		}
 
-		binding.recyclerView.setHasFixedSize(true);
-		binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
+		setupRecyclerView();
+		setupPullToRefresh();
+		observeViewModel();
 
-		binding.bottomAppBar.setNavigationOnClickListener(bottomAppBar -> finish());
+		binding.btnBack.setOnClickListener(v -> finish());
 
-		binding.newProject.setOnClickListener(
-				createProject -> {
-					Intent intent = new Intent(ctx, CreateProjectActivity.class);
-					ctx.startActivity(intent);
+		binding.addNew.setOnClickListener(
+				v -> {
+					CreateProjectBottomSheet sheet = new CreateProjectBottomSheet();
+					sheet.show(getSupportFragmentManager(), "createProjectSheet");
 				});
 
-		binding.pullToRefresh.setOnRefreshListener(
-				() ->
-						new Handler(Looper.getMainLooper())
-								.postDelayed(
-										() -> {
-											page = 1;
-											binding.pullToRefresh.setRefreshing(false);
-											fetchDataAsync();
-											binding.progressBar.setVisibility(View.VISIBLE);
-										},
-										250));
-
-		fetchDataAsync();
+		viewModel.loadProjects(ctx, source, userId);
 	}
 
-	private void fetchDataAsync() {
+	private void setupRecyclerView() {
+		adapter = new ProjectsAdapter(ctx, new ArrayList<>(), source != null ? source : "projects");
+		LinearLayoutManager layoutManager = new LinearLayoutManager(ctx);
+		binding.recyclerView.setLayoutManager(layoutManager);
+		binding.recyclerView.setAdapter(adapter);
 
-		projectsViewModel
-				.getProjects(
-						ctx,
-						source,
-						"multi",
-						userId,
-						resultLimit,
-						page,
-						ProjectsActivity.this,
-						binding.bottomAppBar)
+		EndlessRecyclerViewScrollListener scrollListener =
+				new EndlessRecyclerViewScrollListener(layoutManager) {
+					@Override
+					public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+						viewModel.loadNextPage(ctx);
+					}
+				};
+		binding.recyclerView.addOnScrollListener(scrollListener);
+	}
+
+	private void setupPullToRefresh() {
+		binding.pullToRefresh.setOnRefreshListener(
+				() -> viewModel.loadProjects(ctx, source, userId));
+	}
+
+	private void observeViewModel() {
+		viewModel
+				.getIsLoading()
 				.observe(
-						ProjectsActivity.this,
-						listMain -> {
-							adapter = new ProjectsAdapter(ProjectsActivity.this, listMain, source);
-							adapter.setLoadMoreListener(
-									new ProjectsAdapter.OnLoadMoreListener() {
-
-										@Override
-										public void onLoadMore() {
-
-											page += 1;
-											projectsViewModel.loadMoreProjects(
-													ctx,
-													source,
-													"multi",
-													userId,
-													resultLimit,
-													page,
-													adapter,
-													ProjectsActivity.this,
-													binding.bottomAppBar);
-											binding.progressBar.setVisibility(View.VISIBLE);
-										}
-
-										@Override
-										public void onLoadFinished() {
-
-											binding.progressBar.setVisibility(View.GONE);
-										}
-									});
-
-							if (adapter.getItemCount() > 0) {
-
-								binding.recyclerView.setAdapter(adapter);
+						this,
+						loading -> {
+							if (Boolean.TRUE.equals(loading)) {
+								binding.progressBar.setVisibility(View.VISIBLE);
+								binding.recyclerView.setVisibility(View.GONE);
 								binding.nothingFoundFrame.getRoot().setVisibility(View.GONE);
 							} else {
-
-								adapter.notifyDataChanged();
-								binding.recyclerView.setAdapter(adapter);
-								binding.nothingFoundFrame.getRoot().setVisibility(View.VISIBLE);
+								binding.progressBar.setVisibility(View.GONE);
+								binding.pullToRefresh.setRefreshing(false);
 							}
+						});
 
-							binding.progressBar.setVisibility(View.GONE);
+		viewModel
+				.getProjectsList()
+				.observe(
+						this,
+						projects -> {
+							if (Boolean.TRUE.equals(viewModel.getIsLoading().getValue())) return;
+
+							if (projects == null || projects.isEmpty()) {
+								binding.nothingFoundFrame.getRoot().setVisibility(View.VISIBLE);
+								binding.recyclerView.setVisibility(View.GONE);
+							} else {
+								binding.nothingFoundFrame.getRoot().setVisibility(View.GONE);
+								binding.recyclerView.setVisibility(View.VISIBLE);
+								adapter.updateList(projects);
+							}
+						});
+
+		viewModel
+				.getError()
+				.observe(
+						this,
+						errorMsg -> {
+							if (errorMsg == null) return;
+							switch (errorMsg) {
+								case "auth_error":
+									Toasty.show(ctx, getString(R.string.not_authorized));
+									break;
+								case "access_forbidden_403":
+									Toasty.show(ctx, getString(R.string.access_forbidden_403));
+									break;
+								case "generic_error":
+									Toasty.show(ctx, getString(R.string.generic_error));
+									break;
+								default:
+									Toasty.show(ctx, errorMsg);
+									break;
+							}
+							viewModel.clearError();
 						});
 	}
 
 	@Override
-	public void updateDataListener(String str) {
-
-		if (str.equalsIgnoreCase("created")) {
-			Snackbar.info(
-					ctx,
-					findViewById(android.R.id.content),
-					binding.bottomAppBar,
-					getString(R.string.project_created));
-		}
-
-		adapter.clearAdapter();
-		page = 1;
-		fetchDataAsync();
+	protected void onGlobalRefresh() {
+		viewModel.loadProjects(ctx, source, userId);
 	}
 }
