@@ -1,0 +1,9 @@
+8.0.0-rc1
+
+LabNex 8.0.0 will change how you surf your GitLab. The experience will be smooth, feature-rich, and offer more screen space for content.
+
+It is still a work in progress and may have incomplete features and bugs. If you find any bugs, please report them.
+
+A full list of features and improvements will be published with the stable release.
+
+Release Notes: https://github.com/labnex/LabNex/releases
