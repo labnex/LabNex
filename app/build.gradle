@@ -12,7 +12,7 @@ android {
         minSdk = 26
         targetSdk = 37
         versionCode 795
-        versionName "8.0.0-dev"
+        versionName "8.0.0-rc1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
