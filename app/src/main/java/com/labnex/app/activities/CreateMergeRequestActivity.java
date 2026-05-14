@@ -22,8 +22,7 @@ import retrofit2.Callback;
 /**
  * @author mmarif
  */
-public class CreateMergeRequestActivity extends BaseActivity
-		implements BottomSheetListener, BranchesBottomSheet.MrUpdateInterface {
+public class CreateMergeRequestActivity extends BaseActivity implements BottomSheetListener {
 
 	ActivityCreateMergeRequestBinding binding;
 	private int projectId;
@@ -47,7 +46,6 @@ public class CreateMergeRequestActivity extends BaseActivity
 		binding = ActivityCreateMergeRequestBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
-		BranchesBottomSheet.setMrUpdateListener(this);
 		Bundle bsBundle = new Bundle();
 
 		projectsContext = ProjectsContext.fromIntent(getIntent());
@@ -146,16 +144,6 @@ public class CreateMergeRequestActivity extends BaseActivity
 
 					createMergeRequest(title, description, targetBranch, sourceBranch);
 				});
-	}
-
-	@Override
-	public void mrUpdateDataListener(String str, String type) {
-
-		if (type.equalsIgnoreCase("target")) {
-			binding.targetBranch.setText(str);
-		} else if (type.equalsIgnoreCase("source")) {
-			binding.sourceBranch.setText(str);
-		}
 	}
 
 	private void createMergeRequest(

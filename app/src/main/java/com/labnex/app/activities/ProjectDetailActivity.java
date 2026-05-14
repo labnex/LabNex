@@ -38,7 +38,7 @@ import java.util.Map;
  * @author mmarif
  */
 public class ProjectDetailActivity extends BaseActivity
-		implements BranchesBottomSheet.UpdateInterface {
+		implements BranchesBottomSheet.OnBranchSelectedListener {
 
 	private ActivityProjectDetailBinding binding;
 	private ProjectDetailViewModel viewModel;
@@ -78,7 +78,6 @@ public class ProjectDetailActivity extends BaseActivity
 
 		viewModel = new ViewModelProvider(this).get(ProjectDetailViewModel.class);
 
-		BranchesBottomSheet.setUpdateListener(this);
 		projectsContext = ProjectsContext.fromIntent(getIntent());
 		projectId = projectsContext.getProjectId();
 		loadLanguageColors();
@@ -100,13 +99,13 @@ public class ProjectDetailActivity extends BaseActivity
 	}
 
 	@Override
-	public void updateDataListener(String branchName, String type) {
-		branch = branchName;
+	public void onBranchSelected(String branch) {
+		this.branch = branch;
 		ItemProjectActionCardBinding card =
 				ItemProjectActionCardBinding.bind(binding.sectionActions.cardBranch.getRoot());
-		card.actionTitle.setText(branchName);
+		card.actionTitle.setText(branch);
 		if (readmePath != null) {
-			viewModel.loadReadme(ctx, projectId, branchName, readmePath);
+			viewModel.loadReadme(ctx, projectId, branch, readmePath);
 		}
 	}
 
@@ -116,13 +115,9 @@ public class ProjectDetailActivity extends BaseActivity
 				R.drawable.ic_branch,
 				0,
 				COLOR_CODE,
-				v -> {
-					Bundle args = new Bundle();
-					args.putInt("projectId", projectId);
-					args.putString("source", "project_detail");
-					// new BranchesBottomSheet().setArguments(args)
-					//		.show(getSupportFragmentManager(), "branchesBottomSheet");
-				});
+				v ->
+						BranchesBottomSheet.newInstance(projectId)
+								.show(getSupportFragmentManager(), "branchesSheet"));
 
 		setupCard(
 				binding.sectionActions.cardFiles.getRoot(),
@@ -262,8 +257,8 @@ public class ProjectDetailActivity extends BaseActivity
 						"create_issue",
 						R.string.create_issue,
 						R.drawable.ic_add,
-						com.google.android.material.R.attr.colorPrimaryContainer,
-						com.google.android.material.R.attr.colorOnPrimaryContainer));
+						com.google.android.material.R.attr.colorSecondaryContainer,
+						com.google.android.material.R.attr.colorOnSecondaryContainer));
 		items.add(
 				new GenericMenuItemModel(
 						"create_mr",
@@ -273,25 +268,32 @@ public class ProjectDetailActivity extends BaseActivity
 						com.google.android.material.R.attr.colorOnSecondaryContainer));
 		items.add(
 				new GenericMenuItemModel(
+						"create_branch",
+						R.string.create_branch,
+						R.drawable.ic_add,
+						com.google.android.material.R.attr.colorSecondaryContainer,
+						com.google.android.material.R.attr.colorOnSecondaryContainer));
+		items.add(
+				new GenericMenuItemModel(
 						"create_milestone",
 						R.string.create_milestone,
 						R.drawable.ic_add,
-						com.google.android.material.R.attr.colorTertiaryContainer,
-						com.google.android.material.R.attr.colorOnTertiaryContainer));
+						com.google.android.material.R.attr.colorSecondaryContainer,
+						com.google.android.material.R.attr.colorOnSecondaryContainer));
 		items.add(
 				new GenericMenuItemModel(
 						"create_label",
 						R.string.create_new_label,
 						R.drawable.ic_add,
-						com.google.android.material.R.attr.colorPrimaryContainer,
-						com.google.android.material.R.attr.colorOnPrimaryContainer));
+						com.google.android.material.R.attr.colorSecondaryContainer,
+						com.google.android.material.R.attr.colorOnSecondaryContainer));
 		items.add(
 				new GenericMenuItemModel(
 						"fork_project",
 						R.string.fork,
 						R.drawable.ic_forks,
-						com.google.android.material.R.attr.colorSecondaryContainer,
-						com.google.android.material.R.attr.colorOnSecondaryContainer));
+						com.google.android.material.R.attr.colorTertiaryContainer,
+						com.google.android.material.R.attr.colorOnTertiaryContainer));
 
 		GenericMenuBottomSheet sheet =
 				GenericMenuBottomSheet.newInstance(
@@ -318,6 +320,10 @@ public class ProjectDetailActivity extends BaseActivity
 													projectId,
 													ctx)
 											.getIntent(ctx, CreateMergeRequestActivity.class));
+							break;
+						case "create_branch":
+							CreateBranchBottomSheet.newInstance(projectId, branch)
+									.show(getSupportFragmentManager(), "createBranchSheet");
 							break;
 						case "create_milestone":
 							// milestone sheet

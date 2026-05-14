@@ -136,7 +136,7 @@
     <string name="branch_name">Branch name</string>
     <string name="branch_ref_hint">Branch name or commit SHA to create branch from</string>
     <string name="branch_ref_required">Branch name and ref are required</string>
-    <string name="branch_created">"Branch %1$s created successfully"</string>
+    <string name="branch_created">Branch %1$s created successfully</string>
     <string name="source_target_branch_empty_error">Both the target and source branches are required</string>
     <string name="user_followers">%s followers</string>
     <string name="user_following">%s following</string>
@@ -356,6 +356,7 @@
     <string name="invalid_color">Invalid color code</string>
     <string name="invalid_length">Must be 6 characters</string>
     <string name="label_name">Label name</string>
+    <string name="branch_name_invalid">Only letters, numbers, dots, hyphens and underscores allowed</string>
 
     <!-- errors -->
     <string name="generic_error">An unexpected error occurred</string>
@@ -503,5 +504,6 @@
     <string name="snippet">Snippet</string>
     <string name="group">Group</string>
     <string name="starrers">Starrers</string>
+    <string name="branches">Branches</string>
     <!-- generic copy -->
 </resources>

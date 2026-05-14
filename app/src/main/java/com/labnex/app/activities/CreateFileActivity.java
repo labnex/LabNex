@@ -28,8 +28,7 @@ import retrofit2.Callback;
 /**
  * @author mmarif
  */
-public class CreateFileActivity extends BaseActivity
-		implements BottomSheetListener, BranchesBottomSheet.CreateFileUpdateInterface {
+public class CreateFileActivity extends BaseActivity implements BottomSheetListener {
 
 	ActivityCreateFileBinding binding;
 	public ProjectsContext projectsContext;
@@ -94,7 +93,6 @@ public class CreateFileActivity extends BaseActivity
 		projectId = projectsContext.getProjectId();
 
 		Bundle bsBundle = new Bundle();
-		BranchesBottomSheet.setCreateFileUpdateListener(CreateFileActivity.this);
 
 		originalFilename = getIntent().getStringExtra("filename");
 		originalBranch = getIntent().getStringExtra("branch");
@@ -494,12 +492,6 @@ public class CreateFileActivity extends BaseActivity
 	private void enableButton() {
 		binding.create.setEnabled(true);
 		binding.create.setAlpha(1F);
-	}
-
-	@Override
-	public void createFileUpdateDataListener(String str, String type) {
-
-		binding.chooseBranch.setText(str);
 	}
 
 	@Override
