@@ -1,711 +1,662 @@
 package com.labnex.app.activities;
 
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.graphics.Color;
-import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
-import android.view.LayoutInflater;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.LinearLayout;
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
+import androidx.lifecycle.ViewModelProvider;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.chip.Chip;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.gson.Gson;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.labnex.app.R;
-import com.labnex.app.bottomsheets.BranchesBottomSheet;
-import com.labnex.app.bottomsheets.ProjectLabelsBottomSheet;
-import com.labnex.app.bottomsheets.ProjectMembersBottomSheet;
-import com.labnex.app.bottomsheets.ProjectMilestonesBottomSheet;
-import com.labnex.app.bottomsheets.ProjectReleasesBottomSheet;
-import com.labnex.app.bottomsheets.ProjectTagsBottomSheet;
-import com.labnex.app.bottomsheets.ProjectWikisBottomSheet;
-import com.labnex.app.clients.RetrofitClient;
+import com.labnex.app.bottomsheets.*;
 import com.labnex.app.contexts.ProjectsContext;
 import com.labnex.app.databinding.ActivityProjectDetailBinding;
-import com.labnex.app.databinding.BottomSheetProjectMenuBinding;
+import com.labnex.app.databinding.ItemProjectActionCardBinding;
+import com.labnex.app.helpers.AppUIStateManager;
+import com.labnex.app.helpers.AvatarGenerator;
 import com.labnex.app.helpers.Markdown;
-import com.labnex.app.helpers.TextDrawable.ColorGenerator;
-import com.labnex.app.helpers.TextDrawable.TextDrawable;
 import com.labnex.app.helpers.Toasty;
+import com.labnex.app.helpers.UIHelper;
 import com.labnex.app.helpers.Utils;
-import com.labnex.app.interfaces.BottomSheetListener;
-import com.labnex.app.models.branches.Branches;
-import com.labnex.app.models.error.ErrorResponse;
+import com.labnex.app.models.app.CardColors;
+import com.labnex.app.models.app.GenericMenuItemModel;
 import com.labnex.app.models.projects.Projects;
-import com.labnex.app.models.repository.FileContents;
+import com.labnex.app.viewmodels.ProjectDetailViewModel;
 import com.vdurmont.emoji.EmojiParser;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * @author mmarif
  */
 public class ProjectDetailActivity extends BaseActivity
-		implements BottomSheetListener, BranchesBottomSheet.UpdateInterface {
+		implements BranchesBottomSheet.UpdateInterface {
 
 	private ActivityProjectDetailBinding binding;
-	public ProjectsContext projectsContext;
+	private ProjectDetailViewModel viewModel;
+	private ProjectsContext projectsContext;
 	private int projectId;
 	private String branch;
-	private String README;
-	private String source;
-	private Bundle bsBundle;
+	private String readmePath;
 	private Map<String, Integer> languageColors;
 
-	public void onCreate(Bundle savedInstanceState) {
+	private static final CardColors COLOR_CODE =
+			new CardColors(
+					com.google.android.material.R.attr.colorPrimaryContainer,
+					com.google.android.material.R.attr.colorOnPrimaryContainer);
 
+	private static final CardColors COLOR_ISSUE_MR =
+			new CardColors(
+					com.google.android.material.R.attr.colorSurfaceContainer,
+					com.google.android.material.R.attr.colorOnSurface);
+
+	private static final CardColors COLOR_META =
+			new CardColors(
+					com.google.android.material.R.attr.colorTertiaryContainer,
+					com.google.android.material.R.attr.colorOnTertiaryContainer);
+
+	private static final CardColors COLOR_OTHER =
+			new CardColors(
+					com.google.android.material.R.attr.colorSurfaceContainerHighest,
+					com.google.android.material.R.attr.colorOnSurface);
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		binding = ActivityProjectDetailBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
-		BranchesBottomSheet.setUpdateListener(ProjectDetailActivity.this);
+		UIHelper.applyEdgeToEdge(this, binding.dockedToolbar, binding.scrollView, null, null);
 
+		viewModel = new ViewModelProvider(this).get(ProjectDetailViewModel.class);
+
+		BranchesBottomSheet.setUpdateListener(this);
 		projectsContext = ProjectsContext.fromIntent(getIntent());
 		projectId = projectsContext.getProjectId();
-
 		loadLanguageColors();
 
-		bsBundle = new Bundle();
+		binding.btnBack.setOnClickListener(v -> finish());
+		binding.btnStar.setOnClickListener(v -> viewModel.toggleStar(ctx, projectId));
+		binding.btnMenu.setOnClickListener(v -> showProjectMenu());
 
-		if (getIntent().getStringExtra("source") != null) {
+		setupActionCards();
+		observeViewModel();
 
-			source = getIntent().getStringExtra("source");
-
-			/*if (Objects.requireNonNull(source).equalsIgnoreCase("starred")) {
-				binding.projectsText.setText(R.string.starred_projects);
-			}*/
-		} else {
-			source = "";
-		}
-
-		binding.filesMainFrame.setOnClickListener(
-				files -> {
-					ProjectsContext project =
-							new ProjectsContext(projectsContext.getProject(), ctx);
-					Intent intent = project.getIntent(ctx, FilesBrowserActivity.class);
-					intent.putExtra("source", "project");
-					intent.putExtra("projectName", projectsContext.getProjectName());
-					intent.putExtra("path", projectsContext.getPath());
-					intent.putExtra("projectId", projectId);
-					intent.putExtra("branch", branch);
-					ctx.startActivity(intent);
-				});
-
-		binding.commitsMainFrame.setOnClickListener(
-				commits -> {
-					ProjectsContext project =
-							new ProjectsContext(projectsContext.getProject(), ctx);
-					Intent intent = project.getIntent(ctx, CommitsActivity.class);
-					intent.putExtra("source", "project");
-					intent.putExtra("projectName", projectsContext.getProjectName());
-					intent.putExtra("path", projectsContext.getPath());
-					intent.putExtra("projectId", projectId);
-					intent.putExtra("branch", branch);
-					ctx.startActivity(intent);
-				});
-
-		binding.issuesMainFrame.setOnClickListener(
-				issues -> {
-					ProjectsContext project =
-							new ProjectsContext(projectsContext.getProject(), ctx);
-					Intent intent = project.getIntent(ctx, IssuesActivity.class);
-					intent.putExtra("source", "project");
-					intent.putExtra("projectName", projectsContext.getProjectName());
-					intent.putExtra("path", projectsContext.getPath());
-					intent.putExtra("id", projectId);
-					ctx.startActivity(intent);
-				});
-
-		binding.mergeRequestsMainFrame.setOnClickListener(
-				mr -> {
-					ProjectsContext project =
-							new ProjectsContext(projectsContext.getProject(), ctx);
-					Intent intent = project.getIntent(ctx, MergeRequestsActivity.class);
-					intent.putExtra("source", "mr");
-					intent.putExtra("id", projectId);
-					intent.putExtra("projectName", projectsContext.getProjectName());
-					intent.putExtra("path", projectsContext.getPath());
-					ctx.startActivity(intent);
-				});
-
-		binding.releasesMainFrame.setOnClickListener(
-				releases -> {
-					bsBundle.putInt("projectId", projectId);
-					ProjectReleasesBottomSheet bottomSheet = new ProjectReleasesBottomSheet();
-					bottomSheet.setArguments(bsBundle);
-					bottomSheet.show(getSupportFragmentManager(), "projectReleasesBottomSheet");
-				});
-
-		binding.tagsMainFrame.setOnClickListener(
-				tags -> {
-					bsBundle.putInt("projectId", projectId);
-					ProjectTagsBottomSheet bottomSheet = new ProjectTagsBottomSheet();
-					bottomSheet.setArguments(bsBundle);
-					bottomSheet.show(getSupportFragmentManager(), "projectTagsBottomSheet");
-				});
-
-		binding.labelsMainFrame.setOnClickListener(
-				labels -> {
-					bsBundle.putInt("projectId", projectId);
-					ProjectLabelsBottomSheet bottomSheet = new ProjectLabelsBottomSheet();
-					bottomSheet.setArguments(bsBundle);
-					bottomSheet.show(getSupportFragmentManager(), "projectLabelsBottomSheet");
-				});
-
-		binding.milestonesMainFrame.setOnClickListener(
-				milestones -> {
-					bsBundle.putInt("projectId", projectId);
-					ProjectMilestonesBottomSheet bottomSheet = new ProjectMilestonesBottomSheet();
-					bottomSheet.setArguments(bsBundle);
-					bottomSheet.show(getSupportFragmentManager(), "projectMilestonesBottomSheet");
-				});
-
-		binding.membersMainFrame.setOnClickListener(
-				members -> {
-					bsBundle.putInt("projectId", projectId);
-					bsBundle.putString("type", "members");
-					ProjectMembersBottomSheet bottomSheet = new ProjectMembersBottomSheet();
-					bottomSheet.setArguments(bsBundle);
-					bottomSheet.show(getSupportFragmentManager(), "projectMembersBottomSheet");
-				});
-
-		binding.wikiMainFrame.setOnClickListener(
-				wiki -> {
-					bsBundle.putInt("projectId", projectId);
-					ProjectWikisBottomSheet bottomSheet = new ProjectWikisBottomSheet();
-					bottomSheet.setArguments(bsBundle);
-					bottomSheet.show(getSupportFragmentManager(), "projectWikisBottomSheet");
-				});
-
-		binding.bottomAppBar.setNavigationOnClickListener(bottomAppBar -> finish());
-
-		binding.bottomAppBar.setOnMenuItemClickListener(
-				menuItem -> {
-					if (menuItem.getItemId() == R.id.menu) {
-						showProjectMenuBottomSheet();
-						return true;
-					}
-					return false;
-				});
-
-		binding.newIssue.setOnClickListener(
-				newIssue -> {
-					ProjectsContext project =
-							new ProjectsContext(
-									projectsContext.getProjectName(),
-									projectsContext.getPath(),
-									projectsContext.getProjectId(),
-									ctx);
-					Intent intent = project.getIntent(ctx, CreateIssueActivity.class);
-					ctx.startActivity(intent);
-				});
-
-		binding.switchBranch.setOnClickListener(
-				branches -> {
-					bsBundle.putInt("projectId", projectId);
-					bsBundle.putString("source", "project_detail");
-					BranchesBottomSheet bottomSheet = new BranchesBottomSheet();
-					bottomSheet.setArguments(bsBundle);
-					bottomSheet.show(getSupportFragmentManager(), "branchesBottomSheet");
-				});
-
-		binding.starAProject.setOnClickListener(starAProject -> starAProject());
-
-		binding.unstarAProject.setOnClickListener(unstarAProject -> unstarAProject());
-
-		getProjectInfo();
-		loadUserStars();
+		viewModel.loadProject(ctx, projectId);
 	}
 
 	@Override
-	public void updateDataListener(String str, String type) {
-
-		branch = str;
-		binding.branchTitle.setText(str);
+	protected void onGlobalRefresh() {
+		viewModel.loadProject(ctx, projectId);
+		Log.e("ProjectDetail", "called");
 	}
 
-	private void showProjectMenuBottomSheet() {
-		BottomSheetProjectMenuBinding sheetBinding =
-				BottomSheetProjectMenuBinding.inflate(LayoutInflater.from(this), null, false);
-		BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
-		bottomSheetDialog.setContentView(sheetBinding.getRoot());
+	@Override
+	public void updateDataListener(String branchName, String type) {
+		branch = branchName;
+		ItemProjectActionCardBinding card =
+				ItemProjectActionCardBinding.bind(binding.sectionActions.cardBranch.getRoot());
+		card.actionTitle.setText(branchName);
+		if (readmePath != null) {
+			viewModel.loadReadme(ctx, projectId, branchName, readmePath);
+		}
+	}
 
-		LinearLayout createBranchItem = sheetBinding.createBranchItem;
-		createBranchItem.setOnClickListener(
+	private void setupActionCards() {
+		setupCard(
+				binding.sectionActions.cardBranch.getRoot(),
+				R.drawable.ic_branch,
+				0,
+				COLOR_CODE,
 				v -> {
-					showCreateBranchDialog();
-					bottomSheetDialog.dismiss();
+					Bundle args = new Bundle();
+					args.putInt("projectId", projectId);
+					args.putString("source", "project_detail");
+					// new BranchesBottomSheet().setArguments(args)
+					//		.show(getSupportFragmentManager(), "branchesBottomSheet");
 				});
 
-		bottomSheetDialog.show();
+		setupCard(
+				binding.sectionActions.cardFiles.getRoot(),
+				R.drawable.ic_files_code,
+				R.string.files,
+				COLOR_CODE,
+				v -> navigateTo(FilesBrowserActivity.class, "project"));
+
+		setupCard(
+				binding.sectionActions.cardIssues.getRoot(),
+				R.drawable.ic_issues,
+				R.string.issues,
+				COLOR_ISSUE_MR,
+				v -> navigateTo(IssuesActivity.class, "project"));
+
+		setupCard(
+				binding.sectionActions.cardMergeRequests.getRoot(),
+				R.drawable.ic_merge_request,
+				R.string.merge_requests,
+				COLOR_ISSUE_MR,
+				v -> navigateTo(MergeRequestsActivity.class, "mr"));
+
+		setupCard(
+				binding.sectionActions.cardCommits.getRoot(),
+				R.drawable.ic_commits,
+				R.string.commits,
+				COLOR_CODE,
+				v -> navigateTo(CommitsActivity.class, "project"));
+
+		setupCard(
+				binding.sectionActions.cardReleases.getRoot(),
+				R.drawable.ic_releases,
+				R.string.releases,
+				COLOR_META,
+				v -> showSheet(new ProjectReleasesBottomSheet(), "projectReleasesBottomSheet"));
+
+		setupCard(
+				binding.sectionActions.cardMilestones.getRoot(),
+				R.drawable.ic_milestones,
+				R.string.milestones,
+				COLOR_META,
+				v -> showSheet(new ProjectMilestonesBottomSheet(), "projectMilestonesBottomSheet"));
+
+		setupCard(
+				binding.sectionActions.cardTags.getRoot(),
+				R.drawable.ic_tags,
+				R.string.tags,
+				COLOR_META,
+				v -> showSheet(new ProjectTagsBottomSheet(), "projectTagsBottomSheet"));
+
+		setupCard(
+				binding.sectionActions.cardLabels.getRoot(),
+				R.drawable.ic_labels,
+				R.string.labels,
+				COLOR_META,
+				v ->
+						LabelsBottomSheet.newInstance("project", projectId)
+								.show(getSupportFragmentManager(), "labelsSheet"));
+
+		setupCard(
+				binding.sectionActions.cardWiki.getRoot(),
+				R.drawable.ic_wiki,
+				R.string.wiki,
+				COLOR_OTHER,
+				v -> showSheet(new ProjectWikisBottomSheet(), "projectWikisBottomSheet"));
+
+		setupCard(
+				binding.sectionActions.cardMembers.getRoot(),
+				R.drawable.ic_users,
+				R.string.members,
+				COLOR_OTHER,
+				v ->
+						MembersBottomSheet.newInstance("project", projectId)
+								.show(getSupportFragmentManager(), "membersSheet"));
+
+		setupCard(
+				binding.sectionActions.cardCopyInfo.getRoot(),
+				R.drawable.ic_copy,
+				R.string.copy_info,
+				COLOR_OTHER,
+				this::showCopyInfoSheet);
 	}
 
-	private void showCreateBranchDialog() {
+	private void setupCard(
+			View cardView,
+			int iconRes,
+			int defaultTextRes,
+			CardColors colors,
+			View.OnClickListener listener) {
+		ItemProjectActionCardBinding card = ItemProjectActionCardBinding.bind(cardView);
+		card.actionIcon.setImageResource(iconRes);
 
-		View dialogView =
-				LayoutInflater.from(this).inflate(R.layout.custom_create_branch_dialog, null);
-		EditText newBranchInput = dialogView.findViewById(R.id.branch_name);
-		EditText refInput = dialogView.findViewById(R.id.branch_ref);
+		TypedValue bgValue = new TypedValue();
+		ctx.getTheme().resolveAttribute(colors.backgroundAttr, bgValue, true);
+		card.actionCard.setCardBackgroundColor(bgValue.data);
 
-		MaterialAlertDialogBuilder builder =
-				new MaterialAlertDialogBuilder(this)
-						.setTitle(R.string.create_branch)
-						.setView(dialogView)
-						.setPositiveButton(R.string.create, null)
-						.setNeutralButton(R.string.cancel, null);
+		TypedValue tintValue = new TypedValue();
+		ctx.getTheme().resolveAttribute(colors.iconTextAttr, tintValue, true);
+		card.actionIcon.setImageTintList(ColorStateList.valueOf(tintValue.data));
+		card.actionTitle.setTextColor(tintValue.data);
+		card.actionChip.setTextColor(tintValue.data);
+		card.actionChip.setChipBackgroundColor(
+				ColorStateList.valueOf(
+						android.graphics.Color.argb(
+								30,
+								android.graphics.Color.red(tintValue.data),
+								android.graphics.Color.green(tintValue.data),
+								android.graphics.Color.blue(tintValue.data))));
 
-		final androidx.appcompat.app.AlertDialog dialog = builder.create();
-		dialog.show();
+		if (defaultTextRes != 0) card.actionTitle.setText(defaultTextRes);
+		cardView.setOnClickListener(listener);
+	}
 
-		dialog.getButton(DialogInterface.BUTTON_POSITIVE)
-				.setOnClickListener(
-						v -> {
-							String newBranch = newBranchInput.getText().toString().trim();
-							String ref = refInput.getText().toString().trim();
+	private <T extends BaseActivity> void navigateTo(Class<T> target, String source) {
+		ProjectsContext pc = new ProjectsContext(projectsContext.getProject(), ctx);
+		Intent intent = pc.getIntent(ctx, target);
+		intent.putExtra("source", source);
+		intent.putExtra("projectName", projectsContext.getProjectName());
+		intent.putExtra("path", projectsContext.getPath());
+		intent.putExtra("projectId", projectId);
+		intent.putExtra("id", projectId);
+		if (branch != null) intent.putExtra("branch", branch);
+		startActivity(intent);
+	}
 
-							if (newBranch.isEmpty() || ref.isEmpty()) {
-								Toasty.show(ctx, getString(R.string.branch_ref_required));
-							} else {
-								createBranch(newBranch, ref, dialog);
+	private void showSheet(BottomSheetDialogFragment sheet, String tag) {
+		Bundle args = new Bundle();
+		args.putInt("projectId", projectId);
+		sheet.setArguments(args);
+		sheet.show(getSupportFragmentManager(), tag);
+	}
+
+	private void showProjectMenu() {
+		List<GenericMenuItemModel> items = new ArrayList<>();
+		items.add(
+				new GenericMenuItemModel(
+						"create_issue",
+						R.string.create_issue,
+						R.drawable.ic_add,
+						com.google.android.material.R.attr.colorPrimaryContainer,
+						com.google.android.material.R.attr.colorOnPrimaryContainer));
+		items.add(
+				new GenericMenuItemModel(
+						"create_mr",
+						R.string.create_mr,
+						R.drawable.ic_add,
+						com.google.android.material.R.attr.colorSecondaryContainer,
+						com.google.android.material.R.attr.colorOnSecondaryContainer));
+		items.add(
+				new GenericMenuItemModel(
+						"create_milestone",
+						R.string.create_milestone,
+						R.drawable.ic_add,
+						com.google.android.material.R.attr.colorTertiaryContainer,
+						com.google.android.material.R.attr.colorOnTertiaryContainer));
+		items.add(
+				new GenericMenuItemModel(
+						"create_label",
+						R.string.create_new_label,
+						R.drawable.ic_add,
+						com.google.android.material.R.attr.colorPrimaryContainer,
+						com.google.android.material.R.attr.colorOnPrimaryContainer));
+		items.add(
+				new GenericMenuItemModel(
+						"fork_project",
+						R.string.fork,
+						R.drawable.ic_forks,
+						com.google.android.material.R.attr.colorSecondaryContainer,
+						com.google.android.material.R.attr.colorOnSecondaryContainer));
+
+		GenericMenuBottomSheet sheet =
+				GenericMenuBottomSheet.newInstance(
+						projectsContext.getProjectName(),
+						projectsContext.getProject().getNameWithNamespace(),
+						items);
+		sheet.setOnMenuItemClickListener(
+				id -> {
+					switch (id) {
+						case "create_issue":
+							startActivity(
+									new ProjectsContext(
+													projectsContext.getProjectName(),
+													projectsContext.getPath(),
+													projectId,
+													ctx)
+											.getIntent(ctx, CreateIssueActivity.class));
+							break;
+						case "create_mr":
+							startActivity(
+									new ProjectsContext(
+													projectsContext.getProjectName(),
+													projectsContext.getPath(),
+													projectId,
+													ctx)
+											.getIntent(ctx, CreateMergeRequestActivity.class));
+							break;
+						case "create_milestone":
+							// milestone sheet
+							break;
+						case "create_label":
+							CreateLabelBottomSheet.newInstance("project", projectId)
+									.show(getSupportFragmentManager(), "createLabelSheet");
+							break;
+						case "fork_project":
+							// fork a project
+							break;
+					}
+				});
+		sheet.show(getSupportFragmentManager(), "projectMenuSheet");
+	}
+
+	private void showCopyInfoSheet(View v) {
+		Projects project = viewModel.getProjectInfo().getValue();
+		if (project == null) return;
+
+		List<GenericMenuItemModel> items = new ArrayList<>();
+		items.add(
+				new GenericMenuItemModel(
+						"copy_id",
+						R.string.copy_project_id,
+						R.drawable.ic_info,
+						com.google.android.material.R.attr.colorPrimaryContainer,
+						com.google.android.material.R.attr.colorOnPrimaryContainer));
+		items.add(
+				new GenericMenuItemModel(
+						"copy_url",
+						R.string.copy_web_url,
+						R.drawable.ic_browser,
+						com.google.android.material.R.attr.colorSecondaryContainer,
+						com.google.android.material.R.attr.colorOnSecondaryContainer));
+		items.add(
+				new GenericMenuItemModel(
+						"copy_https",
+						R.string.copy_clone_https_url,
+						R.drawable.ic_copy,
+						com.google.android.material.R.attr.colorTertiaryContainer,
+						com.google.android.material.R.attr.colorOnTertiaryContainer));
+		items.add(
+				new GenericMenuItemModel(
+						"copy_ssh",
+						R.string.copy_ssh_url,
+						R.drawable.ic_copy,
+						com.google.android.material.R.attr.colorPrimaryContainer,
+						com.google.android.material.R.attr.colorOnPrimaryContainer));
+
+		GenericMenuBottomSheet sheet =
+				GenericMenuBottomSheet.newInstance(getString(R.string.copy_info), null, items);
+		sheet.setOnMenuItemClickListener(
+				id -> {
+					switch (id) {
+						case "copy_id":
+							Utils.copyToClipboard(
+									ctx,
+									String.valueOf(project.getId()),
+									getString(R.string.copied_to_clipboard));
+							break;
+						case "copy_url":
+							Utils.copyToClipboard(
+									ctx,
+									project.getWebUrl(),
+									getString(R.string.copied_to_clipboard));
+							break;
+						case "copy_https":
+							Utils.copyToClipboard(
+									ctx,
+									project.getHttpUrlToRepo(),
+									getString(R.string.copied_to_clipboard));
+							break;
+						case "copy_ssh":
+							Utils.copyToClipboard(
+									ctx,
+									project.getSshUrlToRepo(),
+									getString(R.string.copied_to_clipboard));
+							break;
+					}
+				});
+		sheet.show(getSupportFragmentManager(), "copyInfoSheet");
+	}
+
+	private void observeViewModel() {
+		viewModel
+				.getIsLoading()
+				.observe(
+						this,
+						loading -> {
+							binding.progressBar.setVisibility(
+									Boolean.TRUE.equals(loading) ? View.VISIBLE : View.GONE);
+						});
+
+		viewModel
+				.getProjectInfo()
+				.observe(
+						this,
+						project -> {
+							if (project == null) return;
+							populateHeader(project);
+							viewModel.loadLanguageStats(ctx, projectId);
+							viewModel.loadMrCount(ctx, projectId);
+							viewModel.checkStarStatus(
+									ctx, getAccount().getUserInfo().getId(), projectId);
+
+							branch = project.getDefaultBranch();
+							ItemProjectActionCardBinding branchCard =
+									ItemProjectActionCardBinding.bind(
+											binding.sectionActions.cardBranch.getRoot());
+							branchCard.actionTitle.setText(branch);
+
+							if (project.getReadmeUrl() != null) {
+								readmePath =
+										project.getReadmeUrl()
+												.substring(project.getReadmeUrl().length() - 9);
+								viewModel.loadReadme(ctx, projectId, branch, readmePath);
 							}
+						});
+
+		viewModel.getLanguageStats().observe(this, this::displayLanguageStats);
+
+		viewModel
+				.getReadmeContent()
+				.observe(
+						this,
+						content -> {
+							if (content != null && !content.isEmpty()) {
+								binding.sectionReadme.getRoot().setVisibility(View.VISIBLE);
+								Markdown.render(
+										ctx,
+										EmojiParser.parseToUnicode(content),
+										binding.sectionReadme.readme,
+										projectsContext);
+							}
+						});
+
+		viewModel
+				.getIsStarred()
+				.observe(
+						this,
+						starred -> {
+							binding.btnStar.setIconResource(
+									Boolean.TRUE.equals(starred)
+											? R.drawable.ic_star_filled
+											: R.drawable.ic_star);
+						});
+
+		viewModel
+				.getStarCount()
+				.observe(
+						this,
+						count -> {
+							if (count != null && count >= 0) {
+								binding.sectionHeader.projectStars.setText(
+										Utils.numberFormatter(count));
+							}
+						});
+
+		viewModel
+				.getActionSuccess()
+				.observe(
+						this,
+						success -> {
+							if (Boolean.TRUE.equals(success)) {
+								Log.e(
+										"ActionSuccess",
+										String.valueOf(viewModel.getIsStarred().getValue()));
+								Boolean starred = viewModel.getIsStarred().getValue();
+								Toasty.show(
+										ctx,
+										getString(
+												Boolean.TRUE.equals(starred)
+														? R.string.project_starred
+														: R.string.project_unstarred));
+								AppUIStateManager.refreshData();
+								viewModel.clearActionSuccess();
+							}
+						});
+
+		viewModel
+				.getMrCount()
+				.observe(
+						this,
+						count -> {
+							if (count != null && count >= 0) {
+								ItemProjectActionCardBinding mrCard =
+										ItemProjectActionCardBinding.bind(
+												binding.sectionActions.cardMergeRequests.getRoot());
+								mrCard.actionChip.setText(Utils.numberFormatter(count));
+							}
+						});
+
+		viewModel
+				.getError()
+				.observe(
+						this,
+						errorMsg -> {
+							if (errorMsg == null) return;
+							switch (errorMsg) {
+								case "auth_error":
+									Toasty.show(ctx, getString(R.string.not_authorized));
+									break;
+								case "access_forbidden_403":
+									Toasty.show(ctx, getString(R.string.access_forbidden_403));
+									break;
+								case "not_found":
+									Toasty.show(ctx, getString(R.string.not_found));
+								case "generic_error":
+									Toasty.show(ctx, getString(R.string.generic_error));
+									break;
+								default:
+									Toasty.show(ctx, errorMsg);
+									break;
+							}
+							viewModel.clearError();
 						});
 	}
 
-	private void createBranch(
-			String branch, String ref, androidx.appcompat.app.AlertDialog dialog) {
+	private void populateHeader(Projects project) {
+		binding.sectionHeader.basicInfoFrame.setVisibility(View.VISIBLE);
 
-		Call<Branches> call =
-				RetrofitClient.getApiInterface(this).createBranch(projectId, branch, ref);
+		if (project.isArchived()) {
+			binding.archivedProjectFrame.setVisibility(View.VISIBLE);
+			binding.btnStar.setEnabled(false);
+			binding.btnStar.setAlpha(0.4f);
+			binding.dockContainer.removeView(binding.btnMenu);
+		}
 
-		call.enqueue(
-				new Callback<>() {
-					@Override
-					public void onResponse(
-							@NonNull Call<Branches> call, @NonNull Response<Branches> response) {
+		if (project.getAvatarUrl() != null && "public".equalsIgnoreCase(project.getVisibility())) {
+			Glide.with(ctx)
+					.load(project.getAvatarUrl())
+					.diskCacheStrategy(DiskCacheStrategy.ALL)
+					.placeholder(R.drawable.ic_spinner)
+					.centerCrop()
+					.into(binding.sectionHeader.projectAvatar);
+		} else {
+			binding.sectionHeader.projectAvatar.setImageDrawable(
+					AvatarGenerator.getLetterAvatar(ctx, project.getName(), 48));
+		}
 
-						if (response.isSuccessful() && response.code() == 201) {
+		if ("private".equalsIgnoreCase(project.getVisibility())) {
+			binding.sectionHeader.visibilityIcon.setVisibility(View.VISIBLE);
+		}
 
-							Toasty.show(ctx, getString(R.string.branch_created, branch));
-							dialog.dismiss();
+		binding.sectionHeader.projectName.setText(project.getName());
+		binding.sectionHeader.projectPath.setText(project.getPathWithNamespace());
+
+		if (project.getDescription() != null && !project.getDescription().isEmpty()) {
+			binding.sectionHeader.projectDescription.setVisibility(View.VISIBLE);
+			binding.sectionHeader.projectDescription.setText(project.getDescription());
+		}
+
+		binding.sectionHeader.statsStars.setOnClickListener(
+				v -> {
+					MembersBottomSheet.newInstance("starrers", projectId)
+							.show(getSupportFragmentManager(), "membersSheet");
+				});
+
+		binding.sectionHeader.statsForks.setOnClickListener(
+				v -> {
+					ProjectsContext pc = new ProjectsContext(projectsContext.getProject(), ctx);
+					Intent intent = pc.getIntent(ctx, ProjectsActivity.class);
+					intent.putExtra("source", "forks");
+					intent.putExtra("projectId", projectId);
+					startActivity(intent);
+				});
+
+		binding.sectionHeader.projectStars.setText(Utils.numberFormatter(project.getStarCount()));
+		binding.sectionHeader.projectForks.setText(Utils.numberFormatter(project.getForksCount()));
+
+		ItemProjectActionCardBinding issuesCard =
+				ItemProjectActionCardBinding.bind(binding.sectionActions.cardIssues.getRoot());
+		issuesCard.actionChip.setVisibility(View.VISIBLE);
+		issuesCard.actionChip.setText(Utils.numberFormatter(project.getOpenIssuesCount()));
+
+		ItemProjectActionCardBinding mrCard =
+				ItemProjectActionCardBinding.bind(
+						binding.sectionActions.cardMergeRequests.getRoot());
+		mrCard.actionChip.setVisibility(View.VISIBLE);
+	}
+
+	private void displayLanguageStats(Map<String, Float> languages) {
+		if (languages == null || languages.isEmpty()) return;
+
+		binding.sectionHeader.languageBarContainer.setVisibility(View.VISIBLE);
+		binding.sectionHeader.languageLabel.setVisibility(View.VISIBLE);
+		binding.sectionHeader.languageBarContainer.removeAllViews();
+
+		List<Map.Entry<String, Float>> sorted = new ArrayList<>(languages.entrySet());
+		sorted.sort((a, b) -> Float.compare(b.getValue(), a.getValue()));
+
+		StringBuilder label = new StringBuilder();
+		int maxDisplay = Math.min(3, sorted.size());
+		for (int i = 0; i < maxDisplay; i++) {
+			String lang = sorted.get(i).getKey();
+			float pct = sorted.get(i).getValue();
+			if (i > 0) label.append(" · ");
+			label.append(String.format(Locale.US, "%s %.1f%%", lang, pct));
+		}
+		binding.sectionHeader.languageLabel.setText(label.toString());
+
+		binding.sectionHeader.languageBarContainer.post(
+				() -> {
+					float dp8 =
+							TypedValue.applyDimension(
+									TypedValue.COMPLEX_UNIT_DIP,
+									8,
+									getResources().getDisplayMetrics());
+					int totalWidth = binding.sectionHeader.languageBarContainer.getWidth();
+					if (totalWidth <= 0) return;
+					float total = 0;
+					for (int i = 0; i < maxDisplay; i++) total += sorted.get(i).getValue();
+					for (int i = 0; i < maxDisplay; i++) {
+						float pct = sorted.get(i).getValue() / total;
+						int color = getLanguageColor(sorted.get(i).getKey());
+
+						View bar = new View(this);
+						int width = (int) (totalWidth * pct);
+						int height = getResources().getDimensionPixelSize(R.dimen.dimen8dp);
+
+						float[] radii;
+						if (maxDisplay == 1) {
+							radii = new float[] {dp8, dp8, dp8, dp8, dp8, dp8, dp8, dp8};
+						} else if (i == 0) {
+							radii = new float[] {dp8, dp8, 0, 0, 0, 0, dp8, dp8};
+						} else if (i == maxDisplay - 1) {
+							radii = new float[] {0, 0, dp8, dp8, dp8, dp8, 0, 0};
 						} else {
-
-							String errorMessage;
-							try (okhttp3.ResponseBody errorBody = response.errorBody()) {
-
-								if (errorBody != null) {
-
-									Gson gson = new Gson();
-									ErrorResponse errorResponse =
-											gson.fromJson(errorBody.string(), ErrorResponse.class);
-									errorMessage =
-											errorResponse.getMessage() != null
-													? errorResponse.getMessage()
-													: getString(R.string.generic_error);
-
-								} else if (response.code() == 401) {
-
-									errorMessage = getString(R.string.not_authorized);
-								} else if (response.code() == 403) {
-
-									errorMessage = getString(R.string.access_forbidden_403);
-								} else {
-
-									errorMessage = getString(R.string.generic_error);
-								}
-							} catch (IOException e) {
-								errorMessage = getString(R.string.generic_error);
-							}
-
-							Toasty.show(ctx, errorMessage);
+							radii = new float[] {0, 0, 0, 0, 0, 0, 0, 0};
 						}
-					}
 
-					@Override
-					public void onFailure(@NonNull Call<Branches> call, @NonNull Throwable t) {
+						GradientDrawable drawable = new GradientDrawable();
+						drawable.setColor(color);
+						drawable.setCornerRadii(radii);
 
-						Toasty.show(ctx, getString(R.string.generic_server_response_error));
-					}
-				});
-	}
-
-	private void getProjectInfo() {
-
-		Call<Projects> call = RetrofitClient.getApiInterface(ctx).getProjectInfo(projectId);
-
-		call.enqueue(
-				new Callback<>() {
-
-					@Override
-					public void onResponse(
-							@NonNull Call<Projects> call, @NonNull Response<Projects> response) {
-
-						Projects projectDetails = response.body();
-
-						if (response.isSuccessful()) {
-
-							if (response.code() == 200) {
-
-								assert projectDetails != null;
-
-								projectsContext.setProject(projectDetails);
-								projectsContext.setBranchRef(
-										projectsContext.getProject().getDefaultBranch());
-
-								binding.progressBar.setVisibility(View.GONE);
-								binding.basicInfoFrame.setVisibility(View.VISIBLE);
-								binding.codeSection.setVisibility(View.VISIBLE);
-								binding.branchSection.setVisibility(View.VISIBLE);
-
-								if (projectDetails.isArchived()) {
-									binding.archivedProjectFrame.setVisibility(View.VISIBLE);
-								}
-
-								if (!projectDetails.isArchived()
-										&& projectDetails.isIssuesEnabled()
-										&& !Objects.equals(source, "most_visited")) {
-									binding.newIssue.setVisibility(View.VISIBLE);
-								}
-
-								ColorGenerator generator = ColorGenerator.MATERIAL;
-								int color = generator.getColor(projectDetails.getName());
-								String firstCharacter =
-										String.valueOf(projectDetails.getName().charAt(0));
-
-								TextDrawable drawable =
-										TextDrawable.builder()
-												.beginConfig()
-												.useFont(Typeface.DEFAULT)
-												.fontSize(16)
-												.toUpperCase()
-												.width(28)
-												.height(28)
-												.endConfig()
-												.buildRoundRect(firstCharacter, color, 8);
-
-								if (projectDetails.getAvatarUrl() != null
-										&& projectDetails
-												.getVisibility()
-												.equalsIgnoreCase("public")) {
-
-									Glide.with(ctx)
-											.load(projectDetails.getAvatarUrl())
-											.diskCacheStrategy(DiskCacheStrategy.ALL)
-											.placeholder(R.drawable.ic_spinner)
-											.centerCrop()
-											.into(binding.projectAvatar);
-								} else {
-									binding.projectAvatar.setImageDrawable(drawable);
-								}
-
-								binding.projectName.setText(projectDetails.getName());
-								binding.projectPath.setText(projectDetails.getPathWithNamespace());
-								if (projectDetails.getDescription() != null
-										&& !projectDetails.getDescription().isEmpty()) {
-									binding.projectDescription.setVisibility(View.VISIBLE);
-									binding.projectDescription.setText(
-											projectDetails.getDescription());
-								}
-
-								binding.projectStars.setText(
-										getResources()
-												.getQuantityString(
-														R.plurals.project_stars,
-														projectDetails.getStarCount(),
-														Utils.numberFormatter(
-																projectDetails.getStarCount())));
-								binding.projectForks.setText(
-										getResources()
-												.getQuantityString(
-														R.plurals.project_forks,
-														projectDetails.getForksCount(),
-														Utils.numberFormatter(
-																projectDetails.getForksCount())));
-								binding.issuesOpenCount.setText(
-										Utils.numberFormatter(projectDetails.getOpenIssuesCount()));
-
-								binding.branchTitle.setText(projectDetails.getDefaultBranch());
-								branch = projectDetails.getDefaultBranch();
-
-								binding.copyProjectUrl.setOnClickListener(
-										copy -> {
-											MaterialAlertDialogBuilder materialAlertDialogBuilder =
-													new MaterialAlertDialogBuilder(ctx);
-
-											View customDialogView =
-													LayoutInflater.from(ctx)
-															.inflate(
-																	R.layout
-																			.custom_copy_project_urls_dialog,
-																	findViewById(
-																			android.R.id.content),
-																	false);
-
-											materialAlertDialogBuilder
-													.setView(customDialogView)
-													.setNeutralButton(R.string.close, null)
-													.show();
-
-											MaterialButton projId =
-													customDialogView.findViewById(
-															R.id.copy_project_id);
-											MaterialButton webUrl =
-													customDialogView.findViewById(
-															R.id.copy_web_url);
-											MaterialButton httpsUrl =
-													customDialogView.findViewById(
-															R.id.copy_https_url);
-											MaterialButton sshUrl =
-													customDialogView.findViewById(
-															R.id.copy_ssh_url);
-
-											projId.setOnClickListener(
-													projectId ->
-															Utils.copyToClipboard(
-																	ctx,
-																	String.valueOf(
-																			projectDetails.getId()),
-																	getString(
-																			R.string
-																					.copy_url_message)));
-											webUrl.setOnClickListener(
-													web ->
-															Utils.copyToClipboard(
-																	ctx,
-																	projectDetails.getWebUrl(),
-																	getString(
-																			R.string
-																					.copy_url_message)));
-											httpsUrl.setOnClickListener(
-													https ->
-															Utils.copyToClipboard(
-																	ctx,
-																	projectDetails
-																			.getHttpUrlToRepo(),
-																	getString(
-																			R.string
-																					.copy_url_message)));
-											sshUrl.setOnClickListener(
-													ssh ->
-															Utils.copyToClipboard(
-																	ctx,
-																	projectDetails
-																			.getSshUrlToRepo(),
-																	getString(
-																			R.string
-																					.copy_url_message)));
-										});
-
-								setupLanguageStats();
-								if (projectDetails.getReadmeUrl() != null) {
-									README =
-											projectDetails
-													.getReadmeUrl()
-													.substring(
-															projectDetails.getReadmeUrl().length()
-																	- 9);
-									loadProjectReadme();
-								}
-
-								if (projectDetails.getStarCount() > 0) {
-									binding.projectStars.setOnClickListener(
-											stars -> {
-												bsBundle.putInt("projectId", projectId);
-												bsBundle.putString("type", "stars");
-												ProjectMembersBottomSheet bottomSheet =
-														new ProjectMembersBottomSheet();
-												bottomSheet.setArguments(bsBundle);
-												bottomSheet.show(
-														getSupportFragmentManager(),
-														"projectMembersBottomSheet");
-											});
-								}
-
-								if (projectDetails.getForksCount() > 0) {
-									binding.projectForks.setOnClickListener(
-											forks -> {
-												ProjectsContext project =
-														new ProjectsContext(
-																projectsContext.getProject(), ctx);
-												Intent intent =
-														project.getIntent(
-																ctx, ProjectsActivity.class);
-												intent.putExtra("source", "forks");
-												intent.putExtra("projectId", projectId);
-												ctx.startActivity(intent);
-											});
-								}
-							}
-						}
-					}
-
-					@Override
-					public void onFailure(@NonNull Call<Projects> call, @NonNull Throwable t) {
-						Toasty.show(ctx, getString(R.string.generic_server_response_error));
-					}
-				});
-	}
-
-	private void loadProjectReadme() {
-
-		Call<FileContents> call =
-				RetrofitClient.getApiInterface(ctx)
-						.getProjectFileContent(
-								projectId, README, projectsContext.getProject().getDefaultBranch());
-
-		call.enqueue(
-				new Callback<>() {
-
-					@Override
-					public void onResponse(
-							@NonNull Call<FileContents> call,
-							@NonNull Response<FileContents> response) {
-
-						FileContents readmeFile = response.body();
-
-						if (response.isSuccessful()) {
-
-							if (response.code() == 200) {
-
-								assert readmeFile != null;
-								binding.projectReadmeSection.setVisibility(View.VISIBLE);
-
-								Markdown.render(
-										ctx,
-										EmojiParser.parseToUnicode(
-												Utils.decodeBase64(readmeFile.getContent())),
-										binding.readme,
-										projectsContext);
-							}
-						}
-					}
-
-					@Override
-					public void onFailure(@NonNull Call<FileContents> call, @NonNull Throwable t) {
-						Toasty.show(ctx, getString(R.string.generic_server_response_error));
-					}
-				});
-	}
-
-	private void loadUserStars() {
-
-		Call<List<Projects>> call =
-				RetrofitClient.getApiInterface(ctx)
-						.getStarredProjects(getAccount().getUserInfo().getId(), 100, 1);
-
-		call.enqueue(
-				new Callback<>() {
-
-					@Override
-					public void onResponse(
-							@NonNull Call<List<Projects>> call,
-							@NonNull Response<List<Projects>> response) {
-
-						List<Projects> projects = response.body();
-
-						if (response.isSuccessful()) {
-
-							if (response.code() == 200) {
-
-								assert projects != null;
-								List<Integer> starred = new ArrayList<>();
-								for (int i = 0; i < projects.size(); i++) {
-									starred.add(projects.get(i).getId());
-								}
-
-								binding.starForkProjectFrame.setVisibility(View.VISIBLE);
-								if (starred.contains(projectId)) {
-									binding.unstarAProject.setVisibility(View.VISIBLE);
-									binding.starAProject.setVisibility(View.GONE);
-								} else {
-									binding.starAProject.setVisibility(View.VISIBLE);
-									binding.unstarAProject.setVisibility(View.GONE);
-								}
-							}
-						}
-					}
-
-					@Override
-					public void onFailure(
-							@NonNull Call<List<Projects>> call, @NonNull Throwable t) {
-						Toasty.show(ctx, getString(R.string.generic_server_response_error));
-					}
-				});
-	}
-
-	private void starAProject() {
-
-		Call<Projects> call = RetrofitClient.getApiInterface(ctx).starProject(projectId);
-
-		call.enqueue(
-				new Callback<>() {
-
-					@Override
-					public void onResponse(
-							@NonNull Call<Projects> call, @NonNull Response<Projects> response) {
-
-						if (response.isSuccessful()) {
-
-							if (response.code() == 201) {
-
-								Toasty.show(ctx, getString(R.string.project_starred));
-
-								binding.starAProject.setVisibility(View.GONE);
-								binding.unstarAProject.setVisibility(View.VISIBLE);
-							}
-						}
-					}
-
-					@Override
-					public void onFailure(@NonNull Call<Projects> call, @NonNull Throwable t) {
-						Toasty.show(ctx, getString(R.string.generic_server_response_error));
-					}
-				});
-	}
-
-	private void unstarAProject() {
-
-		Call<Projects> call = RetrofitClient.getApiInterface(ctx).unstarProject(projectId);
-
-		call.enqueue(
-				new Callback<>() {
-
-					@Override
-					public void onResponse(
-							@NonNull Call<Projects> call, @NonNull Response<Projects> response) {
-
-						if (response.isSuccessful()) {
-
-							if (response.code() == 201) {
-
-								Toasty.show(ctx, getString(R.string.project_unstarred));
-
-								binding.starAProject.setVisibility(View.VISIBLE);
-								binding.unstarAProject.setVisibility(View.GONE);
-							}
-						}
-					}
-
-					@Override
-					public void onFailure(@NonNull Call<Projects> call, @NonNull Throwable t) {
-						Toasty.show(ctx, getString(R.string.generic_server_response_error));
+						bar.setBackground(drawable);
+						bar.setLayoutParams(new LinearLayout.LayoutParams(width, height));
+						binding.sectionHeader.languageBarContainer.addView(bar);
 					}
 				});
 	}
@@ -716,175 +667,15 @@ public class ProjectDetailActivity extends BaseActivity
 		String[] hexColors = getResources().getStringArray(R.array.language_colors);
 		if (names.length == hexColors.length) {
 			for (int i = 0; i < names.length; i++) {
-				languageColors.put(names[i], Color.parseColor(hexColors[i]));
+				languageColors.put(names[i], android.graphics.Color.parseColor(hexColors[i]));
 			}
 		}
 	}
 
-	private void setupLanguageStats() {
-
-		Call<Map<String, Float>> call =
-				RetrofitClient.getApiInterface(this).getProjectLanguages(projectId);
-
-		call.enqueue(
-				new Callback<>() {
-					@Override
-					public void onResponse(
-							@NonNull Call<Map<String, Float>> call,
-							@NonNull Response<Map<String, Float>> response) {
-						if (response.isSuccessful() && response.code() == 200) {
-							Map<String, Float> languages = response.body();
-							if (languages != null && !languages.isEmpty()) {
-								binding.languageStatsCard.setVisibility(View.VISIBLE);
-								displayLanguageBar(languages);
-							}
-						}
-					}
-
-					@Override
-					public void onFailure(
-							@NonNull Call<Map<String, Float>> call, @NonNull Throwable t) {}
-				});
-	}
-
-	private void displayLanguageBar(Map<String, Float> languages) {
-
-		LinearLayout container = binding.languageBarContainer;
-		container.removeAllViews();
-
-		List<Map.Entry<String, Float>> sortedLanguages = new ArrayList<>(languages.entrySet());
-		sortedLanguages.sort((e1, e2) -> Float.compare(e2.getValue(), e1.getValue()));
-		int maxDisplay = Math.min(3, sortedLanguages.size());
-
-		float totalPercent = 0;
-		for (int i = 0; i < maxDisplay; i++) {
-			totalPercent += sortedLanguages.get(i).getValue();
-		}
-
-		float finalTotalPercent = totalPercent;
-		container.post(
-				() -> {
-					int totalWidth = container.getWidth();
-					if (totalWidth == 0)
-						totalWidth = getResources().getDisplayMetrics().widthPixels - 64;
-					for (int i = 0; i < maxDisplay; i++) {
-						Map.Entry<String, Float> entry = sortedLanguages.get(i);
-						String lang = entry.getKey();
-						float percent = (entry.getValue() / finalTotalPercent) * 100;
-						int sectionWidth = (int) ((totalWidth * percent) / 100);
-
-						View section = new View(this);
-						section.setLayoutParams(
-								new LinearLayout.LayoutParams(
-										sectionWidth,
-										getResources().getDimensionPixelSize(R.dimen.dimen12dp)));
-						int color = getLanguageColor(lang);
-						section.setBackgroundColor(color);
-						container.addView(section);
-					}
-
-					binding.languageStatsCard.setOnClickListener(v -> showLanguageDialog());
-				});
-	}
-
 	private int getLanguageColor(String lang) {
-		String normalizedLang = lang.toLowerCase().replace(" ", "_").replace("-", "_");
-		Integer color = languageColors.get(normalizedLang);
-		if (color == null) {
-			color = languageColors.get("default");
-		}
-		return color != null ? color : Color.parseColor("#49da39");
-	}
-
-	private void showLanguageDialog() {
-
-		Call<Map<String, Float>> call =
-				RetrofitClient.getApiInterface(this).getProjectLanguages(projectId);
-
-		call.enqueue(
-				new Callback<>() {
-					@Override
-					public void onResponse(
-							@NonNull Call<Map<String, Float>> call,
-							@NonNull Response<Map<String, Float>> response) {
-						if (response.isSuccessful() && response.code() == 200) {
-							Map<String, Float> languages = response.body();
-							if (languages != null && !languages.isEmpty()) {
-								showLanguageDialogInternal(languages);
-							}
-						}
-					}
-
-					@Override
-					public void onFailure(
-							@NonNull Call<Map<String, Float>> call, @NonNull Throwable t) {}
-				});
-	}
-
-	private void showLanguageDialogInternal(Map<String, Float> languages) {
-
-		LinearLayout dialogLayout = new LinearLayout(this);
-		dialogLayout.setOrientation(LinearLayout.VERTICAL);
-		dialogLayout.setPadding(16, 32, 16, 16);
-
-		for (Map.Entry<String, Float> entry : languages.entrySet()) {
-			String lang = entry.getKey();
-			float percent = entry.getValue();
-
-			Chip chip = new Chip(this);
-			chip.setText(String.format(Locale.US, "%s (%.1f%%)", lang, percent));
-			chip.setChipBackgroundColor(
-					ContextCompat.getColorStateList(this, R.color.alert_tip_border));
-			int color = getLanguageColor(lang);
-			chip.setChipBackgroundColor(ColorStateList.valueOf(color));
-			chip.setTextColor(isDarkColor(color) ? Color.WHITE : Color.BLACK);
-			chip.setChipMinHeight(getResources().getDimensionPixelSize(R.dimen.dimen28dp));
-			float cornerRadius = dpToPx(this);
-			chip.setShapeAppearanceModel(
-					chip.getShapeAppearanceModel().toBuilder()
-							.setAllCornerSizes(cornerRadius)
-							.build());
-			chip.setPadding(12, 8, 12, 8);
-			chip.setClickable(false);
-			chip.setEnsureMinTouchTargetSize(false);
-
-			LinearLayout.LayoutParams params =
-					new LinearLayout.LayoutParams(
-							LinearLayout.LayoutParams.WRAP_CONTENT,
-							LinearLayout.LayoutParams.WRAP_CONTENT);
-			params.setMargins(36, 12, 36, 12);
-			chip.setLayoutParams(params);
-
-			dialogLayout.addView(chip);
-		}
-
-		new MaterialAlertDialogBuilder(this)
-				.setTitle(R.string.languages)
-				.setView(dialogLayout)
-				.setPositiveButton(R.string.close, null)
-				.show();
-	}
-
-	private boolean isDarkColor(int color) {
-		double darkness =
-				1
-						- (0.299 * Color.red(color)
-										+ 0.587 * Color.green(color)
-										+ 0.114 * Color.blue(color))
-								/ 255;
-		return darkness >= 0.5;
-	}
-
-	private float dpToPx(Context context) {
-		DisplayMetrics metrics = context.getResources().getDisplayMetrics();
-		return 32 * (metrics.densityDpi / 160f);
-	}
-
-	@Override
-	public void onButtonClicked(String text) {}
-
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
+		String key = lang.toLowerCase().replace(" ", "_").replace("-", "_");
+		Integer color = languageColors.get(key);
+		if (color == null) color = languageColors.get("default");
+		return color != null ? color : android.graphics.Color.parseColor("#49da39");
 	}
 }

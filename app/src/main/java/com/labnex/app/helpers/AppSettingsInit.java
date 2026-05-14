@@ -23,7 +23,7 @@ public class AppSettingsInit {
 	public static String APP_SHOW_LABELS_IN_LISTS_KEY = "app_show_labels_in_lists";
 	public static String APP_SHOW_LABELS_IN_LISTS_DEFAULT = "true";
 	public static String APP_SHOW_LABELS_COLORS_KEY = "app_show_labels_colors";
-	public static String APP_SHOW_LABELS_COLORS_DEFAULT = "true";
+	public static String APP_SHOW_LABELS_COLORS_DEFAULT = "false";
 
 	public static void initDefaultSettings(Context ctx) {
 

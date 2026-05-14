@@ -111,14 +111,14 @@ public interface ApiInterface {
 			@Query("page") int page);
 
 	@POST("groups/{id}/labels") // create a group label
-	Call<Labels> createGroupLabel(@Path("id") int id, @Body CrudeLabel body);
+	Call<Labels> createGroupLabel(@Path("id") long id, @Body CrudeLabel body);
 
 	@DELETE("groups/{id}/labels/{label_id}") // delete a group label
 	Call<Void> deleteGroupLabel(@Path("id") long id, @Path("label_id") int label_id);
 
 	@PUT("groups/{id}/labels/{label_id}") // update a group label
 	Call<Labels> updateGroupLabel(
-			@Path("id") int id, @Path("label_id") int label_id, @Body CrudeLabel body);
+			@Path("id") long id, @Path("label_id") long label_id, @Body CrudeLabel body);
 
 	@GET("groups/{id}/members") // get a group members
 	Call<List<User>> getGroupMembers(
@@ -167,11 +167,11 @@ public interface ApiInterface {
 
 	@GET("projects/{id}/members") // get a project members
 	Call<List<User>> getProjectMembers(
-			@Path("id") int id, @Query("per_page") int per_page, @Query("page") int page);
+			@Path("id") long id, @Query("per_page") int per_page, @Query("page") int page);
 
 	@GET("projects/{id}/starrers") // get a project starrers
 	Call<List<Stars>> getProjectStarrers(
-			@Path("id") int id, @Query("per_page") int per_page, @Query("page") int page);
+			@Path("id") long id, @Query("per_page") int per_page, @Query("page") int page);
 
 	@POST("projects/{id}/star") // star a project
 	Call<Projects> starProject(@Path("id") int id);
@@ -199,14 +199,14 @@ public interface ApiInterface {
 			@Query("page") int page);
 
 	@DELETE("projects/{id}/labels/{label_id}") // delete a project label
-	Call<Void> deleteProjectLabel(@Path("id") int id, @Path("label_id") int label_id);
+	Call<Void> deleteProjectLabel(@Path("id") long id, @Path("label_id") int label_id);
 
 	@POST("projects/{id}/labels") // create a project label
-	Call<Labels> createProjectLabel(@Path("id") int id, @Body CrudeLabel body);
+	Call<Labels> createProjectLabel(@Path("id") long id, @Body CrudeLabel body);
 
 	@PUT("projects/{id}/labels/{label_id}") // update a project label
 	Call<Labels> updateProjectLabel(
-			@Path("id") int id, @Path("label_id") int label_id, @Body CrudeLabel body);
+			@Path("id") long id, @Path("label_id") long label_id, @Body CrudeLabel body);
 
 	@GET("projects/{id}/labels/{label_id}") // get a project label
 	Call<Labels> getProjectLabel(@Path("id") int id, @Path("label_id") String label_id);

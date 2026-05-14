@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/basic_info_frame"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/dimen16dp"
+    android:visibility="gone"
+    app:cardBackgroundColor="?attr/colorSurfaceContainerLow"
+    app:cardCornerRadius="@dimen/dimen20dp"
+    app:cardElevation="0dp"
+    app:strokeWidth="0dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/dimen20dp">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/project_avatar"
+            android:layout_width="@dimen/dimen48dp"
+            android:layout_height="@dimen/dimen48dp"
+            android:src="@drawable/ic_spinner"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Medium" />
+
+        <TextView
+            android:id="@+id/project_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dimen12dp"
+            android:layout_marginEnd="@dimen/dimen4dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:maxWidth="260dp"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            android:textColor="?attr/colorOnSurface"
+            android:textStyle="bold"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintEnd_toStartOf="@id/visibility_icon"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toEndOf="@id/project_avatar"
+            app:layout_constraintTop_toTopOf="@id/project_avatar" />
+
+        <ImageView
+            android:id="@+id/visibility_icon"
+            android:layout_width="@dimen/dimen16dp"
+            android:layout_height="@dimen/dimen16dp"
+            android:layout_marginStart="@dimen/dimen4dp"
+            android:contentDescription="@string/visibility"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/project_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/project_name"
+            app:layout_constraintTop_toTopOf="@id/project_name"
+            android:src="@drawable/ic_lock"
+            app:tint="?attr/iconsColor" />
+
+        <TextView
+            android:id="@+id/project_path"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dimen12dp"
+            android:alpha="0.7"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="?attr/textAppearanceLabelMedium"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/project_avatar"
+            app:layout_constraintTop_toBottomOf="@id/project_name" />
+
+        <TextView
+            android:id="@+id/project_description"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dimen12dp"
+            android:ellipsize="end"
+            android:maxLines="3"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/project_avatar" />
+
+        <LinearLayout
+            android:id="@+id/stats_row"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dimen16dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/project_description">
+
+            <LinearLayout
+                android:id="@+id/stats_stars"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:layout_width="@dimen/dimen16dp"
+                    android:layout_height="@dimen/dimen16dp"
+                    android:contentDescription="@string/stars"
+                    android:src="@drawable/ic_star"
+                    app:tint="?attr/iconsColor" />
+
+                <TextView
+                    android:id="@+id/project_stars"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dimen4dp"
+                    android:layout_marginEnd="@dimen/dimen16dp"
+                    android:textAppearance="?attr/textAppearanceLabelMedium"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/stats_forks"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:layout_width="@dimen/dimen16dp"
+                    android:layout_height="@dimen/dimen16dp"
+                    android:contentDescription="@string/forks"
+                    android:src="@drawable/ic_forks"
+                    app:tint="?attr/iconsColor" />
+
+                <TextView
+                    android:id="@+id/project_forks"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dimen4dp"
+                    android:textAppearance="?attr/textAppearanceLabelMedium"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/language_bar_container"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/dimen8dp"
+            android:visibility="gone"
+            android:layout_marginTop="@dimen/dimen16dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/stats_row" />
+
+        <TextView
+            android:id="@+id/language_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dimen6dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="?attr/textAppearanceLabelSmall"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/language_bar_container" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

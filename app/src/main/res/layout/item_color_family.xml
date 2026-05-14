@@ -1,0 +1,121 @@
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_parent"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/dimen48dp"
+    android:layout_marginVertical="@dimen/dimen8dp"
+    app:cardCornerRadius="@dimen/dimen18dp"
+    app:cardElevation="0dp"
+    app:strokeWidth="0dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:baselineAligned="false"
+        android:orientation="horizontal">
+
+        <FrameLayout
+            android:id="@+id/seg1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <View
+                android:id="@+id/dot1"
+                android:layout_width="@dimen/dimen10dp"
+                android:layout_height="@dimen/dimen10dp"
+                android:layout_gravity="center"
+                android:background="@drawable/shape_circle"
+                android:backgroundTint="@android:color/white"
+                android:visibility="gone" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/seg2"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <View
+                android:id="@+id/dot2"
+                android:layout_width="@dimen/dimen10dp"
+                android:layout_height="@dimen/dimen10dp"
+                android:layout_gravity="center"
+                android:background="@drawable/shape_circle"
+                android:backgroundTint="@android:color/white"
+                android:visibility="gone" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/seg3"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <View
+                android:id="@+id/dot3"
+                android:layout_width="@dimen/dimen10dp"
+                android:layout_height="@dimen/dimen10dp"
+                android:layout_gravity="center"
+                android:background="@drawable/shape_circle"
+                android:backgroundTint="@android:color/white"
+                android:visibility="gone" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/seg4"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <View
+                android:id="@+id/dot4"
+                android:layout_width="@dimen/dimen10dp"
+                android:layout_height="@dimen/dimen10dp"
+                android:layout_gravity="center"
+                android:background="@drawable/shape_circle"
+                android:backgroundTint="@android:color/white"
+                android:visibility="gone" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/seg5"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <View
+                android:id="@+id/dot5"
+                android:layout_width="@dimen/dimen10dp"
+                android:layout_height="@dimen/dimen10dp"
+                android:layout_gravity="center"
+                android:background="@drawable/shape_circle"
+                android:backgroundTint="@android:color/white"
+                android:visibility="gone" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/seg6"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <View
+                android:id="@+id/dot6"
+                android:layout_width="@dimen/dimen10dp"
+                android:layout_height="@dimen/dimen10dp"
+                android:layout_gravity="center"
+                android:background="@drawable/shape_circle"
+                android:backgroundTint="@android:color/white"
+                android:visibility="gone" />
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

@@ -1,184 +1,140 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.listitem.ListItemLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/layout_frame"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:gravity="center_vertical"
-    android:orientation="horizontal"
-    android:paddingTop="@dimen/dimen4dp"
-    android:paddingBottom="@dimen/dimen4dp">
+    android:layout_height="wrap_content">
 
-    <com.google.android.material.card.MaterialCardView
+    <com.google.android.material.listitem.ListItemCardView
+        android:id="@+id/card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="?attr/materialCardViewFilledStyle"
-        app:strokeWidth="@dimen/dimen0dp"
-        app:cardElevation="@dimen/dimen0dp">
+        android:layout_marginVertical="@dimen/dimen1dp"
+        android:checkable="false"
+        app:cardBackgroundColor="?attr/colorSurfaceContainerHigh"
+        app:strokeWidth="0dp">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/dimen12dp"
-            android:orientation="vertical">
+            android:padding="@dimen/dimen8dp">
 
             <LinearLayout
-                android:id="@+id/labels"
-                android:layout_width="match_parent"
+                android:id="@+id/label_container"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical|center_horizontal"
                 android:orientation="horizontal"
-                tools:ignore="UseCompoundDrawables">
+                app:layout_constraintEnd_toStartOf="@id/btn_edit"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="@id/btn_edit">
 
-                <LinearLayout
-                    android:id="@+id/label_container"
-                    android:layout_width="0dp"
+                <TextView
+                    android:id="@+id/label_name"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="start"
-                    android:orientation="horizontal"
-                    android:layout_weight="1"
-                    android:background="@android:color/transparent">
+                    android:paddingHorizontal="@dimen/dimen10dp"
+                    android:paddingVertical="@dimen/dimen4dp"
+                    android:textAppearance="?attr/textAppearanceLabelMedium" />
 
-                    <!-- key/label -->
-                    <TextView
-                        android:id="@+id/label_name"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingStart="12dp"
-                        android:paddingEnd="12dp"
-                        android:paddingTop="8dp"
-                        android:paddingBottom="8dp"
-                        android:textColor="#FFFFFF"
-                        android:textSize="14sp" />
-
-                    <!-- value/2nd part -->
-                    <TextView
-                        android:id="@+id/label_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingStart="12dp"
-                        android:paddingEnd="12dp"
-                        android:paddingTop="8dp"
-                        android:paddingBottom="8dp"
-                        android:textColor="#FFFFFF"
-                        android:textSize="14sp"
-                        android:visibility="gone" />
-
-                </LinearLayout>
-
-                <ImageView
-                    android:id="@+id/edit_label"
-                    android:layout_width="@dimen/dimen20dp"
+                <TextView
+                    android:id="@+id/label_value"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:contentDescription="@string/edit"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/ic_edit" />
-
-                <ImageView
-                    android:id="@+id/delete_label"
-                    android:layout_width="@dimen/dimen20dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/dimen16dp"
-                    android:contentDescription="@string/delete"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/ic_trash" />
+                    android:paddingHorizontal="@dimen/dimen10dp"
+                    android:paddingVertical="@dimen/dimen4dp"
+                    android:textAppearance="?attr/textAppearanceLabelMedium"
+                    android:visibility="gone" />
 
             </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_edit"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/edit"
+                app:iconSize="@dimen/dimen20dp"
+                app:icon="@drawable/ic_edit"
+                app:iconTint="?attr/iconsColor"
+                app:layout_constraintEnd_toStartOf="@id/btn_delete"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_delete"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/delete"
+                app:iconSize="@dimen/dimen20dp"
+                app:icon="@drawable/ic_trash"
+                app:iconTint="?attr/colorError"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/description"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dimen12dp"
+                android:ellipsize="end"
+                android:maxLines="3"
+                android:textAppearance="?attr/textAppearanceBodySmall"
+                android:textColor="?attr/colorOnSurfaceVariant"
                 android:visibility="gone"
-                android:textSize="@dimen/dimen16sp" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/label_container" />
 
-            <!-- label open issues/mr -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:baselineAligned="false"
-                android:orientation="horizontal"
+            <ImageView
+                android:id="@+id/open_issues_icon"
+                android:layout_width="@dimen/dimen14dp"
+                android:layout_height="@dimen/dimen14dp"
                 android:layout_marginTop="@dimen/dimen12dp"
-                tools:ignore="UseCompoundDrawables">
+                android:contentDescription="@string/issues"
+                android:src="@drawable/ic_issues"
+                app:tint="?attr/iconsColor"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/description" />
 
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    style="?attr/materialCardViewElevatedStyle"
-                    android:backgroundTint="@color/md_theme_background"
-                    app:cardElevation="@dimen/dimen0dp">
+            <TextView
+                android:id="@+id/label_open_issues"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dimen4dp"
+                android:textAppearance="?attr/textAppearanceLabelSmall"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@id/open_issues_icon"
+                app:layout_constraintStart_toEndOf="@id/open_issues_icon"
+                app:layout_constraintTop_toTopOf="@id/open_issues_icon" />
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:foreground="?android:attr/selectableItemBackground"
-                        android:paddingStart="@dimen/dimen12dp"
-                        android:paddingEnd="@dimen/dimen12dp"
-                        android:paddingTop="@dimen/dimen6dp"
-                        android:paddingBottom="@dimen/dimen6dp"
-                        android:orientation="horizontal">
+            <ImageView
+                android:id="@+id/open_mr_icon"
+                android:layout_width="@dimen/dimen14dp"
+                android:layout_height="@dimen/dimen14dp"
+                android:layout_marginStart="@dimen/dimen14dp"
+                android:contentDescription="@string/merge_requests"
+                android:src="@drawable/ic_merge_request"
+                app:tint="?attr/iconsColor"
+                app:layout_constraintBottom_toBottomOf="@id/open_issues_icon"
+                app:layout_constraintStart_toEndOf="@id/label_open_issues"
+                app:layout_constraintTop_toTopOf="@id/open_issues_icon" />
 
-                        <ImageView
-                            android:layout_width="@dimen/dimen18dp"
-                            android:layout_height="@dimen/dimen18dp"
-                            android:contentDescription="@string/generic_img_copy"
-                            android:layout_gravity="center_vertical|center_horizontal"
-                            android:layout_marginEnd="@dimen/dimen6dp"
-                            android:src="@drawable/ic_issues" />
+            <TextView
+                android:id="@+id/label_open_merge_requests"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dimen4dp"
+                android:textAppearance="?attr/textAppearanceLabelSmall"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@id/open_mr_icon"
+                app:layout_constraintStart_toEndOf="@id/open_mr_icon"
+                app:layout_constraintTop_toTopOf="@id/open_mr_icon" />
 
-                        <TextView
-                            android:id="@+id/label_open_issues"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="@dimen/dimen14sp" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-                    </LinearLayout>
+    </com.google.android.material.listitem.ListItemCardView>
 
-                </com.google.android.material.card.MaterialCardView>
-
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    style="?attr/materialCardViewElevatedStyle"
-                    android:backgroundTint="@color/md_theme_background"
-                    android:layout_marginStart="@dimen/dimen12dp"
-                    app:cardElevation="@dimen/dimen0dp">
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:foreground="?android:attr/selectableItemBackground"
-                        android:paddingStart="@dimen/dimen12dp"
-                        android:paddingEnd="@dimen/dimen12dp"
-                        android:paddingTop="@dimen/dimen6dp"
-                        android:paddingBottom="@dimen/dimen6dp"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="@dimen/dimen18dp"
-                            android:layout_height="@dimen/dimen18dp"
-                            android:contentDescription="@string/generic_img_copy"
-                            android:layout_gravity="center_vertical|center_horizontal"
-                            android:layout_marginEnd="@dimen/dimen6dp"
-                            android:src="@drawable/ic_merge_request" />
-
-                        <TextView
-                            android:id="@+id/label_open_merge_requests"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="@dimen/dimen14sp" />
-
-                    </LinearLayout>
-
-                </com.google.android.material.card.MaterialCardView>
-
-            </LinearLayout>
-            <!-- label open issues/mr -->
-
-        </LinearLayout>
-
-    </com.google.android.material.card.MaterialCardView>
-
-</LinearLayout>
+</com.google.android.material.listitem.ListItemLayout>

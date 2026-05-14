@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/action_card"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:checkable="true"
+    android:clickable="true"
+    android:focusable="true"
+    app:cardBackgroundColor="?attr/colorSurfaceContainerLow"
+    app:cardCornerRadius="@dimen/dimen20dp"
+    app:cardElevation="0dp"
+    app:strokeWidth="0dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="@dimen/dimen20dp">
+
+        <ImageView
+            android:id="@+id/action_icon"
+            android:layout_width="@dimen/dimen28dp"
+            android:layout_height="@dimen/dimen28dp"
+            android:layout_marginBottom="@dimen/dimen8dp"
+            android:contentDescription="@string/generic_img_copy"
+            app:tint="?attr/colorPrimary" />
+
+        <TextView
+            android:id="@+id/action_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="?attr/textAppearanceLabelLarge"
+            android:textColor="?attr/colorOnSurface" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/action_chip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dimen6dp"
+            android:clickable="false"
+            android:focusable="false"
+            android:textAppearance="?attr/textAppearanceLabelMedium"
+            android:textColor="?attr/colorOnPrimary"
+            android:text="@string/number_zero"
+            android:visibility="gone"
+            app:chipBackgroundColor="?attr/colorPrimary"
+            app:chipStrokeColor="@android:color/transparent" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

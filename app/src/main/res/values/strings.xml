@@ -37,9 +37,11 @@
     <string name="theme_system" translatable="false">System</string>
     <string name="where_to_get_token_message" translatable="false"><![CDATA[• Log in to your account on your instance (GitLab, framagit, etc.).<br>• Click on your user profile picture, then go to Preferences.<br>• In the left side menu, click on Personal access tokens.<br>• Click on Add new token button.<br>• Enter token name and choose expiration date as long as possible.<br>• Check all the scopes.<br><br>Once created, copy and paste or type the token in Personal access token input field.]]></string>
     <string name="number_label" translatable="false">12</string>
+    <string name="number_zero" translatable="false">0</string>
     <string name="main" translatable="false">main</string>
     <string name="cursor_position_format" translatable="false">Ln %d, Col %d</string>
     <string name="separator_dot" translatable="false">●</string>
+    <string name="readme" translatable="false">Readme</string>
     <!-- non translatable strings -->
 
     <string name="action_sign_in">Sign in</string>
@@ -88,21 +90,13 @@
     <string name="archived_project">This is an archived project. Repository and other project resources are read-only.</string>
     <string name="project_starred">The project has been starred successfully</string>
     <string name="project_unstarred">The project has been unstarred successfully</string>
-    <plurals name="project_stars">
-        <item quantity="one">%1$s star</item>
-        <item quantity="other">%1$s stars</item>
-    </plurals>
-    <plurals name="project_forks">
-        <item quantity="one">%1$s fork</item>
-        <item quantity="other">%1$s forks</item>
-    </plurals>
     <string name="switch_branch">Switch branch</string>
     <string name="create_new_label">Create new label</string>
     <string name="label_color">Background color</string>
-    <string name="label_title_empty">Label title is required</string>
+    <string name="label_title_empty">Label name is required</string>
     <string name="label_created">Label created successfully</string>
     <string name="new_label">New label</string>
-    <string name="update_label">Update %1$s</string>
+    <string name="edit_label">Edit label</string>
     <string name="delete_dialog_title">Delete %1$s</string>
     <string name="delete_label_dialog_message">Do you really want to delete this label?</string>
     <string name="label_deleted">Label deleted successfully</string>
@@ -356,6 +350,12 @@
     <string name="disable_mentions">Disable mentions</string>
     <string name="create_as_subgroup">Create as subgroup</string>
     <string name="parent_group">Parent group</string>
+    <string name="copy_info">Copy Info</string>
+    <string name="select_color">Select Color</string>
+    <string name="labelColorHex">Hex Color</string>
+    <string name="invalid_color">Invalid color code</string>
+    <string name="invalid_length">Must be 6 characters</string>
+    <string name="label_name">Label name</string>
 
     <!-- errors -->
     <string name="generic_error">An unexpected error occurred</string>
@@ -502,5 +502,6 @@
     <string name="untitled">Untitled</string>
     <string name="snippet">Snippet</string>
     <string name="group">Group</string>
+    <string name="starrers">Starrers</string>
     <!-- generic copy -->
 </resources>

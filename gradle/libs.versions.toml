@@ -27,6 +27,8 @@ annotation = "1.10.0"
 urlbuilder = "2.0.9"
 swiperefreshlayout = "1.2.0"
 desugar_jdk_libs = "2.1.5"
+android-svg = "1.4"
+android-gif-drawable = "1.2.31"
 emoji-java = "v5.1.2"
 photoview = "2.3.0"
 #noinspection NewerVersionAvailable
@@ -77,6 +79,8 @@ lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-view
 urlbuilder = { group = "io.mikael", name = "urlbuilder", version.ref = "urlbuilder" }
 swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swiperefreshlayout" }
 desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
+android-svg = { group = "com.caverock", name = "androidsvg-aar", version.ref = "android-svg" }
+android-gif-drawable = { group = "pl.droidsonroids.gif", name = "android-gif-drawable", version.ref = "android-gif-drawable" }
 emoji-java = { group = "org.codeberg.gitnex-garage", name = "emoji-java", version.ref = "emoji-java" }
 stormpot = { group = "com.github.chrisvest", name = "stormpot", version.ref = "stormpot" }
 photoview = { group = "com.github.chrisbanes", name = "PhotoView", version.ref = "photoview" }

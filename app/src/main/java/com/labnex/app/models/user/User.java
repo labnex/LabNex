@@ -337,4 +337,36 @@ public class User implements Serializable {
 	public String getUsername() {
 		return username;
 	}
+
+	public void setNote(String note) {
+		this.note = note;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public void setFullName(String fullName) {
+		this.fullName = fullName;
+	}
+
+	public void setWebUrl(String webUrl) {
+		this.webUrl = webUrl;
+	}
+
+	public void setAvatarUrl(String avatarUrl) {
+		this.avatarUrl = avatarUrl;
+	}
+
+	public void setLocked(boolean locked) {
+		this.locked = locked;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
 }
