@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
@@ -21,6 +22,7 @@ import com.labnex.app.helpers.LabelStylingHelper;
 import com.labnex.app.helpers.Toasty;
 import com.labnex.app.helpers.UIHelper;
 import com.labnex.app.models.labels.CrudeLabel;
+import com.labnex.app.models.labels.Labels;
 import com.labnex.app.viewmodels.LabelsViewModel;
 import java.util.Objects;
 
@@ -38,25 +40,12 @@ public class CreateLabelBottomSheet extends BottomSheetDialogFragment {
 	private String selectedColor = "#2E7D32";
 	private LabelStylingHelper stylingHelper;
 
-	public static CreateLabelBottomSheet newInstance(String type, long id) {
+	public static CreateLabelBottomSheet newInstance(String type, long id, Labels label) {
 		CreateLabelBottomSheet sheet = new CreateLabelBottomSheet();
 		Bundle args = new Bundle();
 		args.putString("type", type);
 		args.putLong("id", id);
-		sheet.setArguments(args);
-		return sheet;
-	}
-
-	public static CreateLabelBottomSheet newInstance(
-			String type, long id, int labelId, String name, String description, String color) {
-		CreateLabelBottomSheet sheet = new CreateLabelBottomSheet();
-		Bundle args = new Bundle();
-		args.putString("type", type);
-		args.putLong("id", id);
-		args.putInt("label_id", labelId);
-		args.putString("name", name);
-		args.putString("description", description);
-		args.putString("color", color);
+		args.putSerializable("label", label);
 		sheet.setArguments(args);
 		return sheet;
 	}
@@ -67,13 +56,10 @@ public class CreateLabelBottomSheet extends BottomSheetDialogFragment {
 		if (getArguments() != null) {
 			type = getArguments().getString("type", "project");
 			id = getArguments().getLong("id", 0);
-			if (getArguments().containsKey("label_id")) {
+			Labels label = (Labels) getArguments().getSerializable("label");
+			if (label != null) {
 				isEditMode = true;
-				labelId = getArguments().getInt("label_id");
-				selectedColor = getArguments().getString("color", "2E7D32");
-				if (!selectedColor.startsWith("#")) {
-					selectedColor = "#" + selectedColor;
-				}
+				labelId = label.getId();
 			}
 		}
 	}
@@ -85,18 +71,33 @@ public class CreateLabelBottomSheet extends BottomSheetDialogFragment {
 			@Nullable Bundle savedInstanceState) {
 		binding = BottomsheetCreateLabelBinding.inflate(inflater, container, false);
 		viewModel = new ViewModelProvider(requireActivity()).get(LabelsViewModel.class);
-
 		stylingHelper = LabelStylingHelper.getInstance(requireContext());
 
 		binding.btnClose.setOnClickListener(v -> dismiss());
 
+		binding.descriptionInput.setOnTouchListener(
+				(v, event) -> {
+					if (event.getAction() == MotionEvent.ACTION_DOWN) {
+						v.getParent().requestDisallowInterceptTouchEvent(true);
+					} else if (event.getAction() == MotionEvent.ACTION_UP
+							|| event.getAction() == MotionEvent.ACTION_CANCEL) {
+						v.getParent().requestDisallowInterceptTouchEvent(false);
+						v.performClick();
+					}
+					return false;
+				});
+
 		if (isEditMode && getArguments() != null) {
-			binding.sheetTitle.setText(R.string.edit_label);
-			binding.btnSubmit.setText(R.string.update);
-			String editName = getArguments().getString("name", "");
-			String editDesc = getArguments().getString("description", "");
-			binding.nameInput.setText(editName);
-			binding.descriptionInput.setText(editDesc);
+			Labels label = (Labels) getArguments().getSerializable("label");
+			if (label != null) {
+				binding.sheetTitle.setText(R.string.edit_label);
+				binding.btnSubmit.setText(R.string.update);
+				binding.nameInput.setText(label.getName());
+				binding.descriptionInput.setText(
+						label.getDescription() != null ? label.getDescription().toString() : "");
+				selectedColor = label.getColor();
+				if (!selectedColor.startsWith("#")) selectedColor = "#" + selectedColor;
+			}
 		}
 
 		binding.nameInput.addTextChangedListener(

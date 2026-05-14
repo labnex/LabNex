@@ -223,7 +223,7 @@ public class GroupDetailActivity extends BaseActivity {
 							id -> {
 								switch (id) {
 									case "create_label":
-										CreateLabelBottomSheet.newInstance("group", groupId)
+										CreateLabelBottomSheet.newInstance("group", groupId, null)
 												.show(
 														getSupportFragmentManager(),
 														"createLabelSheet");

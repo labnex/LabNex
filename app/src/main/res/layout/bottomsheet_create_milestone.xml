@@ -23,7 +23,7 @@
             style="@style/TextAppearance.Material3.HeadlineSmall"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/create_new_label"
+            android:text="@string/create_milestone"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/btn_close"
@@ -60,61 +60,23 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/preview_card"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="@dimen/dimen8dp"
-                app:cardCornerRadius="@dimen/dimen20dp"
-                app:cardElevation="0dp"
-                app:strokeWidth="0dp">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/label_preview_text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingHorizontal="@dimen/dimen16dp"
-                        android:paddingVertical="@dimen/dimen8dp"
-                        android:text="@string/label_name"
-                        android:textAppearance="?attr/textAppearanceLabelLarge"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/label_preview_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingHorizontal="@dimen/dimen16dp"
-                        android:paddingVertical="@dimen/dimen8dp"
-                        android:textAppearance="?attr/textAppearanceLabelLarge"
-                        android:textStyle="bold"
-                        android:visibility="gone" />
-
-                </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>
-
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/name_layout"
+                android:id="@+id/title_layout"
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimen24dp"
-                android:hint="@string/label_name"
+                android:layout_marginTop="@dimen/dimen8dp"
+                android:hint="@string/title"
                 app:endIconMode="clear_text"
                 app:endIconTint="?attr/iconsColor"
                 app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Medium">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/name_input"
+                    android:id="@+id/title_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="text"
+                    android:maxLength="60"
                     android:singleLine="true" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -127,7 +89,7 @@
                 android:layout_marginTop="@dimen/dimen16dp"
                 android:hint="@string/description"
                 app:counterEnabled="true"
-                app:counterMaxLength="140"
+                app:counterMaxLength="500"
                 app:endIconMode="clear_text"
                 app:endIconTint="?attr/iconsColor"
                 app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Medium">
@@ -135,36 +97,26 @@
                 <com.labnex.app.views.AccessibleEditText
                     android:id="@+id/description_input"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/dimen120dp"
+                    android:layout_height="@dimen/dimen160dp"
                     android:gravity="top"
-                    android:inputType="textMultiLine"
-                    android:maxLength="140" />
+                    android:inputType="textMultiLine|textCapSentences"
+                    android:maxLength="500" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <LinearLayout
-                android:id="@+id/color_picker_trigger"
+            <include
+                android:id="@+id/card_start_date"
+                layout="@layout/item_picker_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimen20dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="@dimen/dimen8dp">
+                android:layout_marginTop="@dimen/dimen16dp" />
 
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/label_color"
-                    android:textAppearance="?attr/textAppearanceBodyLarge" />
-
-                <View
-                    android:id="@+id/color_indicator"
-                    android:layout_width="@dimen/dimen28dp"
-                    android:layout_height="@dimen/dimen28dp"
-                    android:background="@drawable/shape_circle" />
-
-            </LinearLayout>
+            <include
+                android:id="@+id/card_due_date"
+                layout="@layout/item_picker_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen12dp" />
 
             <FrameLayout
                 android:layout_width="match_parent"

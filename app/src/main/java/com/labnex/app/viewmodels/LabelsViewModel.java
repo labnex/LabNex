@@ -107,7 +107,7 @@ public class LabelsViewModel extends ViewModel {
 		if ("project".equals(currentType)) {
 			call =
 					RetrofitClient.getApiInterface(ctx)
-							.getProjectLabels((int) currentId, true, resultLimit, page);
+							.getProjectLabels(currentId, true, resultLimit, page);
 		} else {
 			call =
 					RetrofitClient.getApiInterface(ctx)

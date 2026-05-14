@@ -193,7 +193,7 @@ public interface ApiInterface {
 
 	@GET("projects/{id}/labels") // get project labels
 	Call<List<Labels>> getProjectLabels(
-			@Path("id") int id,
+			@Path("id") long id,
 			@Query("with_counts") boolean with_counts,
 			@Query("per_page") int per_page,
 			@Query("page") int page);
@@ -236,16 +236,20 @@ public interface ApiInterface {
 
 	@GET("projects/{id}/milestones") // get project milestones
 	Call<List<Milestones>> getProjectMilestones(
-			@Path("id") int id,
+			@Path("id") long id,
 			@Query("state") String state,
 			@Query("per_page") int per_page,
 			@Query("page") int page);
 
-	@POST("projects/{id}/milestones") // create a project milestone
-	Call<Milestones> createProjectMilestone(@Path("id") int id, @Body CrudeMilestone body);
+	@POST("projects/{id}/milestones") // create a milestone
+	Call<Milestones> createMilestone(@Path("id") long id, @Body CrudeMilestone body);
+
+	@PUT("projects/{id}/milestones/{milestone_id}")
+	Call<Milestones> updateMilestone(
+			@Path("id") long id, @Path("milestone_id") long milestoneId, @Body CrudeMilestone body);
 
 	@DELETE("projects/{id}/milestones/{milestone_id}") // delete a milestone
-	Call<Void> deleteProjectMilestone(@Path("id") int id, @Path("milestone_id") int milestone_id);
+	Call<Void> deleteMilestone(@Path("id") long id, @Path("milestone_id") long milestone_id);
 
 	@GET("projects/{id}/languages") // get project lang stats
 	Call<Map<String, Float>> getProjectLanguages(@Path("id") int id);

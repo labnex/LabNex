@@ -14,28 +14,28 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.labnex.app.R;
-import com.labnex.app.adapters.LabelsAdapter;
-import com.labnex.app.databinding.BottomsheetLabelsBinding;
+import com.labnex.app.adapters.MilestonesAdapter;
+import com.labnex.app.databinding.BottomsheetMilestonesBinding;
 import com.labnex.app.helpers.EndlessRecyclerViewScrollListener;
 import com.labnex.app.helpers.Toasty;
 import com.labnex.app.helpers.UIHelper;
-import com.labnex.app.models.labels.Labels;
-import com.labnex.app.viewmodels.LabelsViewModel;
+import com.labnex.app.models.milestone.Milestones;
+import com.labnex.app.viewmodels.MilestonesViewModel;
 import java.util.ArrayList;
 
 /**
  * @author mmarif
  */
-public class LabelsBottomSheet extends BottomSheetDialogFragment {
+public class MilestonesBottomSheet extends BottomSheetDialogFragment {
 
-	private BottomsheetLabelsBinding binding;
-	private LabelsViewModel viewModel;
-	private LabelsAdapter adapter;
+	private BottomsheetMilestonesBinding binding;
+	private MilestonesViewModel viewModel;
+	private MilestonesAdapter adapter;
 	private String type;
 	private long id;
 
-	public static LabelsBottomSheet newInstance(String type, long id) {
-		LabelsBottomSheet sheet = new LabelsBottomSheet();
+	public static MilestonesBottomSheet newInstance(String type, long id) {
+		MilestonesBottomSheet sheet = new MilestonesBottomSheet();
 		Bundle args = new Bundle();
 		args.putString("type", type);
 		args.putLong("id", id);
@@ -57,44 +57,44 @@ public class LabelsBottomSheet extends BottomSheetDialogFragment {
 			@NonNull LayoutInflater inflater,
 			@Nullable ViewGroup container,
 			@Nullable Bundle savedInstanceState) {
-		binding = BottomsheetLabelsBinding.inflate(inflater, container, false);
-		viewModel = new ViewModelProvider(requireActivity()).get(LabelsViewModel.class);
+		binding = BottomsheetMilestonesBinding.inflate(inflater, container, false);
+		viewModel = new ViewModelProvider(requireActivity()).get(MilestonesViewModel.class);
 
 		setupRecyclerView();
 		observeViewModel();
-		viewModel.loadLabels(requireContext(), type, id);
+		viewModel.loadMilestones(requireContext(), type, id);
 
 		return binding.getRoot();
 	}
 
 	private void setupRecyclerView() {
 		adapter =
-				new LabelsAdapter(
+				new MilestonesAdapter(
 						requireContext(),
 						new ArrayList<>(),
-						new LabelsAdapter.OnLabelClickListener() {
+						new MilestonesAdapter.OnMilestoneClickListener() {
 							@Override
-							public void onEditClick(Labels label) {
-								CreateLabelBottomSheet.newInstance(type, id, label)
-										.show(getParentFragmentManager(), "editLabelSheet");
+							public void onEditClick(Milestones milestone) {
+								CreateMilestoneBottomSheet.newInstance(type, id, milestone)
+										.show(getParentFragmentManager(), "editMilestoneSheet");
 							}
 
 							@Override
-							public void onDeleteClick(Labels label, int position) {
+							public void onDeleteClick(Milestones milestone, int position) {
 								new MaterialAlertDialogBuilder(requireContext())
 										.setTitle(
 												getString(
 														R.string.delete_dialog_title,
-														label.getName()))
-										.setMessage(R.string.delete_label_dialog_message)
+														milestone.getTitle()))
+										.setMessage(R.string.delete_milestone_message)
 										.setPositiveButton(
 												R.string.delete,
 												(dialog, which) -> {
-													viewModel.deleteLabel(
+													viewModel.deleteMilestone(
 															requireContext(),
 															type,
 															id,
-															label.getId());
+															milestone.getId());
 												})
 										.setNeutralButton(R.string.cancel, null)
 										.show();
@@ -102,8 +102,8 @@ public class LabelsBottomSheet extends BottomSheetDialogFragment {
 						});
 
 		LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());
-		binding.labelsList.setLayoutManager(layoutManager);
-		binding.labelsList.setAdapter(adapter);
+		binding.milestonesList.setLayoutManager(layoutManager);
+		binding.milestonesList.setAdapter(adapter);
 
 		EndlessRecyclerViewScrollListener scrollListener =
 				new EndlessRecyclerViewScrollListener(layoutManager) {
@@ -112,7 +112,7 @@ public class LabelsBottomSheet extends BottomSheetDialogFragment {
 						viewModel.loadNextPage(requireContext());
 					}
 				};
-		binding.labelsList.addOnScrollListener(scrollListener);
+		binding.milestonesList.addOnScrollListener(scrollListener);
 	}
 
 	private void observeViewModel() {
@@ -120,35 +120,23 @@ public class LabelsBottomSheet extends BottomSheetDialogFragment {
 				.getIsLoading()
 				.observe(
 						getViewLifecycleOwner(),
-						loading -> {
-							binding.progressBar.setVisibility(
-									Boolean.TRUE.equals(loading) ? View.VISIBLE : View.GONE);
-						});
+						loading ->
+								binding.progressBar.setVisibility(
+										Boolean.TRUE.equals(loading) ? View.VISIBLE : View.GONE));
 
 		viewModel
-				.getLabelList()
+				.getMilestoneList()
 				.observe(
 						getViewLifecycleOwner(),
 						list -> {
 							if (Boolean.TRUE.equals(viewModel.getIsLoading().getValue())) return;
 							if (list == null || list.isEmpty()) {
 								binding.nothingFoundFrame.getRoot().setVisibility(View.VISIBLE);
-								binding.labelsList.setVisibility(View.GONE);
+								binding.milestonesList.setVisibility(View.GONE);
 							} else {
 								binding.nothingFoundFrame.getRoot().setVisibility(View.GONE);
-								binding.labelsList.setVisibility(View.VISIBLE);
+								binding.milestonesList.setVisibility(View.VISIBLE);
 								adapter.updateList(list);
-							}
-						});
-
-		viewModel
-				.getDeleteSuccess()
-				.observe(
-						getViewLifecycleOwner(),
-						success -> {
-							if (Boolean.TRUE.equals(success)) {
-								Toasty.show(requireContext(), R.string.label_deleted);
-								viewModel.clearDeleteSuccess();
 							}
 						});
 
@@ -158,8 +146,19 @@ public class LabelsBottomSheet extends BottomSheetDialogFragment {
 						getViewLifecycleOwner(),
 						success -> {
 							if (Boolean.TRUE.equals(success)) {
-								viewModel.loadLabels(requireContext(), type, id);
+								viewModel.loadMilestones(requireContext(), type, id);
 								viewModel.clearActionSuccess();
+							}
+						});
+
+		viewModel
+				.getDeleteSuccess()
+				.observe(
+						getViewLifecycleOwner(),
+						success -> {
+							if (Boolean.TRUE.equals(success)) {
+								Toasty.show(requireContext(), R.string.milestone_deleted);
+								viewModel.clearDeleteSuccess();
 							}
 						});
 
@@ -181,6 +180,7 @@ public class LabelsBottomSheet extends BottomSheetDialogFragment {
 									break;
 								case "not_found":
 									Toasty.show(requireContext(), getString(R.string.not_found));
+									break;
 								case "generic_error":
 									Toasty.show(
 											requireContext(), getString(R.string.generic_error));

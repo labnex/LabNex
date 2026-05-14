@@ -159,7 +159,9 @@ public class ProjectDetailActivity extends BaseActivity
 				R.drawable.ic_milestones,
 				R.string.milestones,
 				COLOR_META,
-				v -> showSheet(new ProjectMilestonesBottomSheet(), "projectMilestonesBottomSheet"));
+				v ->
+						MilestonesBottomSheet.newInstance("project", projectId)
+								.show(getSupportFragmentManager(), "milestonesSheet"));
 
 		setupCard(
 				binding.sectionActions.cardTags.getRoot(),
@@ -326,10 +328,11 @@ public class ProjectDetailActivity extends BaseActivity
 									.show(getSupportFragmentManager(), "createBranchSheet");
 							break;
 						case "create_milestone":
-							// milestone sheet
+							CreateMilestoneBottomSheet.newInstance("project", projectId, null)
+									.show(getSupportFragmentManager(), "milestonesSheet");
 							break;
 						case "create_label":
-							CreateLabelBottomSheet.newInstance("project", projectId)
+							CreateLabelBottomSheet.newInstance("project", projectId, null)
 									.show(getSupportFragmentManager(), "createLabelSheet");
 							break;
 						case "fork_project":
@@ -427,8 +430,11 @@ public class ProjectDetailActivity extends BaseActivity
 							populateHeader(project);
 							viewModel.loadLanguageStats(ctx, projectId);
 							viewModel.loadMrCount(ctx, projectId);
-							viewModel.checkStarStatus(
-									ctx, getAccount().getUserInfo().getId(), projectId);
+
+							if (getAccount().getUserInfo() != null) {
+								viewModel.checkStarStatus(
+										ctx, getAccount().getUserInfo().getId(), projectId);
+							}
 
 							branch = project.getDefaultBranch();
 							ItemProjectActionCardBinding branchCard =

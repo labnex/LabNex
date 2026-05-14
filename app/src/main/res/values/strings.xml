@@ -357,6 +357,11 @@
     <string name="invalid_length">Must be 6 characters</string>
     <string name="label_name">Label name</string>
     <string name="branch_name_invalid">Only letters, numbers, dots, hyphens and underscores allowed</string>
+    <string name="milestone_updated">Milestone updated</string>
+    <string name="edit_milestone">Edit milestone</string>
+    <string name="tap_to_select_date">Tap to select date</string>
+    <string name="milestone_deleted">Milestone deleted successfully</string>
+    <string name="delete_milestone_message">Are you sure you want to delete this milestone. This action cannot be undone.</string>
 
     <!-- errors -->
     <string name="generic_error">An unexpected error occurred</string>
@@ -505,5 +510,6 @@
     <string name="group">Group</string>
     <string name="starrers">Starrers</string>
     <string name="branches">Branches</string>
+    <string name="expired">Expired</string>
     <!-- generic copy -->
 </resources>
