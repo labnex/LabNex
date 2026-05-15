@@ -229,10 +229,10 @@ public interface ApiInterface {
 
 	@GET("projects/{id}/releases") // get project releases
 	Call<List<Releases>> getProjectReleases(
-			@Path("id") int id, @Query("per_page") int per_page, @Query("page") int page);
+			@Path("id") long id, @Query("per_page") int per_page, @Query("page") int page);
 
 	@DELETE("projects/{id}/releases/{tag_name}") // delete a release
-	Call<Void> deleteRelease(@Path("id") int id, @Path("tag_name") String tag_name);
+	Call<Void> deleteRelease(@Path("id") long id, @Path("tag_name") String tag_name);
 
 	@GET("projects/{id}/milestones") // get project milestones
 	Call<List<Milestones>> getProjectMilestones(

@@ -152,7 +152,9 @@ public class ProjectDetailActivity extends BaseActivity
 				R.drawable.ic_releases,
 				R.string.releases,
 				COLOR_META,
-				v -> showSheet(new ProjectReleasesBottomSheet(), "projectReleasesBottomSheet"));
+				v ->
+						ReleasesBottomSheet.newInstance(projectId)
+								.show(getSupportFragmentManager(), "releasesSheet"));
 
 		setupCard(
 				binding.sectionActions.cardMilestones.getRoot(),
