@@ -11,7 +11,6 @@ import android.widget.LinearLayout;
 import androidx.lifecycle.ViewModelProvider;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.labnex.app.R;
 import com.labnex.app.bottomsheets.*;
 import com.labnex.app.contexts.ProjectsContext;
@@ -189,7 +188,12 @@ public class ProjectDetailActivity extends BaseActivity
 				R.drawable.ic_wiki,
 				R.string.wiki,
 				COLOR_OTHER,
-				v -> showSheet(new ProjectWikisBottomSheet(), "projectWikisBottomSheet"));
+				v -> {
+					Projects project = viewModel.getProjectInfo().getValue();
+					String webUrl = project != null ? project.getWebUrl() : "";
+					WikisBottomSheet.newInstance("project", projectId, webUrl)
+							.show(getSupportFragmentManager(), "wikisSheet");
+				});
 
 		setupCard(
 				binding.sectionActions.cardMembers.getRoot(),
@@ -250,13 +254,6 @@ public class ProjectDetailActivity extends BaseActivity
 		startActivity(intent);
 	}
 
-	private void showSheet(BottomSheetDialogFragment sheet, String tag) {
-		Bundle args = new Bundle();
-		args.putInt("projectId", projectId);
-		sheet.setArguments(args);
-		sheet.show(getSupportFragmentManager(), tag);
-	}
-
 	private void showProjectMenu() {
 		List<GenericMenuItemModel> items = new ArrayList<>();
 		items.add(
@@ -305,6 +302,13 @@ public class ProjectDetailActivity extends BaseActivity
 				new GenericMenuItemModel(
 						"create_label",
 						R.string.create_new_label,
+						R.drawable.ic_add,
+						com.google.android.material.R.attr.colorPrimaryContainer,
+						com.google.android.material.R.attr.colorOnPrimaryContainer));
+		items.add(
+				new GenericMenuItemModel(
+						"create_wiki",
+						R.string.create_wiki,
 						R.drawable.ic_add,
 						com.google.android.material.R.attr.colorPrimaryContainer,
 						com.google.android.material.R.attr.colorOnPrimaryContainer));
@@ -361,6 +365,10 @@ public class ProjectDetailActivity extends BaseActivity
 						case "create_label":
 							CreateLabelBottomSheet.newInstance("project", projectId, null)
 									.show(getSupportFragmentManager(), "createLabelSheet");
+							break;
+						case "create_wiki":
+							CreateWikiBottomSheet.newInstance("project", projectId, null)
+									.show(getSupportFragmentManager(), "createWikiSheet");
 							break;
 						case "fork_project":
 							// fork a project

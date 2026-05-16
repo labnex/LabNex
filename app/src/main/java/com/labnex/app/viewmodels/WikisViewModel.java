@@ -1,18 +1,16 @@
 package com.labnex.app.viewmodels;
 
-import android.app.Activity;
 import android.content.Context;
-import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-import com.labnex.app.R;
-import com.labnex.app.adapters.WikisAdapter;
 import com.labnex.app.clients.RetrofitClient;
-import com.labnex.app.databinding.BottomSheetProjectWikisBinding;
-import com.labnex.app.helpers.Toasty;
+import com.labnex.app.helpers.ApiResponseHandler;
+import com.labnex.app.helpers.Constants;
+import com.labnex.app.models.wikis.CrudeWiki;
 import com.labnex.app.models.wikis.Wiki;
+import java.util.ArrayList;
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -23,106 +21,205 @@ import retrofit2.Response;
  */
 public class WikisViewModel extends ViewModel {
 
-	private MutableLiveData<List<Wiki>> wikisList;
+	private final MutableLiveData<List<Wiki>> wikiList = new MutableLiveData<>(null);
+	private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
+	private final MutableLiveData<Boolean> isActionLoading = new MutableLiveData<>(false);
+	private final MutableLiveData<Boolean> actionSuccess = new MutableLiveData<>(false);
+	private final MutableLiveData<Boolean> createSuccess = new MutableLiveData<>(false);
+	private final MutableLiveData<Boolean> editSuccess = new MutableLiveData<>(false);
+	private final MutableLiveData<Boolean> deleteSuccess = new MutableLiveData<>(false);
+	private final MutableLiveData<String> error = new MutableLiveData<>();
 
-	public LiveData<List<Wiki>> getWikis(
-			Context ctx,
-			int id,
-			int resultLimit,
-			int page,
-			Activity activity,
-			BottomSheetProjectWikisBinding binding) {
+	private long currentId;
+	private int currentPage = 1;
+	private final int resultLimit = Constants.getResultLimit();
+	private boolean isLastPage = false;
+	private boolean isLoadingMore = false;
 
-		wikisList = new MutableLiveData<>();
-		loadList(ctx, id, resultLimit, page, activity, binding);
-
-		return wikisList;
+	public LiveData<List<Wiki>> getWikiList() {
+		return wikiList;
 	}
 
-	public void loadList(
-			Context ctx,
-			int id,
-			int resultLimit,
-			int page,
-			Activity activity,
-			BottomSheetProjectWikisBinding binding) {
+	public LiveData<Boolean> getIsLoading() {
+		return isLoading;
+	}
 
+	public LiveData<Boolean> getIsActionLoading() {
+		return isActionLoading;
+	}
+
+	public LiveData<Boolean> getActionSuccess() {
+		return actionSuccess;
+	}
+
+	public LiveData<Boolean> getCreateSuccess() {
+		return createSuccess;
+	}
+
+	public LiveData<Boolean> getEditSuccess() {
+		return editSuccess;
+	}
+
+	public LiveData<Boolean> getDeleteSuccess() {
+		return deleteSuccess;
+	}
+
+	public LiveData<String> getError() {
+		return error;
+	}
+
+	public void clearActionSuccess() {
+		actionSuccess.setValue(false);
+	}
+
+	public void clearCreateSuccess() {
+		createSuccess.setValue(false);
+	}
+
+	public void clearEditSuccess() {
+		editSuccess.setValue(false);
+	}
+
+	public void clearDeleteSuccess() {
+		deleteSuccess.setValue(false);
+	}
+
+	public void loadWikis(Context ctx, String type, long projectId) {
+		this.currentId = projectId;
+		currentPage = 1;
+		isLastPage = false;
+		isLoadingMore = false;
+		isLoading.setValue(true);
+		fetch(ctx, 1);
+	}
+
+	public void loadNextPage(Context ctx) {
+		if (isLoadingMore || isLastPage) return;
+		isLoadingMore = true;
+		currentPage++;
+		fetch(ctx, currentPage);
+	}
+
+	private void fetch(Context ctx, int page) {
 		Call<List<Wiki>> call =
-				RetrofitClient.getApiInterface(ctx).getProjectWikis(id, 1, resultLimit, page);
+				RetrofitClient.getApiInterface(ctx)
+						.getProjectWikis(currentId, 1, resultLimit, page);
 
 		call.enqueue(
 				new Callback<>() {
-
 					@Override
 					public void onResponse(
-							@NonNull Call<List<Wiki>> call,
-							@NonNull Response<List<Wiki>> response) {
-
-						if (response.isSuccessful()) {
-							wikisList.postValue(response.body());
-						} else if (response.code() == 401) {
-
-							binding.progressBar.setVisibility(View.GONE);
-							Toasty.show(ctx, ctx.getString(R.string.not_authorized));
-						} else if (response.code() == 403) {
-
-							binding.progressBar.setVisibility(View.GONE);
-							Toasty.show(ctx, ctx.getString(R.string.access_forbidden_403));
-						} else {
-
-							binding.progressBar.setVisibility(View.GONE);
-							Toasty.show(ctx, ctx.getString(R.string.generic_error));
-						}
+							@NonNull Call<List<Wiki>> c, @NonNull Response<List<Wiki>> r) {
+						ApiResponseHandler.handleFetch(
+								r,
+								isLoading,
+								() -> {
+									String totalHeader = r.headers().get("x-total");
+									List<Wiki> body = r.body();
+									List<Wiki> current =
+											(page == 1)
+													? new ArrayList<>()
+													: wikiList.getValue() != null
+															? new ArrayList<>(wikiList.getValue())
+															: new ArrayList<>();
+									if (body != null) current.addAll(body);
+									wikiList.setValue(current);
+									checkLastPage(
+											body != null ? body.size() : 0,
+											totalHeader,
+											current.size());
+								},
+								error);
+						isLoadingMore = false;
 					}
 
 					@Override
-					public void onFailure(@NonNull Call<List<Wiki>> call, @NonNull Throwable t) {
-						Toasty.show(ctx, ctx.getString(R.string.generic_server_response_error));
+					public void onFailure(@NonNull Call<List<Wiki>> c, @NonNull Throwable t) {
+						isLoading.setValue(false);
+						isLoadingMore = false;
+						if (page == 1) wikiList.setValue(new ArrayList<>());
+						error.setValue(t.getMessage());
 					}
 				});
 	}
 
-	public void loadMore(
-			Context ctx,
-			int id,
-			int resultLimit,
-			int page,
-			WikisAdapter adapter,
-			Activity activity,
-			BottomSheetProjectWikisBinding binding) {
-
-		Call<List<Wiki>> call =
-				RetrofitClient.getApiInterface(ctx).getProjectWikis(id, 1, resultLimit, page);
-
-		call.enqueue(
-				new Callback<>() {
-
-					@Override
-					public void onResponse(
-							@NonNull Call<List<Wiki>> call,
-							@NonNull Response<List<Wiki>> response) {
-
-						if (response.isSuccessful()) {
-
-							List<Wiki> list = wikisList.getValue();
-							assert list != null;
-							assert response.body() != null;
-
-							if (!response.body().isEmpty()) {
-								list.addAll(response.body());
-								adapter.updateList(list);
-							} else {
-								adapter.setMoreDataAvailable(false);
+	public void createWiki(Context ctx, String type, long projectId, CrudeWiki wiki) {
+		isActionLoading.setValue(true);
+		RetrofitClient.getApiInterface(ctx)
+				.createWikiPage(projectId, wiki)
+				.enqueue(
+						new Callback<>() {
+							@Override
+							public void onResponse(
+									@NonNull Call<Wiki> c, @NonNull Response<Wiki> r) {
+								ApiResponseHandler.handleAction(
+										r, isActionLoading, actionSuccess, error);
+								if (r.isSuccessful()) createSuccess.setValue(true);
 							}
-						} else {
-							Toasty.show(ctx, ctx.getString(R.string.generic_error));
-						}
-					}
 
-					@Override
-					public void onFailure(@NonNull Call<List<Wiki>> call, @NonNull Throwable t) {
-						Toasty.show(ctx, ctx.getString(R.string.generic_server_response_error));
-					}
-				});
+							@Override
+							public void onFailure(@NonNull Call<Wiki> c, @NonNull Throwable t) {
+								isActionLoading.setValue(false);
+								error.setValue(t.getMessage());
+							}
+						});
+	}
+
+	public void updateWiki(Context ctx, String type, long projectId, String slug, CrudeWiki wiki) {
+		isActionLoading.setValue(true);
+		RetrofitClient.getApiInterface(ctx)
+				.updateWikiPage(projectId, slug, wiki)
+				.enqueue(
+						new Callback<>() {
+							@Override
+							public void onResponse(
+									@NonNull Call<Wiki> c, @NonNull Response<Wiki> r) {
+								ApiResponseHandler.handleAction(
+										r, isActionLoading, actionSuccess, error);
+								if (r.isSuccessful()) editSuccess.setValue(true);
+							}
+
+							@Override
+							public void onFailure(@NonNull Call<Wiki> c, @NonNull Throwable t) {
+								isActionLoading.setValue(false);
+								error.setValue(t.getMessage());
+							}
+						});
+	}
+
+	public void deleteWiki(Context ctx, String type, long projectId, String slug) {
+		isActionLoading.setValue(true);
+		RetrofitClient.getApiInterface(ctx)
+				.deleteWikiPage(projectId, slug)
+				.enqueue(
+						new Callback<>() {
+							@Override
+							public void onResponse(
+									@NonNull Call<Void> c, @NonNull Response<Void> r) {
+								ApiResponseHandler.handleAction(
+										r, isActionLoading, actionSuccess, error);
+								if (r.isSuccessful()) deleteSuccess.setValue(true);
+							}
+
+							@Override
+							public void onFailure(@NonNull Call<Void> c, @NonNull Throwable t) {
+								isActionLoading.setValue(false);
+								error.setValue(t.getMessage());
+							}
+						});
+	}
+
+	private void checkLastPage(int bodySize, String totalHeader, int fullListSize) {
+		if (bodySize < resultLimit) isLastPage = true;
+		else if (totalHeader != null) {
+			try {
+				if (fullListSize >= Integer.parseInt(totalHeader)) isLastPage = true;
+			} catch (NumberFormatException ignored) {
+			}
+		}
+	}
+
+	public void clearError() {
+		error.setValue(null);
 	}
 }

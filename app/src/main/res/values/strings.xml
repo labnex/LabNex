@@ -92,7 +92,7 @@
     <string name="project_starred">The project has been starred successfully</string>
     <string name="project_unstarred">The project has been unstarred successfully</string>
     <string name="switch_branch">Switch branch</string>
-    <string name="create_new_label">Create new label</string>
+    <string name="create_new_label">Create label</string>
     <string name="label_color">Background color</string>
     <string name="label_title_empty">Label name is required</string>
     <string name="label_created">Label created successfully</string>
@@ -110,7 +110,7 @@
     <string name="copy_ssh_url">Copy SSH URL</string>
     <string name="new_page">New page</string>
     <string name="delete_wiki_dialog_message">Do you really want to delete this wiki page?</string>
-    <string name="wiki_content_hint">Write wiki content here…</string>
+    <string name="wiki_content_hint">Content (Markdown)</string>
     <string name="wiki_page_created">Wiki page created successfully</string>
     <string name="wiki_page_updated">Wiki page updated successfully</string>
     <string name="title_required">Title is required</string>
@@ -371,6 +371,9 @@
     <string name="ref_hint">Branch, commit SHA, or tag name to create the tag from</string>
     <string name="release_created">Release created</string>
     <string name="release_updated">Release updated</string>
+    <string name="create_wiki">Create wiki page</string>
+    <string name="wiki_pages">Wiki pages</string>
+    <string name="edit_page">Edit page</string>
 
     <!-- errors -->
     <string name="generic_error">An unexpected error occurred</string>

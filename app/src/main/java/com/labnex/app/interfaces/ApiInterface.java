@@ -214,19 +214,19 @@ public interface ApiInterface {
 
 	@GET("projects/{id}/wikis") // get project wikis
 	Call<List<Wiki>> getProjectWikis(
-			@Path("id") int id,
+			@Path("id") long id,
 			@Query("with_content") int with_content,
 			@Query("per_page") int per_page,
 			@Query("page") int page);
 
 	@POST("projects/{id}/wikis") // create a wiki page
-	Call<Wiki> createWikiPage(@Path("id") int id, @Body CrudeWiki body);
+	Call<Wiki> createWikiPage(@Path("id") long id, @Body CrudeWiki body);
 
 	@DELETE("projects/{id}/wikis/{slug}") // delete a wiki page
-	Call<Void> deleteWikiPage(@Path("id") int id, @Path("slug") String slug);
+	Call<Void> deleteWikiPage(@Path("id") long id, @Path("slug") String slug);
 
 	@PUT("projects/{id}/wikis/{slug}") // update a wiki page
-	Call<Wiki> updateWikiPage(@Path("id") int id, @Path("slug") String slug, @Body CrudeWiki body);
+	Call<Wiki> updateWikiPage(@Path("id") long id, @Path("slug") String slug, @Body CrudeWiki body);
 
 	@GET("projects/{id}/releases") // get project releases
 	Call<List<Releases>> getProjectReleases(
