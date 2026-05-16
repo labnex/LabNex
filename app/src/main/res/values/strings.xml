@@ -42,6 +42,7 @@
     <string name="cursor_position_format" translatable="false">Ln %d, Col %d</string>
     <string name="separator_dot" translatable="false">●</string>
     <string name="readme" translatable="false">Readme</string>
+    <string name="tag_info" translatable="false">%1$s • %2$s</string>
     <!-- non translatable strings -->
 
     <string name="action_sign_in">Sign in</string>
@@ -235,7 +236,7 @@
     <string name="copy_commit_id">Copy commit ID</string>
     <string name="commit_id_copied">Commit ID copied to clipboard</string>
     <string name="new_tag">New Tag</string>
-    <string name="create_new_tag">Create New Tag</string>
+    <string name="create_new_tag">Create Tag</string>
     <string name="tag_name">Tag Name</string>
     <string name="message_optional">Message (optional)</string>
     <string name="tag_created">Tag created</string>

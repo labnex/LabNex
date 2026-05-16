@@ -498,17 +498,17 @@ public interface ApiInterface {
 	// Tags
 	@GET("projects/{id}/repository/tags") // get all project tags
 	Call<List<TagsItem>> getProjectTags(
-			@Path("id") int id, @Query("per_page") int perPage, @Query("page") int page);
+			@Path("id") long id, @Query("per_page") int perPage, @Query("page") int page);
 
 	@POST("projects/{id}/repository/tags") // create a tag
 	Call<TagsItem> createProjectTag(
-			@Path("id") int projectId,
+			@Path("id") long projectId,
 			@Query("tag_name") String tagName,
 			@Query("ref") String ref,
 			@Query("message") String message);
 
 	@DELETE("projects/{id}/repository/tags/{tag_name}") // delete a tag
-	Call<Void> deleteProjectTag(@Path("id") int projectId, @Path("tag_name") String tagName);
+	Call<Void> deleteProjectTag(@Path("id") long projectId, @Path("tag_name") String tagName);
 
 	// Todos
 	@GET("todos")

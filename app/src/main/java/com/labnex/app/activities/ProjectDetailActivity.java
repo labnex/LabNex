@@ -170,7 +170,10 @@ public class ProjectDetailActivity extends BaseActivity
 				R.drawable.ic_tags,
 				R.string.tags,
 				COLOR_META,
-				v -> showSheet(new ProjectTagsBottomSheet(), "projectTagsBottomSheet"));
+				v ->
+						TagsBottomSheet.newInstance(projectId)
+								.show(getSupportFragmentManager(), "releasesSheet"));
+		;
 
 		setupCard(
 				binding.sectionActions.cardLabels.getRoot(),
@@ -286,6 +289,13 @@ public class ProjectDetailActivity extends BaseActivity
 						com.google.android.material.R.attr.colorOnPrimaryContainer));
 		items.add(
 				new GenericMenuItemModel(
+						"create_tag",
+						R.string.create_new_tag,
+						R.drawable.ic_add,
+						com.google.android.material.R.attr.colorPrimaryContainer,
+						com.google.android.material.R.attr.colorOnPrimaryContainer));
+		items.add(
+				new GenericMenuItemModel(
 						"create_milestone",
 						R.string.create_milestone,
 						R.drawable.ic_add,
@@ -335,6 +345,10 @@ public class ProjectDetailActivity extends BaseActivity
 						case "create_release":
 							CreateReleaseBottomSheet.newInstance(projectId, null)
 									.show(getSupportFragmentManager(), "createReleaseSheet");
+							break;
+						case "create_tag":
+							CreateTagBottomSheet.newInstance(projectId)
+									.show(getSupportFragmentManager(), "createTagSheet");
 							break;
 						case "create_branch":
 							CreateBranchBottomSheet.newInstance(projectId, branch)
