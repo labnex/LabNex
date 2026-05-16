@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.helpers.ApiResponseHandler;
 import com.labnex.app.helpers.Constants;
+import com.labnex.app.models.release.CrudeRelease;
 import com.labnex.app.models.release.Releases;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,8 @@ public class ReleasesViewModel extends ViewModel {
 	private final MutableLiveData<Boolean> actionSuccess = new MutableLiveData<>(false);
 	private final MutableLiveData<Boolean> deleteSuccess = new MutableLiveData<>(false);
 	private final MutableLiveData<String> error = new MutableLiveData<>();
+	private final MutableLiveData<Boolean> createSuccess = new MutableLiveData<>(false);
+	private final MutableLiveData<Boolean> editSuccess = new MutableLiveData<>(false);
 
 	private long currentId;
 	private int currentPage = 1;
@@ -55,6 +58,22 @@ public class ReleasesViewModel extends ViewModel {
 
 	public LiveData<String> getError() {
 		return error;
+	}
+
+	public LiveData<Boolean> getCreateSuccess() {
+		return createSuccess;
+	}
+
+	public LiveData<Boolean> getEditSuccess() {
+		return editSuccess;
+	}
+
+	public void clearCreateSuccess() {
+		createSuccess.setValue(false);
+	}
+
+	public void clearEditSuccess() {
+		editSuccess.setValue(false);
 	}
 
 	public void clearActionSuccess() {
@@ -141,6 +160,50 @@ public class ReleasesViewModel extends ViewModel {
 
 							@Override
 							public void onFailure(@NonNull Call<Void> c, @NonNull Throwable t) {
+								isActionLoading.setValue(false);
+								error.setValue(t.getMessage());
+							}
+						});
+	}
+
+	public void createRelease(Context ctx, long projectId, CrudeRelease release) {
+		isActionLoading.setValue(true);
+		RetrofitClient.getApiInterface(ctx)
+				.createRelease(projectId, release)
+				.enqueue(
+						new Callback<>() {
+							@Override
+							public void onResponse(
+									@NonNull Call<Releases> c, @NonNull Response<Releases> r) {
+								ApiResponseHandler.handleAction(
+										r, isActionLoading, actionSuccess, error);
+								if (r.isSuccessful()) createSuccess.setValue(true);
+							}
+
+							@Override
+							public void onFailure(@NonNull Call<Releases> c, @NonNull Throwable t) {
+								isActionLoading.setValue(false);
+								error.setValue(t.getMessage());
+							}
+						});
+	}
+
+	public void updateRelease(Context ctx, long projectId, String tagName, CrudeRelease release) {
+		isActionLoading.setValue(true);
+		RetrofitClient.getApiInterface(ctx)
+				.updateRelease(projectId, tagName, release)
+				.enqueue(
+						new Callback<>() {
+							@Override
+							public void onResponse(
+									@NonNull Call<Releases> c, @NonNull Response<Releases> r) {
+								ApiResponseHandler.handleAction(
+										r, isActionLoading, actionSuccess, error);
+								if (r.isSuccessful()) editSuccess.setValue(true);
+							}
+
+							@Override
+							public void onFailure(@NonNull Call<Releases> c, @NonNull Throwable t) {
 								isActionLoading.setValue(false);
 								error.setValue(t.getMessage());
 							}

@@ -42,33 +42,21 @@
                 android:layout_marginStart="@dimen/dimen12dp"
                 android:contentDescription="@string/generic_img_copy"
                 app:layout_constraintBottom_toBottomOf="@id/title"
-                app:layout_constraintEnd_toStartOf="@id/btn_edit"
+                app:layout_constraintEnd_toStartOf="@id/btn_menu"
                 app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toEndOf="@id/title"
                 app:layout_constraintTop_toTopOf="@id/title" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_delete"
+                android:id="@+id/btn_menu"
                 style="@style/Widget.Material3.Button.IconButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:contentDescription="@string/delete"
-                app:icon="@drawable/ic_trash"
-                app:iconSize="@dimen/dimen20dp"
-                app:iconTint="?attr/colorError"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_edit"
-                style="@style/Widget.Material3.Button.IconButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/edit"
-                app:icon="@drawable/ic_edit"
+                android:contentDescription="@string/menu"
+                app:icon="@drawable/ic_menu"
                 app:iconSize="@dimen/dimen20dp"
                 app:iconTint="?attr/iconsColor"
-                app:layout_constraintEnd_toStartOf="@id/btn_delete"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
@@ -81,7 +69,7 @@
                 android:maxLines="1"
                 android:textAppearance="?attr/textAppearanceLabelSmall"
                 android:textColor="?attr/colorOnSurfaceVariant"
-                app:layout_constraintEnd_toStartOf="@id/btn_edit"
+                app:layout_constraintEnd_toStartOf="@id/btn_menu"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/title" />
 

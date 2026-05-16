@@ -24,6 +24,7 @@ import com.labnex.app.models.personal_access_tokens.PersonalAccessTokens;
 import com.labnex.app.models.projects.CrudeProject;
 import com.labnex.app.models.projects.Projects;
 import com.labnex.app.models.projects.Stars;
+import com.labnex.app.models.release.CrudeRelease;
 import com.labnex.app.models.release.Releases;
 import com.labnex.app.models.repository.CrudeFile;
 import com.labnex.app.models.repository.FileContents;
@@ -233,6 +234,13 @@ public interface ApiInterface {
 
 	@DELETE("projects/{id}/releases/{tag_name}") // delete a release
 	Call<Void> deleteRelease(@Path("id") long id, @Path("tag_name") String tag_name);
+
+	@POST("projects/{id}/releases") // create a release
+	Call<Releases> createRelease(@Path("id") long id, @Body CrudeRelease body);
+
+	@PUT("projects/{id}/releases/{tag_name}") // update a release
+	Call<Releases> updateRelease(
+			@Path("id") long id, @Path("tag_name") String tagName, @Body CrudeRelease body);
 
 	@GET("projects/{id}/milestones") // get project milestones
 	Call<List<Milestones>> getProjectMilestones(
@@ -488,18 +496,18 @@ public interface ApiInterface {
 	Call<SnippetsItem> updateSnippet(@Path("id") long id, @Body SnippetCreateModel model);
 
 	// Tags
-	@GET("projects/{id}/repository/tags")
+	@GET("projects/{id}/repository/tags") // get all project tags
 	Call<List<TagsItem>> getProjectTags(
 			@Path("id") int id, @Query("per_page") int perPage, @Query("page") int page);
 
-	@POST("projects/{id}/repository/tags")
+	@POST("projects/{id}/repository/tags") // create a tag
 	Call<TagsItem> createProjectTag(
 			@Path("id") int projectId,
 			@Query("tag_name") String tagName,
 			@Query("ref") String ref,
 			@Query("message") String message);
 
-	@DELETE("projects/{id}/repository/tags/{tag_name}")
+	@DELETE("projects/{id}/repository/tags/{tag_name}") // delete a tag
 	Call<Void> deleteProjectTag(@Path("id") int projectId, @Path("tag_name") String tagName);
 
 	// Todos

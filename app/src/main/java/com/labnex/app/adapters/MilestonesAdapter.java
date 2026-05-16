@@ -30,9 +30,7 @@ public class MilestonesAdapter extends RecyclerView.Adapter<MilestonesAdapter.Mi
 	private final OnMilestoneClickListener listener;
 
 	public interface OnMilestoneClickListener {
-		void onEditClick(Milestones milestone);
-
-		void onDeleteClick(Milestones milestone, int position);
+		void onMenuClick(Milestones milestone);
 	}
 
 	public MilestonesAdapter(
@@ -76,19 +74,11 @@ public class MilestonesAdapter extends RecyclerView.Adapter<MilestonesAdapter.Mi
 			super(binding.getRoot());
 			this.binding = binding;
 
-			binding.btnEdit.setOnClickListener(
+			binding.btnMenu.setOnClickListener(
 					v -> {
 						int pos = getBindingAdapterPosition();
 						if (pos != RecyclerView.NO_POSITION && listener != null) {
-							listener.onEditClick(list.get(pos));
-						}
-					});
-
-			binding.btnDelete.setOnClickListener(
-					v -> {
-						int pos = getBindingAdapterPosition();
-						if (pos != RecyclerView.NO_POSITION && listener != null) {
-							listener.onDeleteClick(list.get(pos), pos);
+							listener.onMenuClick(list.get(pos));
 						}
 					});
 		}

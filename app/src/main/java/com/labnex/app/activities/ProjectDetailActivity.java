@@ -261,36 +261,43 @@ public class ProjectDetailActivity extends BaseActivity
 						"create_issue",
 						R.string.create_issue,
 						R.drawable.ic_add,
-						com.google.android.material.R.attr.colorSecondaryContainer,
-						com.google.android.material.R.attr.colorOnSecondaryContainer));
+						com.google.android.material.R.attr.colorPrimaryContainer,
+						com.google.android.material.R.attr.colorOnPrimaryContainer));
 		items.add(
 				new GenericMenuItemModel(
 						"create_mr",
 						R.string.create_mr,
 						R.drawable.ic_add,
-						com.google.android.material.R.attr.colorSecondaryContainer,
-						com.google.android.material.R.attr.colorOnSecondaryContainer));
+						com.google.android.material.R.attr.colorPrimaryContainer,
+						com.google.android.material.R.attr.colorOnPrimaryContainer));
 		items.add(
 				new GenericMenuItemModel(
 						"create_branch",
 						R.string.create_branch,
 						R.drawable.ic_add,
-						com.google.android.material.R.attr.colorSecondaryContainer,
-						com.google.android.material.R.attr.colorOnSecondaryContainer));
+						com.google.android.material.R.attr.colorPrimaryContainer,
+						com.google.android.material.R.attr.colorOnPrimaryContainer));
+		items.add(
+				new GenericMenuItemModel(
+						"create_release",
+						R.string.create_release,
+						R.drawable.ic_add,
+						com.google.android.material.R.attr.colorPrimaryContainer,
+						com.google.android.material.R.attr.colorOnPrimaryContainer));
 		items.add(
 				new GenericMenuItemModel(
 						"create_milestone",
 						R.string.create_milestone,
 						R.drawable.ic_add,
-						com.google.android.material.R.attr.colorSecondaryContainer,
-						com.google.android.material.R.attr.colorOnSecondaryContainer));
+						com.google.android.material.R.attr.colorPrimaryContainer,
+						com.google.android.material.R.attr.colorOnPrimaryContainer));
 		items.add(
 				new GenericMenuItemModel(
 						"create_label",
 						R.string.create_new_label,
 						R.drawable.ic_add,
-						com.google.android.material.R.attr.colorSecondaryContainer,
-						com.google.android.material.R.attr.colorOnSecondaryContainer));
+						com.google.android.material.R.attr.colorPrimaryContainer,
+						com.google.android.material.R.attr.colorOnPrimaryContainer));
 		items.add(
 				new GenericMenuItemModel(
 						"fork_project",
@@ -324,6 +331,10 @@ public class ProjectDetailActivity extends BaseActivity
 													projectId,
 													ctx)
 											.getIntent(ctx, CreateMergeRequestActivity.class));
+							break;
+						case "create_release":
+							CreateReleaseBottomSheet.newInstance(projectId, null)
+									.show(getSupportFragmentManager(), "createReleaseSheet");
 							break;
 						case "create_branch":
 							CreateBranchBottomSheet.newInstance(projectId, branch)
@@ -362,15 +373,15 @@ public class ProjectDetailActivity extends BaseActivity
 						"copy_url",
 						R.string.copy_web_url,
 						R.drawable.ic_browser,
-						com.google.android.material.R.attr.colorSecondaryContainer,
-						com.google.android.material.R.attr.colorOnSecondaryContainer));
+						com.google.android.material.R.attr.colorPrimaryContainer,
+						com.google.android.material.R.attr.colorOnPrimaryContainer));
 		items.add(
 				new GenericMenuItemModel(
 						"copy_https",
 						R.string.copy_clone_https_url,
 						R.drawable.ic_copy,
-						com.google.android.material.R.attr.colorTertiaryContainer,
-						com.google.android.material.R.attr.colorOnTertiaryContainer));
+						com.google.android.material.R.attr.colorPrimaryContainer,
+						com.google.android.material.R.attr.colorOnPrimaryContainer));
 		items.add(
 				new GenericMenuItemModel(
 						"copy_ssh",
@@ -421,6 +432,8 @@ public class ProjectDetailActivity extends BaseActivity
 						loading -> {
 							binding.progressBar.setVisibility(
 									Boolean.TRUE.equals(loading) ? View.VISIBLE : View.GONE);
+							binding.scrollView.setVisibility(
+									Boolean.TRUE.equals(loading) ? View.GONE : View.VISIBLE);
 						});
 
 		viewModel

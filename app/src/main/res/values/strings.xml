@@ -242,7 +242,6 @@
     <string name="tag_name_empty">Tag name is required</string>
     <string name="ref_empty">Ref is required</string>
     <string name="tag_already_exists">Tag already exists</string>
-    <string name="tag_ref_hint">Commit SHA, another tag name, or branch name</string>
     <string name="tag_ref_invalid">Target ref is invalid</string>
     <string name="delete_tag">Delete Tag</string>
     <string name="delete_tag_confirmation">Are you sure you want to delete tag %1$s?</string>
@@ -362,6 +361,15 @@
     <string name="tap_to_select_date">Tap to select date</string>
     <string name="milestone_deleted">Milestone deleted successfully</string>
     <string name="delete_milestone_message">Are you sure you want to delete this milestone. This action cannot be undone.</string>
+    <string name="create_release">Create release</string>
+    <string name="release_name">Release name</string>
+    <string name="edit_release">Edit release</string>
+    <string name="tag_name_required">Tag name is required</string>
+    <string name="released_at">Released at</string>
+    <string name="released_at_hint">Defaults to now if not set. Use for upcoming or historical releases.</string>
+    <string name="ref_hint">Branch, commit SHA, or tag name to create the tag from</string>
+    <string name="release_created">Release created</string>
+    <string name="release_updated">Release updated</string>
 
     <!-- errors -->
     <string name="generic_error">An unexpected error occurred</string>

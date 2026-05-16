@@ -33,9 +33,7 @@ public class ReleasesAdapter extends RecyclerView.Adapter<ReleasesAdapter.Releas
 	private final OnReleaseClickListener listener;
 
 	public interface OnReleaseClickListener {
-		void onEditClick(Releases release);
-
-		void onDeleteClick(Releases release);
+		void onMenuClick(Releases release);
 	}
 
 	public ReleasesAdapter(Context ctx, List<Releases> listMain, OnReleaseClickListener listener) {
@@ -78,19 +76,11 @@ public class ReleasesAdapter extends RecyclerView.Adapter<ReleasesAdapter.Releas
 			super(binding.getRoot());
 			this.binding = binding;
 
-			binding.btnEdit.setOnClickListener(
+			binding.btnMenu.setOnClickListener(
 					v -> {
 						int pos = getBindingAdapterPosition();
 						if (pos != RecyclerView.NO_POSITION && listener != null) {
-							listener.onEditClick(list.get(pos));
-						}
-					});
-
-			binding.btnDelete.setOnClickListener(
-					v -> {
-						int pos = getBindingAdapterPosition();
-						if (pos != RecyclerView.NO_POSITION && listener != null) {
-							listener.onDeleteClick(list.get(pos));
+							listener.onMenuClick(list.get(pos));
 						}
 					});
 

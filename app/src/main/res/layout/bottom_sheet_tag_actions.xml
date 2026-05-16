@@ -85,7 +85,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dimen16dp"
-                app:helperText="@string/tag_ref_hint"
+                app:helperText="@string/ref_hint"
                 android:hint="@string/ref"
                 app:endIconMode="clear_text"
                 app:endIconTint="?attr/iconsColor">

@@ -19,9 +19,10 @@ import com.labnex.app.databinding.BottomsheetMilestonesBinding;
 import com.labnex.app.helpers.EndlessRecyclerViewScrollListener;
 import com.labnex.app.helpers.Toasty;
 import com.labnex.app.helpers.UIHelper;
-import com.labnex.app.models.milestone.Milestones;
+import com.labnex.app.models.app.GenericMenuItemModel;
 import com.labnex.app.viewmodels.MilestonesViewModel;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author mmarif
@@ -72,33 +73,62 @@ public class MilestonesBottomSheet extends BottomSheetDialogFragment {
 				new MilestonesAdapter(
 						requireContext(),
 						new ArrayList<>(),
-						new MilestonesAdapter.OnMilestoneClickListener() {
-							@Override
-							public void onEditClick(Milestones milestone) {
-								CreateMilestoneBottomSheet.newInstance(type, id, milestone)
-										.show(getParentFragmentManager(), "editMilestoneSheet");
-							}
+						milestone -> {
+							List<GenericMenuItemModel> items = new ArrayList<>();
+							items.add(
+									new GenericMenuItemModel(
+											"edit",
+											R.string.edit,
+											R.drawable.ic_edit,
+											com.google.android.material.R.attr
+													.colorPrimaryContainer,
+											com.google.android.material.R.attr
+													.colorOnPrimaryContainer));
+							items.add(
+									new GenericMenuItemModel(
+											"delete",
+											R.string.delete,
+											R.drawable.ic_trash,
+											com.google.android.material.R.attr.colorErrorContainer,
+											com.google.android.material.R.attr
+													.colorOnErrorContainer));
 
-							@Override
-							public void onDeleteClick(Milestones milestone, int position) {
-								new MaterialAlertDialogBuilder(requireContext())
-										.setTitle(
-												getString(
-														R.string.delete_dialog_title,
-														milestone.getTitle()))
-										.setMessage(R.string.delete_milestone_message)
-										.setPositiveButton(
-												R.string.delete,
-												(dialog, which) -> {
-													viewModel.deleteMilestone(
-															requireContext(),
-															type,
-															id,
-															milestone.getId());
-												})
-										.setNeutralButton(R.string.cancel, null)
-										.show();
-							}
+							GenericMenuBottomSheet sheet =
+									GenericMenuBottomSheet.newInstance(
+											milestone.getTitle(), null, items);
+							sheet.setOnMenuItemClickListener(
+									menuId -> {
+										switch (menuId) {
+											case "edit":
+												CreateMilestoneBottomSheet.newInstance(
+																type, this.id, milestone)
+														.show(
+																getParentFragmentManager(),
+																"editMilestoneSheet");
+												break;
+											case "delete":
+												new MaterialAlertDialogBuilder(requireContext())
+														.setTitle(
+																getString(
+																		R.string
+																				.delete_dialog_title,
+																		milestone.getTitle()))
+														.setMessage(
+																R.string.delete_milestone_message)
+														.setPositiveButton(
+																R.string.delete,
+																(dialog, which) ->
+																		viewModel.deleteMilestone(
+																				requireContext(),
+																				type,
+																				this.id,
+																				milestone.getId()))
+														.setNeutralButton(R.string.cancel, null)
+														.show();
+												break;
+										}
+									});
+							sheet.show(getParentFragmentManager(), "milestoneMenuSheet");
 						});
 
 		LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());

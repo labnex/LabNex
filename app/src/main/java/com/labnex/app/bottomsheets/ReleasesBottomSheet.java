@@ -19,9 +19,10 @@ import com.labnex.app.databinding.BottomsheetReleasesBinding;
 import com.labnex.app.helpers.EndlessRecyclerViewScrollListener;
 import com.labnex.app.helpers.Toasty;
 import com.labnex.app.helpers.UIHelper;
-import com.labnex.app.models.release.Releases;
+import com.labnex.app.models.app.GenericMenuItemModel;
 import com.labnex.app.viewmodels.ReleasesViewModel;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author mmarif
@@ -69,30 +70,61 @@ public class ReleasesBottomSheet extends BottomSheetDialogFragment {
 				new ReleasesAdapter(
 						requireContext(),
 						new ArrayList<>(),
-						new ReleasesAdapter.OnReleaseClickListener() {
-							@Override
-							public void onEditClick(Releases release) {
-								// TODO: CreateReleaseBottomSheet
-							}
+						release -> {
+							List<GenericMenuItemModel> items = new ArrayList<>();
+							items.add(
+									new GenericMenuItemModel(
+											"edit",
+											R.string.edit,
+											R.drawable.ic_edit,
+											com.google.android.material.R.attr
+													.colorPrimaryContainer,
+											com.google.android.material.R.attr
+													.colorOnPrimaryContainer));
+							items.add(
+									new GenericMenuItemModel(
+											"delete",
+											R.string.delete,
+											R.drawable.ic_trash,
+											com.google.android.material.R.attr.colorErrorContainer,
+											com.google.android.material.R.attr
+													.colorOnErrorContainer));
 
-							@Override
-							public void onDeleteClick(Releases release) {
-								new MaterialAlertDialogBuilder(requireContext())
-										.setTitle(
-												getString(
-														R.string.delete_dialog_title,
-														release.getTagName()))
-										.setMessage(R.string.delete_release_message)
-										.setPositiveButton(
-												R.string.delete,
-												(dialog, which) ->
-														viewModel.deleteRelease(
-																requireContext(),
-																projectId,
-																release.getTagName()))
-										.setNeutralButton(R.string.cancel, null)
-										.show();
-							}
+							GenericMenuBottomSheet sheet =
+									GenericMenuBottomSheet.newInstance(
+											release.getName(), release.getTagName(), items);
+							sheet.setOnMenuItemClickListener(
+									id -> {
+										switch (id) {
+											case "edit":
+												CreateReleaseBottomSheet.newInstance(
+																projectId, release)
+														.show(
+																getParentFragmentManager(),
+																"editReleaseSheet");
+												break;
+											case "delete":
+												new MaterialAlertDialogBuilder(requireContext())
+														.setTitle(
+																getString(
+																		R.string
+																				.delete_dialog_title,
+																		release.getTagName()))
+														.setMessage(R.string.delete_release_message)
+														.setPositiveButton(
+																R.string.delete,
+																(dialog, which) ->
+																		viewModel.deleteRelease(
+																				requireContext(),
+																				projectId,
+																				release
+																						.getTagName()))
+														.setNeutralButton(R.string.cancel, null)
+														.show();
+												break;
+										}
+									});
+							sheet.show(getParentFragmentManager(), "releaseMenuSheet");
 						});
 
 		LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());

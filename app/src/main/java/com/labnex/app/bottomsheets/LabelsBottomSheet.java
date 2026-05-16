@@ -19,9 +19,10 @@ import com.labnex.app.databinding.BottomsheetLabelsBinding;
 import com.labnex.app.helpers.EndlessRecyclerViewScrollListener;
 import com.labnex.app.helpers.Toasty;
 import com.labnex.app.helpers.UIHelper;
-import com.labnex.app.models.labels.Labels;
+import com.labnex.app.models.app.GenericMenuItemModel;
 import com.labnex.app.viewmodels.LabelsViewModel;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author mmarif
@@ -72,33 +73,62 @@ public class LabelsBottomSheet extends BottomSheetDialogFragment {
 				new LabelsAdapter(
 						requireContext(),
 						new ArrayList<>(),
-						new LabelsAdapter.OnLabelClickListener() {
-							@Override
-							public void onEditClick(Labels label) {
-								CreateLabelBottomSheet.newInstance(type, id, label)
-										.show(getParentFragmentManager(), "editLabelSheet");
-							}
+						label -> {
+							List<GenericMenuItemModel> items = new ArrayList<>();
+							items.add(
+									new GenericMenuItemModel(
+											"edit",
+											R.string.edit,
+											R.drawable.ic_edit,
+											com.google.android.material.R.attr
+													.colorPrimaryContainer,
+											com.google.android.material.R.attr
+													.colorOnPrimaryContainer));
+							items.add(
+									new GenericMenuItemModel(
+											"delete",
+											R.string.delete,
+											R.drawable.ic_trash,
+											com.google.android.material.R.attr.colorErrorContainer,
+											com.google.android.material.R.attr
+													.colorOnErrorContainer));
 
-							@Override
-							public void onDeleteClick(Labels label, int position) {
-								new MaterialAlertDialogBuilder(requireContext())
-										.setTitle(
-												getString(
-														R.string.delete_dialog_title,
-														label.getName()))
-										.setMessage(R.string.delete_label_dialog_message)
-										.setPositiveButton(
-												R.string.delete,
-												(dialog, which) -> {
-													viewModel.deleteLabel(
-															requireContext(),
-															type,
-															id,
-															label.getId());
-												})
-										.setNeutralButton(R.string.cancel, null)
-										.show();
-							}
+							GenericMenuBottomSheet sheet =
+									GenericMenuBottomSheet.newInstance(
+											label.getName(), null, items);
+							sheet.setOnMenuItemClickListener(
+									menuId -> {
+										switch (menuId) {
+											case "edit":
+												CreateLabelBottomSheet.newInstance(type, id, label)
+														.show(
+																getParentFragmentManager(),
+																"editLabelSheet");
+												break;
+											case "delete":
+												new MaterialAlertDialogBuilder(requireContext())
+														.setTitle(
+																getString(
+																		R.string
+																				.delete_dialog_title,
+																		label.getName()))
+														.setMessage(
+																R.string
+																		.delete_label_dialog_message)
+														.setPositiveButton(
+																R.string.delete,
+																(dialog, which) ->
+																		viewModel.deleteLabel(
+																				requireContext(),
+																				type,
+																				id,
+																				label.getId()))
+														.setNeutralButton(R.string.cancel, null)
+														.show();
+												break;
+										}
+									});
+							sheet.show(getParentFragmentManager(), "labelMenuSheet");
 						});
 
 		LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());

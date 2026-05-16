@@ -23,9 +23,7 @@ public class LabelsAdapter extends RecyclerView.Adapter<LabelsAdapter.LabelsHold
 	private final OnLabelClickListener listener;
 
 	public interface OnLabelClickListener {
-		void onEditClick(Labels label);
-
-		void onDeleteClick(Labels label, int position);
+		void onMenuClick(Labels label);
 	}
 
 	public LabelsAdapter(Context ctx, List<Labels> listMain, OnLabelClickListener listener) {
@@ -70,25 +68,11 @@ public class LabelsAdapter extends RecyclerView.Adapter<LabelsAdapter.LabelsHold
 			this.binding = binding;
 			this.stylingHelper = LabelStylingHelper.getInstance(context);
 
-			binding.btnEdit.setOnClickListener(
+			binding.btnMenu.setOnClickListener(
 					v -> {
 						int pos = getBindingAdapterPosition();
-						if (pos != RecyclerView.NO_POSITION) {
-							Labels label = list.get(pos);
-							if (listener != null) {
-								listener.onEditClick(label);
-							}
-						}
-					});
-
-			binding.btnDelete.setOnClickListener(
-					v -> {
-						int pos = getBindingAdapterPosition();
-						if (pos != RecyclerView.NO_POSITION) {
-							Labels label = list.get(pos);
-							if (listener != null) {
-								listener.onDeleteClick(label, pos);
-							}
+						if (pos != RecyclerView.NO_POSITION && listener != null) {
+							listener.onMenuClick(list.get(pos));
 						}
 					});
 		}

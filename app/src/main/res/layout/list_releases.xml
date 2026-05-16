@@ -39,31 +39,19 @@
                 android:textAppearance="?attr/textAppearanceLabelSmall"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:alpha="0.8"
-                app:layout_constraintEnd_toStartOf="@id/btn_delete"
+                app:layout_constraintEnd_toStartOf="@id/btn_menu"
                 app:layout_constraintStart_toEndOf="@id/user_avatar"
                 app:layout_constraintTop_toTopOf="@id/user_avatar" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_edit"
+                android:id="@+id/btn_menu"
                 style="@style/Widget.Material3.Button.IconButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:contentDescription="@string/edit"
-                app:icon="@drawable/ic_edit"
+                android:contentDescription="@string/menu"
+                app:icon="@drawable/ic_menu"
                 app:iconSize="@dimen/dimen20dp"
                 app:iconTint="?attr/iconsColor"
-                app:layout_constraintEnd_toStartOf="@id/btn_delete"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_delete"
-                style="@style/Widget.Material3.Button.IconButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/delete"
-                app:icon="@drawable/ic_trash"
-                app:iconSize="@dimen/dimen20dp"
-                app:iconTint="?attr/colorError"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -95,7 +83,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dimen12dp"
-                android:textAppearance="?attr/textAppearanceBodySmall"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

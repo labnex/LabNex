@@ -24,10 +24,10 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                app:layout_constraintEnd_toStartOf="@id/btn_edit"
+                app:layout_constraintEnd_toStartOf="@id/btn_menu"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="@id/btn_edit">
+                app:layout_constraintBottom_toBottomOf="@id/btn_menu">
 
                 <TextView
                     android:id="@+id/label_name"
@@ -49,26 +49,14 @@
             </LinearLayout>
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_edit"
+                android:id="@+id/btn_menu"
                 style="@style/Widget.Material3.Button.IconButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:contentDescription="@string/edit"
+                android:contentDescription="@string/menu"
+                app:icon="@drawable/ic_menu"
                 app:iconSize="@dimen/dimen20dp"
-                app:icon="@drawable/ic_edit"
                 app:iconTint="?attr/iconsColor"
-                app:layout_constraintEnd_toStartOf="@id/btn_delete"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_delete"
-                style="@style/Widget.Material3.Button.IconButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/delete"
-                app:iconSize="@dimen/dimen20dp"
-                app:icon="@drawable/ic_trash"
-                app:iconTint="?attr/colorError"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
