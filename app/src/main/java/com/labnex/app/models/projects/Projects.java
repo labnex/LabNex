@@ -356,6 +356,13 @@ public class Projects implements Serializable {
 		}
 	}
 
+	@SerializedName("forked_from_project")
+	private Object forkedFromProject;
+
+	public boolean isForked() {
+		return forkedFromProject != null;
+	}
+
 	public String getSshUrlToRepo() {
 		return sshUrlToRepo;
 	}

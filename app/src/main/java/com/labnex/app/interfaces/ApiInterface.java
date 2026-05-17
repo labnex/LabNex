@@ -148,6 +148,13 @@ public interface ApiInterface {
 			@Query("per_page") int perPage,
 			@Query("page") int page);
 
+	@POST("groups/{id}/issues")
+	Call<Issues> createGroupIssue(@Path("id") long id, @Body CrudeIssue body);
+
+	@PUT("groups/{id}/issues/{issue_iid}")
+	Call<Issues> updateGroupIssue(
+			@Path("id") long id, @Path("issue_iid") long issueIid, @Body CrudeIssue body);
+
 	// Project endpoints
 	@GET("projects/{id}") // get a single project details
 	Call<Projects> getProjectInfo(@Path("id") long id);
@@ -289,6 +296,9 @@ public interface ApiInterface {
 	Call<List<Projects>> getProjectForks(
 			@Path("id") int id, @Query("per_page") int per_page, @Query("page") int page);
 
+	@POST("projects/{id}/fork") // fork a project
+	Call<Projects> forkProject(@Path("id") long id, @Body CrudeProject body);
+
 	// Merge request endpoints
 	@GET("projects/{id}/merge_requests") // get project merge requests
 	Call<List<MergeRequests>> getProjectMergeRequests(
@@ -399,11 +409,11 @@ public interface ApiInterface {
 			@Path("id") int id, @Path("issue_iid") int issue_iid, @Body CreateNote body);
 
 	@POST("projects/{id}/issues") // create a new issue
-	Call<Issues> createIssue(@Path("id") int id, @Body CrudeIssue body);
+	Call<Issues> createIssue(@Path("id") long id, @Body CrudeIssue body);
 
 	@PUT("projects/{id}/issues/{issue_iid}") // update/edit/close/reopen an issue
 	Call<Issues> updateIssue(
-			@Path("id") int id, @Path("issue_iid") int issue_iid, @Body CrudeIssue body);
+			@Path("id") long id, @Path("issue_iid") long issue_iid, @Body CrudeIssue body);
 
 	// Instance meta
 	@GET("broadcast_messages?page=1&per_page=10") // get broadcast messages
@@ -473,11 +483,11 @@ public interface ApiInterface {
 
 	// Templates
 	@GET("projects/{id}/templates/{type}") // get all templates
-	Call<List<Templates>> getTemplates(@Path("id") int id, @Path("type") String type);
+	Call<List<Templates>> getTemplates(@Path("id") long id, @Path("type") String type);
 
 	@GET("projects/{id}/templates/{type}/{name}") // get a template
 	Call<Template> getTemplate(
-			@Path("id") int id, @Path("type") String type, @Path("name") String name);
+			@Path("id") long id, @Path("type") String type, @Path("name") String name);
 
 	// Snippets
 	@GET("snippets") // get all snippets

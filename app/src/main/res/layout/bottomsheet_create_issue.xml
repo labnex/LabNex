@@ -17,7 +17,7 @@
             style="@style/TextAppearance.Material3.HeadlineSmall"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/create_group"
+            android:text="@string/create_issue"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/btn_close"
@@ -55,141 +55,127 @@
             android:orientation="vertical">
 
             <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@+id/switch_subgroup"
+                android:id="@+id/switch_confidential"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dimen8dp"
-                android:checked="false"
-                android:text="@string/create_as_subgroup" />
+                android:text="@string/confidential" />
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/parent_group_layout"
+                android:id="@+id/title_layout"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen16dp"
+                android:hint="@string/title"
+                app:endIconMode="clear_text"
+                app:endIconTint="?attr/iconsColor"
+                app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Medium">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/title_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text|textCapSentences"
+                    android:singleLine="true" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/template_layout"
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimen8dp"
-                android:hint="@string/parent_group"
-                android:visibility="gone"
+                android:layout_marginTop="@dimen/dimen16dp"
+                android:hint="@string/select_template"
                 app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Medium">
 
                 <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                    android:id="@+id/parent_group_input"
+                    android:id="@+id/template_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="none" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/name_layout"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimen8dp"
-                android:hint="@string/group_name"
-                app:endIconMode="clear_text"
-                app:endIconTint="?attr/iconsColor"
-                app:counterEnabled="true"
-                app:counterMaxLength="60"
-                app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Medium">
+                android:layout_marginTop="@dimen/dimen16dp">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/name_input"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/description_layout"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="text|textCapSentences"
-                    android:maxLength="60"
-                    android:singleLine="true" />
+                    android:hint="@string/description"
+                    app:endIconMode="clear_text"
+                    app:endIconTint="?attr/iconsColor"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Medium">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.labnex.app.views.AccessibleEditText
+                        android:id="@+id/description_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dimen240dp"
+                        android:paddingTop="@dimen/dimen36dp"
+                        android:gravity="top"
+                        android:inputType="textMultiLine" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/description_layout"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_expand"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dimen4dp"
+                    android:layout_marginEnd="@dimen/dimen4dp"
+                    android:text="@string/fullscreen"
+                    app:icon="@drawable/ic_maximize"
+                    app:iconSize="@dimen/dimen20dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <include
+                android:id="@+id/card_due_date"
+                layout="@layout/item_picker_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimen16dp"
-                android:hint="@string/description"
-                app:endIconMode="clear_text"
-                app:endIconTint="?attr/iconsColor"
-                app:counterEnabled="true"
-                app:counterMaxLength="250"
-                app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Medium">
+                android:layout_marginTop="@dimen/dimen16dp" />
 
-                <com.labnex.app.views.AccessibleEditText
-                    android:id="@+id/description_input"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/dimen160dp"
-                    android:gravity="top"
-                    android:inputType="textMultiLine|textCapSentences"
-                    android:maxLength="250" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@+id/switch_emails"
+            <include
+                android:id="@+id/card_labels"
+                layout="@layout/item_picker_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimen16dp"
-                android:checked="false"
-                android:text="@string/enable_email_notifications" />
+                android:layout_marginTop="@dimen/dimen12dp" />
 
-            <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@+id/switch_lfs"
+            <include
+                android:id="@+id/card_milestone"
+                layout="@layout/item_picker_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimen4dp"
-                android:checked="false"
-                android:text="@string/enable_lfs" />
-
-            <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@+id/switch_mentions"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimen4dp"
-                android:checked="false"
-                android:text="@string/disable_mentions" />
+                android:layout_marginTop="@dimen/dimen12dp" />
 
             <TextView
+                android:id="@+id/weight_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dimen20dp"
-                android:text="@string/visibility"
-                android:textAppearance="?attr/textAppearanceBodyLarge"
-                android:textStyle="bold" />
+                android:layout_marginBottom="@dimen/dimen16dp"
+                android:text="@string/weight"
+                android:textAppearance="?attr/textAppearanceBodyLarge" />
 
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/visibility_chip_group"
+            <com.google.android.material.slider.Slider
+                android:id="@+id/weight_slider"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimen8dp"
-                app:chipSpacingHorizontal="@dimen/dimen8dp"
-                app:selectionRequired="true"
-                app:singleSelection="true">
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_private"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checkable="true"
-                    android:checked="true"
-                    android:text="@string/private_placeholder" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_internal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checkable="true"
-                    android:text="@string/internal_placeholder" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_public"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checkable="true"
-                    android:text="@string/public_placeholder" />
-
-            </com.google.android.material.chip.ChipGroup>
+                android:stepSize="1"
+                android:valueFrom="0"
+                android:valueTo="9" />
 
             <FrameLayout
                 android:layout_width="match_parent"

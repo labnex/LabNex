@@ -9,6 +9,7 @@ import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.helpers.ApiResponseHandler;
 import com.labnex.app.helpers.Utils;
 import com.labnex.app.models.merge_requests.MergeRequests;
+import com.labnex.app.models.projects.CrudeProject;
 import com.labnex.app.models.projects.Projects;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,7 @@ public class ProjectDetailViewModel extends ViewModel {
 	private final MutableLiveData<Boolean> actionSuccess = new MutableLiveData<>(false);
 	private final MutableLiveData<String> error = new MutableLiveData<>();
 	private final MutableLiveData<Integer> starCount = new MutableLiveData<>(-1);
+	private final MutableLiveData<Boolean> forkSuccess = new MutableLiveData<>(false);
 
 	public LiveData<Integer> getStarCount() {
 		return starCount;
@@ -68,8 +70,57 @@ public class ProjectDetailViewModel extends ViewModel {
 		return actionSuccess;
 	}
 
+	public LiveData<Boolean> getForkSuccess() {
+		return forkSuccess;
+	}
+
+	public LiveData<Boolean> getIsActionLoading() {
+		return isActionLoading;
+	}
+
 	public void clearActionSuccess() {
 		actionSuccess.setValue(false);
+	}
+
+	public void clearForkSuccess() {
+		forkSuccess.setValue(false);
+	}
+
+	public void forkProject(
+			Context ctx,
+			long projectId,
+			String name,
+			String path,
+			String description,
+			String visibility,
+			Long namespaceId) {
+		isActionLoading.setValue(true);
+
+		CrudeProject forkBody = new CrudeProject();
+		if (name != null && !name.isEmpty()) forkBody.setName(name);
+		if (path != null && !path.isEmpty()) forkBody.setPath(path);
+		if (description != null && !description.isEmpty()) forkBody.setDescription(description);
+		if (visibility != null) forkBody.setVisibility(visibility);
+		if (namespaceId != null) forkBody.setNamespaceId(namespaceId);
+
+		RetrofitClient.getApiInterface(ctx)
+				.forkProject(projectId, forkBody)
+				.enqueue(
+						new Callback<>() {
+							@Override
+							public void onResponse(
+									@NonNull Call<Projects> c, @NonNull Response<Projects> r) {
+								ApiResponseHandler.handleAction(
+										r, isActionLoading, actionSuccess, error);
+								if (r.isSuccessful()) forkSuccess.setValue(true);
+							}
+
+							@Override
+							public void onFailure(@NonNull Call<Projects> c, @NonNull Throwable t) {
+								isActionLoading.setValue(false);
+								error.setValue(t.getMessage());
+							}
+						});
 	}
 
 	public void loadProject(Context ctx, int projectId) {

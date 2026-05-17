@@ -10,6 +10,7 @@ import com.labnex.app.contexts.IssueContext;
 import com.labnex.app.contexts.ProjectsContext;
 import com.labnex.app.helpers.ApiResponseHandler;
 import com.labnex.app.helpers.Constants;
+import com.labnex.app.models.issues.CrudeIssue;
 import com.labnex.app.models.issues.Issues;
 import com.labnex.app.models.projects.Projects;
 import java.util.ArrayList;
@@ -27,6 +28,10 @@ public class IssuesViewModel extends ViewModel {
 	private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
 	private final MutableLiveData<String> error = new MutableLiveData<>();
 	private final MutableLiveData<IssueContext> navigateToIssue = new MutableLiveData<>();
+	private final MutableLiveData<Boolean> isActionLoading = new MutableLiveData<>(false);
+	private final MutableLiveData<Boolean> actionSuccess = new MutableLiveData<>(false);
+	private final MutableLiveData<Boolean> createSuccess = new MutableLiveData<>(false);
+	private final MutableLiveData<Boolean> editSuccess = new MutableLiveData<>(false);
 
 	private String currentSource;
 	private int currentId;
@@ -56,6 +61,22 @@ public class IssuesViewModel extends ViewModel {
 		return navigateToIssue;
 	}
 
+	public LiveData<Boolean> getIsActionLoading() {
+		return isActionLoading;
+	}
+
+	public LiveData<Boolean> getActionSuccess() {
+		return actionSuccess;
+	}
+
+	public LiveData<Boolean> getCreateSuccess() {
+		return createSuccess;
+	}
+
+	public LiveData<Boolean> getEditSuccess() {
+		return editSuccess;
+	}
+
 	public String getCurrentScope() {
 		return currentScope;
 	}
@@ -78,6 +99,18 @@ public class IssuesViewModel extends ViewModel {
 
 	public void setCurrentSort(String sort) {
 		this.currentSort = sort;
+	}
+
+	public void clearActionSuccess() {
+		actionSuccess.setValue(false);
+	}
+
+	public void clearCreateSuccess() {
+		createSuccess.setValue(false);
+	}
+
+	public void clearEditSuccess() {
+		editSuccess.setValue(false);
 	}
 
 	public void fetchAndNavigateIssue(Context ctx, Issues issue) {
@@ -207,5 +240,54 @@ public class IssuesViewModel extends ViewModel {
 
 	public void clearError() {
 		error.setValue(null);
+	}
+
+	public void createIssue(Context ctx, String type, long id, CrudeIssue issue) {
+		isActionLoading.setValue(true);
+		Call<Issues> call =
+				"project".equals(type)
+						? RetrofitClient.getApiInterface(ctx).createIssue(id, issue)
+						: RetrofitClient.getApiInterface(ctx).createGroupIssue(id, issue);
+
+		call.enqueue(
+				new Callback<>() {
+					@Override
+					public void onResponse(@NonNull Call<Issues> c, @NonNull Response<Issues> r) {
+						ApiResponseHandler.handleAction(r, isActionLoading, actionSuccess, error);
+						if (r.isSuccessful()) createSuccess.setValue(true);
+					}
+
+					@Override
+					public void onFailure(@NonNull Call<Issues> c, @NonNull Throwable t) {
+						isActionLoading.setValue(false);
+						error.setValue(t.getMessage());
+					}
+				});
+	}
+
+	public void updateIssue(
+			Context ctx, String type, long projectId, long issueIid, CrudeIssue issue) {
+		isActionLoading.setValue(true);
+		Call<Issues> call =
+				"project".equals(type)
+						? RetrofitClient.getApiInterface(ctx)
+								.updateIssue(projectId, issueIid, issue)
+						: RetrofitClient.getApiInterface(ctx)
+								.updateGroupIssue(projectId, issueIid, issue);
+
+		call.enqueue(
+				new Callback<>() {
+					@Override
+					public void onResponse(@NonNull Call<Issues> c, @NonNull Response<Issues> r) {
+						ApiResponseHandler.handleAction(r, isActionLoading, actionSuccess, error);
+						if (r.isSuccessful()) editSuccess.setValue(true);
+					}
+
+					@Override
+					public void onFailure(@NonNull Call<Issues> c, @NonNull Throwable t) {
+						isActionLoading.setValue(false);
+						error.setValue(t.getMessage());
+					}
+				});
 	}
 }

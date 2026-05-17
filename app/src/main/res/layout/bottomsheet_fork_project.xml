@@ -17,7 +17,7 @@
             style="@style/TextAppearance.Material3.HeadlineSmall"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/create_group"
+            android:text="@string/fork_project"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/btn_close"
@@ -54,51 +54,42 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@+id/switch_subgroup"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimen8dp"
-                android:checked="false"
-                android:text="@string/create_as_subgroup" />
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/parent_group_layout"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimen8dp"
-                android:hint="@string/parent_group"
-                android:visibility="gone"
-                app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Medium">
-
-                <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                    android:id="@+id/parent_group_input"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="none" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/name_layout"
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dimen8dp"
-                android:hint="@string/group_name"
+                android:hint="@string/name"
                 app:endIconMode="clear_text"
                 app:endIconTint="?attr/iconsColor"
-                app:counterEnabled="true"
-                app:counterMaxLength="60"
                 app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Medium">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/name_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="text|textCapSentences"
-                    android:maxLength="60"
+                    android:inputType="text"
+                    android:singleLine="true" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/path_layout"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen16dp"
+                android:hint="@string/path"
+                app:endIconMode="clear_text"
+                app:endIconTint="?attr/iconsColor"
+                app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Medium">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/path_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
                     android:singleLine="true" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -112,43 +103,35 @@
                 android:hint="@string/description"
                 app:endIconMode="clear_text"
                 app:endIconTint="?attr/iconsColor"
-                app:counterEnabled="true"
-                app:counterMaxLength="250"
+                app:counterMaxLength="500"
                 app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Medium">
 
                 <com.labnex.app.views.AccessibleEditText
                     android:id="@+id/description_input"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/dimen160dp"
+                    android:layout_height="@dimen/dimen180dp"
                     android:gravity="top"
-                    android:inputType="textMultiLine|textCapSentences"
-                    android:maxLength="250" />
+                    android:maxLength="500"
+                    android:inputType="textMultiLine" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@+id/switch_emails"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/namespace_layout"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dimen16dp"
-                android:checked="false"
-                android:text="@string/enable_email_notifications" />
+                android:hint="@string/namespace"
+                app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Medium">
 
-            <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@+id/switch_lfs"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimen4dp"
-                android:checked="false"
-                android:text="@string/enable_lfs" />
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/namespace_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none" />
 
-            <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@+id/switch_mentions"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimen4dp"
-                android:checked="false"
-                android:text="@string/disable_mentions" />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -176,13 +159,6 @@
                     android:text="@string/private_placeholder" />
 
                 <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_internal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checkable="true"
-                    android:text="@string/internal_placeholder" />
-
-                <com.google.android.material.chip.Chip
                     android:id="@+id/chip_public"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -197,11 +173,11 @@
                 android:layout_marginTop="@dimen/dimen32dp">
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_submit"
+                    android:id="@+id/btn_fork"
                     style="@style/Widget.Material3.Button"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/dimen56dp"
-                    android:text="@string/create"
+                    android:text="@string/fork"
                     app:cornerRadius="@dimen/dimen32dp" />
 
                 <com.google.android.material.progressindicator.CircularProgressIndicator

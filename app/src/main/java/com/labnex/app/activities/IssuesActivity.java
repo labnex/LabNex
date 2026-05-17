@@ -73,7 +73,7 @@ public class IssuesActivity extends BaseActivity implements IssuesAdapter.OnIssu
 										projectsContext.getPath(),
 										projectsContext.getProjectId(),
 										ctx);
-						startActivity(pc.getIntent(ctx, CreateIssueActivity.class));
+						// startActivity(pc.getIntent(ctx, CreateIssueActivity.class));
 					});
 		}
 

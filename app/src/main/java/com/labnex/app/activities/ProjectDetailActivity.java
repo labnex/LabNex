@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -49,6 +48,7 @@ public class ProjectDetailActivity extends BaseActivity
 	private Map<String, Integer> languageColors;
 	private final List<GenericMenuItemModel> menuItems = new ArrayList<>();
 	private boolean canModify;
+	private boolean isFork;
 
 	private static final CardColors COLOR_CODE =
 			new CardColors(
@@ -97,7 +97,6 @@ public class ProjectDetailActivity extends BaseActivity
 	@Override
 	protected void onGlobalRefresh() {
 		viewModel.loadProject(ctx, projectId);
-		Log.e("ProjectDetail", "called");
 	}
 
 	@Override
@@ -332,13 +331,15 @@ public class ProjectDetailActivity extends BaseActivity
 							com.google.android.material.R.attr.colorOnPrimaryContainer));
 		}
 		if (AccessLevel.canFork(project, accessLevel)) {
-			menuItems.add(
-					new GenericMenuItemModel(
-							"fork_project",
-							R.string.fork,
-							R.drawable.ic_forks,
-							com.google.android.material.R.attr.colorPrimaryContainer,
-							com.google.android.material.R.attr.colorOnPrimaryContainer));
+			if (!isFork) {
+				menuItems.add(
+						new GenericMenuItemModel(
+								"fork_project",
+								R.string.fork,
+								R.drawable.ic_forks,
+								com.google.android.material.R.attr.colorPrimaryContainer,
+								com.google.android.material.R.attr.colorOnPrimaryContainer));
+			}
 		}
 
 		binding.btnMenu.setVisibility(menuItems.isEmpty() ? View.GONE : View.VISIBLE);
@@ -355,13 +356,9 @@ public class ProjectDetailActivity extends BaseActivity
 				id -> {
 					switch (id) {
 						case "create_issue":
-							startActivity(
-									new ProjectsContext(
-													projectsContext.getProjectName(),
-													projectsContext.getPath(),
-													projectId,
-													ctx)
-											.getIntent(ctx, CreateIssueActivity.class));
+							CreateIssueBottomSheet.newInstance(
+											"project", projectId, canModify, null)
+									.show(getSupportFragmentManager(), "createIssueSheet");
 							break;
 						case "create_mr":
 							startActivity(
@@ -397,7 +394,9 @@ public class ProjectDetailActivity extends BaseActivity
 									.show(getSupportFragmentManager(), "createWikiSheet");
 							break;
 						case "fork_project":
-							// fork a project
+							ForkProjectBottomSheet.newInstance(
+											projectId, project.getName(), project.getPath())
+									.show(getSupportFragmentManager(), "forkProjectSheet");
 							break;
 					}
 				});
@@ -493,7 +492,7 @@ public class ProjectDetailActivity extends BaseActivity
 							populateHeader(project);
 
 							int accessLevel = AccessLevel.getUserAccessLevel(project);
-							canModify = accessLevel >= 40;
+							canModify = accessLevel >= AccessLevel.MAINTAINER;
 							buildMenuItems(project, accessLevel);
 
 							binding.sectionActions
@@ -578,9 +577,6 @@ public class ProjectDetailActivity extends BaseActivity
 						this,
 						success -> {
 							if (Boolean.TRUE.equals(success)) {
-								Log.e(
-										"ActionSuccess",
-										String.valueOf(viewModel.getIsStarred().getValue()));
 								Boolean starred = viewModel.getIsStarred().getValue();
 								Toasty.show(
 										ctx,
@@ -693,6 +689,8 @@ public class ProjectDetailActivity extends BaseActivity
 				ItemProjectActionCardBinding.bind(
 						binding.sectionActions.cardMergeRequests.getRoot());
 		mrCard.actionChip.setVisibility(View.VISIBLE);
+
+		isFork = project.isForked();
 	}
 
 	private void displayLanguageStats(Map<String, Float> languages) {

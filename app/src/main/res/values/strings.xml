@@ -374,6 +374,14 @@
     <string name="create_wiki">Create wiki page</string>
     <string name="wiki_pages">Wiki pages</string>
     <string name="edit_page">Edit page</string>
+    <string name="select_labels">Select labels</string>
+    <string name="select_milestone">Select milestone</string>
+    <string name="tap_to_select_labels">Tap to select labels</string>
+    <string name="tap_to_select_milestone">Tap to select milestone</string>
+    <string name="edit_issue">Edit issue</string>
+    <string name="issue_updated">Issue updated</string>
+    <string name="fork_project">Fork project</string>
+    <string name="project_forked">Project forked successfully</string>
 
     <!-- errors -->
     <string name="generic_error">An unexpected error occurred</string>
@@ -523,5 +531,10 @@
     <string name="starrers">Starrers</string>
     <string name="branches">Branches</string>
     <string name="expired">Expired</string>
+    <string name="select">Select</string>
+    <string name="done">Done</string>
+    <string name="status">Status</string>
+    <string name="weight">Weight</string>
+    <string name="confidential">Confidential</string>
     <!-- generic copy -->
 </resources>

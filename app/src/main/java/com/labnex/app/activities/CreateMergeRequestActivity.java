@@ -11,7 +11,6 @@ import com.labnex.app.database.api.BaseApi;
 import com.labnex.app.database.api.ProjectsApi;
 import com.labnex.app.databinding.ActivityCreateMergeRequestBinding;
 import com.labnex.app.helpers.Toasty;
-import com.labnex.app.helpers.api.TemplateFetcher;
 import com.labnex.app.interfaces.BottomSheetListener;
 import com.labnex.app.models.merge_requests.CrudeMergeRequest;
 import com.labnex.app.models.merge_requests.MergeRequests;
@@ -83,15 +82,15 @@ public class CreateMergeRequestActivity extends BaseActivity implements BottomSh
 
 		binding.bottomAppBar.setNavigationOnClickListener(bottomAppBar -> finish());
 
-		TemplateFetcher.fetchAndPopulateTemplates(
-				this,
-				projectId,
-				"merge_requests",
-				binding.templates,
-				binding.description,
-				binding.bottomAppBar,
-				this::disableButton,
-				this::enableButton);
+		/*TemplateFetcher.fetchAndPopulateTemplates(
+		this,
+		projectId,
+		"merge_requests",
+		binding.templates,
+		binding.description,
+		binding.bottomAppBar,
+		this::disableButton,
+		this::enableButton);*/
 
 		binding.targetBranch.setOnClickListener(
 				target -> {

@@ -15,6 +15,7 @@ import com.labnex.app.bottomsheets.GenericMenuBottomSheet;
 import com.labnex.app.bottomsheets.LabelsBottomSheet;
 import com.labnex.app.bottomsheets.MembersBottomSheet;
 import com.labnex.app.databinding.ActivityGroupDetailBinding;
+import com.labnex.app.helpers.AccessLevel;
 import com.labnex.app.helpers.AvatarGenerator;
 import com.labnex.app.helpers.Toasty;
 import com.labnex.app.helpers.UIHelper;
@@ -146,7 +147,16 @@ public class GroupDetailActivity extends BaseActivity {
 							}
 						});
 
-		groupsViewModel.getAccessLevel().observe(this, level -> canModify = level >= 40);
+		groupsViewModel
+				.getAccessLevel()
+				.observe(
+						this,
+						level -> {
+							canModify = level >= AccessLevel.MAINTAINER;
+							if (!canModify) {
+								binding.dockContainer.removeView(binding.btnMenu);
+							}
+						});
 
 		groupsViewModel.loadGroupAccessLevel(ctx, groupId, getAccount().getUserId());
 
