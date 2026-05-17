@@ -34,12 +34,14 @@ public class LabelsBottomSheet extends BottomSheetDialogFragment {
 	private LabelsAdapter adapter;
 	private String type;
 	private long id;
+	private boolean canModify;
 
-	public static LabelsBottomSheet newInstance(String type, long id) {
+	public static LabelsBottomSheet newInstance(String type, long id, boolean canModify) {
 		LabelsBottomSheet sheet = new LabelsBottomSheet();
 		Bundle args = new Bundle();
 		args.putString("type", type);
 		args.putLong("id", id);
+		args.putBoolean("canModify", canModify);
 		sheet.setArguments(args);
 		return sheet;
 	}
@@ -50,6 +52,7 @@ public class LabelsBottomSheet extends BottomSheetDialogFragment {
 		if (getArguments() != null) {
 			type = getArguments().getString("type", "project");
 			id = getArguments().getLong("id", 0);
+			canModify = getArguments().getBoolean("canModify");
 		}
 	}
 
@@ -134,6 +137,8 @@ public class LabelsBottomSheet extends BottomSheetDialogFragment {
 		LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());
 		binding.labelsList.setLayoutManager(layoutManager);
 		binding.labelsList.setAdapter(adapter);
+
+		adapter.setCanModify(canModify);
 
 		EndlessRecyclerViewScrollListener scrollListener =
 				new EndlessRecyclerViewScrollListener(layoutManager) {

@@ -33,11 +33,13 @@ public class ReleasesBottomSheet extends BottomSheetDialogFragment {
 	private ReleasesViewModel viewModel;
 	private ReleasesAdapter adapter;
 	private long projectId;
+	private boolean canModify;
 
-	public static ReleasesBottomSheet newInstance(long projectId) {
+	public static ReleasesBottomSheet newInstance(long projectId, boolean canModify) {
 		ReleasesBottomSheet sheet = new ReleasesBottomSheet();
 		Bundle args = new Bundle();
 		args.putLong("projectId", projectId);
+		args.putBoolean("canModify", canModify);
 		sheet.setArguments(args);
 		return sheet;
 	}
@@ -47,6 +49,7 @@ public class ReleasesBottomSheet extends BottomSheetDialogFragment {
 		super.onCreate(savedInstanceState);
 		if (getArguments() != null) {
 			projectId = getArguments().getLong("projectId", 0);
+			canModify = getArguments().getBoolean("canModify");
 		}
 	}
 
@@ -130,6 +133,8 @@ public class ReleasesBottomSheet extends BottomSheetDialogFragment {
 		LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());
 		binding.releasesList.setLayoutManager(layoutManager);
 		binding.releasesList.setAdapter(adapter);
+
+		adapter.setCanModify(canModify);
 
 		EndlessRecyclerViewScrollListener scrollListener =
 				new EndlessRecyclerViewScrollListener(layoutManager) {

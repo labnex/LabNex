@@ -26,6 +26,11 @@ public class TagsAdapter extends RecyclerView.Adapter<TagsAdapter.TagsHolder> {
 	private final Context context;
 	private final List<TagsItem> list;
 	private final OnTagClickListener listener;
+	private boolean canModify = true;
+
+	public void setCanModify(boolean canModify) {
+		this.canModify = canModify;
+	}
 
 	public interface OnTagClickListener {
 		void onMenuClick(TagsItem tag);
@@ -70,6 +75,10 @@ public class TagsAdapter extends RecyclerView.Adapter<TagsAdapter.TagsHolder> {
 		TagsHolder(ListTagsBinding binding) {
 			super(binding.getRoot());
 			this.binding = binding;
+
+			if (!canModify) {
+				binding.btnMenu.setVisibility(View.GONE);
+			}
 
 			binding.btnMenu.setOnClickListener(
 					v -> {

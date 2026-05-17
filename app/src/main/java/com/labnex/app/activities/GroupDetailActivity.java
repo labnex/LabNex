@@ -37,6 +37,7 @@ public class GroupDetailActivity extends BaseActivity {
 	private long groupId;
 	private GroupsItem groupsItem;
 	private final String type = "group";
+	private boolean canModify;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -52,7 +53,11 @@ public class GroupDetailActivity extends BaseActivity {
 		groupId = getIntent().getIntExtra("groupId", 0);
 
 		binding.btnBack.setOnClickListener(v -> finish());
+
 		showGroupMenu();
+		setupProjectsList();
+		observeGroups();
+		observeProjects();
 
 		binding.groupActions.issuesFrame.setOnClickListener(
 				v -> {
@@ -72,17 +77,13 @@ public class GroupDetailActivity extends BaseActivity {
 
 		binding.groupActions.labelsFrame.setOnClickListener(
 				v ->
-						LabelsBottomSheet.newInstance("group", groupId)
+						LabelsBottomSheet.newInstance("group", groupId, canModify)
 								.show(getSupportFragmentManager(), "labelsSheet"));
 
 		binding.groupActions.membersFrame.setOnClickListener(
 				v ->
 						MembersBottomSheet.newInstance("group", groupId)
 								.show(getSupportFragmentManager(), "membersSheet"));
-
-		setupProjectsList();
-		observeGroups();
-		observeProjects();
 
 		groupsViewModel.loadGroupDetail(ctx, (int) groupId);
 		projectsViewModel.loadProjects(ctx, type, (int) groupId);
@@ -102,6 +103,8 @@ public class GroupDetailActivity extends BaseActivity {
 						loading -> {
 							binding.progressBar.setVisibility(
 									Boolean.TRUE.equals(loading) ? View.VISIBLE : View.GONE);
+							binding.scrollView.setVisibility(
+									Boolean.TRUE.equals(loading) ? View.GONE : View.VISIBLE);
 						});
 
 		groupsViewModel
@@ -142,6 +145,10 @@ public class GroupDetailActivity extends BaseActivity {
 								binding.groupDescription.setText(group.getDescription());
 							}
 						});
+
+		groupsViewModel.getAccessLevel().observe(this, level -> canModify = level >= 40);
+
+		groupsViewModel.loadGroupAccessLevel(ctx, groupId, getAccount().getUserId());
 
 		groupsViewModel
 				.getError()

@@ -150,6 +150,13 @@ public class User implements Serializable {
 	@SerializedName("username")
 	private String username;
 
+	@SerializedName("access_level")
+	private int accessLevel;
+
+	public int getAccessLevel() {
+		return accessLevel;
+	}
+
 	public String getNote() {
 		return note;
 	}

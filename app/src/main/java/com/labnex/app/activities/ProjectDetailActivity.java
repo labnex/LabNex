@@ -16,6 +16,7 @@ import com.labnex.app.bottomsheets.*;
 import com.labnex.app.contexts.ProjectsContext;
 import com.labnex.app.databinding.ActivityProjectDetailBinding;
 import com.labnex.app.databinding.ItemProjectActionCardBinding;
+import com.labnex.app.helpers.AccessLevel;
 import com.labnex.app.helpers.AppUIStateManager;
 import com.labnex.app.helpers.AvatarGenerator;
 import com.labnex.app.helpers.Markdown;
@@ -46,6 +47,8 @@ public class ProjectDetailActivity extends BaseActivity
 	private String branch;
 	private String readmePath;
 	private Map<String, Integer> languageColors;
+	private final List<GenericMenuItemModel> menuItems = new ArrayList<>();
+	private boolean canModify;
 
 	private static final CardColors COLOR_CODE =
 			new CardColors(
@@ -152,7 +155,7 @@ public class ProjectDetailActivity extends BaseActivity
 				R.string.releases,
 				COLOR_META,
 				v ->
-						ReleasesBottomSheet.newInstance(projectId)
+						ReleasesBottomSheet.newInstance(projectId, canModify)
 								.show(getSupportFragmentManager(), "releasesSheet"));
 
 		setupCard(
@@ -161,7 +164,7 @@ public class ProjectDetailActivity extends BaseActivity
 				R.string.milestones,
 				COLOR_META,
 				v ->
-						MilestonesBottomSheet.newInstance("project", projectId)
+						MilestonesBottomSheet.newInstance("project", projectId, canModify)
 								.show(getSupportFragmentManager(), "milestonesSheet"));
 
 		setupCard(
@@ -170,9 +173,8 @@ public class ProjectDetailActivity extends BaseActivity
 				R.string.tags,
 				COLOR_META,
 				v ->
-						TagsBottomSheet.newInstance(projectId)
+						TagsBottomSheet.newInstance(projectId, canModify)
 								.show(getSupportFragmentManager(), "releasesSheet"));
-		;
 
 		setupCard(
 				binding.sectionActions.cardLabels.getRoot(),
@@ -180,7 +182,7 @@ public class ProjectDetailActivity extends BaseActivity
 				R.string.labels,
 				COLOR_META,
 				v ->
-						LabelsBottomSheet.newInstance("project", projectId)
+						LabelsBottomSheet.newInstance("project", projectId, canModify)
 								.show(getSupportFragmentManager(), "labelsSheet"));
 
 		setupCard(
@@ -191,7 +193,7 @@ public class ProjectDetailActivity extends BaseActivity
 				v -> {
 					Projects project = viewModel.getProjectInfo().getValue();
 					String webUrl = project != null ? project.getWebUrl() : "";
-					WikisBottomSheet.newInstance("project", projectId, webUrl)
+					WikisBottomSheet.newInstance("project", projectId, webUrl, canModify)
 							.show(getSupportFragmentManager(), "wikisSheet");
 				});
 
@@ -254,77 +256,101 @@ public class ProjectDetailActivity extends BaseActivity
 		startActivity(intent);
 	}
 
+	private void buildMenuItems(Projects project, int accessLevel) {
+		menuItems.clear();
+
+		if (AccessLevel.canCreateIssue(project, accessLevel)) {
+			menuItems.add(
+					new GenericMenuItemModel(
+							"create_issue",
+							R.string.create_issue,
+							R.drawable.ic_add,
+							com.google.android.material.R.attr.colorPrimaryContainer,
+							com.google.android.material.R.attr.colorOnPrimaryContainer));
+		}
+		if (AccessLevel.canCreateMergeRequest(project, accessLevel)) {
+			menuItems.add(
+					new GenericMenuItemModel(
+							"create_mr",
+							R.string.create_mr,
+							R.drawable.ic_add,
+							com.google.android.material.R.attr.colorPrimaryContainer,
+							com.google.android.material.R.attr.colorOnPrimaryContainer));
+		}
+		if (AccessLevel.canCreateBranch(project, accessLevel)) {
+			menuItems.add(
+					new GenericMenuItemModel(
+							"create_branch",
+							R.string.create_branch,
+							R.drawable.ic_add,
+							com.google.android.material.R.attr.colorPrimaryContainer,
+							com.google.android.material.R.attr.colorOnPrimaryContainer));
+		}
+		if (AccessLevel.canCreateRelease(project, accessLevel)) {
+			menuItems.add(
+					new GenericMenuItemModel(
+							"create_release",
+							R.string.create_release,
+							R.drawable.ic_add,
+							com.google.android.material.R.attr.colorPrimaryContainer,
+							com.google.android.material.R.attr.colorOnPrimaryContainer));
+		}
+		if (AccessLevel.canCreateTag(project, accessLevel)) {
+			menuItems.add(
+					new GenericMenuItemModel(
+							"create_tag",
+							R.string.create_new_tag,
+							R.drawable.ic_add,
+							com.google.android.material.R.attr.colorPrimaryContainer,
+							com.google.android.material.R.attr.colorOnPrimaryContainer));
+		}
+		if (AccessLevel.canCreateMilestone(project, accessLevel)) {
+			menuItems.add(
+					new GenericMenuItemModel(
+							"create_milestone",
+							R.string.create_milestone,
+							R.drawable.ic_add,
+							com.google.android.material.R.attr.colorPrimaryContainer,
+							com.google.android.material.R.attr.colorOnPrimaryContainer));
+		}
+		if (AccessLevel.canCreateLabel(project, accessLevel)) {
+			menuItems.add(
+					new GenericMenuItemModel(
+							"create_label",
+							R.string.create_new_label,
+							R.drawable.ic_add,
+							com.google.android.material.R.attr.colorPrimaryContainer,
+							com.google.android.material.R.attr.colorOnPrimaryContainer));
+		}
+		if (AccessLevel.canCreateWiki(project, accessLevel)) {
+			menuItems.add(
+					new GenericMenuItemModel(
+							"create_wiki",
+							R.string.create_wiki,
+							R.drawable.ic_add,
+							com.google.android.material.R.attr.colorPrimaryContainer,
+							com.google.android.material.R.attr.colorOnPrimaryContainer));
+		}
+		if (AccessLevel.canFork(project, accessLevel)) {
+			menuItems.add(
+					new GenericMenuItemModel(
+							"fork_project",
+							R.string.fork,
+							R.drawable.ic_forks,
+							com.google.android.material.R.attr.colorPrimaryContainer,
+							com.google.android.material.R.attr.colorOnPrimaryContainer));
+		}
+
+		binding.btnMenu.setVisibility(menuItems.isEmpty() ? View.GONE : View.VISIBLE);
+	}
+
 	private void showProjectMenu() {
-		List<GenericMenuItemModel> items = new ArrayList<>();
-		items.add(
-				new GenericMenuItemModel(
-						"create_issue",
-						R.string.create_issue,
-						R.drawable.ic_add,
-						com.google.android.material.R.attr.colorPrimaryContainer,
-						com.google.android.material.R.attr.colorOnPrimaryContainer));
-		items.add(
-				new GenericMenuItemModel(
-						"create_mr",
-						R.string.create_mr,
-						R.drawable.ic_add,
-						com.google.android.material.R.attr.colorPrimaryContainer,
-						com.google.android.material.R.attr.colorOnPrimaryContainer));
-		items.add(
-				new GenericMenuItemModel(
-						"create_branch",
-						R.string.create_branch,
-						R.drawable.ic_add,
-						com.google.android.material.R.attr.colorPrimaryContainer,
-						com.google.android.material.R.attr.colorOnPrimaryContainer));
-		items.add(
-				new GenericMenuItemModel(
-						"create_release",
-						R.string.create_release,
-						R.drawable.ic_add,
-						com.google.android.material.R.attr.colorPrimaryContainer,
-						com.google.android.material.R.attr.colorOnPrimaryContainer));
-		items.add(
-				new GenericMenuItemModel(
-						"create_tag",
-						R.string.create_new_tag,
-						R.drawable.ic_add,
-						com.google.android.material.R.attr.colorPrimaryContainer,
-						com.google.android.material.R.attr.colorOnPrimaryContainer));
-		items.add(
-				new GenericMenuItemModel(
-						"create_milestone",
-						R.string.create_milestone,
-						R.drawable.ic_add,
-						com.google.android.material.R.attr.colorPrimaryContainer,
-						com.google.android.material.R.attr.colorOnPrimaryContainer));
-		items.add(
-				new GenericMenuItemModel(
-						"create_label",
-						R.string.create_new_label,
-						R.drawable.ic_add,
-						com.google.android.material.R.attr.colorPrimaryContainer,
-						com.google.android.material.R.attr.colorOnPrimaryContainer));
-		items.add(
-				new GenericMenuItemModel(
-						"create_wiki",
-						R.string.create_wiki,
-						R.drawable.ic_add,
-						com.google.android.material.R.attr.colorPrimaryContainer,
-						com.google.android.material.R.attr.colorOnPrimaryContainer));
-		items.add(
-				new GenericMenuItemModel(
-						"fork_project",
-						R.string.fork,
-						R.drawable.ic_forks,
-						com.google.android.material.R.attr.colorTertiaryContainer,
-						com.google.android.material.R.attr.colorOnTertiaryContainer));
+		Projects project = viewModel.getProjectInfo().getValue();
+		if (project == null || menuItems.isEmpty()) return;
 
 		GenericMenuBottomSheet sheet =
 				GenericMenuBottomSheet.newInstance(
-						projectsContext.getProjectName(),
-						projectsContext.getProject().getNameWithNamespace(),
-						items);
+						project.getName(), project.getNameWithNamespace(), menuItems);
 		sheet.setOnMenuItemClickListener(
 				id -> {
 					switch (id) {
@@ -465,6 +491,26 @@ public class ProjectDetailActivity extends BaseActivity
 						project -> {
 							if (project == null) return;
 							populateHeader(project);
+
+							int accessLevel = AccessLevel.getUserAccessLevel(project);
+							canModify = accessLevel >= 40;
+							buildMenuItems(project, accessLevel);
+
+							binding.sectionActions
+									.cardIssues
+									.getRoot()
+									.setVisibility(
+											AccessLevel.canViewIssues(project, accessLevel)
+													? View.VISIBLE
+													: View.GONE);
+							binding.sectionActions
+									.cardMergeRequests
+									.getRoot()
+									.setVisibility(
+											AccessLevel.canViewMergeRequests(project, accessLevel)
+													? View.VISIBLE
+													: View.GONE);
+
 							viewModel.loadLanguageStats(ctx, projectId);
 							viewModel.loadMrCount(ctx, projectId);
 

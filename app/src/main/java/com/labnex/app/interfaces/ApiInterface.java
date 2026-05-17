@@ -125,6 +125,9 @@ public interface ApiInterface {
 	Call<List<User>> getGroupMembers(
 			@Path("id") long id, @Query("per_page") int per_page, @Query("page") int page);
 
+	@GET("groups/{id}/members/{user_id}") // get a group member
+	Call<User> getGroupMember(@Path("id") long id, @Path("user_id") long userId);
+
 	@GET("groups/{id}/issues") // get group issues
 	Call<List<Issues>> getGroupIssues(
 			@Path("id") int groupId,
@@ -169,6 +172,9 @@ public interface ApiInterface {
 	@GET("projects/{id}/members") // get a project members
 	Call<List<User>> getProjectMembers(
 			@Path("id") long id, @Query("per_page") int per_page, @Query("page") int page);
+
+	@GET("projects/{id}/members/{user_id}") // get a project member
+	Call<User> getProjectMember(@Path("id") long projectId, @Path("user_id") long userId);
 
 	@GET("projects/{id}/starrers") // get a project starrers
 	Call<List<Stars>> getProjectStarrers(
@@ -366,6 +372,7 @@ public interface ApiInterface {
 			@Path("id") int id,
 			@Query("state") String state,
 			@Query("search") String search,
+			@Query("scope") String scope,
 			@Query("per_page") int per_page,
 			@Query("page") int page);
 

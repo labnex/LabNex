@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,6 +32,11 @@ public class ReleasesAdapter extends RecyclerView.Adapter<ReleasesAdapter.Releas
 	private final Context context;
 	private final List<Releases> list;
 	private final OnReleaseClickListener listener;
+	private boolean canModify = true;
+
+	public void setCanModify(boolean canModify) {
+		this.canModify = canModify;
+	}
 
 	public interface OnReleaseClickListener {
 		void onMenuClick(Releases release);
@@ -75,6 +81,10 @@ public class ReleasesAdapter extends RecyclerView.Adapter<ReleasesAdapter.Releas
 		ReleasesHolder(ListReleasesBinding binding) {
 			super(binding.getRoot());
 			this.binding = binding;
+
+			if (!canModify) {
+				binding.btnMenu.setVisibility(View.GONE);
+			}
 
 			binding.btnMenu.setOnClickListener(
 					v -> {

@@ -135,6 +135,7 @@ public class IssuesViewModel extends ViewModel {
 											currentId,
 											currentState,
 											currentSearch,
+											currentScope,
 											resultLimit,
 											page);
 					case "group" ->

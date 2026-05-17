@@ -21,6 +21,11 @@ public class LabelsAdapter extends RecyclerView.Adapter<LabelsAdapter.LabelsHold
 	private final Context context;
 	private final List<Labels> list;
 	private final OnLabelClickListener listener;
+	private boolean canModify = true;
+
+	public void setCanModify(boolean canModify) {
+		this.canModify = canModify;
+	}
 
 	public interface OnLabelClickListener {
 		void onMenuClick(Labels label);
@@ -67,6 +72,10 @@ public class LabelsAdapter extends RecyclerView.Adapter<LabelsAdapter.LabelsHold
 			super(binding.getRoot());
 			this.binding = binding;
 			this.stylingHelper = LabelStylingHelper.getInstance(context);
+
+			if (!canModify) {
+				binding.btnMenu.setVisibility(View.GONE);
+			}
 
 			binding.btnMenu.setOnClickListener(
 					v -> {

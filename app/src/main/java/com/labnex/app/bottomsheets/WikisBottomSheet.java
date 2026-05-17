@@ -38,13 +38,16 @@ public class WikisBottomSheet extends BottomSheetDialogFragment {
 	private String type;
 	private long id;
 	private String webUrl;
+	private boolean canModify;
 
-	public static WikisBottomSheet newInstance(String type, long id, String webUrl) {
+	public static WikisBottomSheet newInstance(
+			String type, long id, String webUrl, boolean canModify) {
 		WikisBottomSheet sheet = new WikisBottomSheet();
 		Bundle args = new Bundle();
 		args.putString("type", type);
 		args.putLong("id", id);
 		args.putString("webUrl", webUrl);
+		args.putBoolean("canModify", canModify);
 		sheet.setArguments(args);
 		return sheet;
 	}
@@ -56,6 +59,7 @@ public class WikisBottomSheet extends BottomSheetDialogFragment {
 			type = getArguments().getString("type", "project");
 			id = getArguments().getLong("id", 0);
 			webUrl = getArguments().getString("webUrl", "");
+			canModify = getArguments().getBoolean("canModify");
 		}
 	}
 
@@ -168,6 +172,8 @@ public class WikisBottomSheet extends BottomSheetDialogFragment {
 		LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());
 		binding.wikisList.setLayoutManager(layoutManager);
 		binding.wikisList.setAdapter(adapter);
+
+		adapter.setCanModify(canModify);
 
 		EndlessRecyclerViewScrollListener scrollListener =
 				new EndlessRecyclerViewScrollListener(layoutManager) {

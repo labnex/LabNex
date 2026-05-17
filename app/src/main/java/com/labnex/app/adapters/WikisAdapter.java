@@ -3,6 +3,7 @@ package com.labnex.app.adapters;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,6 +20,11 @@ public class WikisAdapter extends RecyclerView.Adapter<WikisAdapter.WikisHolder>
 	private final Context context;
 	private final List<Wiki> list;
 	private final OnWikiClickListener listener;
+	private boolean canModify = true;
+
+	public void setCanModify(boolean canModify) {
+		this.canModify = canModify;
+	}
 
 	public interface OnWikiClickListener {
 		void onWikiClick(Wiki wiki);
@@ -65,6 +71,10 @@ public class WikisAdapter extends RecyclerView.Adapter<WikisAdapter.WikisHolder>
 		WikisHolder(ListWikisBinding binding) {
 			super(binding.getRoot());
 			this.binding = binding;
+
+			if (!canModify) {
+				binding.btnMenu.setVisibility(View.GONE);
+			}
 
 			itemView.setOnClickListener(
 					v -> {

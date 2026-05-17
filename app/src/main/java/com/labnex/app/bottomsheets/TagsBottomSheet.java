@@ -33,11 +33,13 @@ public class TagsBottomSheet extends BottomSheetDialogFragment {
 	private TagsViewModel viewModel;
 	private TagsAdapter adapter;
 	private long projectId;
+	private boolean canModify;
 
-	public static TagsBottomSheet newInstance(long projectId) {
+	public static TagsBottomSheet newInstance(long projectId, boolean canModify) {
 		TagsBottomSheet sheet = new TagsBottomSheet();
 		Bundle args = new Bundle();
 		args.putLong("projectId", projectId);
+		args.putBoolean("canModify", canModify);
 		sheet.setArguments(args);
 		return sheet;
 	}
@@ -47,6 +49,7 @@ public class TagsBottomSheet extends BottomSheetDialogFragment {
 		super.onCreate(savedInstanceState);
 		if (getArguments() != null) {
 			projectId = getArguments().getLong("projectId", 0);
+			canModify = getArguments().getBoolean("canModify");
 		}
 	}
 
@@ -110,6 +113,8 @@ public class TagsBottomSheet extends BottomSheetDialogFragment {
 		LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());
 		binding.tagsList.setLayoutManager(layoutManager);
 		binding.tagsList.setAdapter(adapter);
+
+		adapter.setCanModify(canModify);
 
 		EndlessRecyclerViewScrollListener scrollListener =
 				new EndlessRecyclerViewScrollListener(layoutManager) {

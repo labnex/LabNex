@@ -26,8 +26,7 @@
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toStartOf="@id/btn_menu"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="@id/btn_menu">
+                app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
                     android:id="@+id/label_name"
@@ -54,6 +53,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/menu"
+                app:layout_goneMarginEnd="@dimen/dimen8dp"
                 app:icon="@drawable/ic_menu"
                 app:iconSize="@dimen/dimen20dp"
                 app:iconTint="?attr/iconsColor"

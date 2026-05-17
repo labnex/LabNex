@@ -34,12 +34,14 @@ public class MilestonesBottomSheet extends BottomSheetDialogFragment {
 	private MilestonesAdapter adapter;
 	private String type;
 	private long id;
+	private boolean canModify;
 
-	public static MilestonesBottomSheet newInstance(String type, long id) {
+	public static MilestonesBottomSheet newInstance(String type, long id, boolean canModify) {
 		MilestonesBottomSheet sheet = new MilestonesBottomSheet();
 		Bundle args = new Bundle();
 		args.putString("type", type);
 		args.putLong("id", id);
+		args.putBoolean("canModify", canModify);
 		sheet.setArguments(args);
 		return sheet;
 	}
@@ -50,6 +52,7 @@ public class MilestonesBottomSheet extends BottomSheetDialogFragment {
 		if (getArguments() != null) {
 			type = getArguments().getString("type", "project");
 			id = getArguments().getLong("id", 0);
+			canModify = getArguments().getBoolean("canModify");
 		}
 	}
 
@@ -134,6 +137,8 @@ public class MilestonesBottomSheet extends BottomSheetDialogFragment {
 		LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());
 		binding.milestonesList.setLayoutManager(layoutManager);
 		binding.milestonesList.setAdapter(adapter);
+
+		adapter.setCanModify(canModify);
 
 		EndlessRecyclerViewScrollListener scrollListener =
 				new EndlessRecyclerViewScrollListener(layoutManager) {

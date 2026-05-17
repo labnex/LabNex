@@ -28,6 +28,11 @@ public class MilestonesAdapter extends RecyclerView.Adapter<MilestonesAdapter.Mi
 	private final Context context;
 	private final List<Milestones> list;
 	private final OnMilestoneClickListener listener;
+	private boolean canModify = true;
+
+	public void setCanModify(boolean canModify) {
+		this.canModify = canModify;
+	}
 
 	public interface OnMilestoneClickListener {
 		void onMenuClick(Milestones milestone);
@@ -73,6 +78,10 @@ public class MilestonesAdapter extends RecyclerView.Adapter<MilestonesAdapter.Mi
 		MilestonesHolder(ListMilestonesBinding binding) {
 			super(binding.getRoot());
 			this.binding = binding;
+
+			if (!canModify) {
+				binding.btnMenu.setVisibility(View.GONE);
+			}
 
 			binding.btnMenu.setOnClickListener(
 					v -> {
