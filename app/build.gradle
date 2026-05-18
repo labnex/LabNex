@@ -1,6 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
-    id "com.diffplug.spotless" version "8.4.0"
+    id "com.diffplug.spotless" version "8.5.0"
 }
 
 android {
@@ -11,8 +11,8 @@ android {
         applicationId "com.labnex.app"
         minSdk = 26
         targetSdk = 37
-        versionCode 795
-        versionName "8.0.0-rc1"
+        versionCode 796
+        versionName "8.0.0-rc2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
