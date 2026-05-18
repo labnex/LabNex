@@ -7,9 +7,11 @@ import android.view.View;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.labnex.app.R;
 import com.labnex.app.bottomsheets.BranchesBottomSheet;
+import com.labnex.app.bottomsheets.CreateMergeRequestBottomSheet;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.contexts.ProjectsContext;
 import com.labnex.app.database.api.BaseApi;
@@ -407,15 +409,18 @@ public class CreateFileActivity extends BaseActivity implements BottomSheetListe
 						if (response.code() == 204) {
 							UpdateInterface.createFileDataListener("deleted", branch);
 							if (createMergeRequest) {
-								Intent intent =
-										projectsContext.getIntent(
-												ctx, CreateMergeRequestActivity.class);
-								intent.putExtra("sourceBranch", branch);
-								intent.putExtra("mrTitle", mrTitle);
-								intent.putExtra("fromCreateFile", true);
-								intent.putExtra("projectName", projectsContext.getProjectName());
-								intent.putExtra("path", projectsContext.getPath());
-								startActivity(intent);
+								CreateMergeRequestBottomSheet.newInstance(
+												"project",
+												projectsContext.getProjectId(),
+												true,
+												true,
+												branch,
+												mrTitle,
+												null)
+										.show(
+												((AppCompatActivity) ctx)
+														.getSupportFragmentManager(),
+												"createMrSheet");
 							}
 							finish();
 						} else if (response.code() == 401) {
@@ -455,13 +460,17 @@ public class CreateFileActivity extends BaseActivity implements BottomSheetListe
 			UpdateInterface.createFileDataListener(
 					"edit".equals(mode) ? "updated" : "created", branch);
 			if (createMergeRequest) {
-				Intent intent = projectsContext.getIntent(ctx, CreateMergeRequestActivity.class);
-				intent.putExtra("sourceBranch", branch);
-				intent.putExtra("mrTitle", mrTitle);
-				intent.putExtra("projectName", projectsContext.getProjectName());
-				intent.putExtra("path", projectsContext.getPath());
-				intent.putExtra("fromCreateFile", true);
-				startActivity(intent);
+				CreateMergeRequestBottomSheet.newInstance(
+								"project",
+								projectsContext.getProjectId(),
+								true,
+								true,
+								branch,
+								mrTitle,
+								null)
+						.show(
+								((AppCompatActivity) ctx).getSupportFragmentManager(),
+								"createMrSheet");
 			}
 			finish();
 		} else if (response.code() == 401) {

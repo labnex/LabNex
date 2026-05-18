@@ -361,13 +361,10 @@ public class ProjectDetailActivity extends BaseActivity
 									.show(getSupportFragmentManager(), "createIssueSheet");
 							break;
 						case "create_mr":
-							startActivity(
-									new ProjectsContext(
-													projectsContext.getProjectName(),
-													projectsContext.getPath(),
-													projectId,
-													ctx)
-											.getIntent(ctx, CreateMergeRequestActivity.class));
+							CreateMergeRequestBottomSheet.newInstance(
+											"project", projectId, canModify, false, null, null,
+											null)
+									.show(getSupportFragmentManager(), "createMrSheet");
 							break;
 						case "create_release":
 							CreateReleaseBottomSheet.newInstance(projectId, null)

@@ -74,7 +74,7 @@ public class MergeRequestsActivity extends BaseActivity
 										projectsContext.getPath(),
 										projectsContext.getProjectId(),
 										ctx);
-						startActivity(pc.getIntent(ctx, CreateMergeRequestActivity.class));
+						// startActivity(pc.getIntent(ctx, CreateMergeRequestActivity.class));
 					});
 		}
 

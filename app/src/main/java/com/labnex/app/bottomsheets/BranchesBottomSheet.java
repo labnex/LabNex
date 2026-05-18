@@ -31,6 +31,12 @@ public class BranchesBottomSheet extends BottomSheetDialogFragment {
 	private BranchesAdapter adapter;
 	private long projectId;
 
+	public interface OnBranchPickedListener {
+		void onBranchPicked(String branch);
+	}
+
+	private OnBranchPickedListener pickListener;
+
 	public interface OnBranchSelectedListener {
 		void onBranchSelected(String branch);
 	}
@@ -39,6 +45,17 @@ public class BranchesBottomSheet extends BottomSheetDialogFragment {
 		BranchesBottomSheet sheet = new BranchesBottomSheet();
 		Bundle args = new Bundle();
 		args.putLong("projectId", projectId);
+		sheet.setArguments(args);
+		return sheet;
+	}
+
+	public static BranchesBottomSheet newPickerInstance(
+			long projectId, OnBranchPickedListener listener) {
+		BranchesBottomSheet sheet = new BranchesBottomSheet();
+		Bundle args = new Bundle();
+		args.putLong("projectId", projectId);
+		args.putBoolean("pickerMode", true);
+		sheet.pickListener = listener;
 		sheet.setArguments(args);
 		return sheet;
 	}
@@ -67,11 +84,19 @@ public class BranchesBottomSheet extends BottomSheetDialogFragment {
 	}
 
 	private void setupRecyclerView() {
+		boolean isPickerMode =
+				getArguments() != null && getArguments().getBoolean("pickerMode", false);
 		adapter =
 				new BranchesAdapter(
 						requireContext(),
 						new ArrayList<>(),
 						branch -> {
+							if (isPickerMode && pickListener != null) {
+								pickListener.onBranchPicked(branch);
+								dismiss();
+								return;
+							}
+
 							OnBranchSelectedListener parent =
 									(OnBranchSelectedListener) getParentFragment();
 							if (parent != null) {

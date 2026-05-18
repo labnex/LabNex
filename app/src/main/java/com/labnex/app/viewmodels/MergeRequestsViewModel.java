@@ -10,6 +10,7 @@ import com.labnex.app.contexts.MergeRequestContext;
 import com.labnex.app.contexts.ProjectsContext;
 import com.labnex.app.helpers.ApiResponseHandler;
 import com.labnex.app.helpers.Constants;
+import com.labnex.app.models.merge_requests.CrudeMergeRequest;
 import com.labnex.app.models.merge_requests.MergeRequests;
 import com.labnex.app.models.projects.Projects;
 import java.util.ArrayList;
@@ -27,6 +28,10 @@ public class MergeRequestsViewModel extends ViewModel {
 	private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
 	private final MutableLiveData<String> error = new MutableLiveData<>();
 	private final MutableLiveData<MergeRequestContext> navigateToMr = new MutableLiveData<>();
+	private final MutableLiveData<Boolean> isActionLoading = new MutableLiveData<>(false);
+	private final MutableLiveData<Boolean> actionSuccess = new MutableLiveData<>(false);
+	private final MutableLiveData<Boolean> createSuccess = new MutableLiveData<>(false);
+	private final MutableLiveData<Boolean> editSuccess = new MutableLiveData<>(false);
 
 	public LiveData<List<MergeRequests>> getMrList() {
 		return mrList;
@@ -42,6 +47,22 @@ public class MergeRequestsViewModel extends ViewModel {
 
 	public LiveData<MergeRequestContext> getNavigateToMr() {
 		return navigateToMr;
+	}
+
+	public LiveData<Boolean> getIsActionLoading() {
+		return isActionLoading;
+	}
+
+	public LiveData<Boolean> getActionSuccess() {
+		return actionSuccess;
+	}
+
+	public LiveData<Boolean> getCreateSuccess() {
+		return createSuccess;
+	}
+
+	public LiveData<Boolean> getEditSuccess() {
+		return editSuccess;
 	}
 
 	private String currentSource;
@@ -78,6 +99,66 @@ public class MergeRequestsViewModel extends ViewModel {
 
 	public void setCurrentSort(String sort) {
 		this.currentSort = sort;
+	}
+
+	public void clearActionSuccess() {
+		actionSuccess.setValue(false);
+	}
+
+	public void clearCreateSuccess() {
+		createSuccess.setValue(false);
+	}
+
+	public void clearEditSuccess() {
+		editSuccess.setValue(false);
+	}
+
+	public void createMergeRequest(Context ctx, long projectId, CrudeMergeRequest mr) {
+		isActionLoading.setValue(true);
+		RetrofitClient.getApiInterface(ctx)
+				.createMergeRequest(projectId, mr)
+				.enqueue(
+						new Callback<>() {
+							@Override
+							public void onResponse(
+									@NonNull Call<MergeRequests> c,
+									@NonNull Response<MergeRequests> r) {
+								ApiResponseHandler.handleAction(
+										r, isActionLoading, actionSuccess, error);
+								if (r.isSuccessful()) createSuccess.setValue(true);
+							}
+
+							@Override
+							public void onFailure(
+									@NonNull Call<MergeRequests> c, @NonNull Throwable t) {
+								isActionLoading.setValue(false);
+								error.setValue(t.getMessage());
+							}
+						});
+	}
+
+	public void updateMergeRequest(Context ctx, long projectId, int mrIid, CrudeMergeRequest mr) {
+		isActionLoading.setValue(true);
+		RetrofitClient.getApiInterface(ctx)
+				.updateMergeRequest(projectId, mrIid, mr)
+				.enqueue(
+						new Callback<>() {
+							@Override
+							public void onResponse(
+									@NonNull Call<MergeRequests> c,
+									@NonNull Response<MergeRequests> r) {
+								ApiResponseHandler.handleAction(
+										r, isActionLoading, actionSuccess, error);
+								if (r.isSuccessful()) editSuccess.setValue(true);
+							}
+
+							@Override
+							public void onFailure(
+									@NonNull Call<MergeRequests> c, @NonNull Throwable t) {
+								isActionLoading.setValue(false);
+								error.setValue(t.getMessage());
+							}
+						});
 	}
 
 	public void fetchAndNavigateMr(Context ctx, MergeRequests mr) {

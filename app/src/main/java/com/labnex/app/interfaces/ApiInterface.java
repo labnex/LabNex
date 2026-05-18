@@ -367,12 +367,12 @@ public interface ApiInterface {
 			@Body CrudeMergeRequest body);
 
 	@POST("projects/{id}/merge_requests") // create merge request
-	Call<MergeRequests> createMergeRequest(@Path("id") int id, @Body CrudeMergeRequest body);
+	Call<MergeRequests> createMergeRequest(@Path("id") long id, @Body CrudeMergeRequest body);
 
 	@PUT("projects/{id}/merge_requests/{merge_request_iid}") // update/edit/close/reopen merge
 	// request
 	Call<MergeRequests> updateMergeRequest(
-			@Path("id") int id,
+			@Path("id") long id,
 			@Path("merge_request_iid") int issue_iid,
 			@Body CrudeMergeRequest body);
 

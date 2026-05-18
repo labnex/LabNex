@@ -382,6 +382,9 @@
     <string name="issue_updated">Issue updated</string>
     <string name="fork_project">Fork project</string>
     <string name="project_forked">Project forked successfully</string>
+    <string name="tap_to_select_branch">Tap to select branch</string>
+    <string name="edit_mr">Edit merge request</string>
+    <string name="mr_updated">Merge request updated</string>
 
     <!-- errors -->
     <string name="generic_error">An unexpected error occurred</string>
