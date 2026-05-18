@@ -48,21 +48,13 @@
     <string name="archived_project">Questo è un progetto archiviato. Il repository e le altre risorse del progetto sono in sola lettura.</string>
     <string name="project_starred">Il progetto è stato aggiunto ai preferiti</string>
     <string name="project_unstarred">Il progetto è stato rimosso dai preferiti</string>
-    <plurals name="project_stars">
-        <item quantity="one">%1$s stella</item>
-        <item quantity="other">%1$s stelle</item>
-    </plurals>
-    <plurals name="project_forks">
-        <item quantity="one">%1$s fork</item>
-        <item quantity="other">%1$s fork</item>
-    </plurals>
     <string name="switch_branch">Cambia ramo</string>
-    <string name="create_new_label">Crea una nuova etichetta</string>
+    <string name="create_new_label">Create label</string>
     <string name="label_color">Colore di sfondo</string>
-    <string name="label_title_empty">Il titolo dell\'etichetta è obbligatorio</string>
+    <string name="label_title_empty">Label name is required</string>
     <string name="label_created">Etichetta creata correttamente</string>
     <string name="new_label">Nuova etichetta</string>
-    <string name="update_label">Aggiorna %1$s</string>
+    <string name="edit_label">Edit label</string>
     <string name="delete_dialog_title">Elimina %1$s</string>
     <string name="delete_label_dialog_message">Vuoi davvero eliminare questa etichetta?</string>
     <string name="label_deleted">Etichetta eliminata correttamente</string>
@@ -75,7 +67,7 @@
     <string name="copy_ssh_url">Copia l\'URL SSH</string>
     <string name="new_page">Nuova pagina</string>
     <string name="delete_wiki_dialog_message">Vuoi davvero eliminare questa pagina wiki?</string>
-    <string name="wiki_content_hint">Scrivi qui il contenuto wiki…</string>
+    <string name="wiki_content_hint">Content (Markdown)</string>
     <string name="wiki_page_created">Pagina wiki creata correttamente</string>
     <string name="wiki_page_updated">Pagina wiki aggiornata correttamente</string>
     <string name="title_required">Il titolo è obbligatorio</string>
@@ -102,7 +94,7 @@
     <string name="branch_name">Nome del ramo</string>
     <string name="branch_ref_hint">Nome del ramo o dello SHA del commit da cui creare il ramo</string>
     <string name="branch_ref_required">Nome del ramo e ref sono obbligatori</string>
-    <string name="branch_created">"Ramo %1$s creato correttamente"</string>
+    <string name="branch_created">Ramo %1$s creato correttamente</string>
     <string name="source_target_branch_empty_error">Sia il ramo di origine che quello di destinazione sono obbligatori</string>
     <string name="user_followers">%s followers</string>
     <string name="user_following">%s following</string>
@@ -201,14 +193,13 @@
     <string name="copy_commit_id">Copy commit ID</string>
     <string name="commit_id_copied">Commit ID copied to clipboard</string>
     <string name="new_tag">New Tag</string>
-    <string name="create_new_tag">Create New Tag</string>
+    <string name="create_new_tag">Create Tag</string>
     <string name="tag_name">Tag Name</string>
     <string name="message_optional">Message (optional)</string>
     <string name="tag_created">Tag created</string>
     <string name="tag_name_empty">Tag name is required</string>
     <string name="ref_empty">Ref is required</string>
     <string name="tag_already_exists">Tag already exists</string>
-    <string name="tag_ref_hint">Commit SHA, another tag name, or branch name</string>
     <string name="tag_ref_invalid">Target ref is invalid</string>
     <string name="delete_tag">Delete Tag</string>
     <string name="delete_tag_confirmation">Are you sure you want to delete tag %1$s?</string>
@@ -316,6 +307,41 @@
     <string name="disable_mentions">Disable mentions</string>
     <string name="create_as_subgroup">Create as subgroup</string>
     <string name="parent_group">Parent group</string>
+    <string name="copy_info">Copy Info</string>
+    <string name="select_color">Select Color</string>
+    <string name="labelColorHex">Hex Color</string>
+    <string name="invalid_color">Invalid color code</string>
+    <string name="invalid_length">Must be 6 characters</string>
+    <string name="label_name">Label name</string>
+    <string name="branch_name_invalid">Only letters, numbers, dots, hyphens and underscores allowed</string>
+    <string name="milestone_updated">Milestone updated</string>
+    <string name="edit_milestone">Edit milestone</string>
+    <string name="tap_to_select_date">Tap to select date</string>
+    <string name="milestone_deleted">Milestone deleted successfully</string>
+    <string name="delete_milestone_message">Are you sure you want to delete this milestone. This action cannot be undone.</string>
+    <string name="create_release">Create release</string>
+    <string name="release_name">Release name</string>
+    <string name="edit_release">Edit release</string>
+    <string name="tag_name_required">Tag name is required</string>
+    <string name="released_at">Released at</string>
+    <string name="released_at_hint">Defaults to now if not set. Use for upcoming or historical releases.</string>
+    <string name="ref_hint">Branch, commit SHA, or tag name to create the tag from</string>
+    <string name="release_created">Release created</string>
+    <string name="release_updated">Release updated</string>
+    <string name="create_wiki">Create wiki page</string>
+    <string name="wiki_pages">Wiki pages</string>
+    <string name="edit_page">Edit page</string>
+    <string name="select_labels">Select labels</string>
+    <string name="select_milestone">Select milestone</string>
+    <string name="tap_to_select_labels">Tap to select labels</string>
+    <string name="tap_to_select_milestone">Tap to select milestone</string>
+    <string name="edit_issue">Edit issue</string>
+    <string name="issue_updated">Issue updated</string>
+    <string name="fork_project">Fork project</string>
+    <string name="project_forked">Project forked successfully</string>
+    <string name="tap_to_select_branch">Tap to select branch</string>
+    <string name="edit_mr">Edit merge request</string>
+    <string name="mr_updated">Merge request updated</string>
     <!-- errors -->
     <string name="generic_error">An unexpected error occurred</string>
     <string name="browserOpenFailed">No application found to open this link</string>
@@ -460,5 +486,13 @@
     <string name="untitled">Untitled</string>
     <string name="snippet">Snippet</string>
     <string name="group">Group</string>
+    <string name="starrers">Starrers</string>
+    <string name="branches">Branches</string>
+    <string name="expired">Expired</string>
+    <string name="select">Select</string>
+    <string name="done">Done</string>
+    <string name="status">Status</string>
+    <string name="weight">Weight</string>
+    <string name="confidential">Confidential</string>
     <!-- generic copy -->
 </resources>
