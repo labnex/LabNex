@@ -91,4 +91,12 @@ public class Milestones implements Serializable {
 	public String getStartDate() {
 		return startDate;
 	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
 }

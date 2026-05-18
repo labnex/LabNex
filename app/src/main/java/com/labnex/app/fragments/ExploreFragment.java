@@ -205,7 +205,16 @@ public class ExploreFragment extends Fragment {
 								}));
 				break;
 			case ExploreViewModel.SCOPE_USERS:
-				binding.recyclerView.setAdapter(new MembersAdapter(ctx, (List<User>) data));
+				binding.recyclerView.setAdapter(
+						new MembersAdapter(
+								ctx,
+								(List<User>) data,
+								user -> {
+									Intent intent = new Intent(ctx, ProfileActivity.class);
+									intent.putExtra("source", "explore");
+									intent.putExtra("userId", user.getId());
+									startActivity(intent);
+								}));
 				break;
 		}
 	}

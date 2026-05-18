@@ -321,6 +321,48 @@ public class Projects implements Serializable {
 	@SerializedName("forks_count")
 	private int forksCount;
 
+	@SerializedName("permissions")
+	private Permissions permissions;
+
+	public Permissions getPermissions() {
+		return permissions;
+	}
+
+	public static class Permissions implements Serializable {
+		@SerializedName("project_access")
+		private Access projectAccess;
+
+		@SerializedName("group_access")
+		private Access groupAccess;
+
+		public Access getProjectAccess() {
+			return projectAccess;
+		}
+
+		public Access getGroupAccess() {
+			return groupAccess;
+		}
+
+		public static class Access implements Serializable {
+			@SerializedName("access_level")
+			private int accessLevel;
+
+			@SerializedName("notification_level")
+			private int notificationLevel;
+
+			public int getAccessLevel() {
+				return accessLevel;
+			}
+		}
+	}
+
+	@SerializedName("forked_from_project")
+	private Object forkedFromProject;
+
+	public boolean isForked() {
+		return forkedFromProject != null;
+	}
+
 	public String getSshUrlToRepo() {
 		return sshUrlToRepo;
 	}

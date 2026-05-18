@@ -10,6 +10,7 @@ import com.labnex.app.helpers.ApiResponseHandler;
 import com.labnex.app.helpers.Constants;
 import com.labnex.app.models.groups.CreateGroup;
 import com.labnex.app.models.groups.GroupsItem;
+import com.labnex.app.models.user.User;
 import java.util.ArrayList;
 import java.util.List;
 import retrofit2.Call;
@@ -28,6 +29,7 @@ public class GroupsViewModel extends ViewModel {
 	private final MutableLiveData<Boolean> actionSuccess = new MutableLiveData<>(false);
 	private final MutableLiveData<GroupsItem> groupDetail = new MutableLiveData<>();
 	private final MutableLiveData<Boolean> isDetailLoading = new MutableLiveData<>(false);
+	private final MutableLiveData<Integer> accessLevel = new MutableLiveData<>(0);
 
 	public LiveData<List<GroupsItem>> getGroupsList() {
 		return groupsList;
@@ -57,6 +59,10 @@ public class GroupsViewModel extends ViewModel {
 		return isDetailLoading;
 	}
 
+	public LiveData<Integer> getAccessLevel() {
+		return accessLevel;
+	}
+
 	private int currentPage = 1;
 	private final int resultLimit = Constants.getResultLimit();
 	private boolean isLastPage = false;
@@ -79,6 +85,24 @@ public class GroupsViewModel extends ViewModel {
 		isLoadingMore = true;
 		currentPage++;
 		fetch(ctx, currentPage);
+	}
+
+	public void loadGroupAccessLevel(Context ctx, long groupId, long userId) {
+		RetrofitClient.getApiInterface(ctx)
+				.getGroupMember(groupId, userId)
+				.enqueue(
+						new Callback<>() {
+							@Override
+							public void onResponse(
+									@NonNull Call<User> c, @NonNull Response<User> r) {
+								if (r.isSuccessful() && r.body() != null) {
+									accessLevel.setValue(r.body().getAccessLevel());
+								}
+							}
+
+							@Override
+							public void onFailure(@NonNull Call<User> c, @NonNull Throwable t) {}
+						});
 	}
 
 	public void loadGroupDetail(Context ctx, long groupId) {

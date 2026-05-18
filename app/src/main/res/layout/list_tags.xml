@@ -1,85 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.listitem.ListItemLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/layout_frame"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:gravity="center_vertical"
-    android:orientation="horizontal"
-    android:paddingTop="@dimen/dimen4dp"
-    android:paddingBottom="@dimen/dimen4dp">
+    android:layout_height="wrap_content">
 
-    <com.google.android.material.card.MaterialCardView
+    <com.google.android.material.listitem.ListItemCardView
+        android:id="@+id/card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="?attr/materialCardViewFilledStyle"
-        app:cardElevation="@dimen/dimen0dp"
-        app:strokeWidth="@dimen/dimen0dp">
+        android:layout_marginVertical="@dimen/dimen1dp"
+        android:checkable="false"
+        app:cardBackgroundColor="?attr/colorSurfaceContainerHigh"
+        app:strokeWidth="0dp">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="@dimen/dimen12dp">
+            android:padding="@dimen/dimen8dp">
 
             <TextView
                 android:id="@+id/tag_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/dimen8dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                android:textColor="?attr/colorOnSurface"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@id/btn_menu"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_menu"
+                style="@style/Widget.Material3.Button.IconButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/dimen16sp"
-                android:textStyle="bold" />
+                android:contentDescription="@string/menu"
+                app:icon="@drawable/ic_menu"
+                app:iconSize="@dimen/dimen20dp"
+                app:iconTint="?attr/iconsColor"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/author_committer_info"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimen8dp"
-                android:textSize="@dimen/dimen14sp" />
+                android:layout_marginTop="@dimen/dimen4dp"
+                android:layout_marginEnd="@dimen/dimen4dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textAppearance="?attr/textAppearanceLabelMedium"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:alpha="0.8"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btn_menu"
+                app:layout_constraintTop_toBottomOf="@id/tag_name" />
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:id="@+id/commit_row"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimen8dp"
-                android:orientation="horizontal"
+                android:layout_marginTop="@dimen/dimen6dp"
                 android:gravity="center_vertical"
+                android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/author_committer_info"
                 tools:ignore="UseCompoundDrawables">
 
-                <LinearLayout
-                    android:layout_width="0dp"
+                <TextView
+                    android:id="@+id/commit_id"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_weight="1" >
-
-                    <TextView
-                        android:id="@+id/commit_id"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="@dimen/dimen14sp" />
-
-                    <ImageView
-                        android:id="@+id/copy_commit_id"
-                        android:layout_width="@dimen/dimen18dp"
-                        android:layout_height="@dimen/dimen18dp"
-                        android:layout_marginStart="@dimen/dimen8dp"
-                        android:contentDescription="@string/copy"
-                        android:src="@drawable/ic_copy"
-                        android:visibility="gone" />
-
-                </LinearLayout>
+                    android:fontFamily="monospace"
+                    android:textAppearance="?attr/textAppearanceLabelSmall"
+                    android:textColor="?attr/colorOnSurfaceVariant" />
 
                 <ImageView
-                    android:id="@+id/delete_tag"
-                    android:layout_width="@dimen/dimen18dp"
-                    android:layout_height="@dimen/dimen18dp"
-                    android:layout_marginStart="@dimen/dimen8dp"
-                    android:contentDescription="@string/delete_tag"
-                    android:src="@drawable/ic_trash" />
+                    android:id="@+id/copy_commit_id"
+                    android:layout_width="@dimen/dimen16dp"
+                    android:layout_height="@dimen/dimen16dp"
+                    android:layout_marginStart="@dimen/dimen6dp"
+                    android:contentDescription="@string/copy"
+                    android:src="@drawable/ic_copy"
+                    android:visibility="gone"
+                    app:tint="?attr/iconsColor" />
 
             </LinearLayout>
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </com.google.android.material.card.MaterialCardView>
+    </com.google.android.material.listitem.ListItemCardView>
 
-</LinearLayout>
+</com.google.android.material.listitem.ListItemLayout>

@@ -43,7 +43,6 @@ If applicable, add screenshots to help explain your problem. (remove this line)
  - [ ] F-droid
  - [ ] APK
  - [ ] Built from source
- - [ ] OpenAPK
  - [ ] Other stores (Name: )
 
 ### Additional context

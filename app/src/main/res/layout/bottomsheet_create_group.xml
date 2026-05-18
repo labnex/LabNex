@@ -10,7 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingHorizontal="@dimen/dimen16dp"
-        android:paddingTop="@dimen/dimen12dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView

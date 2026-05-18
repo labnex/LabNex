@@ -95,6 +95,8 @@ dependencies {
     implementation libs.codeview
     implementation libs.urlbuilder
     coreLibraryDesugaring libs.desugar.jdk.libs
+    implementation libs.android.gif.drawable
+    implementation libs.android.svg
     implementation libs.emoji.java
     implementation libs.stormpot
     implementation libs.photoview

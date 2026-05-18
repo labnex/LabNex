@@ -2,7 +2,6 @@
 <com.google.android.material.listitem.ListItemLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -39,10 +38,21 @@
                 android:maxLines="1"
                 android:textAppearance="?attr/textAppearanceTitleMedium"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@id/visibility_icon"
+                app:layout_constraintEnd_toStartOf="@+id/archived_badge"
                 app:layout_constraintStart_toEndOf="@id/project_avatar"
-                app:layout_constraintTop_toTopOf="@id/project_avatar"
-                tools:text="awesome-project" />
+                app:layout_constraintTop_toTopOf="@id/project_avatar" />
+
+            <ImageView
+                android:id="@+id/archived_badge"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/dimen18dp"
+                android:layout_marginEnd="@dimen/dimen6dp"
+                android:adjustViewBounds="true"
+                android:contentDescription="@string/generic_img_copy"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/project_name"
+                app:layout_constraintEnd_toStartOf="@id/visibility_icon"
+                app:layout_constraintTop_toTopOf="@id/project_name" />
 
             <ImageView
                 android:id="@+id/visibility_icon"
@@ -52,9 +62,9 @@
                 android:src="@drawable/ic_lock"
                 android:visibility="gone"
                 app:tint="?attr/iconsColor"
+                app:layout_constraintBottom_toBottomOf="@id/project_name"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/project_name"
-                tools:visibility="visible" />
+                app:layout_constraintTop_toTopOf="@id/project_name" />
 
             <TextView
                 android:id="@+id/project_path"
@@ -68,8 +78,7 @@
                 android:textAppearance="?attr/textAppearanceLabelMedium"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/project_avatar"
-                app:layout_constraintTop_toBottomOf="@id/project_name"
-                tools:text="labnex / awesome-project" />
+                app:layout_constraintTop_toBottomOf="@id/project_name" />
 
             <TextView
                 android:id="@+id/project_description"
@@ -83,8 +92,7 @@
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/project_avatar"
-                tools:text="The best GitLab client for Android." />
+                app:layout_constraintTop_toBottomOf="@id/project_avatar" />
 
             <LinearLayout
                 android:id="@+id/meta_row"

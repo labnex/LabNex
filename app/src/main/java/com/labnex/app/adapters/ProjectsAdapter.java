@@ -130,6 +130,17 @@ public class ProjectsAdapter extends RecyclerView.Adapter<ProjectsAdapter.Projec
 				binding.projectStarsIcon.setImageResource(R.drawable.ic_star_filled);
 			}
 
+			if (projects.isArchived()) {
+				binding.archivedBadge.setVisibility(View.VISIBLE);
+				int badgeColor =
+						context.getResources()
+								.getColor(R.color.alert_important_border, context.getTheme());
+				binding.archivedBadge.setImageDrawable(
+						AvatarGenerator.getLabelDrawable(context, "Archived", badgeColor, 18));
+			} else {
+				binding.archivedBadge.setVisibility(View.GONE);
+			}
+
 			binding.projectStars.setText(Utils.numberFormatter(projects.getStarCount()));
 			binding.projectForks.setText(Utils.numberFormatter(projects.getForksCount()));
 			binding.projectOpenIssues.setText(Utils.numberFormatter(projects.getOpenIssuesCount()));

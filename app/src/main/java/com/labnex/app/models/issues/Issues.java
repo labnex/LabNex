@@ -94,7 +94,7 @@ public class Issues implements Serializable {
 	private Author author;
 
 	@SerializedName("due_date")
-	private Object dueDate;
+	private String dueDate;
 
 	@SerializedName("issue_type")
 	private String issueType;
@@ -103,7 +103,7 @@ public class Issues implements Serializable {
 	private String importedFrom;
 
 	@SerializedName("weight")
-	private Object weight;
+	private int weight;
 
 	@SerializedName("epic")
 	private Object epic;
@@ -115,7 +115,7 @@ public class Issues implements Serializable {
 	private int blockingIssuesCount;
 
 	@SerializedName("labels")
-	private List<Object> labels;
+	private List<String> labels;
 
 	@SerializedName("moved_to_id")
 	private Object movedToId;
@@ -247,7 +247,7 @@ public class Issues implements Serializable {
 		return author;
 	}
 
-	public Object getDueDate() {
+	public String getDueDate() {
 		return dueDate;
 	}
 
@@ -259,7 +259,7 @@ public class Issues implements Serializable {
 		return importedFrom;
 	}
 
-	public Object getWeight() {
+	public int getWeight() {
 		return weight;
 	}
 
@@ -275,7 +275,7 @@ public class Issues implements Serializable {
 		return blockingIssuesCount;
 	}
 
-	public List<Object> getLabels() {
+	public List<String> getLabels() {
 		return labels;
 	}
 

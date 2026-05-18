@@ -85,6 +85,12 @@ public class TimeHelper {
 		return res.getString(resId, count);
 	}
 
+	public static String formatDate(String isoDate) {
+		if (isoDate == null) return "";
+		Date date = parseIso8601(isoDate + "T00:00:00Z");
+		return getAbsoluteDate(date, Locale.getDefault());
+	}
+
 	public static boolean timeBetweenHours(int fromHour, int toHour, int fromMinute, int toMinute) {
 
 		Calendar cal = Calendar.getInstance();

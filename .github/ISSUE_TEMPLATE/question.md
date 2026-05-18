@@ -18,5 +18,12 @@ A clear and concise description of the question. (remove this line)
 ### Additional context
 Add any other context about the question here. (remove this line)
 
+### Mode of installation (For info)
+ - [ ] Google Play Store
+ - [ ] F-droid
+ - [ ] APK
+ - [ ] Built from source
+ - [ ] Other stores (Name: )
+
 ### Declaration
 - [ ] I have carefully read and agree to follow the [contribution guidelines](https://github.com/labnex/LabNex/wiki/Contributing).

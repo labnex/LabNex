@@ -2,6 +2,7 @@ package com.labnex.app.models.merge_requests;
 
 import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author mmarif
@@ -28,6 +29,15 @@ public class CrudeMergeRequest implements Serializable {
 
 	@SerializedName("state_event")
 	private String stateEvent;
+
+	@SerializedName("labels")
+	private List<String> labels;
+
+	@SerializedName("milestone_id")
+	private Long milestoneId;
+
+	@SerializedName("remove_source_branch")
+	private boolean removeSourceBranch;
 
 	public CrudeMergeRequest title(String title) {
 		this.title = title;
@@ -90,5 +100,17 @@ public class CrudeMergeRequest implements Serializable {
 
 	public void setStateEvent(String stateEvent) {
 		this.stateEvent = stateEvent;
+	}
+
+	public void setLabels(List<String> labels) {
+		this.labels = labels;
+	}
+
+	public void setMilestoneId(Long milestoneId) {
+		this.milestoneId = milestoneId;
+	}
+
+	public void setRemoveSourceBranch(boolean removeSourceBranch) {
+		this.removeSourceBranch = removeSourceBranch;
 	}
 }

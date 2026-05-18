@@ -1,73 +1,71 @@
 package com.labnex.app.bottomsheets;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.labnex.app.R;
-import com.labnex.app.activities.BaseActivity;
 import com.labnex.app.adapters.BranchesAdapter;
-import com.labnex.app.databinding.BottomSheetBranchesBinding;
-import com.labnex.app.interfaces.BottomSheetListener;
+import com.labnex.app.databinding.BottomsheetBranchesBinding;
+import com.labnex.app.helpers.EndlessRecyclerViewScrollListener;
+import com.labnex.app.helpers.Toasty;
+import com.labnex.app.helpers.UIHelper;
 import com.labnex.app.viewmodels.BranchesViewModel;
+import java.util.ArrayList;
 
 /**
  * @author mmarif
  */
-public class BranchesBottomSheet extends BottomSheetDialogFragment
-		implements BranchesAdapter.BranchesAdapterListener {
+public class BranchesBottomSheet extends BottomSheetDialogFragment {
 
-	private BottomSheetBranchesBinding bottomSheetBranchesBinding;
-	private BranchesViewModel branchesViewModel;
+	private BottomsheetBranchesBinding binding;
+	private BranchesViewModel viewModel;
 	private BranchesAdapter adapter;
-	private int page = 1;
-	private int resultLimit;
-	private int projectId;
-	private String type;
-	private String source;
+	private long projectId;
 
-	// project detail interface
-	private static UpdateInterface UpdateInterface;
-
-	public interface UpdateInterface {
-		void updateDataListener(String str, String type);
+	public interface OnBranchPickedListener {
+		void onBranchPicked(String branch);
 	}
 
-	public static void setUpdateListener(UpdateInterface updateInterface) {
-		UpdateInterface = updateInterface;
+	private OnBranchPickedListener pickListener;
+
+	public interface OnBranchSelectedListener {
+		void onBranchSelected(String branch);
 	}
 
-	// create mr interface
-	private static MrUpdateInterface MrUpdateInterface;
-
-	public interface MrUpdateInterface {
-		void mrUpdateDataListener(String str, String type);
+	public static BranchesBottomSheet newInstance(long projectId) {
+		BranchesBottomSheet sheet = new BranchesBottomSheet();
+		Bundle args = new Bundle();
+		args.putLong("projectId", projectId);
+		sheet.setArguments(args);
+		return sheet;
 	}
 
-	public static void setMrUpdateListener(MrUpdateInterface mrUpdateInterface) {
-		MrUpdateInterface = mrUpdateInterface;
+	public static BranchesBottomSheet newPickerInstance(
+			long projectId, OnBranchPickedListener listener) {
+		BranchesBottomSheet sheet = new BranchesBottomSheet();
+		Bundle args = new Bundle();
+		args.putLong("projectId", projectId);
+		args.putBoolean("pickerMode", true);
+		sheet.pickListener = listener;
+		sheet.setArguments(args);
+		return sheet;
 	}
 
-	// create file interface
-	private static CreateFileUpdateInterface CreateFileUpdateInterface;
-
-	public interface CreateFileUpdateInterface {
-		void createFileUpdateDataListener(String str, String type);
-	}
-
-	public static void setCreateFileUpdateListener(
-			CreateFileUpdateInterface createFileUpdateInterface) {
-		CreateFileUpdateInterface = createFileUpdateInterface;
+	@Override
+	public void onCreate(@Nullable Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		if (getArguments() != null) {
+			projectId = getArguments().getLong("projectId", 0);
+		}
 	}
 
 	@Nullable @Override
@@ -75,152 +73,123 @@ public class BranchesBottomSheet extends BottomSheetDialogFragment
 			@NonNull LayoutInflater inflater,
 			@Nullable ViewGroup container,
 			@Nullable Bundle savedInstanceState) {
+		binding = BottomsheetBranchesBinding.inflate(inflater, container, false);
+		viewModel = new ViewModelProvider(this).get(BranchesViewModel.class);
 
-		bottomSheetBranchesBinding = BottomSheetBranchesBinding.inflate(inflater, container, false);
+		setupRecyclerView();
+		observeViewModel();
+		viewModel.loadBranches(requireContext(), projectId);
 
-		branchesViewModel = new ViewModelProvider(this).get(BranchesViewModel.class);
-
-		projectId = requireArguments().getInt("projectId", 0);
-		type = requireArguments().getString("type");
-		source = requireArguments().getString("source");
-		resultLimit = ((BaseActivity) requireContext()).getAccount().getMaxPageLimit();
-
-		bottomSheetBranchesBinding.closeBs.setOnClickListener(close -> dismiss());
-
-		bottomSheetBranchesBinding.getRoot().setVisibility(View.VISIBLE);
-
-		bottomSheetBranchesBinding.rvList.setHasFixedSize(true);
-		bottomSheetBranchesBinding.rvList.setLayoutManager(new LinearLayoutManager(getContext()));
-		fetchBranches();
-
-		return bottomSheetBranchesBinding.getRoot();
+		return binding.getRoot();
 	}
 
-	@Override
-	public void onClickItem(String branch) {
-
-		if (source.equalsIgnoreCase("project_detail")) {
-			UpdateInterface.updateDataListener(branch, type);
-		} else if (source.equalsIgnoreCase("create_mr")) {
-			MrUpdateInterface.mrUpdateDataListener(branch, type);
-		} else if (source.equalsIgnoreCase("create_file")) {
-			CreateFileUpdateInterface.createFileUpdateDataListener(branch, type);
-		}
-		dismiss();
-	}
-
-	public void fetchBranches() {
-
-		bottomSheetBranchesBinding.progressBar.setVisibility(View.VISIBLE);
-
-		branchesViewModel
-				.getBranches(
-						getContext(),
-						projectId,
-						resultLimit,
-						page,
-						getActivity(),
-						bottomSheetBranchesBinding)
-				.observe(
-						this,
-						listMain -> {
-							adapter =
-									new BranchesAdapter(
-											getContext(),
-											listMain,
-											projectId,
-											bottomSheetBranchesBinding,
-											this);
-							adapter.setLoadMoreListener(
-									new BranchesAdapter.OnLoadMoreListener() {
-
-										@Override
-										public void onLoadMore() {
-
-											page += 1;
-											branchesViewModel.loadMore(
-													getContext(),
-													projectId,
-													resultLimit,
-													page,
-													adapter,
-													getActivity(),
-													bottomSheetBranchesBinding);
-											bottomSheetBranchesBinding.progressBar.setVisibility(
-													View.VISIBLE);
-										}
-
-										@Override
-										public void onLoadFinished() {
-
-											bottomSheetBranchesBinding.progressBar.setVisibility(
-													View.GONE);
-										}
-									});
-
-							if (adapter.getItemCount() > 0) {
-
-								bottomSheetBranchesBinding.rvList.setAdapter(adapter);
-								bottomSheetBranchesBinding
-										.nothingFoundFrame
-										.getRoot()
-										.setVisibility(View.GONE);
-							} else {
-
-								adapter.notifyDataChanged();
-								bottomSheetBranchesBinding.rvList.setAdapter(adapter);
-								bottomSheetBranchesBinding
-										.nothingFoundFrame
-										.getRoot()
-										.setVisibility(View.VISIBLE);
+	private void setupRecyclerView() {
+		boolean isPickerMode =
+				getArguments() != null && getArguments().getBoolean("pickerMode", false);
+		adapter =
+				new BranchesAdapter(
+						requireContext(),
+						new ArrayList<>(),
+						branch -> {
+							if (isPickerMode && pickListener != null) {
+								pickListener.onBranchPicked(branch);
+								dismiss();
+								return;
 							}
 
-							bottomSheetBranchesBinding.progressBar.setVisibility(View.GONE);
+							OnBranchSelectedListener parent =
+									(OnBranchSelectedListener) getParentFragment();
+							if (parent != null) {
+								parent.onBranchSelected(branch);
+							} else if (requireActivity() instanceof OnBranchSelectedListener) {
+								((OnBranchSelectedListener) requireActivity())
+										.onBranchSelected(branch);
+							}
+							dismiss();
+						});
+
+		LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());
+		binding.branchesList.setLayoutManager(layoutManager);
+		binding.branchesList.setAdapter(adapter);
+
+		EndlessRecyclerViewScrollListener scrollListener =
+				new EndlessRecyclerViewScrollListener(layoutManager) {
+					@Override
+					public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+						viewModel.loadNextPage(requireContext());
+					}
+				};
+		binding.branchesList.addOnScrollListener(scrollListener);
+	}
+
+	private void observeViewModel() {
+		viewModel
+				.getIsLoading()
+				.observe(
+						getViewLifecycleOwner(),
+						loading ->
+								binding.progressBar.setVisibility(
+										Boolean.TRUE.equals(loading) ? View.VISIBLE : View.GONE));
+
+		viewModel
+				.getBranchList()
+				.observe(
+						getViewLifecycleOwner(),
+						list -> {
+							if (Boolean.TRUE.equals(viewModel.getIsLoading().getValue())) return;
+							if (list == null || list.isEmpty()) {
+								binding.nothingFoundFrame.getRoot().setVisibility(View.VISIBLE);
+								binding.branchesList.setVisibility(View.GONE);
+							} else {
+								binding.nothingFoundFrame.getRoot().setVisibility(View.GONE);
+								binding.branchesList.setVisibility(View.VISIBLE);
+								adapter.updateList(list);
+							}
+						});
+
+		viewModel
+				.getError()
+				.observe(
+						getViewLifecycleOwner(),
+						errorMsg -> {
+							if (errorMsg == null) return;
+							switch (errorMsg) {
+								case "auth_error":
+									Toasty.show(
+											requireContext(), getString(R.string.not_authorized));
+									break;
+								case "access_forbidden_403":
+									Toasty.show(
+											requireContext(),
+											getString(R.string.access_forbidden_403));
+									break;
+								case "not_found":
+									Toasty.show(requireContext(), getString(R.string.not_found));
+									break;
+								case "generic_error":
+									Toasty.show(
+											requireContext(), getString(R.string.generic_error));
+									break;
+								default:
+									Toasty.show(requireContext(), errorMsg);
+									break;
+							}
+							viewModel.clearError();
 						});
 	}
 
-	@NonNull @Override
-	public Dialog onCreateDialog(Bundle savedInstanceState) {
-
-		BottomSheetDialog dialog = (BottomSheetDialog) super.onCreateDialog(savedInstanceState);
-		dialog.setContentView(R.layout.bottom_sheet_project_labels);
-
-		dialog.setOnShowListener(
-				dialogInterface -> {
-					BottomSheetDialog bottomSheetDialog = (BottomSheetDialog) dialogInterface;
-					View bottomSheet =
-							bottomSheetDialog.findViewById(
-									com.google.android.material.R.id.design_bottom_sheet);
-
-					if (bottomSheet != null) {
-
-						BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(bottomSheet);
-						behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-						behavior.setPeekHeight(bottomSheet.getHeight());
-						behavior.setHideable(true);
-						behavior.setSkipCollapsed(true);
-					}
-				});
-
-		if (dialog.getWindow() != null) {
-
-			WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
-			params.height = WindowManager.LayoutParams.MATCH_PARENT;
-			dialog.getWindow().setAttributes(params);
+	@Override
+	public void onStart() {
+		super.onStart();
+		Dialog dialog = getDialog();
+		if (dialog instanceof BottomSheetDialog) {
+			UIHelper.applyFullScreenSheetStyle((BottomSheetDialog) dialog, true);
 		}
-
-		return dialog;
 	}
 
 	@Override
-	public void onAttach(@NonNull Context context) {
-
-		super.onAttach(context);
-
-		try {
-			BottomSheetListener bottomSheetListener = (BottomSheetListener) context;
-		} catch (ClassCastException e) {
-			throw new ClassCastException(context + " must implement BottomSheetListener");
-		}
+	public void onDestroyView() {
+		super.onDestroyView();
+		binding = null;
 	}
 }

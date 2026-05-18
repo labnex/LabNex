@@ -21,7 +21,7 @@ public class CrudeProject implements Serializable {
 	private String visibility;
 
 	@SerializedName("namespace_id")
-	private Integer namespaceId;
+	private long namespaceId;
 
 	@SerializedName("default_branch")
 	private String defaultBranch;
@@ -31,6 +31,9 @@ public class CrudeProject implements Serializable {
 
 	@SerializedName("emails_enabled")
 	private boolean emailsEnabled;
+
+	@SerializedName("path")
+	private String path;
 
 	public void setName(String name) {
 		this.name = name;
@@ -48,7 +51,7 @@ public class CrudeProject implements Serializable {
 		this.visibility = visibility;
 	}
 
-	public void setNamespaceId(Integer namespaceId) {
+	public void setNamespaceId(long namespaceId) {
 		this.namespaceId = namespaceId;
 	}
 
@@ -62,5 +65,9 @@ public class CrudeProject implements Serializable {
 
 	public void setEmailsEnabled(boolean emailsEnabled) {
 		this.emailsEnabled = emailsEnabled;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
 	}
 }

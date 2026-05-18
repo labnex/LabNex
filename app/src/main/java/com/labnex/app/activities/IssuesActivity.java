@@ -36,6 +36,7 @@ public class IssuesActivity extends BaseActivity implements IssuesAdapter.OnIssu
 	private String filter = "opened";
 	private String searchQuery = "";
 	private ProjectsContext projectsContext;
+	private String initialScope;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -72,19 +73,24 @@ public class IssuesActivity extends BaseActivity implements IssuesAdapter.OnIssu
 										projectsContext.getPath(),
 										projectsContext.getProjectId(),
 										ctx);
-						startActivity(pc.getIntent(ctx, CreateIssueActivity.class));
+						// startActivity(pc.getIntent(ctx, CreateIssueActivity.class));
 					});
 		}
 
 		setupRecyclerView();
 		setupPullToRefresh();
 		observeViewModel();
-		viewModel.loadIssues(ctx, source, id, viewModel.getCurrentScope(), filter, searchQuery);
+
+		initialScope =
+				("project".equals(source) || "group".equals(source))
+						? "all"
+						: viewModel.getCurrentScope();
+		viewModel.loadIssues(ctx, source, id, initialScope, filter, searchQuery);
 	}
 
 	@Override
 	protected void onGlobalRefresh() {
-		viewModel.loadIssues(ctx, source, id, viewModel.getCurrentScope(), filter, searchQuery);
+		viewModel.loadIssues(ctx, source, id, initialScope, filter, searchQuery);
 	}
 
 	private void setupRecyclerView() {

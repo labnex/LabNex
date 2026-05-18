@@ -24,6 +24,7 @@ import com.labnex.app.models.personal_access_tokens.PersonalAccessTokens;
 import com.labnex.app.models.projects.CrudeProject;
 import com.labnex.app.models.projects.Projects;
 import com.labnex.app.models.projects.Stars;
+import com.labnex.app.models.release.CrudeRelease;
 import com.labnex.app.models.release.Releases;
 import com.labnex.app.models.repository.CrudeFile;
 import com.labnex.app.models.repository.FileContents;
@@ -111,18 +112,21 @@ public interface ApiInterface {
 			@Query("page") int page);
 
 	@POST("groups/{id}/labels") // create a group label
-	Call<Labels> createGroupLabel(@Path("id") int id, @Body CrudeLabel body);
+	Call<Labels> createGroupLabel(@Path("id") long id, @Body CrudeLabel body);
 
 	@DELETE("groups/{id}/labels/{label_id}") // delete a group label
 	Call<Void> deleteGroupLabel(@Path("id") long id, @Path("label_id") int label_id);
 
 	@PUT("groups/{id}/labels/{label_id}") // update a group label
 	Call<Labels> updateGroupLabel(
-			@Path("id") int id, @Path("label_id") int label_id, @Body CrudeLabel body);
+			@Path("id") long id, @Path("label_id") long label_id, @Body CrudeLabel body);
 
 	@GET("groups/{id}/members") // get a group members
 	Call<List<User>> getGroupMembers(
 			@Path("id") long id, @Query("per_page") int per_page, @Query("page") int page);
+
+	@GET("groups/{id}/members/{user_id}") // get a group member
+	Call<User> getGroupMember(@Path("id") long id, @Path("user_id") long userId);
 
 	@GET("groups/{id}/issues") // get group issues
 	Call<List<Issues>> getGroupIssues(
@@ -143,6 +147,13 @@ public interface ApiInterface {
 			@Query("order_by") String orderBy,
 			@Query("per_page") int perPage,
 			@Query("page") int page);
+
+	@POST("groups/{id}/issues")
+	Call<Issues> createGroupIssue(@Path("id") long id, @Body CrudeIssue body);
+
+	@PUT("groups/{id}/issues/{issue_iid}")
+	Call<Issues> updateGroupIssue(
+			@Path("id") long id, @Path("issue_iid") long issueIid, @Body CrudeIssue body);
 
 	// Project endpoints
 	@GET("projects/{id}") // get a single project details
@@ -167,11 +178,14 @@ public interface ApiInterface {
 
 	@GET("projects/{id}/members") // get a project members
 	Call<List<User>> getProjectMembers(
-			@Path("id") int id, @Query("per_page") int per_page, @Query("page") int page);
+			@Path("id") long id, @Query("per_page") int per_page, @Query("page") int page);
+
+	@GET("projects/{id}/members/{user_id}") // get a project member
+	Call<User> getProjectMember(@Path("id") long projectId, @Path("user_id") long userId);
 
 	@GET("projects/{id}/starrers") // get a project starrers
 	Call<List<Stars>> getProjectStarrers(
-			@Path("id") int id, @Query("per_page") int per_page, @Query("page") int page);
+			@Path("id") long id, @Query("per_page") int per_page, @Query("page") int page);
 
 	@POST("projects/{id}/star") // star a project
 	Call<Projects> starProject(@Path("id") int id);
@@ -193,59 +207,70 @@ public interface ApiInterface {
 
 	@GET("projects/{id}/labels") // get project labels
 	Call<List<Labels>> getProjectLabels(
-			@Path("id") int id,
+			@Path("id") long id,
 			@Query("with_counts") boolean with_counts,
 			@Query("per_page") int per_page,
 			@Query("page") int page);
 
 	@DELETE("projects/{id}/labels/{label_id}") // delete a project label
-	Call<Void> deleteProjectLabel(@Path("id") int id, @Path("label_id") int label_id);
+	Call<Void> deleteProjectLabel(@Path("id") long id, @Path("label_id") int label_id);
 
 	@POST("projects/{id}/labels") // create a project label
-	Call<Labels> createProjectLabel(@Path("id") int id, @Body CrudeLabel body);
+	Call<Labels> createProjectLabel(@Path("id") long id, @Body CrudeLabel body);
 
 	@PUT("projects/{id}/labels/{label_id}") // update a project label
 	Call<Labels> updateProjectLabel(
-			@Path("id") int id, @Path("label_id") int label_id, @Body CrudeLabel body);
+			@Path("id") long id, @Path("label_id") long label_id, @Body CrudeLabel body);
 
 	@GET("projects/{id}/labels/{label_id}") // get a project label
 	Call<Labels> getProjectLabel(@Path("id") int id, @Path("label_id") String label_id);
 
 	@GET("projects/{id}/wikis") // get project wikis
 	Call<List<Wiki>> getProjectWikis(
-			@Path("id") int id,
+			@Path("id") long id,
 			@Query("with_content") int with_content,
 			@Query("per_page") int per_page,
 			@Query("page") int page);
 
 	@POST("projects/{id}/wikis") // create a wiki page
-	Call<Wiki> createWikiPage(@Path("id") int id, @Body CrudeWiki body);
+	Call<Wiki> createWikiPage(@Path("id") long id, @Body CrudeWiki body);
 
 	@DELETE("projects/{id}/wikis/{slug}") // delete a wiki page
-	Call<Void> deleteWikiPage(@Path("id") int id, @Path("slug") String slug);
+	Call<Void> deleteWikiPage(@Path("id") long id, @Path("slug") String slug);
 
 	@PUT("projects/{id}/wikis/{slug}") // update a wiki page
-	Call<Wiki> updateWikiPage(@Path("id") int id, @Path("slug") String slug, @Body CrudeWiki body);
+	Call<Wiki> updateWikiPage(@Path("id") long id, @Path("slug") String slug, @Body CrudeWiki body);
 
 	@GET("projects/{id}/releases") // get project releases
 	Call<List<Releases>> getProjectReleases(
-			@Path("id") int id, @Query("per_page") int per_page, @Query("page") int page);
+			@Path("id") long id, @Query("per_page") int per_page, @Query("page") int page);
 
 	@DELETE("projects/{id}/releases/{tag_name}") // delete a release
-	Call<Void> deleteRelease(@Path("id") int id, @Path("tag_name") String tag_name);
+	Call<Void> deleteRelease(@Path("id") long id, @Path("tag_name") String tag_name);
+
+	@POST("projects/{id}/releases") // create a release
+	Call<Releases> createRelease(@Path("id") long id, @Body CrudeRelease body);
+
+	@PUT("projects/{id}/releases/{tag_name}") // update a release
+	Call<Releases> updateRelease(
+			@Path("id") long id, @Path("tag_name") String tagName, @Body CrudeRelease body);
 
 	@GET("projects/{id}/milestones") // get project milestones
 	Call<List<Milestones>> getProjectMilestones(
-			@Path("id") int id,
+			@Path("id") long id,
 			@Query("state") String state,
 			@Query("per_page") int per_page,
 			@Query("page") int page);
 
-	@POST("projects/{id}/milestones") // create a project milestone
-	Call<Milestones> createProjectMilestone(@Path("id") int id, @Body CrudeMilestone body);
+	@POST("projects/{id}/milestones") // create a milestone
+	Call<Milestones> createMilestone(@Path("id") long id, @Body CrudeMilestone body);
+
+	@PUT("projects/{id}/milestones/{milestone_id}")
+	Call<Milestones> updateMilestone(
+			@Path("id") long id, @Path("milestone_id") long milestoneId, @Body CrudeMilestone body);
 
 	@DELETE("projects/{id}/milestones/{milestone_id}") // delete a milestone
-	Call<Void> deleteProjectMilestone(@Path("id") int id, @Path("milestone_id") int milestone_id);
+	Call<Void> deleteMilestone(@Path("id") long id, @Path("milestone_id") long milestone_id);
 
 	@GET("projects/{id}/languages") // get project lang stats
 	Call<Map<String, Float>> getProjectLanguages(@Path("id") int id);
@@ -270,6 +295,9 @@ public interface ApiInterface {
 	@GET("projects/{id}/forks") // get a project forks
 	Call<List<Projects>> getProjectForks(
 			@Path("id") int id, @Query("per_page") int per_page, @Query("page") int page);
+
+	@POST("projects/{id}/fork") // fork a project
+	Call<Projects> forkProject(@Path("id") long id, @Body CrudeProject body);
 
 	// Merge request endpoints
 	@GET("projects/{id}/merge_requests") // get project merge requests
@@ -339,12 +367,12 @@ public interface ApiInterface {
 			@Body CrudeMergeRequest body);
 
 	@POST("projects/{id}/merge_requests") // create merge request
-	Call<MergeRequests> createMergeRequest(@Path("id") int id, @Body CrudeMergeRequest body);
+	Call<MergeRequests> createMergeRequest(@Path("id") long id, @Body CrudeMergeRequest body);
 
 	@PUT("projects/{id}/merge_requests/{merge_request_iid}") // update/edit/close/reopen merge
 	// request
 	Call<MergeRequests> updateMergeRequest(
-			@Path("id") int id,
+			@Path("id") long id,
 			@Path("merge_request_iid") int issue_iid,
 			@Body CrudeMergeRequest body);
 
@@ -354,6 +382,7 @@ public interface ApiInterface {
 			@Path("id") int id,
 			@Query("state") String state,
 			@Query("search") String search,
+			@Query("scope") String scope,
 			@Query("per_page") int per_page,
 			@Query("page") int page);
 
@@ -380,11 +409,11 @@ public interface ApiInterface {
 			@Path("id") int id, @Path("issue_iid") int issue_iid, @Body CreateNote body);
 
 	@POST("projects/{id}/issues") // create a new issue
-	Call<Issues> createIssue(@Path("id") int id, @Body CrudeIssue body);
+	Call<Issues> createIssue(@Path("id") long id, @Body CrudeIssue body);
 
 	@PUT("projects/{id}/issues/{issue_iid}") // update/edit/close/reopen an issue
 	Call<Issues> updateIssue(
-			@Path("id") int id, @Path("issue_iid") int issue_iid, @Body CrudeIssue body);
+			@Path("id") long id, @Path("issue_iid") long issue_iid, @Body CrudeIssue body);
 
 	// Instance meta
 	@GET("broadcast_messages?page=1&per_page=10") // get broadcast messages
@@ -454,11 +483,11 @@ public interface ApiInterface {
 
 	// Templates
 	@GET("projects/{id}/templates/{type}") // get all templates
-	Call<List<Templates>> getTemplates(@Path("id") int id, @Path("type") String type);
+	Call<List<Templates>> getTemplates(@Path("id") long id, @Path("type") String type);
 
 	@GET("projects/{id}/templates/{type}/{name}") // get a template
 	Call<Template> getTemplate(
-			@Path("id") int id, @Path("type") String type, @Path("name") String name);
+			@Path("id") long id, @Path("type") String type, @Path("name") String name);
 
 	// Snippets
 	@GET("snippets") // get all snippets
@@ -484,19 +513,19 @@ public interface ApiInterface {
 	Call<SnippetsItem> updateSnippet(@Path("id") long id, @Body SnippetCreateModel model);
 
 	// Tags
-	@GET("projects/{id}/repository/tags")
+	@GET("projects/{id}/repository/tags") // get all project tags
 	Call<List<TagsItem>> getProjectTags(
-			@Path("id") int id, @Query("per_page") int perPage, @Query("page") int page);
+			@Path("id") long id, @Query("per_page") int perPage, @Query("page") int page);
 
-	@POST("projects/{id}/repository/tags")
+	@POST("projects/{id}/repository/tags") // create a tag
 	Call<TagsItem> createProjectTag(
-			@Path("id") int projectId,
+			@Path("id") long projectId,
 			@Query("tag_name") String tagName,
 			@Query("ref") String ref,
 			@Query("message") String message);
 
-	@DELETE("projects/{id}/repository/tags/{tag_name}")
-	Call<Void> deleteProjectTag(@Path("id") int projectId, @Path("tag_name") String tagName);
+	@DELETE("projects/{id}/repository/tags/{tag_name}") // delete a tag
+	Call<Void> deleteProjectTag(@Path("id") long projectId, @Path("tag_name") String tagName);
 
 	// Todos
 	@GET("todos")

@@ -2,76 +2,60 @@ package com.labnex.app.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.labnex.app.R;
-import com.labnex.app.bottomsheets.LabelActionsBottomSheet;
-import com.labnex.app.clients.RetrofitClient;
-import com.labnex.app.databinding.BottomSheetGroupDetailBinding;
+import com.labnex.app.databinding.ListLabelsBinding;
 import com.labnex.app.helpers.LabelStylingHelper;
-import com.labnex.app.helpers.Toasty;
 import com.labnex.app.models.labels.Labels;
+import java.util.ArrayList;
 import java.util.List;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * @author mmarif
  */
-public class LabelsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class LabelsAdapter extends RecyclerView.Adapter<LabelsAdapter.LabelsHolder> {
 
 	private final Context context;
-	private List<Labels> list;
-	private final long groupId;
-	private OnLoadMoreListener loadMoreListener;
-	private boolean isLoading = false, isMoreDataAvailable = true;
-	private final BottomSheetGroupDetailBinding bottomSheetGroupDetailBinding;
-	Bundle bundle = new Bundle();
+	private final List<Labels> list;
+	private final OnLabelClickListener listener;
+	private boolean canModify = true;
 
-	public LabelsAdapter(
-			Context ctx,
-			List<Labels> listMain,
-			long groupId,
-			BottomSheetGroupDetailBinding bottomSheetGroupDetailBinding) {
+	public void setCanModify(boolean canModify) {
+		this.canModify = canModify;
+	}
+
+	public interface OnLabelClickListener {
+		void onMenuClick(Labels label);
+	}
+
+	public LabelsAdapter(Context ctx, List<Labels> listMain, OnLabelClickListener listener) {
 		this.context = ctx;
-		this.list = listMain;
-		this.groupId = groupId;
-		this.bottomSheetGroupDetailBinding = bottomSheetGroupDetailBinding;
+		this.list = new ArrayList<>();
+		if (listMain != null) this.list.addAll(listMain);
+		this.listener = listener;
+	}
+
+	@SuppressLint("NotifyDataSetChanged")
+	public void updateList(List<Labels> newList) {
+		list.clear();
+		if (newList != null) list.addAll(newList);
+		notifyDataSetChanged();
 	}
 
 	@NonNull @Override
-	public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-		View view =
-				LayoutInflater.from(parent.getContext())
-						.inflate(R.layout.list_labels, parent, false);
-		return new LabelsHolder(view);
+	public LabelsHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+		ListLabelsBinding binding =
+				ListLabelsBinding.inflate(LayoutInflater.from(context), parent, false);
+		return new LabelsHolder(binding);
 	}
 
 	@Override
-	public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-		if (position >= getItemCount() - 1
-				&& isMoreDataAvailable
-				&& !isLoading
-				&& loadMoreListener != null) {
-			isLoading = true;
-			loadMoreListener.onLoadMore();
-		}
-
-		((LabelsHolder) holder).bindData(list.get(position));
-	}
-
-	@Override
-	public int getItemViewType(int position) {
-		return position;
+	public void onBindViewHolder(@NonNull LabelsHolder holder, int position) {
+		holder.bind(list.get(position));
+		holder.binding.getRoot().updateAppearance(position, getItemCount());
 	}
 
 	@Override
@@ -79,183 +63,55 @@ public class LabelsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 		return list.size();
 	}
 
-	public void setMoreDataAvailable(boolean moreDataAvailable) {
-		isMoreDataAvailable = moreDataAvailable;
-		if (!isMoreDataAvailable) {
-			loadMoreListener.onLoadFinished();
-		}
-	}
-
-	@SuppressLint("NotifyDataSetChanged")
-	public void notifyDataChanged() {
-		notifyDataSetChanged();
-		isLoading = false;
-		loadMoreListener.onLoadFinished();
-	}
-
-	public void setLoadMoreListener(OnLoadMoreListener loadMoreListener) {
-		this.loadMoreListener = loadMoreListener;
-	}
-
-	public void updateList(List<Labels> list_) {
-		list = list_;
-		notifyDataChanged();
-	}
-
-	public abstract static class OnLoadMoreListener {
-
-		protected abstract void onLoadMore();
-
-		public void onLoadFinished() {}
-	}
-
 	public class LabelsHolder extends RecyclerView.ViewHolder {
 
-		private final TextView labelName;
-		private final TextView labelValue;
-		private final TextView description;
-		private final TextView labelOpenIssues;
-		private final TextView labelOpenMergeRequests;
-		private Labels labels;
+		final ListLabelsBinding binding;
 		private final LabelStylingHelper stylingHelper;
 
-		LabelsHolder(View itemView) {
+		LabelsHolder(ListLabelsBinding binding) {
+			super(binding.getRoot());
+			this.binding = binding;
+			this.stylingHelper = LabelStylingHelper.getInstance(context);
 
-			super(itemView);
+			if (!canModify) {
+				binding.btnMenu.setVisibility(View.GONE);
+			}
 
-			labelName = itemView.findViewById(R.id.label_name);
-			labelValue = itemView.findViewById(R.id.label_value);
-			description = itemView.findViewById(R.id.description);
-			labelOpenIssues = itemView.findViewById(R.id.label_open_issues);
-			labelOpenMergeRequests = itemView.findViewById(R.id.label_open_merge_requests);
-			ImageView editLabel = itemView.findViewById(R.id.edit_label);
-			ImageView deleteLabel1 = itemView.findViewById(R.id.delete_label);
-
-			stylingHelper = LabelStylingHelper.getInstance(itemView.getContext());
-
-			editLabel.setOnClickListener(
-					edit -> {
-						bundle.putString("source", "edit");
-						bundle.putString("name", labels.getName());
-						bundle.putString("description", labels.getDescription().toString());
-						bundle.putString("color", labels.getColor());
-						bundle.putInt("id", labels.getId());
-						bundle.putLong("groupId", groupId);
-
-						LabelActionsBottomSheet bottomSheet = new LabelActionsBottomSheet();
-						bottomSheet.setArguments(bundle);
-						bottomSheet.show(
-								((FragmentActivity) context).getSupportFragmentManager(),
-								"labelActionsBottomSheet");
-					});
-
-			deleteLabel1.setOnClickListener(
-					deleteLabel -> {
-						MaterialAlertDialogBuilder materialAlertDialogBuilder =
-								new MaterialAlertDialogBuilder(
-										context,
-										com.google.android.material.R.style
-												.ThemeOverlay_Material3_Dialog_Alert);
-
-						materialAlertDialogBuilder
-								.setTitle(
-										context.getString(
-												R.string.delete_dialog_title, labels.getName()))
-								.setMessage(R.string.delete_label_dialog_message)
-								.setPositiveButton(
-										R.string.delete,
-										(dialog, whichButton) -> {
-											deleteLabel(
-													labels.getId(),
-													labels.getName(),
-													getBindingAdapterPosition());
-										})
-								.setNeutralButton(R.string.cancel, null)
-								.show();
+			binding.btnMenu.setOnClickListener(
+					v -> {
+						int pos = getBindingAdapterPosition();
+						if (pos != RecyclerView.NO_POSITION && listener != null) {
+							listener.onMenuClick(list.get(pos));
+						}
 					});
 		}
 
-		void bindData(Labels labels) {
-			this.labels = labels;
-			String labelText = labels.getName();
+		void bind(Labels label) {
+			String labelText = label.getName();
 
 			if (LabelStylingHelper.isScopedLabel(labelText)) {
 				stylingHelper.styleScopedLabel(
-						labelText, labels.getColor(), labels.getTextColor(), labelName, labelValue);
+						labelText,
+						label.getColor(),
+						label.getTextColor(),
+						binding.labelName,
+						binding.labelValue);
 			} else {
-				labelValue.setVisibility(View.GONE);
+				binding.labelValue.setVisibility(View.GONE);
 				stylingHelper.styleRegularLabel(
-						labelText, labels.getColor(), labels.getTextColor(), labelName);
+						labelText, label.getColor(), label.getTextColor(), binding.labelName);
 			}
 
-			if (!labels.getDescription().toString().isEmpty()) {
-				description.setVisibility(View.VISIBLE);
-				description.setText(labels.getDescription().toString());
+			if (label.getDescription() != null && !label.getDescription().toString().isEmpty()) {
+				binding.description.setVisibility(View.VISIBLE);
+				binding.description.setText(label.getDescription().toString());
+			} else {
+				binding.description.setVisibility(View.GONE);
 			}
-			labelOpenIssues.setText(String.valueOf(labels.getOpenIssuesCount()));
-			labelOpenMergeRequests.setText(String.valueOf(labels.getOpenMergeRequestsCount()));
+
+			binding.labelOpenIssues.setText(String.valueOf(label.getOpenIssuesCount()));
+			binding.labelOpenMergeRequests.setText(
+					String.valueOf(label.getOpenMergeRequestsCount()));
 		}
-	}
-
-	private void updateAdapter(int position) {
-		list.remove(position);
-		notifyItemRemoved(position);
-		notifyItemRangeChanged(position, list.size());
-	}
-
-	public void clearAdapter() {
-		list.clear();
-		notifyDataChanged();
-	}
-
-	private void deleteLabel(int id, String name, int position) {
-
-		RetrofitClient.getApiInterface(context)
-				.deleteGroupLabel(groupId, id)
-				.enqueue(
-						new Callback<>() {
-
-							@Override
-							public void onResponse(
-									@NonNull Call<Void> call, @NonNull Response<Void> response) {
-
-								if (response.code() == 204) {
-
-									updateAdapter(position);
-									Toasty.show(
-											context,
-											context.getResources()
-													.getString(R.string.label_deleted));
-
-								} else if (response.code() == 401) {
-
-									Toasty.show(
-											context,
-											context.getResources()
-													.getString(R.string.not_authorized));
-								} else if (response.code() == 403) {
-
-									Toasty.show(
-											context,
-											context.getResources()
-													.getString(R.string.access_forbidden_403));
-								} else {
-
-									Toasty.show(
-											context,
-											context.getResources()
-													.getString(R.string.generic_error));
-								}
-							}
-
-							@Override
-							public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-
-								Toasty.show(
-										context,
-										context.getResources()
-												.getString(R.string.generic_server_response_error));
-							}
-						});
 	}
 }

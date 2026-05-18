@@ -207,14 +207,13 @@ public class Markdown {
 							.usePlugin(
 									new AbstractMarkwonPlugin() {
 
-										private Typeface tf;
+										private final Typeface tf = Typeface.DEFAULT;
 
 										@Override
 										public void beforeSetText(
 												@NonNull TextView textView,
 												@NonNull Spanned markdown) {
 
-											// textView.setTypeface(tf);
 											textView.setTextIsSelectable(true);
 											textView.setMovementMethod(
 													LinkMovementMethod.getInstance());
@@ -347,7 +346,7 @@ public class Markdown {
 
 										private final Context context =
 												RecyclerViewRenderer.this.context;
-										private Typeface tf;
+										private final Typeface tf = Typeface.DEFAULT;
 
 										@Override
 										public void beforeSetText(

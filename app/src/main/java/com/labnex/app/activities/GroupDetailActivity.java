@@ -10,10 +10,12 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.labnex.app.R;
 import com.labnex.app.adapters.ProjectsAdapter;
 import com.labnex.app.bottomsheets.CreateGroupBottomSheet;
+import com.labnex.app.bottomsheets.CreateLabelBottomSheet;
 import com.labnex.app.bottomsheets.GenericMenuBottomSheet;
-import com.labnex.app.bottomsheets.GroupDetailBottomSheet;
-import com.labnex.app.bottomsheets.LabelActionsBottomSheet;
+import com.labnex.app.bottomsheets.LabelsBottomSheet;
+import com.labnex.app.bottomsheets.MembersBottomSheet;
 import com.labnex.app.databinding.ActivityGroupDetailBinding;
+import com.labnex.app.helpers.AccessLevel;
 import com.labnex.app.helpers.AvatarGenerator;
 import com.labnex.app.helpers.Toasty;
 import com.labnex.app.helpers.UIHelper;
@@ -36,6 +38,7 @@ public class GroupDetailActivity extends BaseActivity {
 	private long groupId;
 	private GroupsItem groupsItem;
 	private final String type = "group";
+	private boolean canModify;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -51,7 +54,11 @@ public class GroupDetailActivity extends BaseActivity {
 		groupId = getIntent().getIntExtra("groupId", 0);
 
 		binding.btnBack.setOnClickListener(v -> finish());
+
 		showGroupMenu();
+		setupProjectsList();
+		observeGroups();
+		observeProjects();
 
 		binding.groupActions.issuesFrame.setOnClickListener(
 				v -> {
@@ -70,28 +77,14 @@ public class GroupDetailActivity extends BaseActivity {
 				});
 
 		binding.groupActions.labelsFrame.setOnClickListener(
-				v -> {
-					Bundle args = new Bundle();
-					args.putString("source", "labels");
-					args.putLong("groupId", groupId);
-					GroupDetailBottomSheet bottomSheet = new GroupDetailBottomSheet();
-					bottomSheet.setArguments(args);
-					bottomSheet.show(getSupportFragmentManager(), "groupDetailBottomSheet");
-				});
+				v ->
+						LabelsBottomSheet.newInstance("group", groupId, canModify)
+								.show(getSupportFragmentManager(), "labelsSheet"));
 
 		binding.groupActions.membersFrame.setOnClickListener(
-				v -> {
-					Bundle args = new Bundle();
-					args.putString("source", "members");
-					args.putLong("groupId", groupId);
-					GroupDetailBottomSheet bottomSheet = new GroupDetailBottomSheet();
-					bottomSheet.setArguments(args);
-					bottomSheet.show(getSupportFragmentManager(), "groupDetailBottomSheet");
-				});
-
-		setupProjectsList();
-		observeGroups();
-		observeProjects();
+				v ->
+						MembersBottomSheet.newInstance("group", groupId)
+								.show(getSupportFragmentManager(), "membersSheet"));
 
 		groupsViewModel.loadGroupDetail(ctx, (int) groupId);
 		projectsViewModel.loadProjects(ctx, type, (int) groupId);
@@ -111,6 +104,8 @@ public class GroupDetailActivity extends BaseActivity {
 						loading -> {
 							binding.progressBar.setVisibility(
 									Boolean.TRUE.equals(loading) ? View.VISIBLE : View.GONE);
+							binding.scrollView.setVisibility(
+									Boolean.TRUE.equals(loading) ? View.GONE : View.VISIBLE);
 						});
 
 		groupsViewModel
@@ -151,6 +146,19 @@ public class GroupDetailActivity extends BaseActivity {
 								binding.groupDescription.setText(group.getDescription());
 							}
 						});
+
+		groupsViewModel
+				.getAccessLevel()
+				.observe(
+						this,
+						level -> {
+							canModify = level >= AccessLevel.MAINTAINER;
+							if (!canModify) {
+								binding.dockContainer.removeView(binding.btnMenu);
+							}
+						});
+
+		groupsViewModel.loadGroupAccessLevel(ctx, groupId, getAccount().getUserId());
 
 		groupsViewModel
 				.getError()
@@ -232,15 +240,10 @@ public class GroupDetailActivity extends BaseActivity {
 							id -> {
 								switch (id) {
 									case "create_label":
-										Bundle bsBundle = new Bundle();
-										bsBundle.putString("source", "labels");
-										bsBundle.putLong("groupId", groupId);
-										LabelActionsBottomSheet bottomSheet =
-												new LabelActionsBottomSheet();
-										bottomSheet.setArguments(bsBundle);
-										bottomSheet.show(
-												getSupportFragmentManager(),
-												"labelActionsBottomSheet");
+										CreateLabelBottomSheet.newInstance("group", groupId, null)
+												.show(
+														getSupportFragmentManager(),
+														"createLabelSheet");
 										break;
 									case "edit_group":
 										if (groupsItem != null) {
