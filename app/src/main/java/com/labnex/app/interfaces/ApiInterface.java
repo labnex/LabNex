@@ -312,7 +312,7 @@ public interface ApiInterface {
 
 	@GET("projects/{id}/merge_requests/{merge_request_iid}") // get single merge request by id
 	Call<MergeRequests> getMergeRequest(
-			@Path("id") int projectId, @Path("merge_request_iid") int mergeRequestIid);
+			@Path("id") long projectId, @Path("merge_request_iid") long mergeRequestIid);
 
 	@GET("projects/{id}/merge_requests/{merge_request_iid}/notes?sort=asc") // get merge request
 	// notes/comments
@@ -387,7 +387,7 @@ public interface ApiInterface {
 			@Query("page") int page);
 
 	@GET("projects/{id}/issues/{issue_iid}") // get issue by id
-	Call<Issues> getIssue(@Path("id") int projectId, @Path("issue_iid") int issueIid);
+	Call<Issues> getIssue(@Path("id") long projectId, @Path("issue_iid") long issueIid);
 
 	@GET("issues") // get user issues
 	Call<List<Issues>> getIssues(
@@ -529,10 +529,13 @@ public interface ApiInterface {
 
 	// Todos
 	@GET("todos")
-	Call<List<ToDoItem>> getAllTodos();
+	Call<List<ToDoItem>> getAllTodos(
+			@Query("type") String type,
+			@Query("state") String state,
+			@Query("action") String action);
 
 	@POST("todos/{id}/mark_as_done")
-	Call<ToDoItem> markTodoAsDone(@Path("id") int todoId);
+	Call<ToDoItem> markTodoAsDone(@Path("id") long todoId);
 
 	@POST("todos/mark_as_done")
 	Call<ToDoItem> markAllTodoAsDone();

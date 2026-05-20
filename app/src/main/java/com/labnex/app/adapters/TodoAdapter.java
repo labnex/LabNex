@@ -2,7 +2,9 @@ package com.labnex.app.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -10,6 +12,7 @@ import com.labnex.app.R;
 import com.labnex.app.databinding.ListTodoBinding;
 import com.labnex.app.helpers.TimeHelper;
 import com.labnex.app.helpers.Toasty;
+import com.labnex.app.helpers.Utils;
 import com.labnex.app.models.todo.ToDoItem;
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,6 +27,7 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
 	private final Context context;
 	private List<ToDoItem> todoList;
 	private final OnTodoClickListener listener;
+	private String currentState = "pending";
 
 	public interface OnTodoClickListener {
 		void onTodoClick(ToDoItem todo);
@@ -43,6 +47,12 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
 		notifyDataSetChanged();
 	}
 
+	@SuppressLint("NotifyDataSetChanged")
+	public void setCurrentState(String state) {
+		this.currentState = state;
+		notifyDataSetChanged();
+	}
+
 	@NonNull @Override
 	public TodoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 		ListTodoBinding binding =
@@ -52,7 +62,7 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
 
 	@Override
 	public void onBindViewHolder(@NonNull TodoViewHolder holder, int position) {
-		holder.bind(todoList.get(position));
+		holder.bind(todoList.get(position), currentState);
 		holder.binding.getRoot().updateAppearance(position, getItemCount());
 	}
 
@@ -63,7 +73,7 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
 
 	public class TodoViewHolder extends RecyclerView.ViewHolder {
 
-		final ListTodoBinding binding;
+		ListTodoBinding binding;
 		private ToDoItem currentTodo;
 
 		TodoViewHolder(ListTodoBinding binding) {
@@ -85,10 +95,10 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
 					});
 		}
 
-		void bind(ToDoItem todo) {
+		void bind(ToDoItem todo, String state) {
 			currentTodo = todo;
 
-			binding.todoIcon.setImageResource(iconForType(todo.getTargetType()));
+			setupIcon(todo);
 
 			String title = todo.getBody();
 			if (todo.getTarget() != null && todo.getTarget().getTitle() != null) {
@@ -114,6 +124,32 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
 				sb.append(actionLabel(todo.getActionName()));
 			}
 			binding.todoTimeAction.setText(sb.toString());
+
+			if ("done".equals(state)) {
+				binding.todoCheck.setVisibility(View.GONE);
+			} else {
+				binding.todoCheck.setVisibility(View.VISIBLE);
+			}
+		}
+
+		private void setupIcon(ToDoItem todo) {
+			if (todo == null) return;
+
+			int iconRes = iconForType(todo.getTargetType());
+			binding.todoIcon.setImageResource(iconRes);
+
+			int tintColor = Utils.getColorFromAttribute(context, R.attr.iconsColor);
+
+			if (todo.getTarget() != null && todo.getTarget().getState() != null) {
+				String type = todo.getTarget().getState();
+				if (type.equalsIgnoreCase("closed")) {
+					tintColor = context.getColor(R.color.alert_caution_border);
+				} else if (type.equalsIgnoreCase("merged")) {
+					tintColor = context.getColor(R.color.alert_important_border);
+				}
+			}
+
+			binding.todoIcon.setImageTintList(ColorStateList.valueOf(tintColor));
 		}
 
 		private int iconForType(String type) {

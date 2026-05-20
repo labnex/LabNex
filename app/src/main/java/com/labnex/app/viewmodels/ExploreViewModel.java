@@ -51,6 +51,7 @@ public class ExploreViewModel extends ViewModel {
 	private String currentQuery = "";
 	private int currentPage = 1;
 	private final int resultLimit = Constants.getResultLimit();
+	private boolean needsDataLoad = true;
 
 	public LiveData<SearchResult> getSearchResult() {
 		return searchResult;
@@ -78,6 +79,10 @@ public class ExploreViewModel extends ViewModel {
 
 	public String getScope() {
 		return activeScope.getValue();
+	}
+
+	public boolean needsDataLoad() {
+		return needsDataLoad;
 	}
 
 	public void search(Context ctx, String query) {
@@ -157,6 +162,7 @@ public class ExploreViewModel extends ViewModel {
 							error.setValue(ApiResponseHandler.getErrorMessageStatic(response));
 						}
 						isLoading.setValue(false);
+						needsDataLoad = false;
 					}
 
 					@Override

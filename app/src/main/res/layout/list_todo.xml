@@ -37,7 +37,7 @@
                 android:layout_marginEnd="@dimen/dimen8dp"
                 android:ellipsize="end"
                 android:maxLines="2"
-                android:textAppearance="?attr/textAppearanceTitleSmall"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
                 android:textColor="?attr/colorOnSurface"
                 app:layout_constraintEnd_toStartOf="@id/todo_check"
                 app:layout_constraintStart_toEndOf="@id/todo_icon"
@@ -45,14 +45,16 @@
 
             <ImageView
                 android:id="@+id/todo_check"
-                android:layout_width="@dimen/dimen20dp"
-                android:layout_height="@dimen/dimen20dp"
+                android:layout_width="@dimen/dimen32dp"
+                android:layout_height="@dimen/dimen32dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/mark_as_done"
-                android:src="@drawable/ic_check"
+                android:padding="@dimen/dimen4dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/todo_icon"
-                app:tint="?attr/colorOnSurfaceVariant" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_check"
+                app:tint="?attr/iconsColor" />
 
             <TextView
                 android:id="@+id/todo_project"
@@ -64,7 +66,7 @@
                 android:maxLines="1"
                 android:textAppearance="?attr/textAppearanceLabelMedium"
                 android:textColor="?attr/colorOnSurfaceVariant"
-                android:alpha="0.7"
+                android:alpha="0.8"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/todo_icon"
                 app:layout_constraintTop_toBottomOf="@id/todo_title" />
@@ -77,7 +79,7 @@
                 android:layout_marginTop="@dimen/dimen4dp"
                 android:textAppearance="?attr/textAppearanceLabelMedium"
                 android:textColor="?attr/colorOnSurfaceVariant"
-                android:alpha="0.7"
+                android:alpha="0.8"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/todo_icon"
                 app:layout_constraintTop_toBottomOf="@id/todo_project" />

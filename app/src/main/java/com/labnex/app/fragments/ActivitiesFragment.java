@@ -22,9 +22,11 @@ import com.labnex.app.databinding.FragmentActivitiesBinding;
 import com.labnex.app.helpers.EndlessRecyclerViewScrollListener;
 import com.labnex.app.helpers.Toasty;
 import com.labnex.app.helpers.UIHelper;
+import com.labnex.app.models.events.Events;
 import com.labnex.app.models.projects.Projects;
 import com.labnex.app.viewmodels.ActivitiesViewModel;
 import java.util.ArrayList;
+import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -67,24 +69,53 @@ public class ActivitiesFragment extends Fragment {
 	@Override
 	public void onResume() {
 		super.onResume();
-		if (!isHidden() && isFirstLoad) lazyLoad();
+		if (viewModel == null) {
+			viewModel = new ViewModelProvider(this).get(ActivitiesViewModel.class);
+		}
+		if (!isHidden()) {
+			if (isFirstLoad || viewModel.needsDataLoad()) {
+				lazyLoad();
+			} else {
+				restoreUIState();
+			}
+		}
 	}
 
 	@Override
 	public void onHiddenChanged(boolean hidden) {
 		super.onHiddenChanged(hidden);
-		if (!hidden && isFirstLoad) lazyLoad();
+		if (!hidden) {
+			if (viewModel == null) {
+				viewModel = new ViewModelProvider(this).get(ActivitiesViewModel.class);
+			}
+			if (isFirstLoad || viewModel.needsDataLoad()) {
+				lazyLoad();
+			} else {
+				restoreUIState();
+			}
+		}
 	}
 
 	private void lazyLoad() {
 		isFirstLoad = false;
-		viewModel.loadEvents(ctx);
+		if (viewModel != null) {
+			viewModel.loadEvents(ctx);
+		}
 	}
 
-	@Override
-	public void onDestroyView() {
-		super.onDestroyView();
-		binding = null;
+	private void restoreUIState() {
+		if (viewModel == null) return;
+
+		List<Events> events = viewModel.getEvents().getValue();
+		if (events != null && !events.isEmpty()) {
+			binding.nothingFoundFrame.getRoot().setVisibility(View.GONE);
+			binding.recyclerView.setVisibility(View.VISIBLE);
+			binding.progressBar.setVisibility(View.GONE);
+		} else {
+			binding.nothingFoundFrame.getRoot().setVisibility(View.VISIBLE);
+			binding.recyclerView.setVisibility(View.GONE);
+			binding.progressBar.setVisibility(View.GONE);
+		}
 	}
 
 	public void openContextMenu() {
@@ -269,6 +300,9 @@ public class ActivitiesFragment extends Fragment {
 								case "access_forbidden_403":
 									Toasty.show(ctx, getString(R.string.access_forbidden_403));
 									break;
+								case "not_found":
+									Toasty.show(ctx, getString(R.string.not_found));
+									break;
 								case "generic_error":
 									Toasty.show(ctx, getString(R.string.generic_error));
 									break;
@@ -278,5 +312,11 @@ public class ActivitiesFragment extends Fragment {
 							}
 							viewModel.clearError();
 						});
+	}
+
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		binding = null;
 	}
 }

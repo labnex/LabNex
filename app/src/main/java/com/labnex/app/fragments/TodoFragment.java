@@ -13,14 +13,12 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.labnex.app.R;
 import com.labnex.app.activities.IssueDetailActivity;
-import com.labnex.app.activities.IssuesActivity;
+import com.labnex.app.activities.MainActivity;
 import com.labnex.app.activities.MergeRequestDetailActivity;
-import com.labnex.app.activities.MergeRequestsActivity;
-import com.labnex.app.activities.ProjectDetailActivity;
 import com.labnex.app.adapters.TodoAdapter;
-import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.contexts.IssueContext;
 import com.labnex.app.contexts.MergeRequestContext;
 import com.labnex.app.contexts.ProjectsContext;
@@ -34,9 +32,7 @@ import com.labnex.app.models.projects.Projects;
 import com.labnex.app.models.todo.ToDoItem;
 import com.labnex.app.viewmodels.TodoViewModel;
 import java.util.ArrayList;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import java.util.List;
 
 /**
  * @author mmarif
@@ -48,6 +44,9 @@ public class TodoFragment extends Fragment {
 	private TodoViewModel viewModel;
 	private TodoAdapter adapter;
 	private boolean isFirstLoad = true;
+
+	private ToDoItem pendingMrTodo;
+	private ToDoItem pendingIssueTodo;
 
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -75,32 +74,59 @@ public class TodoFragment extends Fragment {
 	@Override
 	public void onResume() {
 		super.onResume();
-		if (!isHidden() && isFirstLoad) {
-			lazyLoad();
+		if (viewModel == null) {
+			viewModel = new ViewModelProvider(this).get(TodoViewModel.class);
+		}
+		if (!isHidden()) {
+			if (isFirstLoad || viewModel.needsDataLoad()) {
+				lazyLoad();
+			} else {
+				restoreUIState();
+			}
 		}
 	}
 
 	@Override
 	public void onHiddenChanged(boolean hidden) {
 		super.onHiddenChanged(hidden);
-		if (!hidden && isFirstLoad) {
-			lazyLoad();
+		if (!hidden) {
+			if (viewModel == null) {
+				viewModel = new ViewModelProvider(this).get(TodoViewModel.class);
+			}
+			if (isFirstLoad || viewModel.needsDataLoad()) {
+				lazyLoad();
+			} else {
+				restoreUIState();
+			}
 		}
 	}
 
 	private void lazyLoad() {
 		isFirstLoad = false;
-		viewModel.loadTodos(ctx);
+		if (viewModel != null) {
+			viewModel.loadTodos(ctx);
+		}
 	}
 
-	@Override
-	public void onDestroyView() {
-		super.onDestroyView();
-		binding = null;
+	private void restoreUIState() {
+		if (viewModel == null) return;
+
+		List<ToDoItem> currentTodos = viewModel.getTodoList().getValue();
+		if (currentTodos != null && !currentTodos.isEmpty()) {
+			binding.nothingFoundFrame.getRoot().setVisibility(View.GONE);
+			binding.recyclerView.setVisibility(View.VISIBLE);
+			binding.progressBar.setVisibility(View.GONE);
+		} else {
+			binding.nothingFoundFrame.getRoot().setVisibility(View.VISIBLE);
+			binding.recyclerView.setVisibility(View.GONE);
+			binding.progressBar.setVisibility(View.GONE);
+		}
 	}
 
 	public void openContextMenu() {
-		showFilterBottomSheet();
+		if (viewModel != null) {
+			showFilterBottomSheet();
+		}
 	}
 
 	private void setupRecyclerView() {
@@ -133,24 +159,60 @@ public class TodoFragment extends Fragment {
 		dialog.setContentView(fb.getRoot());
 		UIHelper.applySheetStyle(dialog, true);
 
-		String current = viewModel.getFilter();
-		fb.chipAll.setChecked(TodoViewModel.FILTER_ALL.equals(current));
-		fb.chipIssues.setChecked(TodoViewModel.FILTER_ISSUES.equals(current));
-		fb.chipMr.setChecked(TodoViewModel.FILTER_MERGE_REQUESTS.equals(current));
+		String type = viewModel.getCurrentType();
+		fb.chipAll.setChecked(TodoViewModel.FILTER_ALL.equals(type));
+		fb.chipIssues.setChecked(TodoViewModel.FILTER_ISSUES.equals(type));
+		fb.chipMr.setChecked(TodoViewModel.FILTER_MERGE_REQUESTS.equals(type));
 
-		fb.chipAll.setOnClickListener(
+		String state = viewModel.getCurrentState();
+		fb.chipPending.setChecked(TodoViewModel.STATE_PENDING.equals(state));
+		fb.chipDone.setChecked(TodoViewModel.STATE_DONE.equals(state));
+
+		String action = viewModel.getCurrentAction();
+		fb.chipAssigned.setChecked("assigned".equals(action));
+		fb.chipMentioned.setChecked("mentioned".equals(action));
+		fb.chipMarked.setChecked("marked".equals(action));
+		fb.chipBuildFailed.setChecked("build_failed".equals(action));
+		fb.chipApprovalRequired.setChecked("approval_required".equals(action));
+
+		fb.btnMarkAllDone.setOnClickListener(
 				v -> {
-					viewModel.setFilter(TodoViewModel.FILTER_ALL);
-					dialog.dismiss();
+					new MaterialAlertDialogBuilder(ctx)
+							.setTitle(R.string.mark_all_as_done)
+							.setMessage(R.string.mark_all_as_done_confirm)
+							.setPositiveButton(
+									R.string.confirm,
+									(dialog1, which) -> {
+										viewModel.markAllAsDone(ctx);
+										dialog.dismiss();
+									})
+							.setNegativeButton(R.string.cancel, null)
+							.show();
 				});
-		fb.chipIssues.setOnClickListener(
+
+		fb.btnApply.setOnClickListener(
 				v -> {
-					viewModel.setFilter(TodoViewModel.FILTER_ISSUES);
-					dialog.dismiss();
-				});
-		fb.chipMr.setOnClickListener(
-				v -> {
-					viewModel.setFilter(TodoViewModel.FILTER_MERGE_REQUESTS);
+					if (fb.chipIssues.isChecked())
+						viewModel.setCurrentType(TodoViewModel.FILTER_ISSUES);
+					else if (fb.chipMr.isChecked())
+						viewModel.setCurrentType(TodoViewModel.FILTER_MERGE_REQUESTS);
+					else viewModel.setCurrentType(TodoViewModel.FILTER_ALL);
+
+					viewModel.setCurrentState(
+							fb.chipDone.isChecked()
+									? TodoViewModel.STATE_DONE
+									: TodoViewModel.STATE_PENDING);
+
+					String selectedAction = null;
+					if (fb.chipAssigned.isChecked()) selectedAction = "assigned";
+					else if (fb.chipMentioned.isChecked()) selectedAction = "mentioned";
+					else if (fb.chipMarked.isChecked()) selectedAction = "marked";
+					else if (fb.chipBuildFailed.isChecked()) selectedAction = "build_failed";
+					else if (fb.chipApprovalRequired.isChecked())
+						selectedAction = "approval_required";
+					viewModel.setCurrentAction(selectedAction);
+
+					viewModel.loadTodos(ctx);
 					dialog.dismiss();
 				});
 
@@ -174,24 +236,70 @@ public class TodoFragment extends Fragment {
 						});
 
 		viewModel
-				.getFilteredTodos()
+				.getTodoList()
 				.observe(
 						getViewLifecycleOwner(),
 						todos -> {
 							if (Boolean.TRUE.equals(viewModel.getIsLoading().getValue())) return;
+							if (todos == null) return;
 
-							if (todos == null) {
-								return;
-							}
+							adapter.setCurrentState(viewModel.getCurrentState());
 
 							if (todos.isEmpty()) {
 								binding.nothingFoundFrame.getRoot().setVisibility(View.VISIBLE);
 								binding.recyclerView.setVisibility(View.GONE);
+								binding.progressBar.setVisibility(View.GONE);
 							} else {
 								binding.nothingFoundFrame.getRoot().setVisibility(View.GONE);
 								binding.recyclerView.setVisibility(View.VISIBLE);
+								binding.progressBar.setVisibility(View.GONE);
 								adapter.updateList(todos);
 							}
+						});
+
+		viewModel
+				.getFetchedProject()
+				.observe(
+						getViewLifecycleOwner(),
+						project -> {
+							if (project == null) return;
+							if (pendingMrTodo != null) {
+								viewModel.fetchMrForTodo(
+										ctx, project.getId(), pendingMrTodo.getTarget().getIid());
+								pendingMrTodo = null;
+							} else if (pendingIssueTodo != null) {
+								viewModel.fetchIssueForTodo(
+										ctx,
+										project.getId(),
+										pendingIssueTodo.getTarget().getIid());
+								pendingIssueTodo = null;
+							}
+						});
+
+		viewModel
+				.getFetchedMr()
+				.observe(
+						getViewLifecycleOwner(),
+						mr -> {
+							if (mr == null) return;
+							Projects project = viewModel.getFetchedProject().getValue();
+							if (project != null) {
+								navigateToMergeRequestDetail(project, mr);
+							}
+							viewModel.clearFetchedData();
+						});
+
+		viewModel
+				.getFetchedIssue()
+				.observe(
+						getViewLifecycleOwner(),
+						issue -> {
+							if (issue == null) return;
+							Projects project = viewModel.getFetchedProject().getValue();
+							if (project != null) {
+								navigateToIssueDetail(project, issue);
+							}
+							viewModel.clearFetchedData();
 						});
 
 		viewModel
@@ -203,6 +311,24 @@ public class TodoFragment extends Fragment {
 							switch (errorMsg) {
 								case "marked_done":
 									Toasty.show(ctx, getString(R.string.todo_marked_done));
+									if (getActivity() instanceof MainActivity) {
+										((MainActivity) getActivity()).refreshTodoBadge();
+									}
+									break;
+								case "all_marked_done":
+									Toasty.show(ctx, getString(R.string.todo_all_marked_done));
+									if (getActivity() instanceof MainActivity) {
+										((MainActivity) getActivity()).refreshTodoBadge();
+									}
+									break;
+								case "auth_error":
+									Toasty.show(ctx, getString(R.string.not_authorized));
+									break;
+								case "access_forbidden_403":
+									Toasty.show(ctx, getString(R.string.access_forbidden_403));
+									break;
+								case "not_found":
+									Toasty.show(ctx, getString(R.string.not_found));
 									break;
 								case "generic_error":
 									Toasty.show(
@@ -218,11 +344,32 @@ public class TodoFragment extends Fragment {
 
 	private void navigateToTodoTarget(ToDoItem todo) {
 		String type = todo.getTargetType();
-		if ("MergeRequest".equalsIgnoreCase(type) && todo.getTarget() != null)
+		if ("MergeRequest".equalsIgnoreCase(type) && todo.getTarget() != null) {
 			navigateToMergeRequest(todo);
-		else if ("Issue".equalsIgnoreCase(type) && todo.getTarget() != null) navigateToIssue(todo);
-		else if (todo.getTargetUrl() != null)
+		} else if ("Issue".equalsIgnoreCase(type) && todo.getTarget() != null) {
+			navigateToIssue(todo);
+		} else if (todo.getTargetUrl() != null) {
 			startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(todo.getTargetUrl())));
+		}
+	}
+
+	private void navigateToMergeRequestDetail(Projects project, MergeRequests mr) {
+		ProjectsContext pc = new ProjectsContext(project, ctx);
+		pc.saveToDB(ctx);
+
+		Intent intent =
+				new MergeRequestContext(mr, pc).getIntent(ctx, MergeRequestDetailActivity.class);
+		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		startActivity(intent);
+	}
+
+	private void navigateToIssueDetail(Projects project, Issues issue) {
+		ProjectsContext pc = new ProjectsContext(project, ctx);
+		pc.saveToDB(ctx);
+
+		Intent intent = new IssueContext(issue, pc).getIntent(ctx, IssueDetailActivity.class);
+		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		startActivity(intent);
 	}
 
 	private void navigateToMergeRequest(ToDoItem todo) {
@@ -230,15 +377,9 @@ public class TodoFragment extends Fragment {
 			showError();
 			return;
 		}
-		RetrofitClient.getApiInterface(ctx)
-				.getProjectInfo(todo.getProject().getId())
-				.enqueue(
-						new ProjectCallback() {
-							@Override
-							void onSuccess(Projects p) {
-								fetchAndOpenMergeRequest(p, todo);
-							}
-						});
+		pendingMrTodo = todo;
+		pendingIssueTodo = null;
+		viewModel.fetchProjectForTodo(ctx, todo.getProject().getId());
 	}
 
 	private void navigateToIssue(ToDoItem todo) {
@@ -246,123 +387,18 @@ public class TodoFragment extends Fragment {
 			showError();
 			return;
 		}
-		RetrofitClient.getApiInterface(ctx)
-				.getProjectInfo(todo.getProject().getId())
-				.enqueue(
-						new ProjectCallback() {
-							@Override
-							void onSuccess(Projects p) {
-								fetchAndOpenIssue(p, todo);
-							}
-						});
-	}
-
-	private void fetchAndOpenMergeRequest(Projects project, ToDoItem todo) {
-		if (todo.getTarget() == null) {
-			showError();
-			return;
-		}
-		RetrofitClient.getApiInterface(ctx)
-				.getMergeRequest(project.getId(), todo.getTarget().getIid())
-				.enqueue(
-						new Callback<>() {
-							@Override
-							public void onResponse(
-									@NonNull Call<MergeRequests> c,
-									@NonNull Response<MergeRequests> r) {
-								if (r.isSuccessful() && r.body() != null)
-									openMergeRequest(project, r.body());
-								else goToProjectSection(project, "merge_request");
-							}
-
-							@Override
-							public void onFailure(
-									@NonNull Call<MergeRequests> c, @NonNull Throwable t) {
-								goToProjectSection(project, "merge_request");
-							}
-						});
-	}
-
-	private void fetchAndOpenIssue(Projects project, ToDoItem todo) {
-		if (todo.getTarget() == null) {
-			showError();
-			return;
-		}
-		RetrofitClient.getApiInterface(ctx)
-				.getIssue(project.getId(), todo.getTarget().getIid())
-				.enqueue(
-						new Callback<>() {
-							@Override
-							public void onResponse(
-									@NonNull Call<Issues> c, @NonNull Response<Issues> r) {
-								if (r.isSuccessful() && r.body() != null)
-									openIssue(project, r.body());
-								else goToProjectSection(project, "issue");
-							}
-
-							@Override
-							public void onFailure(@NonNull Call<Issues> c, @NonNull Throwable t) {
-								goToProjectSection(project, "issue");
-							}
-						});
-	}
-
-	private void openMergeRequest(Projects project, MergeRequests mr) {
-		ProjectsContext pc = new ProjectsContext(project, ctx);
-		pc.saveToDB(ctx);
-		ctx.startActivity(
-				pc.getIntent(ctx, ProjectDetailActivity.class)
-						.setFlags(
-								Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
-		Intent list = new Intent(ctx, MergeRequestsActivity.class);
-		list.putExtra("project", pc);
-		list.putExtra("source", "mr");
-		list.putExtra("projectId", pc.getProjectId());
-		ctx.startActivity(list);
-		ctx.startActivity(
-				new MergeRequestContext(mr, pc).getIntent(ctx, MergeRequestDetailActivity.class));
-	}
-
-	private void openIssue(Projects project, Issues issue) {
-		ProjectsContext pc = new ProjectsContext(project, ctx);
-		pc.saveToDB(ctx);
-		ctx.startActivity(
-				pc.getIntent(ctx, ProjectDetailActivity.class)
-						.setFlags(
-								Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
-		Intent list = new Intent(ctx, IssuesActivity.class);
-		list.putExtra("project", pc);
-		list.putExtra("source", "project");
-		list.putExtra("id", pc.getProjectId());
-		ctx.startActivity(list);
-		ctx.startActivity(new IssueContext(issue, pc).getIntent(ctx, IssueDetailActivity.class));
-	}
-
-	private void goToProjectSection(Projects project, String section) {
-		ProjectsContext pc = new ProjectsContext(project, ctx);
-		pc.saveToDB(ctx);
-		Intent i = pc.getIntent(ctx, ProjectDetailActivity.class);
-		i.putExtra("goToSection", "yes");
-		i.putExtra("goToSectionType", section);
-		ctx.startActivity(i);
+		pendingIssueTodo = todo;
+		pendingMrTodo = null;
+		viewModel.fetchProjectForTodo(ctx, todo.getProject().getId());
 	}
 
 	private void showError() {
 		Toasty.show(ctx, getString(R.string.generic_server_response_error));
 	}
 
-	private abstract class ProjectCallback implements Callback<Projects> {
-		@Override
-		public void onResponse(@NonNull Call<Projects> c, @NonNull Response<Projects> r) {
-			if (r.isSuccessful() && r.body() != null) onSuccess(r.body());
-			else showError();
-		}
-
-		@Override
-		public void onFailure(@NonNull Call<Projects> c, @NonNull Throwable t) {
-			showError();
-		}
-
-		abstract void onSuccess(Projects project);
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		binding = null;
 	}
 }

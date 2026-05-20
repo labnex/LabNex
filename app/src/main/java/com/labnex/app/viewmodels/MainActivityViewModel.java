@@ -12,6 +12,8 @@ import com.labnex.app.helpers.ApiResponseHandler;
 import com.labnex.app.helpers.SharedPrefDB;
 import com.labnex.app.models.metadata.Metadata;
 import com.labnex.app.models.personal_access_tokens.PersonalAccessTokens;
+import com.labnex.app.models.todo.ToDoItem;
+import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -25,6 +27,7 @@ public class MainActivityViewModel extends ViewModel {
 	private final MutableLiveData<String> serverVersion = new MutableLiveData<>();
 	private final MutableLiveData<Boolean> versionCheckDone = new MutableLiveData<>(false);
 	private final MutableLiveData<String> error = new MutableLiveData<>();
+	private final MutableLiveData<Integer> pendingTodoCount = new MutableLiveData<>(0);
 
 	public LiveData<Integer> getTokenCheckResult() {
 		return tokenCheckResult;
@@ -40,6 +43,10 @@ public class MainActivityViewModel extends ViewModel {
 
 	public LiveData<String> getError() {
 		return error;
+	}
+
+	public LiveData<Integer> getPendingTodoCount() {
+		return pendingTodoCount;
 	}
 
 	public void checkPersonalAccessToken(Context ctx) {
@@ -92,6 +99,33 @@ public class MainActivityViewModel extends ViewModel {
 								error.setValue(t.getMessage());
 								versionCheckDone.setValue(true);
 							}
+						});
+	}
+
+	public void fetchPendingTodoCount(Context ctx) {
+		RetrofitClient.getApiInterface(ctx)
+				.getAllTodos(null, "pending", null)
+				.enqueue(
+						new Callback<>() {
+							@Override
+							public void onResponse(
+									@NonNull Call<List<ToDoItem>> call,
+									@NonNull Response<List<ToDoItem>> response) {
+								if (response.isSuccessful()) {
+									String xTotal = response.headers().get("x-total");
+									if (xTotal != null) {
+										try {
+											int count = Integer.parseInt(xTotal);
+											pendingTodoCount.setValue(count);
+										} catch (NumberFormatException ignored) {
+										}
+									}
+								}
+							}
+
+							@Override
+							public void onFailure(
+									@NonNull Call<List<ToDoItem>> call, @NonNull Throwable t) {}
 						});
 	}
 }

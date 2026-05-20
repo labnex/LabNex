@@ -385,6 +385,9 @@
     <string name="tap_to_select_branch">Tap to select branch</string>
     <string name="edit_mr">Edit merge request</string>
     <string name="mr_updated">Merge request updated</string>
+    <string name="mark_all_as_done">Mark all as done</string>
+    <string name="mark_all_as_done_confirm">Are you sure you want to mark all todos as done?</string>
+    <string name="todo_all_marked_done">All todos marked as done</string>
 
     <!-- errors -->
     <string name="generic_error">An unexpected error occurred</string>
@@ -539,5 +542,9 @@
     <string name="status">Status</string>
     <string name="weight">Weight</string>
     <string name="confidential">Confidential</string>
+    <string name="type">Type</string>
+    <string name="pending">Pending</string>
+    <string name="action">Action</string>
+    <string name="confirm">Confirm</string>
     <!-- generic copy -->
 </resources>
