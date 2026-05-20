@@ -251,6 +251,7 @@ public class ProjectDetailActivity extends BaseActivity
 		intent.putExtra("path", projectsContext.getPath());
 		intent.putExtra("projectId", projectId);
 		intent.putExtra("id", projectId);
+		intent.putExtra("canModify", canModify);
 		if (branch != null) intent.putExtra("branch", branch);
 		startActivity(intent);
 	}
