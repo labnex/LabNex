@@ -357,7 +357,7 @@ public class Projects implements Serializable {
 	}
 
 	@SerializedName("forked_from_project")
-	private Object forkedFromProject;
+	private ForkedFromProject forkedFromProject;
 
 	public boolean isForked() {
 		return forkedFromProject != null;
@@ -365,6 +365,10 @@ public class Projects implements Serializable {
 
 	public String getSshUrlToRepo() {
 		return sshUrlToRepo;
+	}
+
+	public ForkedFromProject getForkedFromProject() {
+		return forkedFromProject;
 	}
 
 	public boolean isOnlyAllowMergeIfAllDiscussionsAreResolved() {

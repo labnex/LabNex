@@ -11,11 +11,11 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.labnex.app.R;
 import com.labnex.app.adapters.FilesAdapter;
 import com.labnex.app.bottomsheets.BranchesBottomSheet;
 import com.labnex.app.bottomsheets.ContentViewerBottomSheet;
+import com.labnex.app.bottomsheets.CreateFileBottomSheet;
 import com.labnex.app.bottomsheets.GenericMenuBottomSheet;
 import com.labnex.app.contexts.ProjectsContext;
 import com.labnex.app.databinding.ActivityFilesBrowserBinding;
@@ -24,6 +24,7 @@ import com.labnex.app.helpers.Toasty;
 import com.labnex.app.helpers.UIHelper;
 import com.labnex.app.helpers.Utils;
 import com.labnex.app.models.app.GenericMenuItemModel;
+import com.labnex.app.models.projects.ForkedFromProject;
 import com.labnex.app.models.repository.Tree;
 import com.labnex.app.viewmodels.FilesViewModel;
 import java.io.IOException;
@@ -145,7 +146,7 @@ public class FilesBrowserActivity extends BaseActivity
 			items.add(
 					new GenericMenuItemModel(
 							"add_file",
-							R.string.create_file,
+							R.string.create_files,
 							R.drawable.ic_add,
 							com.google.android.material.R.attr.colorPrimaryContainer,
 							com.google.android.material.R.attr.colorOnPrimaryContainer));
@@ -161,7 +162,18 @@ public class FilesBrowserActivity extends BaseActivity
 									.show(getSupportFragmentManager(), "branchesSheet");
 							break;
 						case "add_file":
-							openCreateFile();
+							ForkedFromProject upstream =
+									projectsContext.getProject() != null
+											? projectsContext.getProject().getForkedFromProject()
+											: null;
+							CreateFileBottomSheet.newInstance(
+											projectId,
+											branch,
+											"create",
+											null,
+											projectsContext,
+											upstream)
+									.show(getSupportFragmentManager(), "createFileSheet");
 							break;
 					}
 				});
@@ -200,74 +212,42 @@ public class FilesBrowserActivity extends BaseActivity
 							com.google.android.material.R.attr.colorOnErrorContainer));
 		}
 
+		ForkedFromProject upstream =
+				projectsContext.getProject() != null
+						? projectsContext.getProject().getForkedFromProject()
+						: null;
+
 		GenericMenuBottomSheet sheet =
 				GenericMenuBottomSheet.newInstance(tree.getName(), currentPath, items);
 		sheet.setOnMenuItemClickListener(
 				id -> {
 					switch (id) {
 						case "edit_file":
-							openEditFile(tree);
+							CreateFileBottomSheet.newInstance(
+											projectId,
+											branch,
+											"edit",
+											tree.getPath(),
+											projectsContext,
+											upstream)
+									.show(getSupportFragmentManager(), "createFileSheet");
 							break;
 						case "download_file":
 							downloadFile(tree);
 							break;
 						case "delete_file":
-							confirmDeleteFile(tree);
+							CreateFileBottomSheet.newInstance(
+											projectId,
+											branch,
+											"delete",
+											tree.getPath(),
+											projectsContext,
+											upstream)
+									.show(getSupportFragmentManager(), "createFileSheet");
 							break;
 					}
 				});
 		sheet.show(getSupportFragmentManager(), "fileMenuSheet");
-	}
-
-	private void openEditFile(Tree tree) {
-		Intent intent = new Intent(ctx, CreateFileActivity.class);
-		intent.putExtra("mode", "edit");
-		intent.putExtra("projectId", projectId);
-		intent.putExtra("filename", tree.getName());
-		intent.putExtra("branch", branch);
-		intent.putExtra("filePath", tree.getPath());
-		if (projectsContext != null) {
-			intent.putExtra("projectsContext", projectsContext);
-		}
-		startActivity(intent);
-	}
-
-	private void confirmDeleteFile(Tree tree) {
-		new MaterialAlertDialogBuilder(ctx)
-				.setTitle(getString(R.string.delete_dialog_title, tree.getName()))
-				.setMessage(R.string.delete_file_dialog_message)
-				.setPositiveButton(
-						R.string.proceed,
-						(dialog, which) -> {
-							Intent intent = new Intent(ctx, CreateFileActivity.class);
-							intent.putExtra("mode", "delete");
-							intent.putExtra("projectId", projectId);
-							intent.putExtra("filename", tree.getName());
-							intent.putExtra("branch", branch);
-							intent.putExtra("filePath", tree.getPath());
-							if (projectsContext != null) {
-								intent.putExtra("projectsContext", projectsContext);
-							}
-							startActivity(intent);
-						})
-				.setNegativeButton(R.string.cancel, null)
-				.show();
-	}
-
-	private void openCreateFile() {
-		Intent intent = new Intent(ctx, CreateFileActivity.class);
-		intent.putExtra("type", "new");
-		intent.putExtra("projectId", projectId);
-		intent.putExtra("branch", branch);
-		intent.putExtra("path", currentPath);
-		if (projectsContext != null) {
-			intent = projectsContext.getIntent(ctx, CreateFileActivity.class);
-			intent.putExtra("type", "new");
-			intent.putExtra("projectId", projectId);
-			intent.putExtra("branch", branch);
-			intent.putExtra("path", currentPath);
-		}
-		startActivity(intent);
 	}
 
 	@Override

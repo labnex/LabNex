@@ -5,6 +5,7 @@ import com.labnex.app.models.approvals.Rule;
 import com.labnex.app.models.branches.Branches;
 import com.labnex.app.models.broadcast_messages.Messages;
 import com.labnex.app.models.commits.Commits;
+import com.labnex.app.models.commits.CrudeCommit;
 import com.labnex.app.models.commits.Diff;
 import com.labnex.app.models.events.Events;
 import com.labnex.app.models.groups.CreateGroup;
@@ -539,4 +540,7 @@ public interface ApiInterface {
 
 	@POST("todos/mark_as_done")
 	Call<ToDoItem> markAllTodoAsDone();
+
+	@POST("projects/{id}/repository/commits") // create files via commit api
+	Call<Commits> createCommit(@Path("id") long id, @Body CrudeCommit commit);
 }

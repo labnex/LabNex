@@ -39,6 +39,13 @@ public class CrudeMergeRequest implements Serializable {
 	@SerializedName("remove_source_branch")
 	private boolean removeSourceBranch;
 
+	@SerializedName("target_project_id")
+	private Long targetProjectId;
+
+	public void setTargetProjectId(Long targetProjectId) {
+		this.targetProjectId = targetProjectId;
+	}
+
 	public CrudeMergeRequest title(String title) {
 		this.title = title;
 		return this;

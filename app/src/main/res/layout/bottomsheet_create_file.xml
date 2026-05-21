@@ -17,7 +17,7 @@
             style="@style/TextAppearance.Material3.HeadlineSmall"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/create_mr"
+            android:text="@string/create_files"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/btn_close"
@@ -54,19 +54,47 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <include
+                android:id="@+id/card_branch"
+                layout="@layout/item_picker_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen8dp" />
+
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/title_layout"
+                android:id="@+id/new_branch_layout"
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimen8dp"
-                android:hint="@string/title"
+                android:layout_marginTop="@dimen/dimen12dp"
+                android:hint="@string/new_branch"
+                app:endIconMode="clear_text"
+                app:endIconTint="?attr/iconsColor"
+                app:helperText="@string/start_new_branch_hint"
+                app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Medium">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/new_branch_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:singleLine="true" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/commit_message_layout"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen12dp"
+                android:hint="@string/commit_message"
                 app:endIconMode="clear_text"
                 app:endIconTint="?attr/iconsColor"
                 app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Medium">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/title_input"
+                    android:id="@+id/commit_message_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="text|textCapSentences"
@@ -74,46 +102,94 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/template_layout"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            <LinearLayout
+                android:id="@+id/file_cards_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dimen16dp"
-                android:hint="@string/select_template"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/files"
+                    android:textAppearance="?attr/textAppearanceBodyLarge"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_add_file"
+                    style="@style/Widget.Material3.Button.IconButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/add"
+                    app:icon="@drawable/ic_add"
+                    app:iconTint="?attr/iconsColor" />
+
+            </LinearLayout>
+
+            <HorizontalScrollView
+                android:id="@+id/file_chips_scroll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen4dp"
+                android:scrollbars="none">
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/file_chips_group"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:chipSpacingHorizontal="@dimen/dimen8dp"
+                    app:selectionRequired="true"
+                    app:singleSelection="true" />
+
+            </HorizontalScrollView>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/file_path_layout"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen16dp"
+                android:hint="@string/file_path"
+                app:endIconMode="clear_text"
+                app:endIconTint="?attr/iconsColor"
                 app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Medium">
 
-                <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                    android:id="@+id/template_input"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/file_path_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="none" />
+                    android:inputType="text"
+                    android:singleLine="true" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/file_content_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimen16dp">
+                android:layout_marginTop="@dimen/dimen12dp">
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/description_layout"
+                    android:id="@+id/content_layout"
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/description"
+                    android:hint="@string/content"
                     app:endIconMode="clear_text"
                     app:endIconTint="?attr/iconsColor"
                     app:layout_constraintTop_toTopOf="parent"
                     app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Medium">
 
                     <com.labnex.app.views.AccessibleEditText
-                        android:id="@+id/description_input"
+                        android:id="@+id/file_content_input"
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/dimen240dp"
+                        android:layout_height="@dimen/dimen180dp"
                         android:gravity="top"
                         android:inputType="textMultiLine"
-                        android:paddingTop="@dimen/dimen36dp" />
+                        android:paddingTop="@dimen/dimen44dp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -130,57 +206,27 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_attach"
+                    style="@style/Widget.Material3.Button.IconButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dimen4dp"
+                    android:contentDescription="@string/attach_file"
+                    app:icon="@drawable/ic_attachment"
+                    app:iconSize="@dimen/dimen20dp"
+                    app:iconTint="?attr/iconsColor"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/btn_expand" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <include
-                android:id="@+id/card_source_branch"
-                layout="@layout/item_picker_card"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimen16dp" />
-
-            <include
-                android:id="@+id/card_target_branch"
-                layout="@layout/item_picker_card"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimen12dp" />
-
-            <include
-                android:id="@+id/card_labels"
-                layout="@layout/item_picker_card"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimen12dp" />
-
-            <include
-                android:id="@+id/card_milestone"
-                layout="@layout/item_picker_card"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimen12dp" />
-
-            <include
-                android:id="@+id/card_upstream"
-                layout="@layout/item_picker_card"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimen12dp"
-                android:visibility="gone" />
-
             <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@+id/switch_squash"
+                android:id="@+id/switch_create_mr"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimen20dp"
-                android:text="@string/squash_commits" />
-
-            <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@+id/switch_remove_source"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimen4dp"
-                android:text="@string/remove_source_branch" />
+                android:layout_marginTop="@dimen/dimen16dp"
+                android:text="@string/create_mr" />
 
             <FrameLayout
                 android:layout_width="match_parent"
@@ -192,7 +238,7 @@
                     style="@style/Widget.Material3.Button"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/dimen56dp"
-                    android:text="@string/create"
+                    android:text="@string/commit"
                     app:cornerRadius="@dimen/dimen32dp" />
 
                 <com.google.android.material.progressindicator.CircularProgressIndicator

@@ -24,6 +24,7 @@ import com.labnex.app.helpers.UIHelper;
 import com.labnex.app.helpers.Utils;
 import com.labnex.app.models.app.CardColors;
 import com.labnex.app.models.app.GenericMenuItemModel;
+import com.labnex.app.models.projects.ForkedFromProject;
 import com.labnex.app.models.projects.Projects;
 import com.labnex.app.viewmodels.ProjectDetailViewModel;
 import com.vdurmont.emoji.EmojiParser;
@@ -57,7 +58,7 @@ public class ProjectDetailActivity extends BaseActivity
 
 	private static final CardColors COLOR_ISSUE_MR =
 			new CardColors(
-					com.google.android.material.R.attr.colorSurfaceContainer,
+					com.google.android.material.R.attr.colorSurfaceContainerHighest,
 					com.google.android.material.R.attr.colorOnSurface);
 
 	private static final CardColors COLOR_META =
@@ -67,7 +68,7 @@ public class ProjectDetailActivity extends BaseActivity
 
 	private static final CardColors COLOR_OTHER =
 			new CardColors(
-					com.google.android.material.R.attr.colorSurfaceContainerHighest,
+					com.google.android.material.R.attr.colorSurfaceContainer,
 					com.google.android.material.R.attr.colorOnSurface);
 
 	@Override
@@ -280,6 +281,15 @@ public class ProjectDetailActivity extends BaseActivity
 		if (AccessLevel.canCreateBranch(project, accessLevel)) {
 			menuItems.add(
 					new GenericMenuItemModel(
+							"create_file",
+							R.string.create_files,
+							R.drawable.ic_add,
+							com.google.android.material.R.attr.colorPrimaryContainer,
+							com.google.android.material.R.attr.colorOnPrimaryContainer));
+		}
+		if (AccessLevel.canCreateBranch(project, accessLevel)) {
+			menuItems.add(
+					new GenericMenuItemModel(
 							"create_branch",
 							R.string.create_branch,
 							R.drawable.ic_add,
@@ -350,6 +360,8 @@ public class ProjectDetailActivity extends BaseActivity
 		Projects project = viewModel.getProjectInfo().getValue();
 		if (project == null || menuItems.isEmpty()) return;
 
+		ForkedFromProject upstream = project.getForkedFromProject();
+
 		GenericMenuBottomSheet sheet =
 				GenericMenuBottomSheet.newInstance(
 						project.getName(), project.getNameWithNamespace(), menuItems);
@@ -364,8 +376,18 @@ public class ProjectDetailActivity extends BaseActivity
 						case "create_mr":
 							CreateMergeRequestBottomSheet.newInstance(
 											"project", projectId, canModify, false, null, null,
-											null)
+											null, upstream)
 									.show(getSupportFragmentManager(), "createMrSheet");
+							break;
+						case "create_file":
+							CreateFileBottomSheet.newInstance(
+											projectId,
+											branch,
+											"create",
+											null,
+											projectsContext,
+											upstream)
+									.show(getSupportFragmentManager(), "createFileSheet");
 							break;
 						case "create_release":
 							CreateReleaseBottomSheet.newInstance(projectId, null)
