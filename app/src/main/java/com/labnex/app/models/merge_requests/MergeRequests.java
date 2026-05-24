@@ -34,7 +34,7 @@ public class MergeRequests implements Serializable {
 	private boolean squash;
 
 	@SerializedName("project_id")
-	private int projectId;
+	private long projectId;
 
 	@SerializedName("draft")
 	private boolean draft;
@@ -43,7 +43,7 @@ public class MergeRequests implements Serializable {
 	private TimeStats timeStats;
 
 	@SerializedName("id")
-	private int id;
+	private long id;
 
 	@SerializedName("state")
 	private String state;
@@ -100,7 +100,7 @@ public class MergeRequests implements Serializable {
 	private Object approvalsBeforeMerge;
 
 	@SerializedName("target_project_id")
-	private int targetProjectId;
+	private long targetProjectId;
 
 	@SerializedName("force_remove_source_branch")
 	private boolean forceRemoveSourceBranch;
@@ -112,7 +112,7 @@ public class MergeRequests implements Serializable {
 	private String detailedMergeStatus;
 
 	@SerializedName("iid")
-	private int iid;
+	private long iid;
 
 	@SerializedName("description")
 	private String description;
@@ -191,7 +191,7 @@ public class MergeRequests implements Serializable {
 		return squash;
 	}
 
-	public int getProjectId() {
+	public long getProjectId() {
 		return projectId;
 	}
 
@@ -203,7 +203,7 @@ public class MergeRequests implements Serializable {
 		return timeStats;
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
@@ -279,7 +279,7 @@ public class MergeRequests implements Serializable {
 		return approvalsBeforeMerge;
 	}
 
-	public int getTargetProjectId() {
+	public long getTargetProjectId() {
 		return targetProjectId;
 	}
 
@@ -295,7 +295,7 @@ public class MergeRequests implements Serializable {
 		return detailedMergeStatus;
 	}
 
-	public int getIid() {
+	public long getIid() {
 		return iid;
 	}
 

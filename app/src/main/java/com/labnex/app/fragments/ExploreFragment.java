@@ -228,7 +228,9 @@ public class ExploreFragment extends Fragment {
 										if (issue.getAuthor() != null) {
 											Intent intent = new Intent(ctx, ProfileActivity.class);
 											intent.putExtra("source", "issues");
-											intent.putExtra("userId", issue.getAuthor().getId());
+											intent.putExtra(
+													"userId",
+													String.valueOf(issue.getAuthor().getId()));
 											startActivity(intent);
 										}
 									}
@@ -250,7 +252,9 @@ public class ExploreFragment extends Fragment {
 										if (mr.getAuthor() != null) {
 											Intent intent = new Intent(ctx, ProfileActivity.class);
 											intent.putExtra("source", "mr");
-											intent.putExtra("userId", mr.getAuthor().getId());
+											intent.putExtra(
+													"userId",
+													String.valueOf(mr.getAuthor().getId()));
 											startActivity(intent);
 										}
 									}
@@ -264,7 +268,7 @@ public class ExploreFragment extends Fragment {
 								user -> {
 									Intent intent = new Intent(ctx, ProfileActivity.class);
 									intent.putExtra("source", "explore");
-									intent.putExtra("userId", user.getId());
+									intent.putExtra("userId", String.valueOf(user.getId()));
 									startActivity(intent);
 								}));
 				break;

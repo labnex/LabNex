@@ -18,7 +18,7 @@ import com.labnex.app.databinding.BottomSheetCommentOnIssueBinding;
 import com.labnex.app.helpers.Markdown;
 import com.labnex.app.helpers.Toasty;
 import com.labnex.app.interfaces.BottomSheetListener;
-import com.labnex.app.models.notes.CreateNote;
+import com.labnex.app.models.notes.CrudeNote;
 import com.labnex.app.models.notes.Notes;
 import com.vdurmont.emoji.EmojiParser;
 import java.util.Objects;
@@ -30,7 +30,7 @@ import retrofit2.Callback;
  */
 public class CommentOnIssueBottomSheet extends BottomSheetDialogFragment {
 
-	private int projectId;
+	private long projectId;
 	private int issueIid;
 	private int mergeRequestIid;
 	private String source;
@@ -149,7 +149,7 @@ public class CommentOnIssueBottomSheet extends BottomSheetDialogFragment {
 
 	private void createNote(String body) {
 
-		CreateNote createNote = new CreateNote();
+		CrudeNote createNote = new CrudeNote();
 		createNote.setBody(body);
 
 		Call<Notes> call =
@@ -196,7 +196,7 @@ public class CommentOnIssueBottomSheet extends BottomSheetDialogFragment {
 
 	private void createMergeRequestNote(String body) {
 
-		CreateNote createNote = new CreateNote();
+		CrudeNote createNote = new CrudeNote();
 		createNote.setBody(body);
 
 		Call<Notes> call =

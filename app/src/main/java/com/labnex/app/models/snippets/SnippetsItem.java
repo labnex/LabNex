@@ -43,7 +43,7 @@ public class SnippetsItem implements Serializable {
 	private String webUrl;
 
 	@SerializedName("project_id")
-	private int projectId;
+	private long projectId;
 
 	@SerializedName("imported")
 	private boolean imported;
@@ -52,7 +52,7 @@ public class SnippetsItem implements Serializable {
 	private List<FilesItem> files;
 
 	@SerializedName("id")
-	private int id;
+	private long id;
 
 	@SerializedName("raw_url")
 	private String rawUrl;
@@ -101,7 +101,7 @@ public class SnippetsItem implements Serializable {
 		return webUrl;
 	}
 
-	public int getProjectId() {
+	public long getProjectId() {
 		return projectId;
 	}
 
@@ -113,7 +113,7 @@ public class SnippetsItem implements Serializable {
 		return files;
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 

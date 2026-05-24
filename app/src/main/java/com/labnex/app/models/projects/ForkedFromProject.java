@@ -9,7 +9,7 @@ import java.io.Serializable;
 public class ForkedFromProject implements Serializable {
 
 	@SerializedName("id")
-	private int id;
+	private long id;
 
 	@SerializedName("name")
 	private String name;
@@ -29,7 +29,7 @@ public class ForkedFromProject implements Serializable {
 	@SerializedName("default_branch")
 	private String defaultBranch;
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 

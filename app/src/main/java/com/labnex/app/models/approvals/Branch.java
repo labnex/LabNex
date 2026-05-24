@@ -10,7 +10,7 @@ import java.util.List;
 public class Branch implements Serializable {
 
 	@SerializedName("id")
-	private int id;
+	private long id;
 
 	@SerializedName("name")
 	private String name;
@@ -27,7 +27,7 @@ public class Branch implements Serializable {
 	@SerializedName("code_owner_approval_required")
 	private String codeOwnerApprovalRequired;
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 

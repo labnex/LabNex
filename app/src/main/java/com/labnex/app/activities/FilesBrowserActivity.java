@@ -47,7 +47,7 @@ public class FilesBrowserActivity extends BaseActivity
 	private FilesViewModel viewModel;
 	private FilesAdapter adapter;
 	private ProjectsContext projectsContext;
-	private int projectId;
+	private long projectId;
 	private String branch;
 	private String currentPath = "";
 	private boolean canModify;
@@ -71,7 +71,7 @@ public class FilesBrowserActivity extends BaseActivity
 		viewModel = new ViewModelProvider(this).get(FilesViewModel.class);
 
 		projectsContext = ProjectsContext.fromIntent(getIntent());
-		projectId = getIntent().getIntExtra("projectId", -1);
+		projectId = getIntent().getLongExtra("projectId", -1);
 		projectName = getIntent().getStringExtra("projectName");
 		String projectPath = getIntent().getStringExtra("path");
 		branch = getIntent().getStringExtra("branch");

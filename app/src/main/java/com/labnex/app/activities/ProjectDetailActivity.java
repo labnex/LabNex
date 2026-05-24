@@ -43,7 +43,7 @@ public class ProjectDetailActivity extends BaseActivity
 	private ActivityProjectDetailBinding binding;
 	private ProjectDetailViewModel viewModel;
 	private ProjectsContext projectsContext;
-	private int projectId;
+	private long projectId;
 	private String branch;
 	private String readmePath;
 	private Map<String, Integer> languageColors;
@@ -51,22 +51,17 @@ public class ProjectDetailActivity extends BaseActivity
 	private boolean canModify;
 	private boolean isFork;
 
-	private static final CardColors COLOR_CODE =
+	private static final CardColors COLOR_DEEP =
 			new CardColors(
 					com.google.android.material.R.attr.colorPrimaryContainer,
 					com.google.android.material.R.attr.colorOnPrimaryContainer);
 
-	private static final CardColors COLOR_ISSUE_MR =
-			new CardColors(
-					com.google.android.material.R.attr.colorSurfaceContainerHighest,
-					com.google.android.material.R.attr.colorOnSurface);
-
-	private static final CardColors COLOR_META =
+	private static final CardColors COLOR_BRIGHT =
 			new CardColors(
 					com.google.android.material.R.attr.colorTertiaryContainer,
 					com.google.android.material.R.attr.colorOnTertiaryContainer);
 
-	private static final CardColors COLOR_OTHER =
+	private static final CardColors COLOR_LIGHT =
 			new CardColors(
 					com.google.android.material.R.attr.colorSurfaceContainer,
 					com.google.android.material.R.attr.colorOnSurface);
@@ -116,7 +111,7 @@ public class ProjectDetailActivity extends BaseActivity
 				binding.sectionActions.cardBranch.getRoot(),
 				R.drawable.ic_branch,
 				0,
-				COLOR_CODE,
+				COLOR_DEEP,
 				v ->
 						BranchesBottomSheet.newInstance(projectId)
 								.show(getSupportFragmentManager(), "branchesSheet"));
@@ -125,35 +120,35 @@ public class ProjectDetailActivity extends BaseActivity
 				binding.sectionActions.cardFiles.getRoot(),
 				R.drawable.ic_files_code,
 				R.string.files,
-				COLOR_CODE,
+				COLOR_DEEP,
 				v -> navigateTo(FilesBrowserActivity.class, "project"));
 
 		setupCard(
 				binding.sectionActions.cardIssues.getRoot(),
 				R.drawable.ic_issues,
 				R.string.issues,
-				COLOR_ISSUE_MR,
+				COLOR_LIGHT,
 				v -> navigateTo(IssuesActivity.class, "project"));
 
 		setupCard(
 				binding.sectionActions.cardMergeRequests.getRoot(),
 				R.drawable.ic_merge_request,
 				R.string.merge_requests,
-				COLOR_ISSUE_MR,
+				COLOR_LIGHT,
 				v -> navigateTo(MergeRequestsActivity.class, "mr"));
 
 		setupCard(
 				binding.sectionActions.cardCommits.getRoot(),
 				R.drawable.ic_commits,
 				R.string.commits,
-				COLOR_CODE,
+				COLOR_BRIGHT,
 				v -> navigateTo(CommitsActivity.class, "project"));
 
 		setupCard(
 				binding.sectionActions.cardReleases.getRoot(),
 				R.drawable.ic_releases,
 				R.string.releases,
-				COLOR_META,
+				COLOR_BRIGHT,
 				v ->
 						ReleasesBottomSheet.newInstance(projectId, canModify)
 								.show(getSupportFragmentManager(), "releasesSheet"));
@@ -162,7 +157,7 @@ public class ProjectDetailActivity extends BaseActivity
 				binding.sectionActions.cardMilestones.getRoot(),
 				R.drawable.ic_milestones,
 				R.string.milestones,
-				COLOR_META,
+				COLOR_DEEP,
 				v ->
 						MilestonesBottomSheet.newInstance("project", projectId, canModify)
 								.show(getSupportFragmentManager(), "milestonesSheet"));
@@ -171,7 +166,7 @@ public class ProjectDetailActivity extends BaseActivity
 				binding.sectionActions.cardTags.getRoot(),
 				R.drawable.ic_tags,
 				R.string.tags,
-				COLOR_META,
+				COLOR_DEEP,
 				v ->
 						TagsBottomSheet.newInstance(projectId, canModify)
 								.show(getSupportFragmentManager(), "releasesSheet"));
@@ -180,7 +175,7 @@ public class ProjectDetailActivity extends BaseActivity
 				binding.sectionActions.cardLabels.getRoot(),
 				R.drawable.ic_labels,
 				R.string.labels,
-				COLOR_META,
+				COLOR_LIGHT,
 				v ->
 						LabelsBottomSheet.newInstance("project", projectId, canModify)
 								.show(getSupportFragmentManager(), "labelsSheet"));
@@ -189,7 +184,7 @@ public class ProjectDetailActivity extends BaseActivity
 				binding.sectionActions.cardWiki.getRoot(),
 				R.drawable.ic_wiki,
 				R.string.wiki,
-				COLOR_OTHER,
+				COLOR_LIGHT,
 				v -> {
 					Projects project = viewModel.getProjectInfo().getValue();
 					String webUrl = project != null ? project.getWebUrl() : "";
@@ -201,7 +196,7 @@ public class ProjectDetailActivity extends BaseActivity
 				binding.sectionActions.cardMembers.getRoot(),
 				R.drawable.ic_users,
 				R.string.members,
-				COLOR_OTHER,
+				COLOR_BRIGHT,
 				v ->
 						MembersBottomSheet.newInstance("project", projectId)
 								.show(getSupportFragmentManager(), "membersSheet"));
@@ -210,7 +205,7 @@ public class ProjectDetailActivity extends BaseActivity
 				binding.sectionActions.cardCopyInfo.getRoot(),
 				R.drawable.ic_copy,
 				R.string.copy_info,
-				COLOR_OTHER,
+				COLOR_BRIGHT,
 				this::showCopyInfoSheet);
 	}
 

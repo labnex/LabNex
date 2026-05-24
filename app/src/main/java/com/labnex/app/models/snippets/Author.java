@@ -18,7 +18,7 @@ public class Author implements Serializable {
 	private String name;
 
 	@SerializedName("id")
-	private int id;
+	private long id;
 
 	@SerializedName("public_email")
 	private String publicEmail;
@@ -44,7 +44,7 @@ public class Author implements Serializable {
 		return name;
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 

@@ -42,7 +42,7 @@ public class CreateIssueBottomSheet extends BottomSheetDialogFragment {
 	private String type;
 	private long projectId;
 	private boolean isEditMode = false;
-	private int issueIid;
+	private long issueIid;
 	private boolean canModify;
 
 	private ItemPickerCardBinding dueDateCard, labelsCard, milestoneCard;

@@ -36,7 +36,7 @@ public class CreateLabelBottomSheet extends BottomSheetDialogFragment {
 	private String type;
 	private long id;
 	private boolean isEditMode = false;
-	private int labelId;
+	private long labelId;
 	private String selectedColor = "#2E7D32";
 	private LabelStylingHelper stylingHelper;
 
@@ -151,7 +151,10 @@ public class CreateLabelBottomSheet extends BottomSheetDialogFragment {
 						colorHex,
 						String.format("#%06X", (0xFFFFFF & contrast)),
 						binding.labelPreviewText,
-						binding.labelPreviewValue);
+						binding.labelPreviewValue,
+						13,
+						6,
+						12);
 			} else {
 				binding.labelPreviewValue.setVisibility(View.GONE);
 				String displayName = name.isEmpty() ? getString(R.string.label_name) : name;
@@ -159,7 +162,10 @@ public class CreateLabelBottomSheet extends BottomSheetDialogFragment {
 						displayName,
 						colorHex,
 						String.format("#%06X", (0xFFFFFF & contrast)),
-						binding.labelPreviewText);
+						binding.labelPreviewText,
+						13,
+						6,
+						12);
 			}
 			binding.colorIndicator.setBackgroundTintList(ColorStateList.valueOf(color));
 		} catch (Exception e) {

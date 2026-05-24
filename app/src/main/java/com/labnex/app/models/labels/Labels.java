@@ -30,7 +30,7 @@ public class Labels implements Serializable {
 	private int closedIssuesCount;
 
 	@SerializedName("id")
-	private int id;
+	private long id;
 
 	@SerializedName("text_color")
 	private String textColor;
@@ -72,7 +72,7 @@ public class Labels implements Serializable {
 		return closedIssuesCount;
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 

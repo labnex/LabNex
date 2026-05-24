@@ -37,7 +37,7 @@ public class Projects implements Serializable {
 	private boolean sharedRunnersEnabled;
 
 	@SerializedName("id")
-	private int id;
+	private long id;
 
 	@SerializedName("import_type")
 	private Object importType;
@@ -79,7 +79,7 @@ public class Projects implements Serializable {
 	private boolean serviceDeskEnabled;
 
 	@SerializedName("creator_id")
-	private int creatorId;
+	private long creatorId;
 
 	@SerializedName("ci_forward_deployment_enabled")
 	private boolean ciForwardDeploymentEnabled;
@@ -403,7 +403,7 @@ public class Projects implements Serializable {
 		return sharedRunnersEnabled;
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
@@ -459,7 +459,7 @@ public class Projects implements Serializable {
 		return serviceDeskEnabled;
 	}
 
-	public int getCreatorId() {
+	public long getCreatorId() {
 		return creatorId;
 	}
 

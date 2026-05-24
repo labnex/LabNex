@@ -26,8 +26,8 @@ public class IssueMrNotesViewModel extends ViewModel {
 
 	public LiveData<List<Notes>> getNotes(
 			Context ctx,
-			int id,
-			int iid,
+			long id,
+			long iid,
 			String type,
 			int resultLimit,
 			int page,
@@ -42,8 +42,8 @@ public class IssueMrNotesViewModel extends ViewModel {
 
 	public void loadInitialList(
 			Context ctx,
-			int id,
-			int iid,
+			long id,
+			long iid,
 			String type,
 			int resultLimit,
 			int page,
@@ -90,8 +90,8 @@ public class IssueMrNotesViewModel extends ViewModel {
 
 	public void loadMore(
 			Context ctx,
-			int id,
-			int iid,
+			long id,
+			long iid,
 			String type,
 			int resultLimit,
 			int page,

@@ -43,6 +43,8 @@
     <string name="separator_dot" translatable="false">●</string>
     <string name="readme" translatable="false">Readme</string>
     <string name="tag_info" translatable="false">%1$s • %2$s</string>
+    <string name="issue_number" translatable="false">#%d</string>
+    <string name="mr_number" translatable="false">!%d</string>
     <!-- non translatable strings -->
 
     <string name="action_sign_in">Sign in</string>
@@ -124,7 +126,7 @@
     <string name="copy_url">Copy URL</string>
     <string name="notes_and_activities">Notes and Activities</string>
     <string name="discussion_locked">Discussion locked</string>
-    <string name="discussion_locked_message">The discussion in this issue is locked. Only project members can comment.\n\nPress Proceed to continue.</string>
+    <string name="discussion_locked_message">The discussion is locked. Only project members can comment.</string>
     <string name="comment_posted">Comment posted</string>
     <string name="comment_is_empty">Did you forget to write something?</string>
     <string name="create_issue">Create issue</string>
@@ -144,7 +146,7 @@
     <string name="remove_source_branch">Remove source branch</string>
     <string name="create_branch">Create branch</string>
     <string name="squash_commits">Squash all commits</string>
-    <string name="close_issue">You are about to close this issue. Tap the Close button to proceed.</string>
+    <string name="close_issue">Close issue</string>
     <string name="issue_closed">Issue was closed successfully</string>
     <string name="initialize_with_readme">Initialize repository with a README</string>
     <string name="create_project">Create project</string>
@@ -378,7 +380,7 @@
     <string name="tap_to_select_labels">Tap to select labels</string>
     <string name="tap_to_select_milestone">Tap to select milestone</string>
     <string name="edit_issue">Edit issue</string>
-    <string name="issue_updated">Issue updated</string>
+    <string name="issue_updated">Issue updated successfully</string>
     <string name="fork_project">Fork project</string>
     <string name="project_forked">Project forked successfully</string>
     <string name="tap_to_select_branch">Tap to select branch</string>
@@ -405,6 +407,14 @@
     <string name="binary_file_attached">Binary file attached</string>
     <string name="create_upstream_mr">Create MR to upstream</string>
     <string name="tap_to_enable">Tap to enable</string>
+    <string name="close_issue_confirmation">You are about to close this issue. Tap the Close button to proceed.</string>
+    <string name="issue_reopened">Issue reopened successfully</string>
+    <string name="cannot_find_issue">There was an error fetching issue data</string>
+    <string name="pick_reaction">Pick a reaction</string>
+    <string name="lock_discussion">Lock discussion</string>
+    <string name="unlock_discussion">Unlock discussion</string>
+    <string name="discussion_locked_success">Discussion locked</string>
+    <string name="discussion_unlocked_success">Discussion unlocked</string>
 
     <!-- errors -->
     <string name="generic_error">An unexpected error occurred</string>
@@ -564,5 +574,7 @@
     <string name="action">Action</string>
     <string name="confirm">Confirm</string>
     <string name="commit">Commit</string>
+    <string name="reopen">Reopen</string>
+    <string name="send">Send</string>
     <!-- generic copy -->
 </resources>

@@ -50,7 +50,7 @@ public class CreateFileViewModel extends ViewModel {
 		actionSuccess.setValue(false);
 	}
 
-	public void loadFileForEdit(Context ctx, int projectId, String filePath, String branch) {
+	public void loadFileForEdit(Context ctx, long projectId, String filePath, String branch) {
 		if (ctx == null) return;
 
 		isLoading.setValue(true);
@@ -81,7 +81,7 @@ public class CreateFileViewModel extends ViewModel {
 
 	public void createCommit(
 			Context ctx,
-			int projectId,
+			long projectId,
 			String branch,
 			String startBranch,
 			String commitMessage,

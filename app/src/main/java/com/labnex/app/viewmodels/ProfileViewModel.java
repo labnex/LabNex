@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.helpers.ApiResponseHandler;
 import com.labnex.app.models.user.User;
+import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -33,7 +34,7 @@ public class ProfileViewModel extends ViewModel {
 		return error;
 	}
 
-	public void loadUser(Context ctx, int userId, int currentLoggedInId) {
+	public void loadUser(Context ctx, long userId, long currentLoggedInId) {
 		isLoading.setValue(true);
 
 		if (userId == currentLoggedInId) {
@@ -43,7 +44,7 @@ public class ProfileViewModel extends ViewModel {
 		}
 	}
 
-	private void fetchPrivateProfile(Context ctx, int userId) {
+	private void fetchPrivateProfile(Context ctx, long userId) {
 		RetrofitClient.getApiInterface(ctx)
 				.getCurrentUser()
 				.enqueue(
@@ -68,7 +69,7 @@ public class ProfileViewModel extends ViewModel {
 						});
 	}
 
-	private void fetchPublicProfile(Context ctx, int userId) {
+	private void fetchPublicProfile(Context ctx, long userId) {
 		RetrofitClient.getApiInterface(ctx)
 				.getSingleUser(userId)
 				.enqueue(
@@ -94,5 +95,34 @@ public class ProfileViewModel extends ViewModel {
 
 	public void clearError() {
 		error.setValue(null);
+	}
+
+	public void loadUserByUsername(Context ctx, String username) {
+		if (ctx == null) return;
+		isLoading.setValue(true);
+
+		RetrofitClient.getApiInterface(ctx)
+				.getUsersByUsername(username)
+				.enqueue(
+						new Callback<>() {
+							@Override
+							public void onResponse(
+									@NonNull Call<List<User>> c, @NonNull Response<List<User>> r) {
+								if (r.isSuccessful() && r.body() != null && !r.body().isEmpty()) {
+									User user = r.body().get(0);
+									loadUser(ctx, user.getId(), -1);
+								} else {
+									isLoading.setValue(false);
+									error.setValue("not_found");
+								}
+							}
+
+							@Override
+							public void onFailure(
+									@NonNull Call<List<User>> c, @NonNull Throwable t) {
+								isLoading.setValue(false);
+								error.setValue(t.getMessage());
+							}
+						});
 	}
 }

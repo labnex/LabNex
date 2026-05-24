@@ -59,8 +59,8 @@ public class MergeRequestDetailActivity extends BaseActivity
 		implements BottomSheetListener, CommentOnIssueBottomSheet.UpdateInterface {
 
 	public MergeRequestContext mergeRequestContext;
-	private int mergeRequestIndex;
-	private int projectId;
+	private long mergeRequestIndex;
+	private long projectId;
 	private ActivityMergeRequestDetailBinding activityMergeRequestDetailBinding;
 	private IssueMrNotesViewModel issueMrNotesViewModel;
 	private IssueNotesAdapter issueNotesAdapter;
@@ -230,7 +230,9 @@ public class MergeRequestDetailActivity extends BaseActivity
 					Intent intent = new Intent(ctx, ProfileActivity.class);
 					intent.putExtra("source", "mr_detail");
 					intent.putExtra(
-							"userId", mergeRequestContext.getMergeRequest().getAuthor().getId());
+							"userId",
+							String.valueOf(
+									mergeRequestContext.getMergeRequest().getAuthor().getId()));
 					ctx.startActivity(intent);
 				});
 
@@ -423,7 +425,7 @@ public class MergeRequestDetailActivity extends BaseActivity
 
 		Bundle bsBundle = new Bundle();
 		bsBundle.putString("source", "mr_comment");
-		bsBundle.putInt("projectId", mergeRequestContext.getProjects().getProjectId());
+		bsBundle.putLong("projectId", mergeRequestContext.getProjects().getProjectId());
 		bsBundle.putInt("mergeRequestIid", mergeRequestContext.getMergeRequestIndex());
 		CommentOnIssueBottomSheet bottomSheet = new CommentOnIssueBottomSheet();
 		bottomSheet.setArguments(bsBundle);

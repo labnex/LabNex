@@ -76,7 +76,7 @@ public class User implements Serializable {
 	private int colorSchemeId;
 
 	@SerializedName("id")
-	private int id;
+	private long id;
 
 	@SerializedName("state")
 	private String state;
@@ -112,7 +112,7 @@ public class User implements Serializable {
 	private String discord;
 
 	@SerializedName("followers")
-	private int followers;
+	private long followers;
 
 	@SerializedName("avatar_url")
 	private String avatarUrl;
@@ -124,13 +124,13 @@ public class User implements Serializable {
 	private String websiteUrl;
 
 	@SerializedName("namespace_id")
-	private int namespaceId;
+	private long namespaceId;
 
 	@SerializedName("organization")
 	private String organization;
 
 	@SerializedName("following")
-	private int following;
+	private long following;
 
 	@SerializedName("name")
 	private String fullName;
@@ -245,7 +245,7 @@ public class User implements Serializable {
 		return colorSchemeId;
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
@@ -293,7 +293,7 @@ public class User implements Serializable {
 		return discord;
 	}
 
-	public int getFollowers() {
+	public long getFollowers() {
 		return followers;
 	}
 
@@ -309,7 +309,7 @@ public class User implements Serializable {
 		return websiteUrl;
 	}
 
-	public int getNamespaceId() {
+	public long getNamespaceId() {
 		return namespaceId;
 	}
 
@@ -317,7 +317,7 @@ public class User implements Serializable {
 		return organization;
 	}
 
-	public int getFollowing() {
+	public long getFollowing() {
 		return following;
 	}
 
@@ -349,7 +349,7 @@ public class User implements Serializable {
 		this.note = note;
 	}
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 

@@ -26,7 +26,7 @@ public class Projects implements Serializable {
 	private int projAutoId;
 
 	private int projectAccountId;
-	private int projectId;
+	private long projectId;
 	private String projectName;
 	private String projectPath;
 	private int mostVisited;
@@ -47,11 +47,11 @@ public class Projects implements Serializable {
 		this.projectAccountId = projectAccountId;
 	}
 
-	public int getProjectId() {
+	public long getProjectId() {
 		return projectId;
 	}
 
-	public void setProjectId(int projectId) {
+	public void setProjectId(long projectId) {
 		this.projectId = projectId;
 	}
 

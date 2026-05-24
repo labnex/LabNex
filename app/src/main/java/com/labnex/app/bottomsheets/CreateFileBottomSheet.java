@@ -50,7 +50,7 @@ public class CreateFileBottomSheet extends BottomSheetDialogFragment {
 	private BottomsheetCreateFileBinding binding;
 	private CreateFileViewModel viewModel;
 
-	private int projectId;
+	private long projectId;
 	private String branch;
 	private String mode;
 
@@ -77,7 +77,7 @@ public class CreateFileBottomSheet extends BottomSheetDialogFragment {
 	}
 
 	public static CreateFileBottomSheet newInstance(
-			int projectId,
+			long projectId,
 			String branch,
 			String mode,
 			@Nullable String filePath,
@@ -85,7 +85,7 @@ public class CreateFileBottomSheet extends BottomSheetDialogFragment {
 			@Nullable ForkedFromProject upstreamProject) {
 		CreateFileBottomSheet sheet = new CreateFileBottomSheet();
 		Bundle args = new Bundle();
-		args.putInt("projectId", projectId);
+		args.putLong("projectId", projectId);
 		args.putString("branch", branch);
 		args.putString("mode", mode);
 		if (filePath != null) args.putString("filePath", filePath);
@@ -99,7 +99,7 @@ public class CreateFileBottomSheet extends BottomSheetDialogFragment {
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (getArguments() != null) {
-			projectId = getArguments().getInt("projectId");
+			projectId = getArguments().getLong("projectId");
 			branch = getArguments().getString("branch");
 			mode = getArguments().getString("mode", "create");
 			editFilePath = getArguments().getString("filePath");

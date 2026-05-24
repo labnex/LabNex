@@ -34,7 +34,7 @@ public class CreateSnippetBottomSheet extends BottomSheetDialogFragment {
 	private SnippetsViewModel viewModel;
 	private final List<FileEntry> files = new ArrayList<>();
 	private int selectedFileIndex = 0;
-	private int snippetId = -1;
+	private long snippetId = -1;
 	private boolean isEditMode = false;
 	private final List<String> originalFileNames = new ArrayList<>();
 
@@ -53,14 +53,14 @@ public class CreateSnippetBottomSheet extends BottomSheetDialogFragment {
 	}
 
 	public static CreateSnippetBottomSheet newInstance(
-			int snippetId,
+			long snippetId,
 			String title,
 			String description,
 			String visibility,
 			List<FileEntry> existingFiles) {
 		CreateSnippetBottomSheet sheet = new CreateSnippetBottomSheet();
 		Bundle args = new Bundle();
-		args.putInt("snippet_id", snippetId);
+		args.putLong("snippet_id", snippetId);
 		args.putString("title", title);
 		args.putString("description", description);
 		args.putString("visibility", visibility);
@@ -73,7 +73,7 @@ public class CreateSnippetBottomSheet extends BottomSheetDialogFragment {
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (getArguments() != null) {
-			snippetId = getArguments().getInt("snippet_id", -1);
+			snippetId = getArguments().getLong("snippet_id", -1);
 			isEditMode = snippetId > 0;
 		}
 	}

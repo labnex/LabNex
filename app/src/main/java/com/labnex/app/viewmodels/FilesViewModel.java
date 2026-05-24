@@ -28,7 +28,7 @@ public class FilesViewModel extends ViewModel {
 	private final MutableLiveData<String> nextPageToken = new MutableLiveData<>(null);
 	private final MutableLiveData<FileContents> fileContents = new MutableLiveData<>();
 
-	private int projectId;
+	private long projectId;
 	private String branch;
 	private String path;
 	private final int resultLimit = Constants.getResultLimit();
@@ -55,7 +55,7 @@ public class FilesViewModel extends ViewModel {
 		error.setValue(null);
 	}
 
-	public void loadFiles(Context ctx, int projectId, String branch, String path) {
+	public void loadFiles(Context ctx, long projectId, String branch, String path) {
 		if (ctx == null) return;
 
 		this.projectId = projectId;
@@ -147,7 +147,7 @@ public class FilesViewModel extends ViewModel {
 		return null;
 	}
 
-	public void fetchFileContents(Context ctx, int projectId, String filePath, String ref) {
+	public void fetchFileContents(Context ctx, long projectId, String filePath, String ref) {
 		if (ctx == null) return;
 
 		isLoading.setValue(true);

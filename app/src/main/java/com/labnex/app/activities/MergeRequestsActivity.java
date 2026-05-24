@@ -10,9 +10,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.labnex.app.R;
 import com.labnex.app.adapters.MergeRequestsAdapter;
+import com.labnex.app.bottomsheets.CreateMergeRequestBottomSheet;
 import com.labnex.app.contexts.ProjectsContext;
 import com.labnex.app.databinding.ActivityMergeRequestsBinding;
 import com.labnex.app.databinding.BottomsheetMergeRequestsMenuBinding;
+import com.labnex.app.helpers.AccessLevel;
 import com.labnex.app.helpers.EndlessRecyclerViewScrollListener;
 import com.labnex.app.helpers.Toasty;
 import com.labnex.app.helpers.UIHelper;
@@ -33,7 +35,7 @@ public class MergeRequestsActivity extends BaseActivity
 	private EndlessRecyclerViewScrollListener scrollListener;
 
 	private String source;
-	private int id;
+	private long id;
 	private final String scope = "created_by_me";
 	private String filter = "opened";
 	private String searchQuery = "";
@@ -51,10 +53,18 @@ public class MergeRequestsActivity extends BaseActivity
 		viewModel = new ViewModelProvider(this).get(MergeRequestsViewModel.class);
 
 		source = getIntent().getStringExtra("source");
-		id = getIntent().getIntExtra("id", 0);
+		id = getIntent().getLongExtra("id", 0);
 
 		if ("mr".equals(source)) {
 			projectsContext = ProjectsContext.fromIntent(getIntent());
+		}
+
+		boolean canModify;
+		if (projectsContext != null && projectsContext.getProject() != null) {
+			int accessLevel = AccessLevel.getUserAccessLevel(projectsContext.getProject());
+			canModify = accessLevel >= AccessLevel.MAINTAINER;
+		} else {
+			canModify = false;
 		}
 
 		binding.btnBack.setOnClickListener(v -> finish());
@@ -65,16 +75,19 @@ public class MergeRequestsActivity extends BaseActivity
 				&& !"group".equals(source)
 				&& projectsContext != null
 				&& !projectsContext.getProject().isArchived()) {
-			binding.dockContainer.addView(binding.newMergeRequest);
+			binding.dockContainer.addView(binding.newMergeRequest, 1);
 			binding.newMergeRequest.setOnClickListener(
 					v -> {
-						ProjectsContext pc =
-								new ProjectsContext(
-										projectsContext.getProjectName(),
-										projectsContext.getPath(),
+						CreateMergeRequestBottomSheet.newInstance(
+										"project",
 										projectsContext.getProjectId(),
-										ctx);
-						// startActivity(pc.getIntent(ctx, CreateMergeRequestActivity.class));
+										canModify,
+										false,
+										null,
+										null,
+										null,
+										null)
+								.show(getSupportFragmentManager(), "createIssueSheet");
 					});
 		}
 
@@ -241,7 +254,7 @@ public class MergeRequestsActivity extends BaseActivity
 		if (mr.getAuthor() != null) {
 			Intent intent = new Intent(ctx, ProfileActivity.class);
 			intent.putExtra("source", "mr");
-			intent.putExtra("userId", mr.getAuthor().getId());
+			intent.putExtra("userId", String.valueOf(mr.getAuthor().getId()));
 			startActivity(intent);
 		}
 	}

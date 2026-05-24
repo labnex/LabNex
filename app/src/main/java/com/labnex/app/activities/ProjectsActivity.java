@@ -24,7 +24,7 @@ public class ProjectsActivity extends BaseActivity {
 	private ProjectsViewModel viewModel;
 	private ProjectsAdapter adapter;
 	private String source;
-	private int userId;
+	private long userId;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {

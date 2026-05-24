@@ -38,7 +38,7 @@ public class HomeViewModel extends ViewModel {
 
 	private int pendingCalls = 0;
 	private boolean isRefreshing = false;
-	private int cachedUserId = -1;
+	private long cachedUserId = -1;
 
 	public LiveData<User> getUserInfo() {
 		return userInfo;

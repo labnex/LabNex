@@ -1,273 +1,129 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:background="?attr/colorSurface">
 
-    <com.google.android.material.progressindicator.LinearProgressIndicator
+    <com.google.android.material.loadingindicator.LoadingIndicator
         android:id="@+id/progress_bar"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fitsSystemWindows="true"
+        android:layout_gravity="center"
         android:visibility="gone"
-        android:indeterminate="true" />
+        android:elevation="@dimen/dimen4dp"
+        app:indicatorSize="@dimen/dimen48dp"
+        app:trackThickness="@dimen/dimen4dp" />
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
-        android:fillViewport="true">
+        android:visibility="gone"
+        android:clipToPadding="false">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="@dimen/dimen12dp">
+            android:paddingHorizontal="@dimen/dimen8dp">
 
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/issue_main_card"
-                style="?attr/materialCardViewElevatedStyle"
+                android:id="@+id/issue_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardElevation="@dimen/dimen0dp">
+                android:layout_marginBottom="@dimen/dimen2dp"
+                app:cardBackgroundColor="?attr/colorSurfaceContainerLow"
+                app:cardElevation="@dimen/dimen0dp"
+                app:cardCornerRadius="@dimen/dimen28dp"
+                app:strokeWidth="0dp">
 
-                <LinearLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:paddingTop="@dimen/dimen12dp"
+                    android:paddingBottom="@dimen/dimen24dp">
 
-                    <!-- title/avatar section -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="@dimen/dimen12dp"
-                        android:orientation="vertical">
+                    <ImageView
+                        android:id="@+id/state_badge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/dimen22dp"
+                        android:layout_marginHorizontal="@dimen/dimen18dp"
+                        android:layout_marginTop="@dimen/dimen12dp"
+                        android:adjustViewBounds="true"
+                        android:contentDescription="@string/state"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-                        <com.google.android.material.textview.MaterialTextView
-                            android:id="@+id/issue_title"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textIsSelectable="true"
-                            android:layout_marginBottom="@dimen/dimen12dp"
-                            android:textSize="@dimen/dimen24sp" />
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-
-                            <com.google.android.material.card.MaterialCardView
-                                android:id="@+id/profile_picture_layout"
-                                android:layout_height="wrap_content"
-                                android:layout_width="wrap_content"
-                                app:strokeWidth="@dimen/dimen0dp"
-                                android:layout_gravity="start|center_vertical"
-                                android:layout_marginEnd="@dimen/dimen12dp"
-                                app:cardCornerRadius="@dimen/dimen8dp"
-                                app:cardElevation="@dimen/dimen0dp">
-
-                                <ImageView
-                                    android:id="@+id/user_avatar"
-                                    android:layout_height="@dimen/dimen28dp"
-                                    android:layout_width="@dimen/dimen28dp"
-                                    android:scaleType="fitCenter"
-                                    android:layout_gravity="center_horizontal"
-                                    android:contentDescription="@string/generic_img_copy"
-                                    android:src="@drawable/ic_spinner" />
-
-                            </com.google.android.material.card.MaterialCardView>
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="start|center_vertical"
-                                android:orientation="horizontal">
-
-                                <com.google.android.material.textview.MaterialTextView
-                                    android:id="@+id/username"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:textIsSelectable="true"
-                                    android:textSize="@dimen/dimen16sp" />
-
-                                <com.google.android.material.textview.MaterialTextView
-                                    android:id="@+id/created_time"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="@dimen/dimen8dp"
-                                    android:layout_marginEnd="@dimen/dimen8dp"
-                                    android:layout_gravity="center_vertical"
-                                    android:alpha=".7"
-                                    android:textSize="@dimen/dimen12sp" />
-
-                            </LinearLayout>
-
-                        </LinearLayout>
-
-                    </LinearLayout>
-                    <!-- title/avatar section -->
-
-                    <!-- description section -->
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/issue_description"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingStart="@dimen/dimen12dp"
-                        android:paddingEnd="@dimen/dimen12dp"
-                        android:textIsSelectable="true"
-                        android:textSize="@dimen/dimen14sp" />
-                    <!-- description section -->
-
-                    <com.google.android.material.divider.MaterialDivider
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/dimen1dp"
-                        app:dividerColor="?attr/colorOnPrimary"
-                        android:visibility="gone"
-                        android:background="?android:attr/listDivider" />
-
-                    <!-- votes section -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="@dimen/dimen12dp"
-                        android:layout_gravity="center_vertical|center_horizontal"
-                        android:orientation="horizontal">
-
-                        <com.google.android.material.card.MaterialCardView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            style="?attr/materialCardViewElevatedStyle"
-                            android:backgroundTint="?attr/inputBackgroundColor"
-                            app:cardElevation="@dimen/dimen0dp">
-
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:foreground="?android:attr/selectableItemBackground"
-                                android:paddingStart="@dimen/dimen12dp"
-                                android:paddingEnd="@dimen/dimen12dp"
-                                android:paddingTop="@dimen/dimen6dp"
-                                android:paddingBottom="@dimen/dimen6dp"
-                                android:orientation="horizontal"
-                                tools:ignore="UseCompoundDrawables">
-
-                                <ImageView
-                                    android:id="@+id/thumbs_up"
-                                    android:layout_width="@dimen/dimen18dp"
-                                    android:layout_height="@dimen/dimen18dp"
-                                    android:contentDescription="@string/generic_img_copy"
-                                    android:layout_gravity="center_vertical|center_horizontal"
-                                    android:layout_marginEnd="@dimen/dimen6dp"
-                                    android:src="@drawable/ic_thumb_up_filled" />
-
-                                <TextView
-                                    android:id="@+id/issue_thumbs_up_count"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:textSize="@dimen/dimen14sp" />
-
-                            </LinearLayout>
-
-                        </com.google.android.material.card.MaterialCardView>
-
-                        <com.google.android.material.card.MaterialCardView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            style="?attr/materialCardViewElevatedStyle"
-                            android:backgroundTint="?attr/inputBackgroundColor"
-                            android:layout_marginStart="@dimen/dimen8dp"
-                            app:cardElevation="@dimen/dimen0dp">
-
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:foreground="?android:attr/selectableItemBackground"
-                                android:paddingStart="@dimen/dimen12dp"
-                                android:paddingEnd="@dimen/dimen12dp"
-                                android:paddingTop="@dimen/dimen6dp"
-                                android:paddingBottom="@dimen/dimen6dp"
-                                android:orientation="horizontal"
-                                tools:ignore="UseCompoundDrawables">
-
-                                <ImageView
-                                    android:id="@+id/thumbs_down"
-                                    android:layout_width="@dimen/dimen18dp"
-                                    android:layout_height="@dimen/dimen18dp"
-                                    android:contentDescription="@string/generic_img_copy"
-                                    android:layout_gravity="center_vertical|center_horizontal"
-                                    android:layout_marginEnd="@dimen/dimen6dp"
-                                    android:src="@drawable/ic_thumb_down_filled" />
-
-                                <TextView
-                                    android:id="@+id/issue_thumbs_down_count"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:textSize="@dimen/dimen14sp" />
-
-                            </LinearLayout>
-
-                        </com.google.android.material.card.MaterialCardView>
-
-                    </LinearLayout>
-                    <!-- votes section -->
-
-                </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- info section -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/issue_info_card"
-                style="?attr/materialCardViewElevatedStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimen12dp"
-                app:cardElevation="@dimen/dimen0dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="@dimen/dimen6dp"
-                    android:orientation="vertical">
-
-                    <HorizontalScrollView
-                        android:id="@+id/assignees_scroll_view"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:fillViewport="true"
-                        android:visibility="gone"
+                    <ImageView
+                        android:id="@+id/confidential_badge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/dimen22dp"
                         android:layout_marginStart="@dimen/dimen6dp"
-                        android:layout_marginEnd="@dimen/dimen6dp"
-                        android:layout_marginTop="@dimen/dimen6dp"
-                        android:layout_marginBottom="@dimen/dimen6dp"
-                        android:scrollbarThumbHorizontal="@android:color/transparent">
+                        android:adjustViewBounds="true"
+                        android:contentDescription="@string/confidential"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="@id/state_badge"
+                        app:layout_constraintStart_toEndOf="@id/state_badge"
+                        app:layout_constraintTop_toTopOf="@id/state_badge" />
 
-                        <LinearLayout
-                            android:id="@+id/assignees_frame"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
+                    <ImageView
+                        android:id="@+id/lock_icon"
+                        android:layout_width="@dimen/dimen20dp"
+                        android:layout_height="@dimen/dimen20dp"
+                        android:layout_marginStart="@dimen/dimen6dp"
+                        android:contentDescription="@string/discussion_locked"
+                        android:src="@drawable/ic_lock"
+                        android:visibility="gone"
+                        app:tint="?attr/iconsColor"
+                        app:layout_constraintBottom_toBottomOf="@id/state_badge"
+                        app:layout_constraintStart_toEndOf="@id/confidential_badge"
+                        app:layout_constraintTop_toTopOf="@id/state_badge" />
 
-                        </LinearLayout>
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_edit"
+                        style="@style/Widget.Material3.Button.IconButton"
+                        android:layout_width="@dimen/dimen48dp"
+                        android:layout_height="@dimen/dimen48dp"
+                        android:layout_marginEnd="@dimen/dimen12dp"
+                        android:contentDescription="@string/edit"
+                        android:visibility="gone"
+                        app:icon="@drawable/ic_edit"
+                        app:iconSize="@dimen/dimen22dp"
+                        app:iconTint="?attr/iconsColor"
+                        app:layout_constraintBottom_toBottomOf="@id/state_badge"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/state_badge" />
 
-                    </HorizontalScrollView>
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/issue_title_and_number"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dimen12dp"
+                        android:layout_marginHorizontal="@dimen/dimen18dp"
+                        android:textAppearance="?attr/textAppearanceHeadlineSmall"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textIsSelectable="true"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/state_badge" />
 
                     <HorizontalScrollView
                         android:id="@+id/labels_scroll_view"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:fillViewport="true"
-                        android:layout_marginStart="@dimen/dimen6dp"
-                        android:layout_marginEnd="@dimen/dimen6dp"
-                        android:layout_marginTop="@dimen/dimen6dp"
-                        android:layout_marginBottom="@dimen/dimen6dp"
-                        android:scrollbarThumbHorizontal="@android:color/transparent"
-                        android:visibility="gone">
+                        android:layout_marginTop="@dimen/dimen16dp"
+                        android:layout_marginHorizontal="@dimen/dimen18dp"
+                        android:scrollbars="none"
+                        android:visibility="gone"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/issue_title_and_number">
 
                         <LinearLayout
-                            android:id="@+id/labels_frame"
+                            android:id="@+id/labels_container"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal" />
@@ -275,134 +131,247 @@
                     </HorizontalScrollView>
 
                     <LinearLayout
-                        android:id="@+id/milestone_frame"
-                        android:layout_width="wrap_content"
+                        android:id="@+id/info_assignees"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:gravity="center_horizontal|center_vertical"
-                        android:layout_marginStart="@dimen/dimen6dp"
-                        android:layout_marginEnd="@dimen/dimen6dp"
-                        android:layout_marginTop="@dimen/dimen6dp"
-                        android:layout_marginBottom="@dimen/dimen6dp"
+                        android:layout_marginTop="@dimen/dimen16dp"
+                        android:layout_marginHorizontal="@dimen/dimen18dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
                         android:visibility="gone"
-                        android:orientation="horizontal">
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/labels_scroll_view">
 
                         <ImageView
                             android:layout_width="@dimen/dimen18dp"
                             android:layout_height="@dimen/dimen18dp"
-                            android:contentDescription="@string/milestones"
-                            android:layout_marginEnd="@dimen/dimen6dp"
-                            android:src="@drawable/ic_milestones" />
+                            android:contentDescription="@string/generic_img_copy"
+                            android:src="@drawable/ic_users"
+                            app:tint="?attr/iconsColor" />
 
-                        <com.google.android.material.textview.MaterialTextView
-                            android:id="@+id/issue_milestone"
+                        <LinearLayout
+                            android:id="@+id/assignees_container"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textSize="@dimen/dimen14sp" />
+                            android:layout_marginStart="@dimen/dimen8dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal" />
 
                     </LinearLayout>
 
                     <LinearLayout
-                        android:id="@+id/due_date_frame"
-                        android:layout_width="wrap_content"
+                        android:id="@+id/info_milestone"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:gravity="center_horizontal|center_vertical"
-                        android:layout_marginStart="@dimen/dimen6dp"
-                        android:layout_marginEnd="@dimen/dimen6dp"
-                        android:layout_marginTop="@dimen/dimen6dp"
-                        android:layout_marginBottom="@dimen/dimen6dp"
+                        android:layout_marginTop="@dimen/dimen16dp"
+                        android:layout_marginHorizontal="@dimen/dimen18dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
                         android:visibility="gone"
-                        android:orientation="horizontal">
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/info_assignees">
 
                         <ImageView
-                            android:layout_width="@dimen/dimen18dp"
-                            android:layout_height="@dimen/dimen18dp"
-                            android:contentDescription="@string/due"
-                            android:layout_marginEnd="@dimen/dimen6dp"
-                            android:src="@drawable/ic_calendar" />
+                            android:layout_width="@dimen/dimen16dp"
+                            android:layout_height="@dimen/dimen16dp"
+                            android:contentDescription="@string/milestone"
+                            android:src="@drawable/ic_milestones"
+                            app:tint="?attr/iconsColor" />
 
                         <com.google.android.material.textview.MaterialTextView
-                            android:id="@+id/issue_due_date"
+                            android:id="@+id/info_milestone_text"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textSize="@dimen/dimen14sp" />
+                            android:layout_marginStart="@dimen/dimen8dp"
+                            android:textAppearance="?attr/textAppearanceBodySmall"
+                            android:textColor="?attr/colorOnSurface" />
 
                     </LinearLayout>
 
-                </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/info_due_date"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dimen16dp"
+                        android:layout_marginHorizontal="@dimen/dimen18dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:visibility="gone"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/info_milestone">
 
-            </com.google.android.material.card.MaterialCardView>
-            <!-- info section -->
+                        <ImageView
+                            android:layout_width="@dimen/dimen16dp"
+                            android:layout_height="@dimen/dimen16dp"
+                            android:contentDescription="@string/due_date"
+                            android:src="@drawable/ic_calendar"
+                            app:tint="?attr/iconsColor" />
 
-            <RelativeLayout
-                android:id="@+id/notes_info_card"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:layout_marginTop="@dimen/dimen12dp">
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/info_due_date_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/dimen8dp"
+                            android:textAppearance="?attr/textAppearanceBodySmall"
+                            android:textColor="?attr/colorOnSurface" />
 
-                <com.google.android.material.divider.MaterialDivider
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/dimen2dp"
-                    app:dividerColor="?attr/divider"
-                    android:layout_marginTop="12dp"
-                    android:background="?android:attr/listDivider" />
+                    </LinearLayout>
 
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    style="?attr/materialCardViewElevatedStyle"
-                    android:layout_centerInParent="true"
-                    app:cardCornerRadius="@dimen/dimen10dp"
-                    app:cardElevation="@dimen/dimen0dp">
+                    <View
+                        android:id="@+id/info_divider"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dimen1dp"
+                        android:layout_marginTop="@dimen/dimen20dp"
+                        android:background="?attr/colorOutlineVariant"
+                        app:layout_constraintTop_toBottomOf="@id/info_due_date" />
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/author_avatar"
+                        android:layout_width="@dimen/dimen40dp"
+                        android:layout_height="@dimen/dimen40dp"
+                        android:layout_marginTop="@dimen/dimen20dp"
+                        android:layout_marginStart="@dimen/dimen18dp"
+                        android:contentDescription="@string/generic_img_copy"
+                        android:src="@drawable/ic_spinner"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/info_divider"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Medium" />
 
                     <com.google.android.material.textview.MaterialTextView
-                        android:id="@+id/divider_info"
-                        android:layout_width="wrap_content"
+                        android:id="@+id/author_name"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="@string/notes_and_activities"
-                        android:paddingTop="@dimen/dimen4dp"
-                        android:paddingBottom="@dimen/dimen4dp"
-                        android:paddingStart="@dimen/dimen16dp"
-                        android:paddingEnd="@dimen/dimen16dp"
-                        android:textSize="@dimen/dimen14sp" />
+                        android:layout_marginStart="@dimen/dimen12dp"
+                        android:layout_marginEnd="@dimen/dimen18dp"
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                        android:textColor="?attr/colorOnSurface"
+                        app:layout_constraintBottom_toTopOf="@id/created_time"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/author_avatar"
+                        app:layout_constraintTop_toTopOf="@id/author_avatar"
+                        app:layout_constraintVertical_chainStyle="packed" />
 
-                </com.google.android.material.card.MaterialCardView>
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/created_time"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dimen12dp"
+                        android:layout_marginEnd="@dimen/dimen18dp"
+                        android:alpha="0.8"
+                        android:textAppearance="?attr/textAppearanceLabelSmall"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        app:layout_constraintBottom_toBottomOf="@id/author_avatar"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/author_avatar"
+                        app:layout_constraintTop_toBottomOf="@id/author_name" />
 
-            </RelativeLayout>
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/issue_description"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dimen16dp"
+                        android:layout_marginHorizontal="@dimen/dimen18dp"
+                        android:textIsSelectable="true"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/author_avatar" />
+
+                    <com.labnex.app.views.reactions.ReactionsView
+                        android:id="@+id/reactions_view"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dimen18dp"
+                        android:layout_marginStart="@dimen/dimen18dp"
+                        android:layout_marginEnd="@dimen/dimen18dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/issue_description" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="@dimen/dimen12dp"
-                android:paddingBottom="@dimen/dimen12dp"
-                android:layout_marginBottom="@dimen/dimen70dp"/>
+                android:layout_marginTop="@dimen/dimen10dp"
+                android:nestedScrollingEnabled="false" />
+
+            <View
+                android:id="@+id/scroll_spacer"
+                android:layout_width="match_parent"
+                android:layout_height="0dp" />
 
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
 
-    <com.google.android.material.bottomappbar.BottomAppBar
-        android:id="@+id/bottom_app_bar"
+    <include
+        android:id="@+id/comment_box"
+        layout="@layout/layout_comment_box"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        app:fabAlignmentMode="end"
-        style="@style/Widget.Material3.BottomAppBar"
-        app:backgroundTint="?attr/bottomNavigationColor"
-        app:menu="@menu/generic_menu"
-        app:navigationIcon="@drawable/ic_arrow_back"
-        app:navigationIconTint="?attr/iconsColor">
+        android:layout_marginHorizontal="@dimen/dimen12dp"
+        android:layout_marginBottom="@dimen/dimen36dp"
+        android:visibility="gone" />
 
-    </com.google.android.material.bottomappbar.BottomAppBar>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/new_note"
+    <com.google.android.material.dockedtoolbar.DockedToolbarLayout
+        android:id="@+id/docked_toolbar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:contentDescription="@string/add"
-        android:backgroundTint="?attr/iconsColor"
-        app:srcCompat="@drawable/ic_comments"
-        app:layout_anchor="@id/bottom_app_bar" />
+        android:layout_gravity="bottom|center_horizontal"
+        android:backgroundTint="?attr/colorSurfaceContainerHighest"
+        app:layout_behavior="com.google.android.material.behavior.HideViewOnScrollBehavior"
+        app:paddingBottomSystemWindowInsets="false"
+        app:paddingLeftSystemWindowInsets="false"
+        app:paddingRightSystemWindowInsets="false"
+        app:paddingTopSystemWindowInsets="false"
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.RoundedDock">
+
+        <com.google.android.material.overflow.OverflowLinearLayout
+            android:id="@+id/dock_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_back"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/close"
+                android:minWidth="0dp"
+                android:paddingHorizontal="@dimen/dimen24dp"
+                app:icon="@drawable/ic_arrow_back" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_comment"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/comment"
+                android:minWidth="0dp"
+                android:paddingHorizontal="@dimen/dimen24dp"
+                app:icon="@drawable/ic_comments" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_menu"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/menu"
+                android:minWidth="0dp"
+                android:paddingHorizontal="@dimen/dimen24dp"
+                app:icon="@drawable/ic_menu" />
+
+        </com.google.android.material.overflow.OverflowLinearLayout>
+
+    </com.google.android.material.dockedtoolbar.DockedToolbarLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

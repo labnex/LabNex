@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.text.TextUtils;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -37,20 +38,18 @@ public class LabelStylingHelper {
 			String colorHex,
 			String textColorHex,
 			TextView keyView,
-			TextView valueView) {
+			TextView valueView,
+			int textSizeDp,
+			int height,
+			int width) {
 
 		callCount++;
 		String[] parts = labelText.split("::", 2);
-		if (parts.length != 2) {
-			return;
-		}
+		if (parts.length != 2) return;
 
 		String key = parts[0].trim();
 		String value = parts[1].trim();
-
-		if (key.isEmpty() || value.isEmpty()) {
-			return;
-		}
+		if (key.isEmpty() || value.isEmpty()) return;
 
 		keyView.setText(key);
 		valueView.setText(value);
@@ -62,26 +61,28 @@ public class LabelStylingHelper {
 
 			float[] hsv = new float[3];
 			Color.colorToHSV(baseColor, hsv);
-			float hue = hsv[0];
-			int valueBgColor = Color.HSVToColor(new float[] {hue, 0.15f, 0.95f});
+			int valueBgColor = Color.HSVToColor(new float[] {hsv[0], 0.15f, 0.95f});
 
-			GradientDrawable keyBg = createLeftRoundedBackground(baseColor, dpToPx(18));
-			GradientDrawable valueBg = createRightRoundedBackground(valueBgColor, dpToPx(18));
+			int textSizePx = dpToPx(textSizeDp);
+			keyView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSizePx);
+			valueView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSizePx);
+
+			float radius = dpToPx(18);
+			GradientDrawable keyBg = createLeftRoundedBackground(baseColor, radius);
+			GradientDrawable valueBg = createRightRoundedBackground(valueBgColor, radius);
 
 			keyView.setBackground(keyBg);
 			valueView.setBackground(valueBg);
-
 			keyView.setTextColor(textColor);
 			valueView.setTextColor(Color.BLACK);
 
-			int hPadding = dpToPx(12);
-			int vPadding = dpToPx(6);
+			int hPadding = dpToPx(width);
+			int vPadding = dpToPx(height);
 			keyView.setPadding(hPadding, vPadding, hPadding, vPadding);
 			valueView.setPadding(hPadding, vPadding, hPadding, vPadding);
 
 			removeMargins(keyView);
 			removeMargins(valueView);
-
 		} catch (Exception e) {
 			keyView.setTextColor(Color.BLACK);
 			valueView.setTextColor(Color.BLACK);
@@ -91,13 +92,22 @@ public class LabelStylingHelper {
 	}
 
 	public void styleRegularLabel(
-			String labelText, String colorHex, String textColorHex, TextView labelView) {
+			String labelText,
+			String colorHex,
+			String textColorHex,
+			TextView labelView,
+			int textSizeDp,
+			int height,
+			int width) {
 
 		labelView.setText(labelText);
 
 		try {
 			int baseColor = Color.parseColor(Utils.repeatString(colorHex, 4, 1, 2));
 			int textColor = Color.parseColor(Utils.repeatString(textColorHex, 4, 1, 2));
+
+			int textSizePx = dpToPx(textSizeDp);
+			labelView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSizePx);
 
 			GradientDrawable bg = new GradientDrawable();
 			bg.setColor(baseColor);
@@ -106,10 +116,9 @@ public class LabelStylingHelper {
 			labelView.setBackground(bg);
 			labelView.setTextColor(textColor);
 
-			int hPadding = dpToPx(12);
-			int vPadding = dpToPx(6);
+			int hPadding = dpToPx(width);
+			int vPadding = dpToPx(height);
 			labelView.setPadding(hPadding, vPadding, hPadding, vPadding);
-
 		} catch (Exception e) {
 			labelView.setTextColor(Color.BLACK);
 			labelView.setBackgroundColor(Color.LTGRAY);

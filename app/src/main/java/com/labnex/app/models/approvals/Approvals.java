@@ -10,13 +10,13 @@ import java.util.List;
 public class Approvals implements Serializable {
 
 	@SerializedName("id")
-	private int id;
+	private long id;
 
 	@SerializedName("iid")
-	private int iid;
+	private long iid;
 
 	@SerializedName("project_id")
-	private int projectId;
+	private long projectId;
 
 	@SerializedName("title")
 	private String title;
@@ -45,15 +45,15 @@ public class Approvals implements Serializable {
 	@SerializedName("approved_by")
 	private List<ApprovedBy> approvedBy;
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
-	public int getIid() {
+	public long getIid() {
 		return iid;
 	}
 
-	public int getProjectId() {
+	public long getProjectId() {
 		return projectId;
 	}
 

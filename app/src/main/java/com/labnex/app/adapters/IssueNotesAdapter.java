@@ -129,7 +129,7 @@ public class IssueNotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 					profile -> {
 						Intent intent = new Intent(context, ProfileActivity.class);
 						intent.putExtra("source", "issues");
-						intent.putExtra("userId", note.getAuthor().getId());
+						intent.putExtra("userId", String.valueOf(note.getAuthor().getId()));
 						context.startActivity(intent);
 					});
 		}

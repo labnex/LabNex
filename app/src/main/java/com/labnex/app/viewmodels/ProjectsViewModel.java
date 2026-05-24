@@ -25,7 +25,7 @@ public class ProjectsViewModel extends ViewModel {
 	private final MutableLiveData<String> error = new MutableLiveData<>();
 
 	private String currentSource;
-	private int currentUserId;
+	private long currentUserId;
 	private int currentPage = 1;
 	private final int resultLimit = Constants.getResultLimit();
 	private boolean isLastPage = false;
@@ -43,7 +43,7 @@ public class ProjectsViewModel extends ViewModel {
 		return error;
 	}
 
-	public void loadProjects(Context ctx, String source, int userId) {
+	public void loadProjects(Context ctx, String source, long userId) {
 		this.currentSource = source;
 		this.currentUserId = userId;
 		currentPage = 1;

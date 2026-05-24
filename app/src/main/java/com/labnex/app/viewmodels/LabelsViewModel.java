@@ -188,7 +188,7 @@ public class LabelsViewModel extends ViewModel {
 				});
 	}
 
-	public void updateLabel(Context ctx, String type, long id, int labelId, CrudeLabel label) {
+	public void updateLabel(Context ctx, String type, long id, long labelId, CrudeLabel label) {
 		isActionLoading.setValue(true);
 		Call<Labels> call =
 				"project".equals(type)
@@ -213,7 +213,7 @@ public class LabelsViewModel extends ViewModel {
 				});
 	}
 
-	public void deleteLabel(Context ctx, String type, long id, int labelId) {
+	public void deleteLabel(Context ctx, String type, long id, long labelId) {
 		isActionLoading.setValue(true);
 		Call<Void> call =
 				"project".equals(type)

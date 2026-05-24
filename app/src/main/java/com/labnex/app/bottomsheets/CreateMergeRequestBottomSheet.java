@@ -42,7 +42,7 @@ public class CreateMergeRequestBottomSheet extends BottomSheetDialogFragment {
 	private String type;
 	private long projectId;
 	private boolean isEditMode = false;
-	private int mrIid;
+	private long mrIid;
 	private boolean canModify;
 	private boolean isFromCreateFile;
 	private String preSourceBranch;

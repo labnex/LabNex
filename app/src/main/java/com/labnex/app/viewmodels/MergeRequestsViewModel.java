@@ -66,7 +66,7 @@ public class MergeRequestsViewModel extends ViewModel {
 	}
 
 	private String currentSource;
-	private int currentId;
+	private long currentId;
 	private String currentState;
 	private String currentSearch;
 	private int currentPage = 1;
@@ -137,7 +137,7 @@ public class MergeRequestsViewModel extends ViewModel {
 						});
 	}
 
-	public void updateMergeRequest(Context ctx, long projectId, int mrIid, CrudeMergeRequest mr) {
+	public void updateMergeRequest(Context ctx, long projectId, long mrIid, CrudeMergeRequest mr) {
 		isActionLoading.setValue(true);
 		RetrofitClient.getApiInterface(ctx)
 				.updateMergeRequest(projectId, mrIid, mr)
@@ -187,7 +187,7 @@ public class MergeRequestsViewModel extends ViewModel {
 	}
 
 	public void loadMergeRequests(
-			Context ctx, String source, int id, String scope, String state, String search) {
+			Context ctx, String source, long id, String scope, String state, String search) {
 		this.currentSource = source;
 		this.currentId = id;
 		this.currentScope = scope;

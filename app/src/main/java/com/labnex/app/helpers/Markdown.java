@@ -2,6 +2,7 @@ package com.labnex.app.helpers;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
@@ -11,6 +12,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.labnex.app.R;
 import com.labnex.app.activities.BaseActivity;
+import com.labnex.app.activities.IssueDetailActivity;
+import com.labnex.app.activities.MergeRequestDetailActivity;
+import com.labnex.app.activities.ProfileActivity;
+import com.labnex.app.contexts.IssueContext;
+import com.labnex.app.contexts.MergeRequestContext;
 import com.labnex.app.contexts.ProjectsContext;
 import com.labnex.app.core.MainGrammarLocator;
 import com.labnex.app.helpers.codeeditor.markwon.MarkwonHighlighter;
@@ -125,6 +131,53 @@ public class Markdown {
 				});
 
 		rvRendererPool = new BlazePool<>(configRv);
+	}
+
+	public static Spanned renderToSpanned(Context context, String markdown) {
+		Markwon markwon =
+				Markwon.builder(context)
+						.usePlugin(CorePlugin.create())
+						.usePlugin(HtmlPlugin.create())
+						.usePlugin(LinkifyPlugin.create(true))
+						.usePlugin(SoftBreakAddsNewLinePlugin.create())
+						.usePlugin(StrikethroughPlugin.create())
+						.usePlugin(TaskListPlugin.create(context))
+						.usePlugin(
+								MarkwonHighlighter.create(
+										context,
+										Theme.getDefaultTheme(context),
+										MainGrammarLocator.DEFAULT_FALLBACK_LANGUAGE))
+						.usePlugin(
+								new AbstractMarkwonPlugin() {
+									private final Typeface tf = Typeface.DEFAULT;
+
+									@Override
+									public void beforeSetText(
+											@NonNull TextView textView, @NonNull Spanned markdown) {
+
+										textView.setTextIsSelectable(true);
+										textView.setMovementMethod(
+												LinkMovementMethod.getInstance());
+										super.beforeSetText(textView, markdown);
+									}
+
+									@Override
+									public void configureTheme(
+											@NonNull MarkwonTheme.Builder builder) {
+
+										builder.codeBlockMargin(
+												(int)
+														(context.getResources()
+																		.getDisplayMetrics()
+																		.density
+																* 10));
+
+										builder.headingTypeface(Typeface.create(tf, Typeface.BOLD));
+									}
+								})
+						.build();
+
+		return markwon.toMarkdown(markdown);
 	}
 
 	public static void render(Context context, String markdown, TextView textView) {
@@ -306,6 +359,7 @@ public class Markdown {
 			final InlineParserFactory inlineParserFactory =
 					MarkwonInlineParser.factoryBuilder()
 							.addInlineProcessor(new IssueInlineProcessor())
+							.addInlineProcessor(new MrInlineProcessor())
 							.addInlineProcessor(new UserInlineProcessor())
 							.build();
 
@@ -390,74 +444,77 @@ public class Markdown {
 													(view, link) -> {
 														ProjectsContext repoLocal =
 																linkPostProcessor.projects;
+
 														if (link.startsWith("labnexuser://")) {
-															/*Intent i =
+															Intent i =
 																	new Intent(
 																			view.getContext(),
 																			ProfileActivity.class);
 															i.putExtra(
 																	"username", link.substring(13));
-															view.getContext().startActivity(i);*/
+															view.getContext().startActivity(i);
+
 														} else if (link.startsWith(
 																"labnexissue://")) {
-															/*link = link.substring(14); // remove
-															// labnexissue://
-															String index;
+															link = link.substring(14);
+															int issueIid;
 															if (link.contains("/")) {
-																index = link.split("#")[1];
+																issueIid =
+																		Integer.parseInt(
+																				link.split("#")[1]);
 															} else {
-																index = link.substring(1);
-															}
-															String[] repo;
-															if (link.contains("/")) {
-																repo =
-																		link.split("#")[0].split(
-																				"/");
-															} else {
-																repo =
-																		new String[] {
-																				repoLocal.getOwner(),
-																				repoLocal.getName()
-																		};
+																issueIid =
+																		Integer.parseInt(
+																				link.substring(1));
 															}
 															Intent i =
 																	new IssueContext(
-																			new RepositoryContext(
-																					repo[0],
-																					repo[1],
-																					context),
-																			Integer
-																					.parseInt(
-																							index),
-																			null)
+																					repoLocal,
+																					issueIid, null)
 																			.getIntent(
-																					context,
+																					view
+																							.getContext(),
 																					IssueDetailActivity
 																							.class);
-
+															view.getContext().startActivity(i);
+														} else if (link.startsWith("labnexmr://")) {
+															link = link.substring(10);
+															int mrIid;
 															if (link.contains("/")) {
-																i.putExtra(
-																		"openedFromLink", "true");
+																mrIid =
+																		Integer.parseInt(
+																				link.split("!")[1]);
+															} else {
+																mrIid =
+																		Integer.parseInt(
+																				link.substring(1));
 															}
-
-															view.getContext().startActivity(i);*/
+															Intent i =
+																	new MergeRequestContext(
+																					repoLocal,
+																					mrIid)
+																			.getIntent(
+																					view
+																							.getContext(),
+																					MergeRequestDetailActivity
+																							.class);
+															view.getContext().startActivity(i);
 														} else if (link.startsWith(
 																"labnexcommit://")) {
-															/*link = link.substring(15);
-															Intent i =
-																	repoLocal.getIntent(
-																			view.getContext(),
-																			CommitDetailActivity
-																					.class);
-															String sha;
-															if (link.contains("/")) {
-																sha = link.split("/")[2];
-															} else {
-																sha = link.substring(1);
-															}
+															link = link.substring(15);
+															String sha =
+																	link.contains("/")
+																			? link.substring(
+																					link
+																									.lastIndexOf(
+																											'/')
+																							+ 1)
+																			: link.substring(1);
+															// Intent i =
+															// repoLocal.getIntent(view.getContext(), CommitDetail.class);
+															// i.putExtra("sha", sha);
+															// view.getContext().startActivity(i);
 
-															i.putExtra("sha", sha);
-															view.getContext().startActivity(i);*/
 														} else {
 															Utils.openUrlInBrowser(
 																	view.getContext(), link);
@@ -604,6 +661,26 @@ public class Markdown {
 					final Link link =
 							new Link("labnexuser://" + user.substring(1 /* remove @ */), null);
 					link.appendChild(text(user));
+					return link;
+				}
+				return null;
+			}
+		}
+
+		private static class MrInlineProcessor extends InlineProcessor {
+			private static final Pattern RE = Pattern.compile("!\\d+");
+
+			@Override
+			public char specialCharacter() {
+				return '!';
+			}
+
+			@Override
+			protected Node parse() {
+				final String id = match(RE);
+				if (id != null) {
+					Link link = new Link("labnexmr://" + id, null);
+					link.appendChild(text(id));
 					return link;
 				}
 				return null;

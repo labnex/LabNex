@@ -51,7 +51,7 @@ public class GroupDetailActivity extends BaseActivity {
 		groupsViewModel = new ViewModelProvider(this).get(GroupsViewModel.class);
 		projectsViewModel = new ViewModelProvider(this).get(ProjectsViewModel.class);
 
-		groupId = getIntent().getIntExtra("groupId", 0);
+		groupId = getIntent().getLongExtra("groupId", 0);
 
 		binding.btnBack.setOnClickListener(v -> finish());
 
@@ -64,7 +64,7 @@ public class GroupDetailActivity extends BaseActivity {
 				v -> {
 					Intent intent = new Intent(ctx, IssuesActivity.class);
 					intent.putExtra("source", "group");
-					intent.putExtra("id", (int) groupId);
+					intent.putExtra("id", groupId);
 					startActivity(intent);
 				});
 
@@ -72,7 +72,7 @@ public class GroupDetailActivity extends BaseActivity {
 				v -> {
 					Intent intent = new Intent(ctx, MergeRequestsActivity.class);
 					intent.putExtra("source", "group");
-					intent.putExtra("id", (int) groupId);
+					intent.putExtra("id", groupId);
 					startActivity(intent);
 				});
 
@@ -86,8 +86,8 @@ public class GroupDetailActivity extends BaseActivity {
 						MembersBottomSheet.newInstance("group", groupId)
 								.show(getSupportFragmentManager(), "membersSheet"));
 
-		groupsViewModel.loadGroupDetail(ctx, (int) groupId);
-		projectsViewModel.loadProjects(ctx, type, (int) groupId);
+		groupsViewModel.loadGroupDetail(ctx, groupId);
+		projectsViewModel.loadProjects(ctx, type, groupId);
 	}
 
 	private void setupProjectsList() {

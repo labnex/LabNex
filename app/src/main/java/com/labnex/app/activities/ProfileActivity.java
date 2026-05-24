@@ -42,24 +42,26 @@ public class ProfileActivity extends BaseActivity {
 		viewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
 		userAccountsApi = BaseApi.getInstance(ctx, UserAccountsApi.class);
 
-		int profileUserId = getIntent().getIntExtra("userId", 0);
-
 		binding.btnBack.setOnClickListener(v -> finish());
-
 		observeViewModel();
-		initLoading(profileUserId);
+
+		String userIdStr = getIntent().getStringExtra("userId");
+		long profileUserId = userIdStr != null ? Long.parseLong(userIdStr) : 0;
+		String username = getIntent().getStringExtra("username");
+
+		if (profileUserId > 0) {
+			initLoading(profileUserId);
+		} else if (username != null && !username.isEmpty()) {
+			viewModel.loadUserByUsername(ctx, username);
+		} else {
+			finish();
+		}
 	}
 
-	private void initLoading(int profileUserId) {
+	private void initLoading(long profileUserId) {
 		int activeAccountId = sharedPrefDB.getInt("currentActiveAccountId", 0);
-
 		UserAccount activeAccount = userAccountsApi.getAccountById(activeAccountId);
-
-		int myUserId = 0;
-		if (activeAccount != null) {
-			myUserId = activeAccount.getUserId();
-		}
-
+		long myUserId = (activeAccount != null) ? activeAccount.getUserId() : 0;
 		viewModel.loadUser(ctx, profileUserId, myUserId);
 	}
 
