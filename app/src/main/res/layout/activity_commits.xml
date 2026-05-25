@@ -1,68 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/main_frame"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:background="?attr/colorSurface">
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="@dimen/dimen70dp"
-        android:fitsSystemWindows="true"
-        app:layout_behavior="@string/searchbar_scrolling_view_behavior">
-
-        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/pull_to_refresh"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/dimen10dp" />
-
-        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-    </FrameLayout>
-
-    <com.google.android.material.progressindicator.LinearProgressIndicator
+    <com.google.android.material.loadingindicator.LoadingIndicator
         android:id="@+id/progress_bar"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fitsSystemWindows="true"
-        android:indeterminate="true" />
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:elevation="@dimen/dimen4dp"
+        app:indicatorSize="@dimen/dimen48dp"
+        app:trackThickness="@dimen/dimen4dp" />
 
     <include
         android:id="@+id/nothing_found_frame"
-        android:visibility="gone"
-        layout="@layout/nothing_found" />
-
-    <com.google.android.material.bottomappbar.BottomAppBar
-        android:id="@+id/bottom_app_bar"
-        android:layout_width="match_parent"
+        layout="@layout/nothing_found"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        style="@style/Widget.Material3.BottomAppBar"
-        app:backgroundTint="?attr/bottomNavigationColor"
-        app:navigationIcon="@drawable/ic_arrow_back"
-        app:navigationIconTint="?attr/iconsColor">
+        android:layout_gravity="center"
+        android:visibility="gone" />
 
-        <RelativeLayout
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/pull_to_refresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingHorizontal="@dimen/dimen10dp" />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <com.google.android.material.dockedtoolbar.DockedToolbarLayout
+        android:id="@+id/docked_toolbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:backgroundTint="?attr/colorSurfaceContainerHighest"
+        app:layout_behavior="com.google.android.material.behavior.HideViewOnScrollBehavior"
+        app:paddingBottomSystemWindowInsets="false"
+        app:paddingLeftSystemWindowInsets="false"
+        app:paddingRightSystemWindowInsets="false"
+        app:paddingTopSystemWindowInsets="false"
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.RoundedDock">
+
+        <com.google.android.material.overflow.OverflowLinearLayout
+            android:id="@+id/dock_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_back"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/close"
+                app:icon="@drawable/ic_arrow_back" />
+
+            <View
+                android:id="@+id/dock_divider"
+                android:layout_width="@dimen/dimen1dp"
+                android:layout_height="@dimen/dimen24dp"
+                android:layout_gravity="center_vertical"
+                android:background="?attr/colorOutlineVariant" />
 
             <TextView
-                android:id="@+id/commits_text"
+                android:id="@+id/commits"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/commits"
-                android:layout_alignParentStart="true"
-                android:textSize="@dimen/dimen20sp" />
+                android:layout_marginStart="@dimen/dimen20dp"
+                android:layout_marginEnd="@dimen/dimen12dp"
+                android:textAppearance="?attr/textAppearanceTitleMedium" />
 
-        </RelativeLayout>
+        </com.google.android.material.overflow.OverflowLinearLayout>
 
-    </com.google.android.material.bottomappbar.BottomAppBar>
+    </com.google.android.material.dockedtoolbar.DockedToolbarLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -43,6 +43,7 @@ public class ExploreFragment extends Fragment {
 	private Context ctx;
 	private ExploreViewModel viewModel;
 	private EndlessRecyclerViewScrollListener scrollListener;
+	private boolean isFirstLoad = true;
 
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -64,6 +65,57 @@ public class ExploreFragment extends Fragment {
 		observeViewModel();
 
 		return binding.getRoot();
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		if (viewModel == null) {
+			viewModel = new ViewModelProvider(this).get(ExploreViewModel.class);
+		}
+		if (!isHidden()) {
+			if (isFirstLoad || viewModel.needsDataLoad()) {
+				lazyLoad();
+			} else {
+				restoreUIState();
+			}
+		}
+	}
+
+	@Override
+	public void onHiddenChanged(boolean hidden) {
+		super.onHiddenChanged(hidden);
+		if (!hidden) {
+			if (viewModel == null) {
+				viewModel = new ViewModelProvider(this).get(ExploreViewModel.class);
+			}
+			if (isFirstLoad || viewModel.needsDataLoad()) {
+				lazyLoad();
+			} else {
+				restoreUIState();
+			}
+		}
+	}
+
+	private void lazyLoad() {
+		isFirstLoad = false;
+		if (viewModel != null) {
+			viewModel.getSearchResult();
+		}
+	}
+
+	private void restoreUIState() {
+		if (viewModel == null) return;
+
+		if (viewModel.getSearchResult().getValue() != null) {
+			binding.nothingFoundFrame.getRoot().setVisibility(View.GONE);
+			binding.recyclerView.setVisibility(View.VISIBLE);
+			binding.progressBar.setVisibility(View.GONE);
+		} else {
+			binding.nothingFoundFrame.getRoot().setVisibility(View.VISIBLE);
+			binding.recyclerView.setVisibility(View.GONE);
+			binding.progressBar.setVisibility(View.GONE);
+		}
 	}
 
 	private void setupRecyclerView() {
@@ -176,7 +228,9 @@ public class ExploreFragment extends Fragment {
 										if (issue.getAuthor() != null) {
 											Intent intent = new Intent(ctx, ProfileActivity.class);
 											intent.putExtra("source", "issues");
-											intent.putExtra("userId", issue.getAuthor().getId());
+											intent.putExtra(
+													"userId",
+													String.valueOf(issue.getAuthor().getId()));
 											startActivity(intent);
 										}
 									}
@@ -198,7 +252,9 @@ public class ExploreFragment extends Fragment {
 										if (mr.getAuthor() != null) {
 											Intent intent = new Intent(ctx, ProfileActivity.class);
 											intent.putExtra("source", "mr");
-											intent.putExtra("userId", mr.getAuthor().getId());
+											intent.putExtra(
+													"userId",
+													String.valueOf(mr.getAuthor().getId()));
 											startActivity(intent);
 										}
 									}
@@ -212,7 +268,7 @@ public class ExploreFragment extends Fragment {
 								user -> {
 									Intent intent = new Intent(ctx, ProfileActivity.class);
 									intent.putExtra("source", "explore");
-									intent.putExtra("userId", user.getId());
+									intent.putExtra("userId", String.valueOf(user.getId()));
 									startActivity(intent);
 								}));
 				break;

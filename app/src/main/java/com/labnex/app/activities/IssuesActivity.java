@@ -10,9 +10,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.labnex.app.R;
 import com.labnex.app.adapters.IssuesAdapter;
+import com.labnex.app.bottomsheets.CreateIssueBottomSheet;
 import com.labnex.app.contexts.ProjectsContext;
 import com.labnex.app.databinding.ActivityIssuesBinding;
 import com.labnex.app.databinding.BottomsheetIssuesMenuBinding;
+import com.labnex.app.helpers.AccessLevel;
 import com.labnex.app.helpers.EndlessRecyclerViewScrollListener;
 import com.labnex.app.helpers.Toasty;
 import com.labnex.app.helpers.UIHelper;
@@ -32,7 +34,7 @@ public class IssuesActivity extends BaseActivity implements IssuesAdapter.OnIssu
 	private EndlessRecyclerViewScrollListener scrollListener;
 
 	private String source;
-	private int id;
+	private long id;
 	private String filter = "opened";
 	private String searchQuery = "";
 	private ProjectsContext projectsContext;
@@ -50,30 +52,34 @@ public class IssuesActivity extends BaseActivity implements IssuesAdapter.OnIssu
 		viewModel = new ViewModelProvider(this).get(IssuesViewModel.class);
 
 		source = getIntent().getStringExtra("source");
-		id = getIntent().getIntExtra("id", 0);
+		id = getIntent().getLongExtra("id", 0);
 
 		if ("project".equals(source)) {
 			projectsContext = ProjectsContext.fromIntent(getIntent());
 		}
 
+		boolean canModify;
+		if (projectsContext != null && projectsContext.getProject() != null) {
+			int accessLevel = AccessLevel.getUserAccessLevel(projectsContext.getProject());
+			canModify = accessLevel >= AccessLevel.MAINTAINER;
+		} else {
+			canModify = false;
+		}
+
 		binding.btnBack.setOnClickListener(v -> finish());
 		binding.btnMenu.setOnClickListener(v -> showFilterBottomSheet());
-		binding.dockContainer.removeView(binding.newIssue);
+		binding.dockContainer.removeView(binding.btnNewIssue);
 
 		if (!"my_issues".equals(source)
 				&& !"group".equals(source)
 				&& projectsContext != null
 				&& !projectsContext.getProject().isArchived()) {
-			binding.dockContainer.addView(binding.newIssue);
-			binding.newIssue.setOnClickListener(
+			binding.dockContainer.addView(binding.btnNewIssue, 1);
+			binding.btnNewIssue.setOnClickListener(
 					v -> {
-						ProjectsContext pc =
-								new ProjectsContext(
-										projectsContext.getProjectName(),
-										projectsContext.getPath(),
-										projectsContext.getProjectId(),
-										ctx);
-						// startActivity(pc.getIntent(ctx, CreateIssueActivity.class));
+						CreateIssueBottomSheet.newInstance(
+										"project", projectsContext.getProjectId(), canModify, null)
+								.show(getSupportFragmentManager(), "createIssueSheet");
 					});
 		}
 
@@ -239,7 +245,7 @@ public class IssuesActivity extends BaseActivity implements IssuesAdapter.OnIssu
 		if (issue.getAuthor() != null) {
 			Intent intent = new Intent(ctx, ProfileActivity.class);
 			intent.putExtra("source", "issues");
-			intent.putExtra("userId", issue.getAuthor().getId());
+			intent.putExtra("userId", String.valueOf(issue.getAuthor().getId()));
 			startActivity(intent);
 		}
 	}

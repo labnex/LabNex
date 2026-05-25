@@ -61,7 +61,7 @@ public class UsersItem implements Serializable {
 	private int colorSchemeId;
 
 	@SerializedName("id")
-	private int id;
+	private long id;
 
 	@SerializedName("state")
 	private String state;
@@ -103,7 +103,7 @@ public class UsersItem implements Serializable {
 	private String websiteUrl;
 
 	@SerializedName("namespace_id")
-	private int namespaceId;
+	private long namespaceId;
 
 	@SerializedName("organization")
 	private String organization;
@@ -191,7 +191,7 @@ public class UsersItem implements Serializable {
 		return colorSchemeId;
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
@@ -247,7 +247,7 @@ public class UsersItem implements Serializable {
 		return websiteUrl;
 	}
 
-	public int getNamespaceId() {
+	public long getNamespaceId() {
 		return namespaceId;
 	}
 

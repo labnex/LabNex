@@ -123,7 +123,7 @@ public class ProjectDetailViewModel extends ViewModel {
 						});
 	}
 
-	public void loadProject(Context ctx, int projectId) {
+	public void loadProject(Context ctx, long projectId) {
 		isLoading.setValue(true);
 		RetrofitClient.getApiInterface(ctx)
 				.getProjectInfo(projectId)
@@ -144,7 +144,7 @@ public class ProjectDetailViewModel extends ViewModel {
 						});
 	}
 
-	public void loadLanguageStats(Context ctx, int projectId) {
+	public void loadLanguageStats(Context ctx, long projectId) {
 		RetrofitClient.getApiInterface(ctx)
 				.getProjectLanguages(projectId)
 				.enqueue(
@@ -164,7 +164,7 @@ public class ProjectDetailViewModel extends ViewModel {
 						});
 	}
 
-	public void loadReadme(Context ctx, int projectId, String branch, String readmePath) {
+	public void loadReadme(Context ctx, long projectId, String branch, String readmePath) {
 		RetrofitClient.getApiInterface(ctx)
 				.getProjectFileContent(projectId, readmePath, branch)
 				.enqueue(
@@ -187,7 +187,7 @@ public class ProjectDetailViewModel extends ViewModel {
 						});
 	}
 
-	public void checkStarStatus(Context ctx, int userId, int projectId) {
+	public void checkStarStatus(Context ctx, long userId, long projectId) {
 		RetrofitClient.getApiInterface(ctx)
 				.getStarredProjects(userId, 100, 1)
 				.enqueue(
@@ -216,7 +216,7 @@ public class ProjectDetailViewModel extends ViewModel {
 						});
 	}
 
-	public void toggleStar(Context ctx, int projectId) {
+	public void toggleStar(Context ctx, long projectId) {
 		isActionLoading.setValue(true);
 		Boolean starred = isStarred.getValue();
 		boolean newStarState = starred == null || !starred;
@@ -257,7 +257,7 @@ public class ProjectDetailViewModel extends ViewModel {
 				});
 	}
 
-	public void loadMrCount(Context ctx, int projectId) {
+	public void loadMrCount(Context ctx, long projectId) {
 		RetrofitClient.getApiInterface(ctx)
 				.getProjectMergeRequests(projectId, "opened", null, null, null, 1, 1)
 				.enqueue(

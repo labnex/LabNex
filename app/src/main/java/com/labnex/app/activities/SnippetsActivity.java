@@ -54,7 +54,7 @@ public class SnippetsActivity extends BaseActivity
 
 		viewModel = new ViewModelProvider(this).get(SnippetsViewModel.class);
 
-		int userId = getAccount().getUserId();
+		long userId = getAccount().getUserId();
 
 		binding.btnBack.setOnClickListener(v -> finish());
 		binding.newSnippet.setOnClickListener(
@@ -74,7 +74,7 @@ public class SnippetsActivity extends BaseActivity
 		viewModel.loadSnippets(ctx);
 	}
 
-	private void setupRecyclerView(int userId) {
+	private void setupRecyclerView(long userId) {
 		adapter = new SnippetsAdapter(ctx, new ArrayList<>(), this, userId);
 		LinearLayoutManager layoutManager = new LinearLayoutManager(ctx);
 		binding.recyclerView.setLayoutManager(layoutManager);

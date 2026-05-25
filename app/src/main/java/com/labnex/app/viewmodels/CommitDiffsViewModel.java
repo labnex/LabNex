@@ -1,18 +1,16 @@
 package com.labnex.app.viewmodels;
 
-import android.app.Activity;
 import android.content.Context;
-import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-import com.labnex.app.R;
-import com.labnex.app.adapters.CommitDiffsAdapter;
 import com.labnex.app.clients.RetrofitClient;
-import com.labnex.app.databinding.BottomSheetCommitDiffsBinding;
-import com.labnex.app.helpers.Toasty;
+import com.labnex.app.helpers.ApiResponseHandler;
+import com.labnex.app.helpers.Constants;
 import com.labnex.app.models.commits.Diff;
+import com.labnex.app.models.commits.MrChanges;
+import java.util.ArrayList;
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -23,125 +21,140 @@ import retrofit2.Response;
  */
 public class CommitDiffsViewModel extends ViewModel {
 
-	private MutableLiveData<List<Diff>> mutableList;
+	private final MutableLiveData<List<Diff>> diffsList = new MutableLiveData<>(new ArrayList<>());
+	private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
+	private final MutableLiveData<String> error = new MutableLiveData<>();
 
-	public LiveData<List<Diff>> getCommitDiffs(
-			Context ctx,
-			String source,
-			int id,
-			String sha,
-			int resultLimit,
-			int page,
-			Activity activity,
-			BottomSheetCommitDiffsBinding binding) {
+	private long projectId;
+	private String sha;
+	private long mrIid;
+	private boolean isMrChanges;
+	private int currentPage = 1;
+	private final int resultLimit = Constants.getResultLimit();
+	private boolean isLastPage = false;
+	private boolean isLoadingMore = false;
 
-		mutableList = new MutableLiveData<>();
-		loadInitialList(ctx, source, id, sha, resultLimit, page, activity, binding);
-
-		return mutableList;
+	public LiveData<List<Diff>> getDiffsList() {
+		return diffsList;
 	}
 
-	public void loadInitialList(
-			Context ctx,
-			String source,
-			int id,
-			String sha,
-			int resultLimit,
-			int page,
-			Activity activity,
-			BottomSheetCommitDiffsBinding binding) {
-
-		Call<List<Diff>> call =
-				RetrofitClient.getApiInterface(ctx).getCommitDiffs(id, sha, resultLimit, page);
-
-		call.enqueue(
-				new Callback<>() {
-
-					@Override
-					public void onResponse(
-							@NonNull Call<List<Diff>> call,
-							@NonNull Response<List<Diff>> response) {
-
-						if (response.isSuccessful()) {
-							mutableList.postValue(response.body());
-						} else if (response.code() == 401) {
-
-							binding.progressBar.setVisibility(View.GONE);
-							Toasty.show(ctx, ctx.getString(R.string.not_authorized));
-						} else if (response.code() == 403) {
-
-							binding.progressBar.setVisibility(View.GONE);
-							Toasty.show(ctx, ctx.getString(R.string.not_authorized));
-						} else {
-
-							binding.progressBar.setVisibility(View.GONE);
-							Toasty.show(ctx, ctx.getString(R.string.not_authorized));
-						}
-					}
-
-					@Override
-					public void onFailure(@NonNull Call<List<Diff>> call, @NonNull Throwable t) {
-
-						binding.progressBar.setVisibility(View.GONE);
-						Toasty.show(ctx, ctx.getString(R.string.not_authorized));
-					}
-				});
+	public LiveData<Boolean> getIsLoading() {
+		return isLoading;
 	}
 
-	public void loadMore(
-			Context ctx,
-			String source,
-			int id,
-			String sha,
-			int resultLimit,
-			int page,
-			CommitDiffsAdapter adapter,
-			Activity activity,
-			BottomSheetCommitDiffsBinding binding) {
+	public LiveData<String> getError() {
+		return error;
+	}
 
-		Call<List<Diff>> call =
-				RetrofitClient.getApiInterface(ctx).getCommitDiffs(id, sha, resultLimit, page);
+	public void clearError() {
+		error.setValue(null);
+	}
 
-		call.enqueue(
-				new Callback<>() {
+	public void loadDiffs(Context ctx, long projectId, String sha) {
+		if (ctx == null) return;
+		this.projectId = projectId;
+		this.sha = sha;
+		this.isMrChanges = false;
+		currentPage = 1;
+		isLastPage = false;
+		isLoadingMore = false;
+		isLoading.setValue(true);
+		fetch(ctx, 1);
+	}
 
-					@Override
-					public void onResponse(
-							@NonNull Call<List<Diff>> call,
-							@NonNull Response<List<Diff>> response) {
+	public void loadMrChanges(Context ctx, long projectId, long mrIid) {
+		if (ctx == null) return;
+		this.projectId = projectId;
+		this.mrIid = mrIid;
+		this.isMrChanges = true;
+		isLoading.setValue(true);
 
-						if (response.isSuccessful()) {
-							List<Diff> list = mutableList.getValue();
-							assert list != null;
-							assert response.body() != null;
-
-							if (!response.body().isEmpty()) {
-								list.addAll(response.body());
-								adapter.updateList(list);
-							} else {
-								adapter.setMoreDataAvailable(false);
+		RetrofitClient.getApiInterface(ctx)
+				.getMrChanges(projectId, mrIid)
+				.enqueue(
+						new Callback<>() {
+							@Override
+							public void onResponse(
+									@NonNull Call<MrChanges> c, @NonNull Response<MrChanges> r) {
+								ApiResponseHandler.handleFetch(
+										r,
+										isLoading,
+										() -> {
+											MrChanges body = r.body();
+											diffsList.setValue(
+													body != null
+															? body.getChanges()
+															: new ArrayList<>());
+										},
+										error);
 							}
-						} else if (response.code() == 401) {
 
-							binding.progressBar.setVisibility(View.GONE);
-							Toasty.show(ctx, ctx.getString(R.string.not_authorized));
-						} else if (response.code() == 403) {
+							@Override
+							public void onFailure(
+									@NonNull Call<MrChanges> c, @NonNull Throwable t) {
+								isLoading.setValue(false);
+								error.setValue(t.getMessage());
+							}
+						});
+	}
 
-							binding.progressBar.setVisibility(View.GONE);
-							Toasty.show(ctx, ctx.getString(R.string.access_forbidden_403));
-						} else {
+	public void loadNextPage(Context ctx) {
+		if (isMrChanges || isLoadingMore || isLastPage) return;
+		isLoadingMore = true;
+		currentPage++;
+		fetch(ctx, currentPage);
+	}
 
-							binding.progressBar.setVisibility(View.GONE);
-							Toasty.show(ctx, ctx.getString(R.string.generic_error));
-						}
+	private void fetch(Context ctx, int page) {
+		Call<List<Diff>> call =
+				RetrofitClient.getApiInterface(ctx)
+						.getCommitDiffs(projectId, sha, resultLimit, page);
+
+		call.enqueue(
+				new Callback<>() {
+					@Override
+					public void onResponse(
+							@NonNull Call<List<Diff>> c, @NonNull Response<List<Diff>> r) {
+						ApiResponseHandler.handleFetch(
+								r,
+								isLoading,
+								() -> {
+									String totalHeader = r.headers().get("x-total");
+									List<Diff> body = r.body();
+									List<Diff> current =
+											(page == 1)
+													? new ArrayList<>()
+													: diffsList.getValue() != null
+															? new ArrayList<>(diffsList.getValue())
+															: new ArrayList<>();
+									if (body != null) current.addAll(body);
+									diffsList.setValue(current);
+									checkLastPage(
+											body != null ? body.size() : 0,
+											totalHeader,
+											current.size());
+								},
+								error);
+						isLoadingMore = false;
 					}
 
 					@Override
-					public void onFailure(@NonNull Call<List<Diff>> call, @NonNull Throwable t) {
-
-						binding.progressBar.setVisibility(View.GONE);
-						Toasty.show(ctx, ctx.getString(R.string.generic_server_response_error));
+					public void onFailure(@NonNull Call<List<Diff>> c, @NonNull Throwable t) {
+						isLoading.setValue(false);
+						isLoadingMore = false;
+						if (page == 1) diffsList.setValue(new ArrayList<>());
+						error.setValue(t.getMessage());
 					}
 				});
+	}
+
+	private void checkLastPage(int bodySize, String totalHeader, int fullListSize) {
+		if (bodySize < resultLimit) isLastPage = true;
+		else if (totalHeader != null) {
+			try {
+				if (fullListSize >= Integer.parseInt(totalHeader)) isLastPage = true;
+			} catch (NumberFormatException ignored) {
+			}
+		}
 	}
 }

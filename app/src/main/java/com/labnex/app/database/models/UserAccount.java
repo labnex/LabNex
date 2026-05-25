@@ -22,7 +22,7 @@ public class UserAccount implements Serializable {
 	private int maxResponseItems;
 	private int defaultPagingNumber;
 	private String tokenExpiry;
-	private int userId;
+	private long userId;
 
 	public int getAccountId() {
 		return accountId;
@@ -96,11 +96,11 @@ public class UserAccount implements Serializable {
 		return tokenExpiry;
 	}
 
-	public int getUserId() {
+	public long getUserId() {
 		return userId;
 	}
 
-	public void setUserId(int userId) {
+	public void setUserId(long userId) {
 		this.userId = userId;
 	}
 }

@@ -57,7 +57,7 @@ public class CreateProjectViewModel extends ViewModel {
 			String defaultBranch,
 			boolean lfsEnabled,
 			boolean emailsEnabled,
-			Integer namespaceId) {
+			long namespaceId) {
 		isLoading.setValue(true);
 
 		CrudeProject project = new CrudeProject();
@@ -68,7 +68,7 @@ public class CreateProjectViewModel extends ViewModel {
 		project.setDefaultBranch(defaultBranch);
 		project.setLfsEnabled(lfsEnabled);
 		project.setEmailsEnabled(emailsEnabled);
-		if (namespaceId != null) project.setNamespaceId(namespaceId);
+		project.setNamespaceId(namespaceId);
 
 		RetrofitClient.getApiInterface(ctx)
 				.createProject(project)
@@ -88,7 +88,7 @@ public class CreateProjectViewModel extends ViewModel {
 						});
 	}
 
-	public void loadNamespaces(Context ctx, int userId, String username) {
+	public void loadNamespaces(Context ctx, long userId, String username) {
 		isLoadingNamespaces.setValue(true);
 
 		List<NamespaceItem> list = new ArrayList<>();
@@ -133,7 +133,7 @@ public class CreateProjectViewModel extends ViewModel {
 	}
 
 	public static class NamespaceItem {
-		public int id;
+		public long id;
 		public String fullPath;
 		public String kind;
 

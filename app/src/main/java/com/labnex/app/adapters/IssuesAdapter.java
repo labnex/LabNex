@@ -3,10 +3,10 @@ package com.labnex.app.adapters;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -17,6 +17,8 @@ import com.labnex.app.R;
 import com.labnex.app.databinding.ListIssuesBinding;
 import com.labnex.app.helpers.AppSettingsInit;
 import com.labnex.app.helpers.AvatarGenerator;
+import com.labnex.app.helpers.ColorInverter;
+import com.labnex.app.helpers.LabelStylingHelper;
 import com.labnex.app.helpers.Markdown;
 import com.labnex.app.helpers.TimeHelper;
 import com.labnex.app.helpers.Toasty;
@@ -53,12 +55,6 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssuesHold
 	public void updateList(List<Issues> newList) {
 		list.clear();
 		if (newList != null) list.addAll(newList);
-		notifyDataSetChanged();
-	}
-
-	@SuppressLint("NotifyDataSetChanged")
-	public void clearAdapter() {
-		list.clear();
 		notifyDataSetChanged();
 	}
 
@@ -183,22 +179,56 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssuesHold
 
 			if (showLabels && issue.getLabels() != null && !issue.getLabels().isEmpty()) {
 				binding.labelsScroll.setVisibility(View.VISIBLE);
-				for (Object labelObj : issue.getLabels()) {
-					String labelName = (String) labelObj;
+				LabelStylingHelper styler = LabelStylingHelper.getInstance(context);
+
+				for (String labelName : issue.getLabels()) {
 					int marginEnd = (int) (6 * context.getResources().getDisplayMetrics().density);
 
 					if (showColors) {
 						int color = getLabelColor(labelName);
-						ImageView labelView = new ImageView(context);
-						labelView.setImageDrawable(
-								AvatarGenerator.getLabelDrawable(context, labelName, color, 22));
-						LinearLayout.LayoutParams params =
-								new LinearLayout.LayoutParams(
-										ViewGroup.LayoutParams.WRAP_CONTENT,
-										ViewGroup.LayoutParams.WRAP_CONTENT);
-						params.setMarginEnd(marginEnd);
-						labelView.setLayoutParams(params);
-						binding.labelsContainer.addView(labelView);
+						int textColor = ColorInverter.getContrastColor(color);
+						String colorHex = String.format("#%06X", 0xFFFFFF & color);
+						String textColorHex = String.format("#%06X", 0xFFFFFF & textColor);
+
+						if (LabelStylingHelper.isScopedLabel(labelName)) {
+							LinearLayout container = new LinearLayout(context);
+							container.setOrientation(LinearLayout.HORIZONTAL);
+							container.setGravity(Gravity.CENTER_VERTICAL);
+
+							TextView labelNameView = new TextView(context);
+							TextView labelValueView = new TextView(context);
+							styler.styleScopedLabel(
+									labelName,
+									colorHex,
+									textColorHex,
+									labelNameView,
+									labelValueView,
+									11,
+									2,
+									8);
+
+							container.addView(labelNameView);
+							container.addView(labelValueView);
+
+							LinearLayout.LayoutParams params =
+									new LinearLayout.LayoutParams(
+											ViewGroup.LayoutParams.WRAP_CONTENT,
+											ViewGroup.LayoutParams.WRAP_CONTENT);
+							params.setMarginEnd(marginEnd);
+							container.setLayoutParams(params);
+							binding.labelsContainer.addView(container);
+						} else {
+							TextView labelView = new TextView(context);
+							styler.styleRegularLabel(
+									labelName, colorHex, textColorHex, labelView, 11, 2, 8);
+							LinearLayout.LayoutParams params =
+									new LinearLayout.LayoutParams(
+											ViewGroup.LayoutParams.WRAP_CONTENT,
+											ViewGroup.LayoutParams.WRAP_CONTENT);
+							params.setMarginEnd(marginEnd);
+							labelView.setLayoutParams(params);
+							binding.labelsContainer.addView(labelView);
+						}
 					} else {
 						TextView labelView = getTextView(labelName, marginEnd);
 						binding.labelsContainer.addView(labelView);

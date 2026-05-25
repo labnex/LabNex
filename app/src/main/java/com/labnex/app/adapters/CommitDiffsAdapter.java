@@ -2,63 +2,50 @@ package com.labnex.app.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.text.SpannableStringBuilder;
+import android.util.Pair;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import com.labnex.app.R;
-import com.labnex.app.databinding.BottomSheetCommitDiffsBinding;
+import com.labnex.app.databinding.ListCommitDiffsBinding;
 import com.labnex.app.helpers.DiffParser;
 import com.labnex.app.models.commits.Diff;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author mmarif
  */
-public class CommitDiffsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class CommitDiffsAdapter extends RecyclerView.Adapter<CommitDiffsAdapter.DiffsViewHolder> {
 
-	private final Context context;
-	private List<Diff> list;
-	private OnLoadMoreListener loadMoreListener;
-	private boolean isLoading = false, isMoreDataAvailable = true;
-	private int projectId;
-	private BottomSheetCommitDiffsBinding binding;
+	private final Context ctx;
+	private List<Pair<Diff, Pair<SpannableStringBuilder, SpannableStringBuilder>>> list;
 
 	public CommitDiffsAdapter(
 			Context ctx,
-			List<Diff> mainList,
-			int projectId,
-			BottomSheetCommitDiffsBinding binding) {
-		this.context = ctx;
-		this.list = mainList;
-		this.projectId = projectId;
-		this.binding = binding;
+			List<Pair<Diff, Pair<SpannableStringBuilder, SpannableStringBuilder>>> list) {
+		this.ctx = ctx;
+		this.list = list != null ? list : new ArrayList<>();
+	}
+
+	@SuppressLint("NotifyDataSetChanged")
+	public void updateList(
+			List<Pair<Diff, Pair<SpannableStringBuilder, SpannableStringBuilder>>> newList) {
+		this.list = new ArrayList<>(newList);
+		notifyDataSetChanged();
 	}
 
 	@NonNull @Override
-	public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-		LayoutInflater inflater = LayoutInflater.from(context);
-		return new CommitDiffsHolder(inflater.inflate(R.layout.list_commit_diffs, parent, false));
+	public DiffsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+		ListCommitDiffsBinding binding =
+				ListCommitDiffsBinding.inflate(LayoutInflater.from(ctx), parent, false);
+		return new DiffsViewHolder(binding);
 	}
 
 	@Override
-	public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-		if (position >= getItemCount() - 1
-				&& isMoreDataAvailable
-				&& !isLoading
-				&& loadMoreListener != null) {
-			isLoading = true;
-			loadMoreListener.onLoadMore();
-		}
-
-		((CommitDiffsHolder) holder).bindData(list.get(position));
-	}
-
-	@Override
-	public int getItemViewType(int position) {
-		return position;
+	public void onBindViewHolder(@NonNull DiffsViewHolder holder, int position) {
+		holder.bind(list.get(position));
 	}
 
 	@Override
@@ -66,66 +53,29 @@ public class CommitDiffsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 		return list.size();
 	}
 
-	public void setMoreDataAvailable(boolean moreDataAvailable) {
-		isMoreDataAvailable = moreDataAvailable;
-		if (!isMoreDataAvailable) {
-			loadMoreListener.onLoadFinished();
-		}
-	}
+	public class DiffsViewHolder extends RecyclerView.ViewHolder {
+		final ListCommitDiffsBinding binding;
 
-	@SuppressLint("NotifyDataSetChanged")
-	public void notifyDataChanged() {
-		notifyDataSetChanged();
-		isLoading = false;
-		loadMoreListener.onLoadFinished();
-	}
-
-	public void setLoadMoreListener(OnLoadMoreListener loadMoreListener) {
-		this.loadMoreListener = loadMoreListener;
-	}
-
-	public void updateList(List<Diff> list_) {
-		list = list_;
-		notifyDataChanged();
-	}
-
-	public abstract static class OnLoadMoreListener {
-
-		protected abstract void onLoadMore();
-
-		public void onLoadFinished() {}
-	}
-
-	public void clearAdapter() {
-		list.clear();
-		notifyDataChanged();
-	}
-
-	public class CommitDiffsHolder extends RecyclerView.ViewHolder {
-
-		private final TextView filename;
-		private final TextView fileStatistics;
-		private final TextView contents;
-		private Diff diffs;
-
-		CommitDiffsHolder(View itemView) {
-
-			super(itemView);
-
-			filename = itemView.findViewById(R.id.filename);
-			fileStatistics = itemView.findViewById(R.id.file_statistics);
-			contents = itemView.findViewById(R.id.contents);
+		DiffsViewHolder(ListCommitDiffsBinding binding) {
+			super(binding.getRoot());
+			this.binding = binding;
 		}
 
-		void bindData(Diff diffs) {
+		void bind(Pair<Diff, Pair<SpannableStringBuilder, SpannableStringBuilder>> itemPair) {
+			Diff diff = itemPair.first;
+			Pair<SpannableStringBuilder, SpannableStringBuilder> parsedSpans = itemPair.second;
 
-			this.diffs = diffs;
+			binding.filename.setText(diff.getNewPath());
 
-			filename.setText(diffs.getNewPath());
-
-			DiffParser diffParser =
-					new DiffParser(context, contents, diffs.getDiff(), fileStatistics);
-			diffParser.highlightDiffWithStats();
+			if (parsedSpans != null) {
+				binding.contents.setText(parsedSpans.first);
+				binding.fileStatistics.setText(parsedSpans.second);
+			} else {
+				DiffParser diffParser =
+						new DiffParser(
+								ctx, binding.contents, diff.getDiff(), binding.fileStatistics);
+				diffParser.highlightDiffWithStats();
+			}
 		}
 	}
 }

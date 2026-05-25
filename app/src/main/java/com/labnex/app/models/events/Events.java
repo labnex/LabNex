@@ -48,7 +48,7 @@ public class Events implements Serializable {
 	private long id;
 
 	@SerializedName("author_id")
-	private int authorId;
+	private long authorId;
 
 	@SerializedName("author_username")
 	private String authorUsername;
@@ -105,7 +105,7 @@ public class Events implements Serializable {
 		return id;
 	}
 
-	public int getAuthorId() {
+	public long getAuthorId() {
 		return authorId;
 	}
 

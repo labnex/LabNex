@@ -24,6 +24,7 @@ import com.labnex.app.helpers.UIHelper;
 import com.labnex.app.models.merge_requests.CrudeMergeRequest;
 import com.labnex.app.models.merge_requests.MergeRequests;
 import com.labnex.app.models.milestone.Milestones;
+import com.labnex.app.models.projects.ForkedFromProject;
 import com.labnex.app.models.templates.Templates;
 import com.labnex.app.viewmodels.MergeRequestsViewModel;
 import com.labnex.app.viewmodels.TemplatesViewModel;
@@ -41,15 +42,17 @@ public class CreateMergeRequestBottomSheet extends BottomSheetDialogFragment {
 	private String type;
 	private long projectId;
 	private boolean isEditMode = false;
-	private int mrIid;
+	private long mrIid;
 	private boolean canModify;
 	private boolean isFromCreateFile;
 	private String preSourceBranch;
 	private String preTitle;
 
-	private ItemPickerCardBinding sourceCard, targetCard, labelsCard, milestoneCard;
+	private ItemPickerCardBinding sourceCard, targetCard, labelsCard, milestoneCard, upstreamCard;
 	private List<String> selectedLabels = new ArrayList<>();
 	private Milestones selectedMilestone;
+	private ForkedFromProject upstreamProject;
+	private boolean createUpstreamMr = false;
 
 	public static CreateMergeRequestBottomSheet newInstance(
 			String type,
@@ -58,7 +61,8 @@ public class CreateMergeRequestBottomSheet extends BottomSheetDialogFragment {
 			boolean isFromCreateFile,
 			@Nullable String sourceBranch,
 			@Nullable String mrTitle,
-			@Nullable MergeRequests mr) {
+			@Nullable MergeRequests mr,
+			@Nullable ForkedFromProject upstreamProject) {
 		CreateMergeRequestBottomSheet sheet = new CreateMergeRequestBottomSheet();
 		Bundle args = new Bundle();
 		args.putString("type", type);
@@ -68,6 +72,7 @@ public class CreateMergeRequestBottomSheet extends BottomSheetDialogFragment {
 		if (sourceBranch != null) args.putString("sourceBranch", sourceBranch);
 		if (mrTitle != null) args.putString("mrTitle", mrTitle);
 		if (mr != null) args.putSerializable("mr", mr);
+		if (upstreamProject != null) args.putSerializable("upstreamProject", upstreamProject);
 		sheet.setArguments(args);
 		return sheet;
 	}
@@ -82,6 +87,7 @@ public class CreateMergeRequestBottomSheet extends BottomSheetDialogFragment {
 			isFromCreateFile = getArguments().getBoolean("isFromCreateFile", false);
 			preSourceBranch = getArguments().getString("sourceBranch");
 			preTitle = getArguments().getString("mrTitle");
+			upstreamProject = (ForkedFromProject) getArguments().getSerializable("upstreamProject");
 			MergeRequests mr = (MergeRequests) getArguments().getSerializable("mr");
 			if (mr != null) {
 				isEditMode = true;
@@ -99,20 +105,103 @@ public class CreateMergeRequestBottomSheet extends BottomSheetDialogFragment {
 		viewModel = new ViewModelProvider(requireActivity()).get(MergeRequestsViewModel.class);
 		templatesViewModel = new ViewModelProvider(this).get(TemplatesViewModel.class);
 
-		if (preSourceBranch != null) {
-			sourceCard.cardSubtitle.setText(preSourceBranch);
-			sourceCard.cardClear.setVisibility(View.VISIBLE);
-		}
-		if (preTitle != null) {
-			binding.titleInput.setText(preTitle);
-		}
-
 		binding.btnClose.setOnClickListener(v -> dismiss());
 
+		bindCards();
+		setupCardLabels();
+		setupPreFilledData();
+		setupEditMode();
+		setupCardListeners();
+		setupTemplates();
+		setupEditorExpand();
+
+		binding.btnSubmit.setOnClickListener(v -> submitMr());
+		observeViewModel();
+		return binding.getRoot();
+	}
+
+	private void bindCards() {
 		sourceCard = ItemPickerCardBinding.bind(binding.cardSourceBranch.getRoot());
 		targetCard = ItemPickerCardBinding.bind(binding.cardTargetBranch.getRoot());
 		labelsCard = ItemPickerCardBinding.bind(binding.cardLabels.getRoot());
 		milestoneCard = ItemPickerCardBinding.bind(binding.cardMilestone.getRoot());
+		upstreamCard = ItemPickerCardBinding.bind(binding.cardUpstream.getRoot());
+	}
+
+	private void setupCardLabels() {
+		sourceCard.cardTitle.setText(R.string.source_branch);
+		sourceCard.cardIcon.setImageResource(R.drawable.ic_branch);
+
+		targetCard.cardTitle.setText(R.string.target_branch);
+		targetCard.cardIcon.setImageResource(R.drawable.ic_branch);
+
+		labelsCard.cardTitle.setText(R.string.labels);
+		labelsCard.cardIcon.setImageResource(R.drawable.ic_labels);
+
+		milestoneCard.cardTitle.setText(R.string.milestone);
+		milestoneCard.cardIcon.setImageResource(R.drawable.ic_milestones);
+
+		binding.cardLabels.getRoot().setVisibility(canModify ? View.VISIBLE : View.GONE);
+		binding.cardMilestone.getRoot().setVisibility(canModify ? View.VISIBLE : View.GONE);
+		binding.switchSquash.setVisibility(canModify ? View.VISIBLE : View.GONE);
+		binding.switchRemoveSource.setVisibility(canModify ? View.VISIBLE : View.GONE);
+
+		if (upstreamProject != null) {
+			binding.cardUpstream.getRoot().setVisibility(View.VISIBLE);
+			upstreamCard.cardTitle.setText(R.string.create_upstream_mr);
+			upstreamCard.cardIcon.setImageResource(R.drawable.ic_forks);
+
+			createUpstreamMr = true;
+			upstreamCard.cardSubtitle.setText(upstreamProject.getNameWithNamespace());
+
+			binding.cardLabels.getRoot().setVisibility(View.GONE);
+			binding.cardMilestone.getRoot().setVisibility(View.GONE);
+
+			binding.cardUpstream
+					.getRoot()
+					.setOnClickListener(
+							v -> {
+								createUpstreamMr = !createUpstreamMr;
+								upstreamCard.cardSubtitle.setText(
+										createUpstreamMr
+												? upstreamProject.getNameWithNamespace()
+												: getString(R.string.tap_to_enable));
+
+								targetCard.cardSubtitle.setText(R.string.tap_to_select_branch);
+								targetCard.cardClear.setVisibility(View.GONE);
+
+								binding.cardLabels
+										.getRoot()
+										.setVisibility(
+												createUpstreamMr
+														? View.GONE
+														: (canModify ? View.VISIBLE : View.GONE));
+								binding.cardMilestone
+										.getRoot()
+										.setVisibility(
+												createUpstreamMr
+														? View.GONE
+														: (canModify ? View.VISIBLE : View.GONE));
+							});
+		}
+	}
+
+	private void setupPreFilledData() {
+		if (preSourceBranch != null) {
+			sourceCard.cardSubtitle.setText(preSourceBranch);
+			sourceCard.cardClear.setVisibility(View.VISIBLE);
+		} else {
+			sourceCard.cardSubtitle.setText(R.string.tap_to_select_branch);
+		}
+
+		targetCard.cardSubtitle.setText(R.string.tap_to_select_branch);
+
+		labelsCard.cardSubtitle.setText(R.string.tap_to_select_labels);
+		milestoneCard.cardSubtitle.setText(R.string.tap_to_select_milestone);
+
+		if (preTitle != null) {
+			binding.titleInput.setText(preTitle);
+		}
 
 		binding.descriptionInput.setOnTouchListener(
 				(v, event) -> {
@@ -125,107 +214,83 @@ public class CreateMergeRequestBottomSheet extends BottomSheetDialogFragment {
 					}
 					return false;
 				});
+	}
 
-		sourceCard.cardTitle.setText(R.string.source_branch);
-		sourceCard.cardSubtitle.setText(R.string.tap_to_select_branch);
-		sourceCard.cardIcon.setImageResource(R.drawable.ic_branch);
+	private void setupEditMode() {
+		if (!isEditMode || getArguments() == null) return;
 
-		targetCard.cardTitle.setText(R.string.target_branch);
-		targetCard.cardSubtitle.setText(R.string.tap_to_select_branch);
-		targetCard.cardIcon.setImageResource(R.drawable.ic_branch);
+		MergeRequests mr = (MergeRequests) getArguments().getSerializable("mr");
+		if (mr == null) return;
 
-		labelsCard.cardTitle.setText(R.string.labels);
-		labelsCard.cardSubtitle.setText(R.string.tap_to_select_labels);
-		labelsCard.cardIcon.setImageResource(R.drawable.ic_labels);
+		binding.sheetTitle.setText(R.string.edit_mr);
+		binding.btnSubmit.setText(R.string.update);
+		binding.titleInput.setText(mr.getTitle());
+		binding.descriptionInput.setText(mr.getDescription() != null ? mr.getDescription() : "");
+		sourceCard.cardSubtitle.setText(mr.getSourceBranch());
+		targetCard.cardSubtitle.setText(mr.getTargetBranch());
 
-		milestoneCard.cardTitle.setText(R.string.milestone);
-		milestoneCard.cardSubtitle.setText(R.string.tap_to_select_milestone);
-		milestoneCard.cardIcon.setImageResource(R.drawable.ic_milestones);
-
-		binding.cardLabels.getRoot().setVisibility(canModify ? View.VISIBLE : View.GONE);
-		binding.cardMilestone.getRoot().setVisibility(canModify ? View.VISIBLE : View.GONE);
-		binding.switchSquash.setVisibility(canModify ? View.VISIBLE : View.GONE);
-		binding.switchRemoveSource.setVisibility(canModify ? View.VISIBLE : View.GONE);
-
-		if (isEditMode & getArguments() != null) {
-			MergeRequests mr = (MergeRequests) getArguments().getSerializable("mr");
-			if (mr != null) {
-				binding.sheetTitle.setText(R.string.edit_mr);
-				binding.btnSubmit.setText(R.string.update);
-				binding.titleInput.setText(mr.getTitle());
-				binding.descriptionInput.setText(
-						mr.getDescription() != null ? mr.getDescription() : "");
-				sourceCard.cardSubtitle.setText(mr.getSourceBranch());
-				targetCard.cardSubtitle.setText(mr.getTargetBranch());
-				if (mr.getLabels() != null) {
-					selectedLabels = new ArrayList<>(mr.getLabels());
-					labelsCard.cardSubtitle.setText(String.join(", ", selectedLabels));
-					labelsCard.cardClear.setVisibility(View.VISIBLE);
-				}
-				if (mr.getMilestone() != null) {
-					selectedMilestone = new Milestones();
-					selectedMilestone.setId(mr.getMilestone().getId());
-					selectedMilestone.setTitle(mr.getMilestone().getTitle());
-					milestoneCard.cardSubtitle.setText(mr.getMilestone().getTitle());
-					milestoneCard.cardClear.setVisibility(View.VISIBLE);
-				}
-			}
+		if (mr.getLabels() != null && !mr.getLabels().isEmpty()) {
+			selectedLabels = new ArrayList<>(mr.getLabels());
+			labelsCard.cardSubtitle.setText(String.join(", ", selectedLabels));
+			labelsCard.cardClear.setVisibility(View.VISIBLE);
 		}
 
+		if (mr.getMilestone() != null) {
+			selectedMilestone = new Milestones();
+			selectedMilestone.setId(mr.getMilestone().getId());
+			selectedMilestone.setTitle(mr.getMilestone().getTitle());
+			milestoneCard.cardSubtitle.setText(mr.getMilestone().getTitle());
+			milestoneCard.cardClear.setVisibility(View.VISIBLE);
+		}
+	}
+
+	private void setupCardListeners() {
 		binding.cardSourceBranch
 				.getRoot()
 				.setOnClickListener(
-						v -> {
-							BranchesBottomSheet picker =
-									BranchesBottomSheet.newPickerInstance(
-											projectId,
-											branch -> {
-												sourceCard.cardSubtitle.setText(branch);
-												sourceCard.cardClear.setVisibility(View.VISIBLE);
-												String target =
-														targetCard
-																.cardSubtitle
-																.getText()
-																.toString();
-												if (branch.equals(target)) {
-													Toasty.show(
-															requireContext(),
-															getString(
-																	R.string.mr_branches_are_same));
-												}
-											});
-							picker.show(getParentFragmentManager(), "sourceBranchPicker");
-						});
+						v ->
+								BranchesBottomSheet.newPickerInstance(
+												projectId,
+												branch -> {
+													sourceCard.cardSubtitle.setText(branch);
+													sourceCard.cardClear.setVisibility(
+															View.VISIBLE);
+													checkBranchesSame(
+															branch,
+															targetCard
+																	.cardSubtitle
+																	.getText()
+																	.toString());
+												})
+										.show(getParentFragmentManager(), "sourceBranchPicker"));
 
-		binding.cardTargetBranch
-				.getRoot()
-				.setOnClickListener(
-						v -> {
-							BranchesBottomSheet picker =
-									BranchesBottomSheet.newPickerInstance(
-											projectId,
-											branch -> {
-												targetCard.cardSubtitle.setText(branch);
-												targetCard.cardClear.setVisibility(View.VISIBLE);
-												String source =
-														sourceCard
-																.cardSubtitle
-																.getText()
-																.toString();
-												if (branch.equals(source)) {
-													Toasty.show(
-															requireContext(),
-															getString(
-																	R.string.mr_branches_are_same));
-												}
-											});
-							picker.show(getParentFragmentManager(), "targetBranchPicker");
-						});
 		sourceCard.cardClear.setOnClickListener(
 				v -> {
 					sourceCard.cardSubtitle.setText(R.string.tap_to_select_branch);
 					sourceCard.cardClear.setVisibility(View.GONE);
 				});
+
+		binding.cardTargetBranch
+				.getRoot()
+				.setOnClickListener(
+						v -> {
+							long branchProjectId =
+									createUpstreamMr ? upstreamProject.getId() : projectId;
+							BranchesBottomSheet.newPickerInstance(
+											branchProjectId,
+											branch -> {
+												targetCard.cardSubtitle.setText(branch);
+												targetCard.cardClear.setVisibility(View.VISIBLE);
+												checkBranchesSame(
+														sourceCard
+																.cardSubtitle
+																.getText()
+																.toString(),
+														branch);
+											})
+									.show(getParentFragmentManager(), "targetBranchPicker");
+						});
+
 		targetCard.cardClear.setOnClickListener(
 				v -> {
 					targetCard.cardSubtitle.setText(R.string.tap_to_select_branch);
@@ -251,6 +316,7 @@ public class CreateMergeRequestBottomSheet extends BottomSheetDialogFragment {
 									});
 							picker.show(getParentFragmentManager(), "labelsPicker");
 						});
+
 		labelsCard.cardClear.setOnClickListener(
 				v -> {
 					selectedLabels.clear();
@@ -273,13 +339,24 @@ public class CreateMergeRequestBottomSheet extends BottomSheetDialogFragment {
 									});
 							picker.show(getParentFragmentManager(), "milestonePicker");
 						});
+
 		milestoneCard.cardClear.setOnClickListener(
 				v -> {
 					selectedMilestone = null;
 					milestoneCard.cardSubtitle.setText(R.string.tap_to_select_milestone);
 					milestoneCard.cardClear.setVisibility(View.GONE);
 				});
+	}
 
+	private void checkBranchesSame(String source, String target) {
+		if (!source.equals(getString(R.string.tap_to_select_branch))
+				&& !target.equals(getString(R.string.tap_to_select_branch))
+				&& source.equals(target)) {
+			Toasty.show(requireContext(), getString(R.string.mr_branches_are_same));
+		}
+	}
+
+	private void setupTemplates() {
 		templatesViewModel.loadTemplates(requireContext(), projectId, "merge_requests");
 		templatesViewModel
 				.getTemplateList()
@@ -298,18 +375,21 @@ public class CreateMergeRequestBottomSheet extends BottomSheetDialogFragment {
 								binding.templateInput.setAdapter(adapter);
 								binding.templateInput.setOnItemClickListener(
 										(parent, view, position, id) -> {
-											if (position > 0)
+											if (position > 0) {
 												templatesViewModel.loadTemplateContent(
 														requireContext(),
 														projectId,
 														"merge_requests",
 														templates.get(position - 1).getName());
-											else binding.descriptionInput.setText("");
+											} else {
+												binding.descriptionInput.setText("");
+											}
 										});
 							} else {
 								binding.templateLayout.setVisibility(View.GONE);
 							}
 						});
+
 		templatesViewModel
 				.getTemplateContent()
 				.observe(
@@ -317,7 +397,9 @@ public class CreateMergeRequestBottomSheet extends BottomSheetDialogFragment {
 						content -> {
 							if (content != null) binding.descriptionInput.setText(content);
 						});
+	}
 
+	private void setupEditorExpand() {
 		binding.btnExpand.setOnClickListener(
 				v -> {
 					String content =
@@ -331,10 +413,6 @@ public class CreateMergeRequestBottomSheet extends BottomSheetDialogFragment {
 							newContent -> binding.descriptionInput.setText(newContent));
 					editor.show(getChildFragmentManager(), "fullscreenEditor");
 				});
-
-		binding.btnSubmit.setOnClickListener(v -> submitMr());
-		observeViewModel();
-		return binding.getRoot();
 	}
 
 	private void submitMr() {
@@ -372,8 +450,20 @@ public class CreateMergeRequestBottomSheet extends BottomSheetDialogFragment {
 		if (!selectedLabels.isEmpty()) mr.setLabels(selectedLabels);
 		if (selectedMilestone != null) mr.setMilestoneId((long) selectedMilestone.getId());
 
-		if (isEditMode) viewModel.updateMergeRequest(requireContext(), projectId, mrIid, mr);
-		else viewModel.createMergeRequest(requireContext(), projectId, mr);
+		if (!createUpstreamMr) {
+			if (!selectedLabels.isEmpty()) mr.setLabels(selectedLabels);
+			if (selectedMilestone != null) mr.setMilestoneId((long) selectedMilestone.getId());
+		}
+
+		if (createUpstreamMr && upstreamProject != null) {
+			mr.setTargetProjectId((long) upstreamProject.getId());
+		}
+
+		if (isEditMode) {
+			viewModel.updateMergeRequest(requireContext(), projectId, mrIid, mr);
+		} else {
+			viewModel.createMergeRequest(requireContext(), projectId, mr);
+		}
 	}
 
 	private void observeViewModel() {
@@ -403,15 +493,8 @@ public class CreateMergeRequestBottomSheet extends BottomSheetDialogFragment {
 								Toasty.show(requireContext(), R.string.mr_created);
 								viewModel.clearCreateSuccess();
 								AppUIStateManager.refreshData();
-								if (getActivity() instanceof BaseActivity) {
-									((BaseActivity) getActivity()).triggerGlobalRefresh();
-								}
-								if (isFromCreateFile && getActivity() != null) {
-									startActivity(
-											new Intent(getActivity(), MergeRequestsActivity.class)
-													.putExtra("source", "mr")
-													.putExtra("id", (int) projectId));
-								}
+								triggerGlobalRefresh();
+								navigateAfterCreate();
 								dismiss();
 							}
 						});
@@ -425,9 +508,7 @@ public class CreateMergeRequestBottomSheet extends BottomSheetDialogFragment {
 								Toasty.show(requireContext(), R.string.mr_updated);
 								viewModel.clearEditSuccess();
 								AppUIStateManager.refreshData();
-								if (getActivity() instanceof BaseActivity) {
-									((BaseActivity) getActivity()).triggerGlobalRefresh();
-								}
+								triggerGlobalRefresh();
 								dismiss();
 							}
 						});
@@ -461,6 +542,22 @@ public class CreateMergeRequestBottomSheet extends BottomSheetDialogFragment {
 							}
 							viewModel.clearError();
 						});
+	}
+
+	private void triggerGlobalRefresh() {
+		if (getActivity() instanceof BaseActivity) {
+			((BaseActivity) getActivity()).triggerGlobalRefresh();
+		}
+	}
+
+	private void navigateAfterCreate() {
+		if (isFromCreateFile && getActivity() != null) {
+			long targetProject = createUpstreamMr ? upstreamProject.getId() : projectId;
+			startActivity(
+					new Intent(getActivity(), MergeRequestsActivity.class)
+							.putExtra("source", "mr")
+							.putExtra("id", (int) targetProject));
+		}
 	}
 
 	@Override

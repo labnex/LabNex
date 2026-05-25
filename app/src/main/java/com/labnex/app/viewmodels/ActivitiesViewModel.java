@@ -39,6 +39,7 @@ public class ActivitiesViewModel extends ViewModel {
 	private final int resultLimit = Constants.getResultLimit();
 	private boolean isLastPage = false;
 	private boolean isLoadingMore = false;
+	private boolean needsDataLoad = true;
 
 	public LiveData<List<Events>> getEvents() {
 		return events;
@@ -61,7 +62,13 @@ public class ActivitiesViewModel extends ViewModel {
 		currentFilter = filter;
 	}
 
+	public boolean needsDataLoad() {
+		return needsDataLoad;
+	}
+
 	public void loadEvents(Context ctx) {
+		if (ctx == null) return;
+
 		currentPage = 1;
 		isLastPage = false;
 		isLoadingMore = false;
@@ -92,6 +99,7 @@ public class ActivitiesViewModel extends ViewModel {
 								},
 								error);
 						isLoadingMore = false;
+						needsDataLoad = false;
 					}
 
 					@Override

@@ -45,7 +45,7 @@ public class GroupsItem implements Serializable {
 	private boolean emailsEnabled;
 
 	@SerializedName("id")
-	private int id;
+	private long id;
 
 	@SerializedName("full_path")
 	private String fullPath;
@@ -81,7 +81,7 @@ public class GroupsItem implements Serializable {
 	private String webUrl;
 
 	@SerializedName("parent_id")
-	private Integer parentId;
+	private long parentId;
 
 	@SerializedName("duo_features_enabled")
 	private boolean duoFeaturesEnabled;
@@ -140,7 +140,7 @@ public class GroupsItem implements Serializable {
 		return wikiAccessLevel;
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
@@ -196,11 +196,11 @@ public class GroupsItem implements Serializable {
 		return webUrl;
 	}
 
-	public Integer getParentId() {
+	public long getParentId() {
 		return parentId;
 	}
 
-	public void setParentId(Integer parentId) {
+	public void setParentId(long parentId) {
 		this.parentId = parentId;
 	}
 

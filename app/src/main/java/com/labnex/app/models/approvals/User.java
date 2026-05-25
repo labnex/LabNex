@@ -9,7 +9,7 @@ import java.io.Serializable;
 public class User implements Serializable {
 
 	@SerializedName("id")
-	private int id;
+	private long id;
 
 	@SerializedName("name")
 	private String name;
@@ -26,7 +26,7 @@ public class User implements Serializable {
 	@SerializedName("web_url")
 	private String webUrl;
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 

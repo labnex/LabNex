@@ -20,7 +20,7 @@ public class ProjectsApi extends BaseApi {
 
 	public long insertProject(
 			int projectAccountId,
-			int projectId,
+			long projectId,
 			String projectName,
 			String projectPath,
 			int mostVisited) {
@@ -39,7 +39,7 @@ public class ProjectsApi extends BaseApi {
 		return projectsDao.newProject(projects);
 	}
 
-	public Projects getProject(int projectAccountId, int projectId) {
+	public Projects getProject(int projectAccountId, long projectId) {
 		return projectsDao.getSingleProject(projectAccountId, projectId);
 	}
 
@@ -51,19 +51,19 @@ public class ProjectsApi extends BaseApi {
 		return projectsDao.getAllProjectsByAccount(projectAccountId);
 	}
 
-	public Integer checkProject(int projectAccountId, int projectId, String projectName) {
+	public Integer checkProject(int projectAccountId, long projectId, String projectName) {
 		return projectsDao.checkProject(projectAccountId, projectId, projectName);
 	}
 
-	public Projects fetchProjectById(int projAutoId) {
+	public Projects fetchProjectById(long projAutoId) {
 		return projectsDao.fetchProjectById(projAutoId);
 	}
 
-	public Projects fetchByProjectId(int projectId) {
+	public Projects fetchByProjectId(long projectId) {
 		return projectsDao.fetchByProjectId(projectId);
 	}
 
-	public Projects fetchProjectByAccountIdByProjectIdDao(int projectId, int projectAccountId) {
+	public Projects fetchProjectByAccountIdByProjectIdDao(long projectId, int projectAccountId) {
 		return projectsDao.fetchProjectByAccountIdByProjectIdDao(projectId, projectAccountId);
 	}
 
@@ -76,7 +76,7 @@ public class ProjectsApi extends BaseApi {
 		executorService.execute(() -> projectsDao.deleteProjectsByAccount(projectAccountId));
 	}
 
-	public void deleteProject(final int projectId) {
+	public void deleteProject(final long projectId) {
 		executorService.execute(() -> projectsDao.deleteProject(projectId));
 	}
 
@@ -85,7 +85,7 @@ public class ProjectsApi extends BaseApi {
 				() -> projectsDao.deleteProjectByName(currentActiveAccountId, projectName));
 	}
 
-	public void updateProjectMostVisited(int mostVisited, int projectId) {
+	public void updateProjectMostVisited(int mostVisited, long projectId) {
 		executorService.execute(() -> projectsDao.updateProjectMostVisited(mostVisited, projectId));
 	}
 

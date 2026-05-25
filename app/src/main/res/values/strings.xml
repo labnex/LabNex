@@ -43,6 +43,8 @@
     <string name="separator_dot" translatable="false">●</string>
     <string name="readme" translatable="false">Readme</string>
     <string name="tag_info" translatable="false">%1$s • %2$s</string>
+    <string name="issue_number" translatable="false">#%d</string>
+    <string name="mr_number" translatable="false">!%d</string>
     <!-- non translatable strings -->
 
     <string name="action_sign_in">Sign in</string>
@@ -98,7 +100,7 @@
     <string name="label_created">Label created successfully</string>
     <string name="new_label">New label</string>
     <string name="edit_label">Edit label</string>
-    <string name="delete_dialog_title">Delete %1$s</string>
+    <string name="delete_dialog_title">Delete %1$s?</string>
     <string name="delete_label_dialog_message">Do you really want to delete this label?</string>
     <string name="label_deleted">Label deleted successfully</string>
     <string name="label_updated">Label updated successfully</string>
@@ -124,13 +126,12 @@
     <string name="copy_url">Copy URL</string>
     <string name="notes_and_activities">Notes and Activities</string>
     <string name="discussion_locked">Discussion locked</string>
-    <string name="discussion_locked_message">The discussion in this issue is locked. Only project members can comment.\n\nPress Proceed to continue.</string>
+    <string name="discussion_locked_message">The discussion is locked. Only project members can comment.</string>
     <string name="comment_posted">Comment posted</string>
     <string name="comment_is_empty">Did you forget to write something?</string>
     <string name="create_issue">Create issue</string>
     <string name="issue_created">Issue created successfully</string>
     <string name="commit_author_info">%1$s authored and %2$s committed %3$s</string>
-    <string name="diff_statistics">%1$s addition(s) and %2$s deletion(s)</string>
     <string name="broadcast_message">Broadcast message</string>
     <string name="source_branch">Source branch</string>
     <string name="target_branch">Target branch</string>
@@ -144,7 +145,7 @@
     <string name="remove_source_branch">Remove source branch</string>
     <string name="create_branch">Create branch</string>
     <string name="squash_commits">Squash all commits</string>
-    <string name="close_issue">You are about to close this issue. Tap the Close button to proceed.</string>
+    <string name="close_issue">Close issue</string>
     <string name="issue_closed">Issue was closed successfully</string>
     <string name="initialize_with_readme">Initialize repository with a README</string>
     <string name="create_project">Create project</string>
@@ -174,7 +175,7 @@
     <string name="merge_request_exists">Another open merge request already exists for this source branch.</string>
     <string name="merge_info">%1$s wants to merge branch %2$s into %3$s</string>
     <string name="mr_cannot_be_merged">This merge request cannot be merged at this time. Please check for merge conflicts and other issues.</string>
-    <string name="close_mr">You are about to close this merge request. Tap the Close button to proceed.</string>
+    <string name="close_mr">Close merge request</string>
     <string name="merge_fail_text">Merge may fail if you are not authorized to merge this Merge Request.</string>
     <string name="merge_error_405">Method not allowed</string>
     <string name="merge_error_409">SHA does not match HEAD of source branch</string>
@@ -186,7 +187,7 @@
     <string name="mr_branches_are_same">Target and source branches cannot be the same</string>
     <string name="revoke_approval">Revoke approval</string>
     <string name="files_ref">Files - ref:%1$s</string>
-    <string name="exclude_files_in_fileviewer">This file type/size is not supported by the file viewer. You can download it to your phone instead.</string>
+    <string name="exclude_files_in_fileviewer">This file type cannot be previewed. Please download to view.</string>
     <string name="render_md">Render Markdown</string>
     <string name="file_viewer_notification_title_started">Download in progress</string>
     <string name="file_viewer_notification_description_started">Downloading %1$s</string>
@@ -218,10 +219,9 @@
     <string name="delete_snippet_error">Failed to delete snippet</string>
     <string name="create_snippet">Create snippet</string>
     <string name="at_least_one_file">At least one file is required</string>
-    <string name="max_files_reached">Maximum 10 files reached</string>
+    <string name="max_files_reached">Maximum files limit reached</string>
     <string name="delete_file">Delete File</string>
     <string name="delete_file_confirmation">Are you sure you want to delete this file? This action cannot be undone.</string>
-    <string name="file_deleted">File deleted</string>
     <string name="snippet_created">Snippet created successfully</string>
     <string name="create_snippet_with_count">Create Snippet (%1$d/10 files)</string>
     <string name="duplicate_file_name">Duplicate file names are not allowed</string>
@@ -379,12 +379,48 @@
     <string name="tap_to_select_labels">Tap to select labels</string>
     <string name="tap_to_select_milestone">Tap to select milestone</string>
     <string name="edit_issue">Edit issue</string>
-    <string name="issue_updated">Issue updated</string>
+    <string name="issue_updated">Issue updated successfully</string>
     <string name="fork_project">Fork project</string>
     <string name="project_forked">Project forked successfully</string>
     <string name="tap_to_select_branch">Tap to select branch</string>
     <string name="edit_mr">Edit merge request</string>
     <string name="mr_updated">Merge request updated</string>
+    <string name="mark_all_as_done">Mark all as done</string>
+    <string name="mark_all_as_done_confirm">Are you sure you want to mark all todos as done?</string>
+    <string name="todo_all_marked_done">All todos marked as done</string>
+    <string name="file_downloaded">File downloaded successfully</string>
+    <string name="delete_file_dialog_message">Are you sure you want to delete this file?</string>
+    <string name="files_created">Files created successfully</string>
+    <string name="file_updated">File updated successfully</string>
+    <string name="file_deleted">File deleted successfully</string>
+    <string name="file_path_required">File path is required</string>
+    <string name="commit_message_required">Commit message is required</string>
+    <string name="create_files">Create files</string>
+    <string name="edit_file">Edit file</string>
+    <string name="attachment_limit_count">Maximum %d attachment(s) allowed</string>
+    <string name="attachment_limit_size">File size exceeds the maximum limit of %s</string>
+    <string name="new_branch">New branch (optional)</string>
+    <string name="start_new_branch_hint">Name for a new branch</string>
+    <string name="file_path">File path (e.g. src/main/App.java)</string>
+    <string name="attach_file">Attach file</string>
+    <string name="binary_file_attached">Binary file attached</string>
+    <string name="create_upstream_mr">Create MR to upstream</string>
+    <string name="tap_to_enable">Tap to enable</string>
+    <string name="close_issue_confirmation">You are about to close this issue. Tap the Close button to proceed.</string>
+    <string name="issue_reopened">Issue reopened successfully</string>
+    <string name="cannot_find_issue">There was an error fetching issue data</string>
+    <string name="pick_reaction">Pick a reaction</string>
+    <string name="lock_discussion">Lock discussion</string>
+    <string name="unlock_discussion">Unlock discussion</string>
+    <string name="discussion_locked_success">Discussion locked</string>
+    <string name="discussion_unlocked_success">Discussion unlocked</string>
+    <string name="cannot_find_mr">Cannot find merge request</string>
+    <string name="merge_options">Merge options</string>
+    <string name="mr_reopened">Merge request reopened</string>
+    <string name="close_mr_confirmation">You are about to close this merge request. Tap the Close button to proceed.</string>
+    <string name="mark_draft">Mark as draft</string>
+    <string name="mark_ready">Mark as ready</string>
+    <string name="commit_sha_copied">Commit SHA copied to clipboard</string>
 
     <!-- errors -->
     <string name="generic_error">An unexpected error occurred</string>
@@ -539,5 +575,14 @@
     <string name="status">Status</string>
     <string name="weight">Weight</string>
     <string name="confidential">Confidential</string>
+    <string name="type">Type</string>
+    <string name="pending">Pending</string>
+    <string name="action">Action</string>
+    <string name="confirm">Confirm</string>
+    <string name="commit">Commit</string>
+    <string name="reopen">Reopen</string>
+    <string name="send">Send</string>
+    <string name="draft">Draft</string>
+    <string name="diffs">Diffs</string>
     <!-- generic copy -->
 </resources>

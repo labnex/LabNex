@@ -29,7 +29,7 @@ public class SnippetsAdapter extends RecyclerView.Adapter<SnippetsAdapter.Snippe
 	private final Context context;
 	private final List<SnippetsItem> snippetsList;
 	private final OnSnippetClickListener listener;
-	private final int currentUserId;
+	private final long currentUserId;
 
 	public interface OnSnippetClickListener {
 		void onSnippetClick(SnippetsItem snippet);
@@ -43,7 +43,7 @@ public class SnippetsAdapter extends RecyclerView.Adapter<SnippetsAdapter.Snippe
 			Context ctx,
 			List<SnippetsItem> mainList,
 			OnSnippetClickListener listener,
-			int currentUserId) {
+			long currentUserId) {
 		this.context = ctx;
 		this.snippetsList = new ArrayList<>();
 		if (mainList != null) this.snippetsList.addAll(mainList);

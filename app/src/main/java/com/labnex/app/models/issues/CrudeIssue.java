@@ -33,6 +33,13 @@ public class CrudeIssue implements Serializable {
 	@SerializedName("weight")
 	private Integer weight;
 
+	@SerializedName("discussion_locked")
+	private Boolean discussionLocked;
+
+	public void setDiscussionLocked(Boolean discussionLocked) {
+		this.discussionLocked = discussionLocked;
+	}
+
 	public void setConfidential(boolean confidential) {
 		this.confidential = confidential;
 	}

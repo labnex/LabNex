@@ -34,7 +34,7 @@ public class IssuesViewModel extends ViewModel {
 	private final MutableLiveData<Boolean> editSuccess = new MutableLiveData<>(false);
 
 	private String currentSource;
-	private int currentId;
+	private long currentId;
 	private String currentScope = "created_by_me";
 	private String currentState;
 	private String currentSearch;
@@ -139,7 +139,7 @@ public class IssuesViewModel extends ViewModel {
 	}
 
 	public void loadIssues(
-			Context ctx, String source, int id, String scope, String state, String search) {
+			Context ctx, String source, long id, String scope, String state, String search) {
 		this.currentSource = source;
 		this.currentId = id;
 		this.currentScope = scope;

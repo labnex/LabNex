@@ -34,7 +34,7 @@ public class CreateSnippetBottomSheet extends BottomSheetDialogFragment {
 	private SnippetsViewModel viewModel;
 	private final List<FileEntry> files = new ArrayList<>();
 	private int selectedFileIndex = 0;
-	private int snippetId = -1;
+	private long snippetId = -1;
 	private boolean isEditMode = false;
 	private final List<String> originalFileNames = new ArrayList<>();
 
@@ -53,14 +53,14 @@ public class CreateSnippetBottomSheet extends BottomSheetDialogFragment {
 	}
 
 	public static CreateSnippetBottomSheet newInstance(
-			int snippetId,
+			long snippetId,
 			String title,
 			String description,
 			String visibility,
 			List<FileEntry> existingFiles) {
 		CreateSnippetBottomSheet sheet = new CreateSnippetBottomSheet();
 		Bundle args = new Bundle();
-		args.putInt("snippet_id", snippetId);
+		args.putLong("snippet_id", snippetId);
 		args.putString("title", title);
 		args.putString("description", description);
 		args.putString("visibility", visibility);
@@ -72,8 +72,9 @@ public class CreateSnippetBottomSheet extends BottomSheetDialogFragment {
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		if (getArguments() != null) {
-			snippetId = getArguments().getInt("snippet_id", -1);
+		Bundle args = getArguments();
+		if (args != null) {
+			snippetId = args.getLong("snippet_id", -1);
 			isEditMode = snippetId > 0;
 		}
 	}
@@ -124,16 +125,28 @@ public class CreateSnippetBottomSheet extends BottomSheetDialogFragment {
 				});
 
 		if (isEditMode && getArguments() != null) {
+			Bundle args = getArguments();
 			binding.sheetTitle.setText(R.string.edit_snippet);
 			binding.btnSubmit.setText(R.string.update);
-			binding.titleInput.setText(getArguments().getString("title", ""));
-			binding.descriptionInput.setText(getArguments().getString("description", ""));
-			String vis = getArguments().getString("visibility", "private");
+			binding.titleInput.setText(args.getString("title", ""));
+			binding.descriptionInput.setText(args.getString("description", ""));
+			String vis = args.getString("visibility", "private");
 			binding.chipPublic.setChecked("public".equals(vis));
 
-			//noinspection unchecked
-			List<FileEntry> existing = (List<FileEntry>) getArguments().getSerializable("files");
-			if (existing != null && !existing.isEmpty()) {
+			List<FileEntry> existing = new ArrayList<>();
+
+			Object serializableObj =
+					androidx.core.os.BundleCompat.getSerializable(args, "files", ArrayList.class);
+
+			if (serializableObj instanceof List<?> rawList) {
+				for (Object obj : rawList) {
+					if (obj instanceof FileEntry) {
+						existing.add((FileEntry) obj);
+					}
+				}
+			}
+
+			if (!existing.isEmpty()) {
 				files.addAll(existing);
 				originalFileNames.clear();
 				for (FileEntry entry : existing) {

@@ -3,10 +3,13 @@ package com.labnex.app.helpers;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
 import android.text.style.LineHeightSpan;
 import android.text.style.ReplacementSpan;
+import android.util.Pair;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -20,7 +23,7 @@ public class DiffParser {
 	private final Context context;
 	private final TextView diffTextView;
 	private final String diff;
-	private TextView fileStatistics;
+	private final TextView fileStatistics;
 
 	public DiffParser(
 			Context context, TextView diffTextView, String diff, TextView fileStatistics) {
@@ -30,32 +33,51 @@ public class DiffParser {
 		this.fileStatistics = fileStatistics;
 	}
 
-	public DiffParser(Context context, TextView diffTextView, String diff) {
-		this.context = context;
-		this.diffTextView = diffTextView;
-		this.diff = diff;
+	public void highlightDiffWithStats() {
+		if (diff == null) return;
+		Pair<SpannableStringBuilder, SpannableStringBuilder> parsedOutput =
+				parseWorker(context, diff, diffTextView.getTextSize());
+
+		diffTextView.setText(parsedOutput.first);
+		if (fileStatistics != null) {
+			fileStatistics.setText(parsedOutput.second);
+		}
 	}
 
-	public void highlightDiffWithStats() {
+	public static Pair<SpannableStringBuilder, SpannableStringBuilder> parseInBackground(
+			Context context, String rawDiff, float textViewTextSizePx) {
+		return parseWorker(context, rawDiff, textViewTextSizePx);
+	}
+
+	private static Pair<SpannableStringBuilder, SpannableStringBuilder> parseWorker(
+			Context context, String diff, float textSizePx) {
+		if (diff == null) {
+			return new Pair<>(new SpannableStringBuilder(""), new SpannableStringBuilder(""));
+		}
 
 		SpannableStringBuilder highlightedDiff = new SpannableStringBuilder();
+
 		Paint paint = new Paint();
+		paint.setTypeface(Typeface.MONOSPACE);
+		paint.setTextSize(textSizePx);
 
 		String[] lines = diff.split("\n");
-
 		boolean firstLine = true;
 
 		int removedLineColor = ContextCompat.getColor(context, R.color.diff_removed_color);
 		int addedLineColor = ContextCompat.getColor(context, R.color.diff_added_color);
-		int textColor = ContextCompat.getColor(context, R.color.five_dark_white);
+
+		android.util.TypedValue typedValue = new android.util.TypedValue();
+		context.getTheme()
+				.resolveAttribute(
+						com.google.android.material.R.attr.colorOnSurface, typedValue, true);
+		int textColor = typedValue.data;
 
 		int paddingStart = 40;
 		int paddingEnd = 40;
-		int marginTopBottom = 10;
-		float maxLineWidth = 0;
-		int removedLineCount = 0;
-		int addedLineCount = 0;
+		int marginTopBottom = 12;
 
+		float maxLineWidth = 0;
 		for (String line : lines) {
 			float lineWidth = paint.measureText(line) + paddingStart + paddingEnd;
 			maxLineWidth = Math.max(maxLineWidth, lineWidth);
@@ -65,8 +87,10 @@ public class DiffParser {
 			maxLineWidth = 420;
 		}
 
-		for (String line : lines) {
+		int removedLineCount = 0;
+		int addedLineCount = 0;
 
+		for (String line : lines) {
 			if (firstLine && line.startsWith("@@")) {
 				firstLine = false;
 				continue;
@@ -77,14 +101,9 @@ public class DiffParser {
 			int end = highlightedDiff.length();
 
 			if (line.startsWith("-")) {
-
 				highlightedDiff.setSpan(
 						new PaddedBackgroundSpan(
-								paddingStart,
-								paddingEnd,
-								removedLineColor,
-								textColor,
-								maxLineWidth * 3.2F),
+								paddingStart, removedLineColor, textColor, maxLineWidth),
 						start,
 						end,
 						Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -95,14 +114,9 @@ public class DiffParser {
 						Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 				removedLineCount++;
 			} else if (line.startsWith("+")) {
-
 				highlightedDiff.setSpan(
 						new PaddedBackgroundSpan(
-								paddingStart,
-								paddingEnd,
-								addedLineColor,
-								textColor,
-								maxLineWidth * 3.2F),
+								paddingStart, addedLineColor, textColor, maxLineWidth),
 						start,
 						end,
 						Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -113,110 +127,40 @@ public class DiffParser {
 						Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 				addedLineCount++;
 			} else {
-
 				highlightedDiff.setSpan(
-						new PaddingSpan(paddingStart, paddingEnd, maxLineWidth * 3.2F),
+						new PaddingSpan(paddingStart, maxLineWidth),
 						start,
 						end,
 						Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 			}
 		}
 
-		diffTextView.setText(highlightedDiff);
-		fileStatistics.setText(
-				context.getString(
-						R.string.diff_statistics,
-						String.valueOf(addedLineCount),
-						String.valueOf(removedLineCount)));
-	}
+		SpannableStringBuilder statsBuilder = new SpannableStringBuilder();
 
-	public void highlightDiffWithoutStats() {
+		String addedText = "+" + addedLineCount;
+		int addedStart = statsBuilder.length();
+		statsBuilder.append(addedText);
+		statsBuilder.setSpan(
+				new ForegroundColorSpan(0xFF4CAF50),
+				addedStart,
+				statsBuilder.length(),
+				Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-		SpannableStringBuilder highlightedDiff = new SpannableStringBuilder();
-		Paint paint = new Paint();
+		statsBuilder.append("  ");
 
-		String[] lines = diff.split("\n");
+		String removedText = "-" + removedLineCount;
+		int removedStart = statsBuilder.length();
+		statsBuilder.append(removedText);
+		statsBuilder.setSpan(
+				new ForegroundColorSpan(0xFFF44336),
+				removedStart,
+				statsBuilder.length(),
+				Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-		boolean firstLine = true;
-
-		int removedLineColor = ContextCompat.getColor(context, R.color.diff_removed_color);
-		int addedLineColor = ContextCompat.getColor(context, R.color.diff_added_color);
-		int textColor = ContextCompat.getColor(context, R.color.five_dark_white);
-
-		int paddingStart = 40;
-		int paddingEnd = 40;
-		int marginTopBottom = 10;
-		float maxLineWidth = 0;
-
-		for (String line : lines) {
-			float lineWidth = paint.measureText(line) + paddingStart + paddingEnd;
-			maxLineWidth = Math.max(maxLineWidth, lineWidth);
-		}
-
-		if (maxLineWidth < 420) {
-			maxLineWidth = 420;
-		}
-
-		for (String line : lines) {
-
-			if (firstLine && line.startsWith("@@")) {
-				firstLine = false;
-				continue;
-			}
-
-			int start = highlightedDiff.length();
-			highlightedDiff.append(line).append("\n");
-			int end = highlightedDiff.length();
-
-			if (line.startsWith("-")) {
-
-				highlightedDiff.setSpan(
-						new PaddedBackgroundSpan(
-								paddingStart,
-								paddingEnd,
-								removedLineColor,
-								textColor,
-								maxLineWidth * 3.2F),
-						start,
-						end,
-						Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-				highlightedDiff.setSpan(
-						new CustomLineHeightSpan(marginTopBottom),
-						start,
-						end,
-						Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-			} else if (line.startsWith("+")) {
-
-				highlightedDiff.setSpan(
-						new PaddedBackgroundSpan(
-								paddingStart,
-								paddingEnd,
-								addedLineColor,
-								textColor,
-								maxLineWidth * 3.2F),
-						start,
-						end,
-						Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-				highlightedDiff.setSpan(
-						new CustomLineHeightSpan(marginTopBottom),
-						start,
-						end,
-						Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-			} else {
-
-				highlightedDiff.setSpan(
-						new PaddingSpan(paddingStart, paddingEnd, maxLineWidth * 3.2F),
-						start,
-						end,
-						Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-			}
-		}
-
-		diffTextView.setText(highlightedDiff);
+		return new Pair<>(highlightedDiff, statsBuilder);
 	}
 
 	private static class CustomLineHeightSpan implements LineHeightSpan {
-
 		private final int marginTopBottom;
 
 		public CustomLineHeightSpan(int marginTopBottom) {
@@ -237,21 +181,14 @@ public class DiffParser {
 	}
 
 	private static class PaddedBackgroundSpan extends ReplacementSpan {
-
 		private final int paddingStart;
-		private final int paddingEnd;
 		private final int backgroundColor;
 		private final int textColor;
 		private final float maxLineWidth;
 
 		public PaddedBackgroundSpan(
-				int paddingStart,
-				int paddingEnd,
-				int backgroundColor,
-				int textColor,
-				float maxLineWidth) {
+				int paddingStart, int backgroundColor, int textColor, float maxLineWidth) {
 			this.paddingStart = paddingStart;
-			this.paddingEnd = paddingEnd;
 			this.backgroundColor = backgroundColor;
 			this.textColor = textColor;
 			this.maxLineWidth = maxLineWidth;
@@ -264,12 +201,12 @@ public class DiffParser {
 				int start,
 				int end,
 				Paint.FontMetricsInt fm) {
-			return (int) maxLineWidth;
+			return (int) (paint.measureText(text, start, end) + (paddingStart * 2));
 		}
 
 		@Override
 		public void draw(
-				Canvas canvas,
+				@NonNull Canvas canvas,
 				CharSequence text,
 				int start,
 				int end,
@@ -277,29 +214,23 @@ public class DiffParser {
 				int top,
 				int y,
 				int bottom,
-				Paint paint) {
-			// Draw the background across the maxLineWidth
-			paint.setColor(backgroundColor);
-			canvas.drawRect(x, top, x + maxLineWidth, bottom, paint);
+				@NonNull Paint paint) {
+			float drawWidth = Math.max(canvas.getWidth(), maxLineWidth);
 
-			// Draw the text with start padding
+			paint.setColor(backgroundColor);
+			canvas.drawRect(x, top, x + drawWidth, bottom, paint);
+
 			paint.setColor(textColor);
+			paint.setTypeface(Typeface.MONOSPACE);
 			canvas.drawText(text, start, end, x + paddingStart, y, paint);
 		}
 	}
 
 	private static class PaddingSpan extends ReplacementSpan {
-
 		private final int paddingStart;
-		private final int paddingEnd;
-		// private final int textColor;
-		private final float maxLineWidth;
 
-		public PaddingSpan(int paddingStart, int paddingEnd, float maxLineWidth) {
+		public PaddingSpan(int paddingStart, float maxLineWidth) {
 			this.paddingStart = paddingStart;
-			this.paddingEnd = paddingEnd;
-			// this.textColor = textColor;
-			this.maxLineWidth = maxLineWidth;
 		}
 
 		@Override
@@ -309,12 +240,12 @@ public class DiffParser {
 				int start,
 				int end,
 				Paint.FontMetricsInt fm) {
-			return (int) maxLineWidth;
+			return (int) (paint.measureText(text, start, end) + (paddingStart * 2));
 		}
 
 		@Override
 		public void draw(
-				Canvas canvas,
+				@NonNull Canvas canvas,
 				CharSequence text,
 				int start,
 				int end,
@@ -323,7 +254,7 @@ public class DiffParser {
 				int y,
 				int bottom,
 				@NonNull Paint paint) {
-			// paint.setColor(textColor);
+			paint.setTypeface(Typeface.MONOSPACE);
 			canvas.drawText(text, start, end, x + paddingStart, y, paint);
 		}
 	}

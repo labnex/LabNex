@@ -1,527 +1,824 @@
 package com.labnex.app.activities;
 
+import android.animation.ValueAnimator;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.Typeface;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
+import android.util.TypedValue;
 import android.view.Gravity;
-import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import androidx.annotation.NonNull;
-import androidx.core.content.res.ResourcesCompat;
-import androidx.core.text.HtmlCompat;
+import android.widget.TextView;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
-import com.bumptech.glide.request.RequestOptions;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.labnex.app.R;
-import com.labnex.app.adapters.IssueNotesAdapter;
-import com.labnex.app.bottomsheets.CommentOnIssueBottomSheet;
-import com.labnex.app.clients.RetrofitClient;
+import com.labnex.app.adapters.TimelineAdapter;
+import com.labnex.app.bottomsheets.CreateIssueBottomSheet;
+import com.labnex.app.bottomsheets.GenericMenuBottomSheet;
 import com.labnex.app.contexts.IssueContext;
 import com.labnex.app.databinding.ActivityIssueDetailBinding;
-import com.labnex.app.databinding.BottomSheetIssueActionsBinding;
+import com.labnex.app.helpers.AccessLevel;
+import com.labnex.app.helpers.AppUIStateManager;
+import com.labnex.app.helpers.AvatarGenerator;
+import com.labnex.app.helpers.EndlessRecyclerViewScrollListener;
+import com.labnex.app.helpers.LabelStylingHelper;
 import com.labnex.app.helpers.Markdown;
-import com.labnex.app.helpers.TextDrawable.ColorGenerator;
-import com.labnex.app.helpers.TextDrawable.TextDrawable;
-import com.labnex.app.helpers.TimeUtils;
+import com.labnex.app.helpers.TimeHelper;
 import com.labnex.app.helpers.Toasty;
+import com.labnex.app.helpers.UIHelper;
 import com.labnex.app.helpers.Utils;
-import com.labnex.app.interfaces.BottomSheetListener;
-import com.labnex.app.models.issues.CrudeIssue;
+import com.labnex.app.models.app.GenericMenuItemModel;
+import com.labnex.app.models.issues.AssigneesItem;
+import com.labnex.app.models.issues.Author;
 import com.labnex.app.models.issues.Issues;
 import com.labnex.app.models.labels.Labels;
-import com.labnex.app.viewmodels.IssueMrNotesViewModel;
+import com.labnex.app.viewmodels.IssueDetailViewModel;
+import com.labnex.app.viewmodels.ReactionsViewModel;
+import com.labnex.app.viewmodels.TimelineViewModel;
 import com.vdurmont.emoji.EmojiParser;
-import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * @author mmarif
  */
-public class IssueDetailActivity extends BaseActivity
-		implements BottomSheetListener, CommentOnIssueBottomSheet.UpdateInterface {
+public class IssueDetailActivity extends BaseActivity {
 
-	public IssueContext issue;
-	private int issueIndex;
-	private int projectId;
-	private ActivityIssueDetailBinding activityIssueDetailBinding;
-	private IssueMrNotesViewModel issueMrNotesViewModel;
-	private IssueNotesAdapter issueNotesAdapter;
-	private boolean infoCard = false;
-	private int page = 1;
-	private int resultLimit;
-	private final String type = "issue";
-	private BottomSheetIssueActionsBinding sheetBinding;
+	private ActivityIssueDetailBinding binding;
+	private IssueDetailViewModel viewModel;
+	private TimelineViewModel timelineViewModel;
+	private TimelineAdapter timelineAdapter;
+	private ReactionsViewModel reactionsViewModel;
+
+	private IssueContext issue;
+	private long issueIid;
+	private long projectId;
+	private boolean timelineInitialized = false;
+	private boolean labelsObserverSet = false;
+	private List<String> currentLabelNames = new ArrayList<>();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-
 		super.onCreate(savedInstanceState);
+		binding = ActivityIssueDetailBinding.inflate(getLayoutInflater());
+		setContentView(binding.getRoot());
 
-		activityIssueDetailBinding = ActivityIssueDetailBinding.inflate(getLayoutInflater());
-		setContentView(activityIssueDetailBinding.getRoot());
+		UIHelper.applyEdgeToEdge(this, binding.dockedToolbar, binding.scrollView, null, null);
 
-		issueMrNotesViewModel = new ViewModelProvider(this).get(IssueMrNotesViewModel.class);
+		viewModel = new ViewModelProvider(this).get(IssueDetailViewModel.class);
 
-		CommentOnIssueBottomSheet.setUpdateListener(this);
-
-		Locale locale = ctx.getResources().getConfiguration().getLocales().get(0);
 		issue = IssueContext.fromIntent(getIntent());
 
-		resultLimit = getAccount().getMaxPageLimit();
-
-		issueIndex = issue.getIssueIndex();
-		if (issue.getProjects() != null) {
-			projectId = issue.getProjects().getProjectId();
+		if (issue == null || issue.getProjects() == null) {
+			Toasty.show(ctx, getString(R.string.cannot_find_issue));
+			finish();
+			return;
 		}
 
-		activityIssueDetailBinding.bottomAppBar.setNavigationOnClickListener(
-				bottomAppBar -> finish());
+		issueIid = issue.getIssueIndex();
+		projectId = issue.getProjects().getProjectId();
 
-		activityIssueDetailBinding.bottomAppBar.setOnMenuItemClickListener(
-				item -> {
-					if (item.getItemId() == R.id.menu) {
-						showIssueActionsBottomSheet();
-						return true;
+		if (issueIid <= 0 || projectId <= 0) {
+			Toasty.show(ctx, getString(R.string.cannot_find_issue));
+			finish();
+			return;
+		}
+
+		setupDock();
+		observeViewModel();
+		setupCommentBox();
+
+		binding.getRoot()
+				.getViewTreeObserver()
+				.addOnGlobalLayoutListener(
+						() -> {
+							Rect r = new Rect();
+							binding.getRoot().getWindowVisibleDisplayFrame(r);
+							int screenHeight = binding.getRoot().getRootView().getHeight();
+							int keypadHeight = screenHeight - r.bottom;
+
+							ViewGroup.MarginLayoutParams params =
+									(ViewGroup.MarginLayoutParams)
+											binding.commentBox.getRoot().getLayoutParams();
+							if (keypadHeight > screenHeight * 0.15) {
+								params.bottomMargin = keypadHeight;
+							} else {
+								params.bottomMargin =
+										(int) (36 * getResources().getDisplayMetrics().density);
+							}
+							binding.commentBox.getRoot().setLayoutParams(params);
+						});
+
+		viewModel.loadIssue(ctx, projectId, issueIid);
+	}
+
+	private void setupDock() {
+		binding.btnBack.setOnClickListener(v -> finish());
+		binding.btnComment.setOnClickListener(v -> toggleCommentBox());
+		binding.btnMenu.setOnClickListener(v -> showIssueMenu());
+	}
+
+	private void updateCommentButton(Issues issueData) {
+		boolean isLocked = issueData.getDiscussionLocked();
+		boolean isArchived = issue.getProjects().getProject().isArchived();
+
+		if (isArchived) {
+			binding.btnComment.setVisibility(View.GONE);
+			return;
+		}
+
+		if (isLocked) {
+			int accessLevel = AccessLevel.getUserAccessLevel(issue.getProjects().getProject());
+			boolean isMember = accessLevel >= AccessLevel.REPORTER;
+			binding.btnComment.setEnabled(isMember);
+			binding.btnComment.setAlpha(isMember ? 1.0f : 0.4f);
+		} else {
+			binding.btnComment.setEnabled(true);
+			binding.btnComment.setAlpha(1.0f);
+		}
+	}
+
+	private void toggleCommentSectionSpace(boolean expand) {
+		float density = getResources().getDisplayMetrics().density;
+		int targetHeight = expand ? (int) (190 * density) : 0;
+
+		ValueAnimator animator =
+				ValueAnimator.ofInt(binding.scrollSpacer.getLayoutParams().height, targetHeight);
+		animator.setDuration(300);
+		animator.addUpdateListener(
+				animation -> {
+					binding.scrollSpacer.getLayoutParams().height =
+							(int) animation.getAnimatedValue();
+					binding.scrollSpacer.requestLayout();
+				});
+		animator.start();
+	}
+
+	private void toggleCommentBox() {
+		if (binding.commentBox.getRoot().getVisibility() == View.VISIBLE) {
+			hideCommentBox();
+		} else {
+			showCommentBox();
+		}
+	}
+
+	private void showCommentBox() {
+		Issues issueData = viewModel.getIssueData().getValue();
+		if (issueData != null && issueData.getDiscussionLocked()) {
+			int accessLevel = AccessLevel.getUserAccessLevel(issue.getProjects().getProject());
+			boolean isMember = accessLevel >= AccessLevel.REPORTER;
+			if (!isMember) {
+				Toasty.show(ctx, getString(R.string.discussion_locked));
+				return;
+			}
+		}
+
+		toggleCommentSectionSpace(true);
+
+		binding.commentBox.getRoot().setVisibility(View.VISIBLE);
+		binding.commentBox.getRoot().setAlpha(0f);
+		binding.commentBox.getRoot().setTranslationY(100f);
+		binding.commentBox
+				.getRoot()
+				.animate()
+				.alpha(1f)
+				.translationY(0f)
+				.setDuration(250)
+				.withEndAction(() -> binding.commentBox.etQuickComment.requestFocus())
+				.start();
+	}
+
+	private void hideCommentBox() {
+		toggleCommentSectionSpace(false);
+
+		Utils.hideKeyboard(this);
+		binding.commentBox.etQuickComment.setText("");
+		binding.commentBox
+				.getRoot()
+				.animate()
+				.alpha(0f)
+				.translationY(100f)
+				.setDuration(200)
+				.withEndAction(() -> binding.commentBox.getRoot().setVisibility(View.GONE))
+				.start();
+	}
+
+	private void setupCommentBox() {
+		binding.commentBox.etQuickComment.setOnFocusChangeListener(
+				(v, hasFocus) -> {
+					if (hasFocus) {
+						Utils.showKeyboard(this, binding.commentBox.etQuickComment);
+					}
+				});
+
+		binding.commentBox.btnCloseReply.setOnClickListener(v -> hideCommentBox());
+		binding.commentBox.btnQuickSend.setOnClickListener(v -> submitComment());
+		binding.commentBox.etQuickComment.setOnTouchListener(
+				(v, event) -> {
+					if (event.getAction() == MotionEvent.ACTION_DOWN) {
+						v.getParent().requestDisallowInterceptTouchEvent(true);
+					} else if (event.getAction() == MotionEvent.ACTION_UP
+							|| event.getAction() == MotionEvent.ACTION_CANCEL) {
+						v.getParent().requestDisallowInterceptTouchEvent(false);
+						v.performClick();
 					}
 					return false;
 				});
+	}
 
-		if (!issue.getProjects().getProject().isArchived()) {
-			activityIssueDetailBinding.newNote.setOnClickListener(
-					accounts -> {
-						if (issue.getIssue().getDiscussionLocked()) {
-							MaterialAlertDialogBuilder materialAlertDialogBuilder =
-									new MaterialAlertDialogBuilder(
-											ctx,
-											com.google.android.material.R.style
-													.ThemeOverlay_Material3_Dialog_Alert);
+	private void submitComment() {
+		String body =
+				binding.commentBox.etQuickComment.getText() != null
+						? binding.commentBox.etQuickComment.getText().toString().trim()
+						: "";
+		if (body.isEmpty()) return;
 
-							materialAlertDialogBuilder
-									.setTitle(R.string.discussion_locked)
-									.setMessage(R.string.discussion_locked_message)
+		timelineViewModel.addComment(ctx, projectId, issueIid, body);
+	}
+
+	private void scrollTimelineToBottom() {
+		binding.scrollView.post(
+				() ->
+						binding.scrollView.smoothScrollTo(
+								0, binding.scrollView.getChildAt(0).getHeight()));
+	}
+
+	private void showIssueMenu() {
+		Issues issueData = issue.getIssue();
+		if (issueData == null) return;
+
+		List<GenericMenuItemModel> items = new ArrayList<>();
+		boolean isClosed = "closed".equalsIgnoreCase(issueData.getState());
+		boolean isLocked = issueData.getDiscussionLocked();
+		int accessLevel = AccessLevel.getUserAccessLevel(issue.getProjects().getProject());
+		boolean canModify = accessLevel >= AccessLevel.MAINTAINER;
+
+		if (canModify) {
+			if (isClosed && !isLocked) {
+				items.add(
+						new GenericMenuItemModel(
+								"reopen",
+								R.string.reopen,
+								R.drawable.ic_refresh,
+								com.google.android.material.R.attr.colorPrimaryContainer,
+								com.google.android.material.R.attr.colorOnPrimaryContainer));
+			} else if (!isClosed) {
+				items.add(
+						new GenericMenuItemModel(
+								"close",
+								R.string.close,
+								R.drawable.ic_close,
+								com.google.android.material.R.attr.colorErrorContainer,
+								com.google.android.material.R.attr.colorOnErrorContainer));
+			}
+
+			if (isLocked) {
+				items.add(
+						new GenericMenuItemModel(
+								"unlock",
+								R.string.unlock_discussion,
+								R.drawable.ic_unlock,
+								com.google.android.material.R.attr.colorPrimaryContainer,
+								com.google.android.material.R.attr.colorOnPrimaryContainer));
+			} else {
+				items.add(
+						new GenericMenuItemModel(
+								"lock",
+								R.string.lock_discussion,
+								R.drawable.ic_lock,
+								com.google.android.material.R.attr.colorPrimaryContainer,
+								com.google.android.material.R.attr.colorOnPrimaryContainer));
+			}
+		}
+
+		items.add(
+				new GenericMenuItemModel(
+						"copy_url",
+						R.string.copy_url,
+						R.drawable.ic_link,
+						com.google.android.material.R.attr.colorPrimaryContainer,
+						com.google.android.material.R.attr.colorOnPrimaryContainer));
+		items.add(
+				new GenericMenuItemModel(
+						"open_browser",
+						R.string.open_in_browser,
+						R.drawable.ic_browser,
+						com.google.android.material.R.attr.colorPrimaryContainer,
+						com.google.android.material.R.attr.colorOnPrimaryContainer));
+
+		GenericMenuBottomSheet sheet =
+				GenericMenuBottomSheet.newInstance(issueData.getTitle(), "#" + issueIid, items);
+		sheet.setOnMenuItemClickListener(
+				id -> {
+					switch (id) {
+						case "close":
+							new MaterialAlertDialogBuilder(ctx)
+									.setTitle(R.string.close_issue)
+									.setMessage(R.string.close_issue_confirmation)
 									.setPositiveButton(
-											R.string.proceed,
-											(dialog, whichButton) -> {
-												initComment();
-											})
-									.setNeutralButton(R.string.cancel, null)
+											R.string.close,
+											(d, w) ->
+													viewModel.toggleIssueState(
+															ctx, projectId, issueIid, "close"))
+									.setNegativeButton(R.string.cancel, null)
 									.show();
-						} else {
-							initComment();
-						}
-					});
+							break;
+						case "reopen":
+							viewModel.toggleIssueState(ctx, projectId, issueIid, "reopen");
+							break;
+						case "lock":
+							viewModel.toggleDiscussionLock(ctx, projectId, issueIid, true);
+							break;
+						case "unlock":
+							viewModel.toggleDiscussionLock(ctx, projectId, issueIid, false);
+							break;
+						case "copy_url":
+							Utils.copyToClipboard(
+									ctx,
+									issueData.getWebUrl(),
+									getString(R.string.copied_to_clipboard));
+							break;
+						case "open_browser":
+							Utils.openUrlInBrowser(this, issueData.getWebUrl());
+							break;
+					}
+				});
+		sheet.show(getSupportFragmentManager(), "issueMenuSheet");
+	}
+
+	private void setupHeader(Issues issueData) {
+		String state = issueData.getState();
+		String stateLabel =
+				state != null ? state.substring(0, 1).toUpperCase() + state.substring(1) : "";
+		int stateColor;
+		if ("closed".equalsIgnoreCase(state)) {
+			stateColor = ctx.getResources().getColor(R.color.label_default_color, ctx.getTheme());
 		} else {
-			activityIssueDetailBinding.newNote.setVisibility(View.GONE);
+			stateColor = ctx.getResources().getColor(R.color.green, ctx.getTheme());
+			stateLabel = getString(R.string.open);
 		}
 
-		activityIssueDetailBinding.recyclerView.setHasFixedSize(true);
-		activityIssueDetailBinding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
-		activityIssueDetailBinding.recyclerView.setNestedScrollingEnabled(false);
+		Drawable stateBadge = AvatarGenerator.getLabelDrawable(ctx, stateLabel, stateColor, 22);
+		binding.stateBadge.setImageDrawable(stateBadge);
 
-		ColorGenerator generator = ColorGenerator.MATERIAL;
-		int color = generator.getColor(issue.getIssue().getAuthor().getName());
-		String firstCharacter = String.valueOf(issue.getIssue().getAuthor().getName().charAt(0));
+		binding.lockIcon.setVisibility(issueData.getDiscussionLocked() ? View.VISIBLE : View.GONE);
+		if (issueData.getDiscussionLocked()) {
+			binding.lockIcon.setOnClickListener(
+					v -> Toasty.show(ctx, getString(R.string.discussion_locked_message)));
+		}
 
-		TextDrawable drawable =
-				TextDrawable.builder()
-						.beginConfig()
-						.useFont(Typeface.DEFAULT)
-						.fontSize(16)
-						.toUpperCase()
-						.width(28)
-						.height(28)
-						.endConfig()
-						.buildRoundRect(firstCharacter, color, 8);
-
-		String issueId =
-				"<font color='"
-						+ ResourcesCompat.getColor(
-								getResources(), R.color.md_theme_onBackground, null)
-						+ "'>"
-						+ appCtx.getResources().getString(R.string.hash)
-						+ issueIndex
-						+ "</font>";
-		String modifiedTime =
-				TimeUtils.formatTime(
-						Date.from(
-								OffsetDateTime.parse(issue.getIssue().getCreatedAt()).toInstant()),
-						locale);
-
-		if (issue.getIssue().getAuthor().getAvatarUrl() != null) {
-
-			Glide.with(ctx)
-					.load(issue.getIssue().getAuthor().getAvatarUrl())
-					.diskCacheStrategy(DiskCacheStrategy.ALL)
-					.placeholder(R.drawable.ic_spinner)
-					.centerCrop()
-					.into(activityIssueDetailBinding.userAvatar);
+		if (issueData.isConfidential()) {
+			int confidentialColor =
+					ctx.getResources().getColor(R.color.alert_warning_border, ctx.getTheme());
+			Drawable confidentialBadge =
+					AvatarGenerator.getLabelDrawable(
+							ctx, getString(R.string.confidential), confidentialColor, 22);
+			binding.confidentialBadge.setImageDrawable(confidentialBadge);
+			binding.confidentialBadge.setVisibility(View.VISIBLE);
 		} else {
-			activityIssueDetailBinding.userAvatar.setImageDrawable(drawable);
+			binding.confidentialBadge.setVisibility(View.GONE);
 		}
 
-		Markdown.render(
-				ctx,
-				String.valueOf(
-						HtmlCompat.fromHtml(
-								EmojiParser.parseToUnicode(issue.getIssue().getTitle())
-										+ " "
-										+ issueId,
-								HtmlCompat.FROM_HTML_MODE_LEGACY)),
-				activityIssueDetailBinding.issueTitle);
-
-		if (issue.getIssue().getMilestone() != null) {
-
-			activityIssueDetailBinding.milestoneFrame.setVisibility(View.VISIBLE);
-			activityIssueDetailBinding.issueMilestone.setText(
-					issue.getIssue().getMilestone().getTitle());
-			infoCard = true;
-		}
-
-		if (issue.getIssue().getDueDate() != null) {
-
-			activityIssueDetailBinding.dueDateFrame.setVisibility(View.VISIBLE);
-			activityIssueDetailBinding.issueDueDate.setText(
-					issue.getIssue().getDueDate().toString());
-			infoCard = true;
-		}
-
-		getLabels();
-
-		if (!issue.getIssue().getDescription().isEmpty()) {
-			Markdown.render(
-					ctx,
-					EmojiParser.parseToUnicode(issue.getIssue().getDescription().trim()),
-					activityIssueDetailBinding.issueDescription,
-					issue.getProjects());
-		} else {
-			activityIssueDetailBinding.issueDescription.setVisibility(View.GONE);
-		}
-
-		activityIssueDetailBinding.username.setText(issue.getIssue().getAuthor().getName());
-		activityIssueDetailBinding.createdTime.setText(modifiedTime);
-		activityIssueDetailBinding.issueThumbsUpCount.setText(
-				String.valueOf(issue.getIssue().getUpvotes()));
-		activityIssueDetailBinding.issueThumbsDownCount.setText(
-				String.valueOf(issue.getIssue().getDownvotes()));
-
-		activityIssueDetailBinding.userAvatar.setOnClickListener(
-				profile -> {
-					Intent intent = new Intent(ctx, ProfileActivity.class);
-					intent.putExtra("source", "issue_detail");
-					intent.putExtra("userId", issue.getIssue().getAuthor().getId());
-					ctx.startActivity(intent);
+		int accessLevel = AccessLevel.getUserAccessLevel(issue.getProjects().getProject());
+		boolean canModify = accessLevel >= AccessLevel.MAINTAINER;
+		binding.btnEdit.setVisibility(canModify ? View.VISIBLE : View.GONE);
+		binding.btnEdit.setOnClickListener(
+				v -> {
+					CreateIssueBottomSheet.newInstance("project", projectId, canModify, issueData)
+							.show(getSupportFragmentManager(), "editIssueSheet");
 				});
 
-		if (!issue.getIssue().getAssignees().isEmpty()) {
+		setupIssueHeaderTitle(issueData.getTitle(), issueIid);
 
-			infoCard = true;
-			LinearLayout.LayoutParams paramsAssignees = new LinearLayout.LayoutParams(64, 64);
-			paramsAssignees.setMargins(0, 0, 16, 0);
-
-			activityIssueDetailBinding.assigneesScrollView.setVisibility(View.VISIBLE);
-
-			for (int i = 0; i < issue.getIssue().getAssignees().size(); i++) {
-
-				ImageView assigneesView = new ImageView(ctx);
-
+		Author author = issueData.getAuthor();
+		if (author != null) {
+			if (author.getAvatarUrl() != null) {
 				Glide.with(ctx)
-						.load(issue.getIssue().getAssignees().get(i).getAvatarUrl())
+						.load(author.getAvatarUrl())
 						.diskCacheStrategy(DiskCacheStrategy.ALL)
 						.placeholder(R.drawable.ic_spinner)
 						.centerCrop()
-						.apply(RequestOptions.bitmapTransform(new RoundedCorners(20)))
-						.into(assigneesView);
-
-				activityIssueDetailBinding.assigneesFrame.addView(assigneesView);
-				assigneesView.setLayoutParams(paramsAssignees);
-
-				int finalI = i;
-				assigneesView.setOnClickListener(
-						profile -> {
-							Intent intent = new Intent(ctx, ProfileActivity.class);
-							intent.putExtra("source", "issue_detail");
-							intent.putExtra(
-									"userId", issue.getIssue().getAssignees().get(finalI).getId());
-							ctx.startActivity(intent);
-						});
+						.into(binding.authorAvatar);
+			} else {
+				binding.authorAvatar.setImageDrawable(
+						AvatarGenerator.getLetterAvatar(ctx, author.getName(), 36));
 			}
+			String displayName = author.getName() != null ? author.getName() : author.getUsername();
+			binding.authorName.setText(displayName);
+			binding.authorAvatar.setOnClickListener(v -> openProfile(author.getId()));
 		}
 
-		if (!infoCard) {
-			activityIssueDetailBinding.issueInfoCard.setVisibility(View.GONE);
+		String createdAt = issueData.getCreatedAt();
+		if (createdAt != null) {
+			Date date = TimeHelper.parseIso8601(createdAt);
+			binding.createdTime.setText(TimeHelper.formatTime(date));
+			binding.createdTime.setOnClickListener(
+					v -> Toasty.show(ctx, TimeHelper.getFullDateTime(date, Locale.getDefault())));
 		}
 
-		getIssueNotesData();
+		String description = issueData.getDescription();
+		if (description != null && !description.isEmpty()) {
+			Markdown.render(
+					ctx,
+					EmojiParser.parseToUnicode(description.trim()),
+					binding.issueDescription,
+					issue.getProjects());
+		} else {
+			binding.issueDescription.setVisibility(View.GONE);
+		}
 	}
 
-	private void showIssueActionsBottomSheet() {
+	private void setupIssueHeaderTitle(String titleText, long issueIid) {
+		if (titleText == null) titleText = "";
 
-		sheetBinding =
-				BottomSheetIssueActionsBinding.inflate(LayoutInflater.from(this), null, false);
-		BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
-		bottomSheetDialog.setContentView(sheetBinding.getRoot());
+		String numberText = " " + getString(R.string.issue_number, issueIid);
 
-		if (issue.getIssue().getState().equalsIgnoreCase("closed")) {
-			sheetBinding.closeItemCard.setVisibility(View.GONE);
+		TypedValue typedValue = new TypedValue();
+		getTheme()
+				.resolveAttribute(
+						com.google.android.material.R.attr.colorOnSurface, typedValue, true);
+		int baseColor = typedValue.data;
+		int alphaColor = (baseColor & 0x00FFFFFF) | (0x99 << 24);
+
+		Spanned titleSpanned =
+				Markdown.renderToSpanned(ctx, EmojiParser.parseToUnicode(titleText.trim()));
+
+		SpannableStringBuilder builder = new SpannableStringBuilder();
+		builder.append(titleSpanned);
+
+		int startPos = builder.length();
+		builder.append(numberText);
+		builder.setSpan(
+				new ForegroundColorSpan(alphaColor),
+				startPos,
+				builder.length(),
+				Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+		binding.issueTitleAndNumber.setText(builder);
+	}
+
+	private void setupInfoSection(Issues issueData) {
+		setupLabels(issueData.getLabels());
+		setupAssignees(issueData.getAssignees());
+
+		if (issueData.getMilestone() != null) {
+			binding.infoMilestone.setVisibility(View.VISIBLE);
+			binding.infoMilestoneText.setText(issueData.getMilestone().getTitle());
 		}
 
-		sheetBinding.closeItem.setOnClickListener(
-				v -> {
-					MaterialAlertDialogBuilder materialAlertDialogBuilder =
-							new MaterialAlertDialogBuilder(ctx);
-					materialAlertDialogBuilder
-							.setTitle(R.string.close)
-							.setMessage(R.string.close_issue)
-							.setPositiveButton(
-									R.string.close,
-									(dialog, whichButton) -> {
-										closeIssue();
-									})
-							.setNeutralButton(R.string.cancel, null)
-							.show();
-					bottomSheetDialog.dismiss();
-				});
-
-		sheetBinding.urlCopyItem.setOnClickListener(
-				v -> {
-					Utils.copyToClipboard(
-							ctx,
-							issue.getIssue().getWebUrl(),
-							getString(R.string.copy_url_message));
-					bottomSheetDialog.dismiss();
-				});
-
-		sheetBinding.openInBrowserItem.setOnClickListener(
-				v -> {
-					Utils.openUrlInBrowser(this, issue.getIssue().getWebUrl());
-					bottomSheetDialog.dismiss();
-				});
-
-		bottomSheetDialog.show();
+		if (issueData.getDueDate() != null) {
+			binding.infoDueDate.setVisibility(View.VISIBLE);
+			binding.infoDueDateText.setText(issueData.getDueDate());
+		}
 	}
 
-	@Override
-	public void updateDataListener(String str) {
+	private void setupLabels(List<String> labelNames) {
+		this.currentLabelNames = labelNames != null ? labelNames : new ArrayList<>();
 
-		if (str.equalsIgnoreCase("created")) {
-			Toasty.show(ctx, getString(R.string.comment_posted));
+		if (currentLabelNames.isEmpty()) {
+			binding.labelsScrollView.setVisibility(View.GONE);
+			return;
+		}
+		binding.labelsScrollView.setVisibility(View.VISIBLE);
+		binding.labelsContainer.removeAllViews();
+
+		for (String name : currentLabelNames) {
+			viewModel.fetchLabel(ctx, projectId, name);
 		}
 
-		issueNotesAdapter.clearAdapter();
-		page = 1;
-		getIssueNotesData();
-	}
-
-	private void initComment() {
-
-		Bundle bsBundle = new Bundle();
-		bsBundle.putString("source", "comment");
-		bsBundle.putInt("projectId", issue.getProjects().getProjectId());
-		bsBundle.putInt("issueIid", issue.getIssueIndex());
-		CommentOnIssueBottomSheet bottomSheet = new CommentOnIssueBottomSheet();
-		bottomSheet.setArguments(bsBundle);
-		bottomSheet.show(getSupportFragmentManager(), "commentOnIssueBottomSheet");
-	}
-
-	@Override
-	public void onButtonClicked(String text) {}
-
-	private void closeIssue() {
-
-		CrudeIssue crudeIssue = new CrudeIssue();
-		crudeIssue.setStateEvent("close");
-
-		Call<Issues> call =
-				RetrofitClient.getApiInterface(ctx).updateIssue(projectId, issueIndex, crudeIssue);
-
-		call.enqueue(
-				new Callback<>() {
-
-					@Override
-					public void onResponse(
-							@NonNull Call<Issues> call,
-							@NonNull retrofit2.Response<Issues> response) {
-
-						if (response.code() == 200) {
-
-							sheetBinding.closeItemCard.setVisibility(View.GONE);
-							// IssuesActivity.updateIssuesList = true;
-							Toasty.show(ctx, getString(R.string.issue_closed));
-						} else if (response.code() == 401) {
-
-							Toasty.show(ctx, getString(R.string.not_authorized));
-						} else if (response.code() == 403) {
-
-							Toasty.show(ctx, getString(R.string.access_forbidden_403));
-						} else {
-
-							Toasty.show(ctx, getString(R.string.generic_error));
-						}
-					}
-
-					@Override
-					public void onFailure(@NonNull Call<Issues> call, @NonNull Throwable t) {
-
-						Toasty.show(ctx, getString(R.string.generic_server_response_error));
-					}
-				});
-	}
-
-	private void getIssueNotesData() {
-
-		activityIssueDetailBinding.progressBar.setVisibility(View.VISIBLE);
-
-		issueMrNotesViewModel
-				.getNotes(
-						ctx,
-						projectId,
-						issueIndex,
-						type,
-						resultLimit,
-						page,
-						IssueDetailActivity.this,
-						activityIssueDetailBinding.bottomAppBar)
-				.observe(
-						IssueDetailActivity.this,
-						mainList -> {
-							issueNotesAdapter =
-									new IssueNotesAdapter(
-											IssueDetailActivity.this,
-											mainList,
-											issue.getProjects());
-							issueNotesAdapter.setLoadMoreListener(
-									new IssueNotesAdapter.OnLoadMoreListener() {
-
-										@Override
-										public void onLoadMore() {
-
-											page += 1;
-											issueMrNotesViewModel.loadMore(
-													ctx,
-													projectId,
-													issueIndex,
-													type,
-													resultLimit,
-													page,
-													issueNotesAdapter,
-													IssueDetailActivity.this,
-													activityIssueDetailBinding.bottomAppBar);
-											activityIssueDetailBinding.progressBar.setVisibility(
-													View.VISIBLE);
-										}
-
-										@Override
-										public void onLoadFinished() {
-
-											activityIssueDetailBinding.progressBar.setVisibility(
-													View.GONE);
-										}
-									});
-
-							if (issueNotesAdapter.getItemCount() > 0) {
-								activityIssueDetailBinding.notesInfoCard.setVisibility(
-										View.VISIBLE);
-								activityIssueDetailBinding.recyclerView.setAdapter(
-										issueNotesAdapter);
-							}
-
-							activityIssueDetailBinding.progressBar.setVisibility(View.GONE);
-						});
-	}
-
-	private void getLabels() {
-
-		LinearLayout.LayoutParams params =
-				new LinearLayout.LayoutParams(
-						LinearLayout.LayoutParams.WRAP_CONTENT,
-						LinearLayout.LayoutParams.WRAP_CONTENT);
-		params.setMargins(0, 0, 20, 0);
-
-		if (!issue.getIssue().getLabels().isEmpty()) {
-
-			infoCard = true;
-			activityIssueDetailBinding.labelsScrollView.setVisibility(View.VISIBLE);
-			activityIssueDetailBinding.labelsFrame.removeAllViews();
-
-			for (int i = 0; i < issue.getIssue().getLabels().size(); i++) {
-
-				ImageView labelsView = new ImageView(ctx);
-				activityIssueDetailBinding.labelsFrame.setOrientation(LinearLayout.HORIZONTAL);
-				activityIssueDetailBinding.labelsFrame.setGravity(Gravity.START | Gravity.TOP);
-				labelsView.setLayoutParams(params);
-
-				int height = Utils.getPixelsFromDensity(ctx, 22);
-				int textSize = Utils.getPixelsFromScaledDensity(ctx, 14);
-
-				Call<Labels> call =
-						RetrofitClient.getApiInterface(ctx)
-								.getProjectLabel(
-										projectId, issue.getIssue().getLabels().get(i).toString());
-
-				call.enqueue(
-						new Callback<>() {
-
-							@Override
-							public void onResponse(
-									@NonNull Call<Labels> call,
-									@NonNull Response<Labels> response) {
-
-								if (response.code() == 200) {
-
-									assert response.body() != null;
-									int labelColor =
-											Color.parseColor(
-													Utils.repeatString(
-															response.body().getColor(), 4, 1, 2));
-									int textColor =
-											Color.parseColor(
-													Utils.repeatString(
-															response.body().getTextColor(),
-															4,
-															1,
-															2));
-									String labelName = response.body().getName();
-
-									TextDrawable drawable =
-											TextDrawable.builder()
-													.beginConfig()
-													.textColor(textColor)
-													.fontSize(textSize)
-													.width(
-															Utils.calculateLabelWidth(
-																	labelName,
-																	textSize,
-																	Utils.getPixelsFromDensity(
-																			ctx, 8)))
-													.height(height)
-													.endConfig()
-													.buildRoundRect(
-															labelName,
-															labelColor,
-															Utils.getPixelsFromDensity(ctx, 18));
-
-									labelsView.setImageDrawable(drawable);
-									activityIssueDetailBinding.labelsFrame.addView(labelsView);
+		if (!labelsObserverSet) {
+			labelsObserverSet = true;
+			viewModel
+					.getLabelCache()
+					.observe(
+							this,
+							cache -> {
+								LabelStylingHelper styler = LabelStylingHelper.getInstance(ctx);
+								binding.labelsContainer.removeAllViews();
+								for (String name : currentLabelNames) {
+									Labels label = cache.get(name);
+									if (label != null) {
+										addLabelView(label, styler);
+									}
 								}
-							}
-
-							@Override
-							public void onFailure(
-									@NonNull Call<Labels> call, @NonNull Throwable t) {}
-						});
-			}
+							});
 		}
+	}
+
+	private void addLabelView(Labels label, LabelStylingHelper styler) {
+		if (LabelStylingHelper.isScopedLabel(label.getName())) {
+			LinearLayout container = new LinearLayout(ctx);
+			container.setOrientation(LinearLayout.HORIZONTAL);
+			container.setGravity(Gravity.CENTER_VERTICAL);
+
+			TextView labelName = new TextView(ctx);
+			TextView labelValue = new TextView(ctx);
+			styler.styleScopedLabel(
+					label.getName(),
+					label.getColor(),
+					label.getTextColor(),
+					labelName,
+					labelValue,
+					13,
+					4,
+					10);
+
+			container.addView(labelName);
+			container.addView(labelValue);
+
+			LinearLayout.LayoutParams params =
+					new LinearLayout.LayoutParams(
+							ViewGroup.LayoutParams.WRAP_CONTENT,
+							ViewGroup.LayoutParams.WRAP_CONTENT);
+			int margin = (int) (8 * ctx.getResources().getDisplayMetrics().density);
+			params.setMargins(0, 0, margin, 0);
+			container.setLayoutParams(params);
+
+			binding.labelsContainer.addView(container);
+		} else {
+			TextView labelName = new TextView(ctx);
+			styler.styleRegularLabel(
+					label.getName(), label.getColor(), label.getTextColor(), labelName, 13, 4, 10);
+
+			LinearLayout.LayoutParams params =
+					new LinearLayout.LayoutParams(
+							ViewGroup.LayoutParams.WRAP_CONTENT,
+							ViewGroup.LayoutParams.WRAP_CONTENT);
+			int margin = (int) (8 * ctx.getResources().getDisplayMetrics().density);
+			params.setMargins(0, 0, margin, 0);
+			labelName.setLayoutParams(params);
+
+			binding.labelsContainer.addView(labelName);
+		}
+	}
+
+	private void setupAssignees(List<AssigneesItem> assignees) {
+		if (assignees == null || assignees.isEmpty()) {
+			binding.infoAssignees.setVisibility(View.GONE);
+			return;
+		}
+		binding.infoAssignees.setVisibility(View.VISIBLE);
+		binding.assigneesContainer.removeAllViews();
+
+		int sizeDp = 24;
+		int marginDp = 4;
+		for (AssigneesItem a : assignees) {
+			ImageView iv = new ImageView(ctx);
+			int sizePx = (int) (sizeDp * getResources().getDisplayMetrics().density);
+			LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(sizePx, sizePx);
+			params.setMargins(
+					0, 0, (int) (marginDp * getResources().getDisplayMetrics().density), 0);
+			iv.setLayoutParams(params);
+
+			Glide.with(ctx)
+					.load(a.getAvatarUrl())
+					.diskCacheStrategy(DiskCacheStrategy.ALL)
+					.placeholder(R.drawable.ic_spinner)
+					.centerCrop()
+					.transform(new RoundedCorners(14))
+					.into(iv);
+			iv.setOnClickListener(v -> openProfile(a.getId()));
+			binding.assigneesContainer.addView(iv);
+		}
+	}
+
+	private void initTimeline() {
+		if (timelineInitialized) return;
+		timelineInitialized = true;
+
+		timelineViewModel = new ViewModelProvider(this).get(TimelineViewModel.class);
+
+		long myUserId = getAccount().getUserInfo() != null ? getAccount().getUserInfo().getId() : 0;
+		timelineAdapter =
+				new TimelineAdapter(
+						ctx,
+						new ArrayList<>(),
+						issue.getProjects(),
+						getSupportFragmentManager(),
+						myUserId,
+						"issue");
+
+		LinearLayoutManager layoutManager = new LinearLayoutManager(ctx);
+		binding.recyclerView.setLayoutManager(layoutManager);
+		binding.recyclerView.setAdapter(timelineAdapter);
+
+		EndlessRecyclerViewScrollListener scrollListener =
+				new EndlessRecyclerViewScrollListener(layoutManager) {
+					@Override
+					public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+						timelineViewModel.loadNextPage(ctx);
+					}
+				};
+		binding.recyclerView.addOnScrollListener(scrollListener);
+
+		timelineViewModel
+				.getIsLoading()
+				.observe(
+						this,
+						loading -> {
+							if (Boolean.TRUE.equals(loading)
+									&& timelineAdapter.getItemCount() == 0) {
+								binding.progressBar.setVisibility(View.VISIBLE);
+							} else {
+								binding.progressBar.setVisibility(View.GONE);
+							}
+						});
+
+		timelineViewModel
+				.getTimelineList()
+				.observe(
+						this,
+						list -> {
+							if (list != null && !list.isEmpty()) {
+								binding.recyclerView.setVisibility(View.VISIBLE);
+								timelineAdapter.updateList(list);
+							}
+						});
+
+		timelineViewModel
+				.getIsSubmitting()
+				.observe(
+						this,
+						isSubmitting -> {
+							if (Boolean.TRUE.equals(isSubmitting)) {
+								binding.commentBox.btnQuickSend.setVisibility(View.GONE);
+								binding.commentBox.commentLoader.setVisibility(View.VISIBLE);
+							} else {
+								binding.commentBox.commentLoader.setVisibility(View.GONE);
+								binding.commentBox.btnQuickSend.setVisibility(View.VISIBLE);
+							}
+						});
+
+		timelineViewModel
+				.getSubmittedComment()
+				.observe(
+						this,
+						comment -> {
+							if (comment != null) {
+								Toasty.show(ctx, getString(R.string.comment_posted));
+								hideCommentBox();
+								timelineViewModel.clearSubmittedComment();
+								refreshTimeline();
+								binding.recyclerView.postDelayed(
+										this::scrollTimelineToBottom, 1500);
+							}
+						});
+
+		timelineViewModel
+				.getError()
+				.observe(
+						this,
+						errorMsg -> {
+							if (errorMsg != null) {
+								Toasty.show(ctx, errorMsg);
+								timelineViewModel.clearError();
+							}
+						});
+	}
+
+	private void refreshTimeline() {
+		timelineViewModel.loadTimeline(ctx, projectId, issueIid, "issue");
+	}
+
+	private void loadTimeline() {
+		initTimeline();
+		refreshTimeline();
+	}
+
+	private void openProfile(long userId) {
+		Intent intent = new Intent(ctx, ProfileActivity.class);
+		intent.putExtra("userId", String.valueOf(userId));
+		startActivity(intent);
+	}
+
+	private void setupReactions() {
+		if (reactionsViewModel == null) {
+			reactionsViewModel = new ViewModelProvider(this).get(ReactionsViewModel.class);
+		}
+		long myUserId = getAccount().getUserInfo() != null ? getAccount().getUserInfo().getId() : 0;
+		binding.reactionsView.configure(
+				projectId, "issue", issueIid, null, getSupportFragmentManager(), myUserId);
+		binding.reactionsView.loadReactions(reactionsViewModel);
+	}
+
+	private void observeViewModel() {
+		viewModel
+				.getIsLoading()
+				.observe(
+						this,
+						loading -> {
+							if (Boolean.TRUE.equals(loading)) {
+								binding.progressBar.setVisibility(View.VISIBLE);
+							} else {
+								binding.progressBar.setVisibility(View.GONE);
+								binding.scrollView.setVisibility(View.VISIBLE);
+							}
+						});
+
+		viewModel
+				.getIssueData()
+				.observe(
+						this,
+						issueData -> {
+							if (issueData == null) return;
+							issue.setIssue(issueData);
+							setupHeader(issueData);
+							updateCommentButton(issueData);
+							setupInfoSection(issueData);
+							setupReactions();
+							loadTimeline();
+						});
+
+		viewModel
+				.getCloseSuccess()
+				.observe(
+						this,
+						success -> {
+							if (Boolean.TRUE.equals(success)) {
+								Toasty.show(ctx, getString(R.string.issue_closed));
+								AppUIStateManager.refreshData();
+								viewModel.clearCloseSuccess();
+							}
+						});
+
+		viewModel
+				.getReopenSuccess()
+				.observe(
+						this,
+						success -> {
+							if (Boolean.TRUE.equals(success)) {
+								Toasty.show(ctx, getString(R.string.issue_reopened));
+								AppUIStateManager.refreshData();
+								viewModel.clearReopenSuccess();
+							}
+						});
+
+		viewModel
+				.getLockSuccess()
+				.observe(
+						this,
+						success -> {
+							if (Boolean.TRUE.equals(success)) {
+								Toasty.show(ctx, getString(R.string.discussion_locked_success));
+								viewModel.clearLockSuccess();
+							}
+						});
+
+		viewModel
+				.getUnlockSuccess()
+				.observe(
+						this,
+						success -> {
+							if (Boolean.TRUE.equals(success)) {
+								Toasty.show(ctx, getString(R.string.discussion_unlocked_success));
+								viewModel.clearUnlockSuccess();
+							}
+						});
+
+		viewModel
+				.getError()
+				.observe(
+						this,
+						errorMsg -> {
+							if (errorMsg == null) return;
+							switch (errorMsg) {
+								case "auth_error":
+									Toasty.show(ctx, getString(R.string.not_authorized));
+									break;
+								case "access_forbidden_403":
+									Toasty.show(ctx, getString(R.string.access_forbidden_403));
+									break;
+								case "not_found":
+									Toasty.show(ctx, getString(R.string.not_found));
+									break;
+								case "generic_error":
+									Toasty.show(ctx, getString(R.string.generic_error));
+									break;
+								default:
+									Toasty.show(ctx, errorMsg);
+									break;
+							}
+							viewModel.clearError();
+						});
+	}
+
+	@Override
+	protected void onGlobalRefresh() {
+		viewModel.loadIssue(ctx, projectId, issueIid);
 	}
 }

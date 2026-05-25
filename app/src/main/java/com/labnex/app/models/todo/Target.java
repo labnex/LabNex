@@ -18,7 +18,7 @@ public class Target {
 	private boolean mergeWhenPipelineSucceeds;
 
 	@SerializedName("iid")
-	private int iid;
+	private long iid;
 
 	@SerializedName("author")
 	private Author author;
@@ -33,7 +33,7 @@ public class Target {
 	private String targetBranch;
 
 	@SerializedName("source_project_id")
-	private int sourceProjectId;
+	private long sourceProjectId;
 
 	@SerializedName("title")
 	private String title;
@@ -89,7 +89,7 @@ public class Target {
 		return mergeWhenPipelineSucceeds;
 	}
 
-	public int getIid() {
+	public long getIid() {
 		return iid;
 	}
 
@@ -109,7 +109,7 @@ public class Target {
 		return targetBranch;
 	}
 
-	public int getSourceProjectId() {
+	public long getSourceProjectId() {
 		return sourceProjectId;
 	}
 

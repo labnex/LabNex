@@ -10,7 +10,7 @@ import java.util.List;
 public class Rule implements Serializable {
 
 	@SerializedName("id")
-	private int id;
+	private long id;
 
 	@SerializedName("name")
 	private String name;
@@ -42,7 +42,7 @@ public class Rule implements Serializable {
 	@SerializedName("contains_hidden_groups")
 	private boolean containsHiddenGroups;
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 

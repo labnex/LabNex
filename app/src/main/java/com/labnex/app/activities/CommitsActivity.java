@@ -1,133 +1,140 @@
 package com.labnex.app.activities;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.View;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import com.labnex.app.R;
 import com.labnex.app.adapters.CommitsAdapter;
-import com.labnex.app.contexts.ProjectsContext;
 import com.labnex.app.databinding.ActivityCommitsBinding;
-import com.labnex.app.interfaces.BottomSheetListener;
+import com.labnex.app.helpers.EndlessRecyclerViewScrollListener;
+import com.labnex.app.helpers.Toasty;
+import com.labnex.app.helpers.UIHelper;
 import com.labnex.app.viewmodels.CommitsViewModel;
+import java.util.ArrayList;
 
 /**
  * @author mmarif
  */
-public class CommitsActivity extends BaseActivity implements BottomSheetListener {
+public class CommitsActivity extends BaseActivity {
 
 	private ActivityCommitsBinding binding;
-	private CommitsViewModel commitsViewModel;
+	private CommitsViewModel viewModel;
 	private CommitsAdapter adapter;
-	private int page = 1;
-	private int resultLimit;
-	private int projectId;
-	public ProjectsContext projectsContext;
+
 	private String source;
-	private int mergeRequestIid;
+	private long projectId;
+	private long mergeRequestIid;
 	private String branch;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-
 		super.onCreate(savedInstanceState);
 		binding = ActivityCommitsBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
-		commitsViewModel = new ViewModelProvider(this).get(CommitsViewModel.class);
-		projectsContext = ProjectsContext.fromIntent(getIntent());
-		resultLimit = getAccount().getMaxPageLimit();
+		UIHelper.applyEdgeToEdge(
+				this, binding.dockedToolbar, binding.recyclerView, binding.pullToRefresh, null);
 
-		if (getIntent().getStringExtra("source") != null) {
-			source = getIntent().getStringExtra("source");
-		}
-		if (getIntent().getStringExtra("branch") != null) {
-			branch = getIntent().getStringExtra("branch");
-		}
-		mergeRequestIid = getIntent().getIntExtra("mergeRequestIid", 0);
-		projectId = getIntent().getIntExtra("projectId", 0);
+		viewModel = new ViewModelProvider(this).get(CommitsViewModel.class);
 
-		binding.recyclerView.setHasFixedSize(true);
-		binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
+		source = getIntent().getStringExtra("source");
+		projectId = getIntent().getLongExtra("projectId", 0);
+		mergeRequestIid = getIntent().getLongExtra("mergeRequestIid", 0);
+		branch = getIntent().getStringExtra("branch");
 
-		binding.bottomAppBar.setNavigationOnClickListener(bottomAppBar -> finish());
+		binding.btnBack.setOnClickListener(v -> finish());
 
-		binding.pullToRefresh.setOnRefreshListener(
-				() ->
-						new Handler(Looper.getMainLooper())
-								.postDelayed(
-										() -> {
-											page = 1;
-											binding.pullToRefresh.setRefreshing(false);
-											fetchDataAsync();
-											binding.progressBar.setVisibility(View.VISIBLE);
-										},
-										250));
-
-		fetchDataAsync();
+		setupRecyclerView();
+		setupPullToRefresh();
+		observeViewModel();
+		viewModel.loadCommits(ctx, source, projectId, mergeRequestIid, branch);
 	}
 
 	@Override
-	public void onButtonClicked(String text) {}
+	protected void onGlobalRefresh() {
+		viewModel.loadCommits(ctx, source, projectId, mergeRequestIid, branch);
+	}
 
-	private void fetchDataAsync() {
+	private void setupRecyclerView() {
+		adapter = new CommitsAdapter(ctx, new ArrayList<>(), projectId);
 
-		commitsViewModel
-				.getCommits(
-						ctx,
-						source,
-						projectId,
-						mergeRequestIid,
-						branch,
-						resultLimit,
-						page,
-						CommitsActivity.this,
-						binding.bottomAppBar)
+		LinearLayoutManager layoutManager = new LinearLayoutManager(ctx);
+		binding.recyclerView.setLayoutManager(layoutManager);
+		binding.recyclerView.setAdapter(adapter);
+
+		EndlessRecyclerViewScrollListener scrollListener =
+				new EndlessRecyclerViewScrollListener(layoutManager) {
+					@Override
+					public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+						viewModel.loadNextPage(ctx);
+					}
+				};
+		binding.recyclerView.addOnScrollListener(scrollListener);
+	}
+
+	private void setupPullToRefresh() {
+		binding.pullToRefresh.setOnRefreshListener(
+				() -> viewModel.loadCommits(ctx, source, projectId, mergeRequestIid, branch));
+	}
+
+	private void observeViewModel() {
+		viewModel
+				.getIsLoading()
 				.observe(
-						CommitsActivity.this,
-						mainList -> {
-							adapter = new CommitsAdapter(CommitsActivity.this, mainList, projectId);
-							adapter.setLoadMoreListener(
-									new CommitsAdapter.OnLoadMoreListener() {
-
-										@Override
-										public void onLoadMore() {
-
-											page += 1;
-											commitsViewModel.loadMore(
-													ctx,
-													source,
-													projectId,
-													mergeRequestIid,
-													branch,
-													resultLimit,
-													page,
-													adapter,
-													CommitsActivity.this,
-													binding.bottomAppBar);
-											binding.progressBar.setVisibility(View.VISIBLE);
-										}
-
-										@Override
-										public void onLoadFinished() {
-
-											binding.progressBar.setVisibility(View.GONE);
-										}
-									});
-
-							if (adapter.getItemCount() > 0) {
-
-								binding.recyclerView.setAdapter(adapter);
+						this,
+						loading -> {
+							if (Boolean.TRUE.equals(loading)) {
+								binding.pullToRefresh.setRefreshing(false);
+								binding.progressBar.setVisibility(View.VISIBLE);
 								binding.nothingFoundFrame.getRoot().setVisibility(View.GONE);
 							} else {
-
-								adapter.notifyDataChanged();
-								binding.recyclerView.setAdapter(adapter);
-								binding.nothingFoundFrame.getRoot().setVisibility(View.VISIBLE);
+								binding.progressBar.setVisibility(View.GONE);
+								binding.pullToRefresh.setRefreshing(false);
 							}
+						});
 
-							binding.progressBar.setVisibility(View.GONE);
+		viewModel
+				.getCommitsList()
+				.observe(
+						this,
+						list -> {
+							if (Boolean.TRUE.equals(viewModel.getIsLoading().getValue())) return;
+							if (list == null || list.isEmpty()) {
+								binding.nothingFoundFrame.getRoot().setVisibility(View.VISIBLE);
+								binding.recyclerView.setVisibility(View.GONE);
+							} else {
+								binding.nothingFoundFrame.getRoot().setVisibility(View.GONE);
+								binding.recyclerView.setVisibility(View.VISIBLE);
+								adapter.updateList(list);
+							}
+						});
+
+		viewModel
+				.getError()
+				.observe(
+						this,
+						errorMsg -> {
+							if (errorMsg == null) return;
+							switch (errorMsg) {
+								case "auth_error":
+									Toasty.show(ctx, getString(R.string.not_authorized));
+									break;
+								case "access_forbidden_403":
+									Toasty.show(ctx, getString(R.string.access_forbidden_403));
+									break;
+								case "not_found":
+									Toasty.show(ctx, getString(R.string.not_found));
+									break;
+								case "generic_error":
+									Toasty.show(ctx, getString(R.string.generic_error));
+									break;
+								default:
+									Toasty.show(ctx, errorMsg);
+									break;
+							}
+							viewModel.clearError();
 						});
 	}
 }

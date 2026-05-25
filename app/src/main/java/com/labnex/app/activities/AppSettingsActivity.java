@@ -118,7 +118,8 @@ public class AppSettingsActivity extends BaseActivity
 						v -> {
 							Intent intent = new Intent(this, ProfileActivity.class);
 							intent.putExtra("source", "app_settings");
-							intent.putExtra("userId", getAccount().getUserInfo().getId());
+							intent.putExtra(
+									"userId", String.valueOf(getAccount().getUserInfo().getId()));
 							startActivity(intent);
 						});
 			}

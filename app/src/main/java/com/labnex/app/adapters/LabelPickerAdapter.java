@@ -93,11 +93,20 @@ public class LabelPickerAdapter extends RecyclerView.Adapter<LabelPickerAdapter.
 						label.getColor(),
 						label.getTextColor(),
 						binding.labelName,
-						binding.labelValue);
+						binding.labelValue,
+						13,
+						6,
+						12);
 			} else {
 				binding.labelValue.setVisibility(View.GONE);
 				stylingHelper.styleRegularLabel(
-						labelText, label.getColor(), label.getTextColor(), binding.labelName);
+						labelText,
+						label.getColor(),
+						label.getTextColor(),
+						binding.labelName,
+						13,
+						6,
+						12);
 			}
 
 			binding.checkbox.setChecked(selectedLabels.contains(label.getName()));

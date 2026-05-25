@@ -101,7 +101,10 @@ public class ReleasesAdapter extends RecyclerView.Adapter<ReleasesAdapter.Releas
 							context.startActivity(
 									new Intent(context, ProfileActivity.class)
 											.putExtra("source", "releases")
-											.putExtra("userId", list.get(pos).getAuthor().getId()));
+											.putExtra(
+													"userId",
+													String.valueOf(
+															list.get(pos).getAuthor().getId())));
 						}
 					});
 		}

@@ -76,7 +76,7 @@ public class MembersBottomSheet extends BottomSheetDialogFragment {
 						user -> {
 							Intent intent = new Intent(requireContext(), ProfileActivity.class);
 							intent.putExtra("source", "members");
-							intent.putExtra("userId", user.getId());
+							intent.putExtra("userId", String.valueOf(user.getId()));
 							startActivity(intent);
 						});
 		LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());

@@ -21,7 +21,7 @@ public class ProjectsContext implements Serializable {
 
 	public static final String INTENT_EXTRA = "project";
 	private final AccountContext account;
-	private int projectId;
+	private long projectId;
 	private final String projectName;
 	private final String path;
 	private com.labnex.app.models.projects.Projects project;
@@ -42,7 +42,7 @@ public class ProjectsContext implements Serializable {
 		this.path = project.getPath();
 	}
 
-	public ProjectsContext(String projectName, String path, int projectId, Context context) {
+	public ProjectsContext(String projectName, String path, long projectId, Context context) {
 		this.account = ((BaseActivity) context).getAccount();
 		this.projectName = projectName;
 		this.path = path;
@@ -126,11 +126,11 @@ public class ProjectsContext implements Serializable {
 		this.issueMilestoneFilterName = issueMilestoneFilterName;
 	}
 
-	public int getProjectId() {
+	public long getProjectId() {
 		return projectId;
 	}
 
-	public void setProjectId(int projectId) {
+	public void setProjectId(long projectId) {
 
 		this.projectId = projectId;
 	}
@@ -190,7 +190,7 @@ public class ProjectsContext implements Serializable {
 		}
 	}
 
-	public int saveToDB(Context context) {
+	public long saveToDB(Context context) {
 		int currentActiveAccountId =
 				SharedPrefDB.getInstance(context).getInt("currentActiveAccountId");
 		ProjectsApi projectData = BaseApi.getInstance(context, ProjectsApi.class);
@@ -203,7 +203,7 @@ public class ProjectsContext implements Serializable {
 			long id =
 					projectData.insertProject(
 							currentActiveAccountId, getProjectId(), getProjectName(), getPath(), 1);
-			Projects data = projectData.fetchProjectById((int) id);
+			Projects data = projectData.fetchProjectById(id);
 			setProjectId(data.getProjectId());
 			return data.getProjectId();
 		} else {

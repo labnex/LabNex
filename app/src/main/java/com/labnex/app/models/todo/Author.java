@@ -17,7 +17,7 @@ public class Author {
 	private String name;
 
 	@SerializedName("id")
-	private int id;
+	private long id;
 
 	@SerializedName("state")
 	private String state;
@@ -37,7 +37,7 @@ public class Author {
 		return name;
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 

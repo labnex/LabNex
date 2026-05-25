@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
+import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.button.MaterialButton;
 import com.labnex.app.R;
 import com.labnex.app.database.api.BaseApi;
@@ -20,6 +21,7 @@ import com.labnex.app.fragments.ExploreFragment;
 import com.labnex.app.fragments.HomeFragment;
 import com.labnex.app.fragments.TodoFragment;
 import com.labnex.app.helpers.AppSettingsInit;
+import com.labnex.app.helpers.BadgeHelper;
 import com.labnex.app.helpers.CheckAuthorizationStatus;
 import com.labnex.app.helpers.SharedPrefDB;
 import com.labnex.app.helpers.Toasty;
@@ -51,6 +53,7 @@ public class MainActivity extends BaseActivity {
 	private Fragment activeFragment = homeFrag;
 	private String currentActiveTab = TAB_HOME;
 	private final FragmentManager fm = getSupportFragmentManager();
+	private BadgeDrawable todoBadge;
 
 	private View detachedDivider;
 	private View detachedMenuBtn;
@@ -84,8 +87,11 @@ public class MainActivity extends BaseActivity {
 
 		observeViewModel();
 		CheckAuthorizationStatus.checkTokenExpiryWarning(this);
-		viewModel.checkPersonalAccessToken(ctx);
-		viewModel.fetchGitlabVersion(ctx);
+
+		if (ctx != null) {
+			viewModel.checkPersonalAccessToken(ctx);
+			viewModel.fetchGitlabVersion(ctx);
+		}
 
 		setupFragments();
 		setupDockListeners();
@@ -124,6 +130,7 @@ public class MainActivity extends BaseActivity {
 			finishAndRemoveTask();
 			closeActivity = false;
 		}
+		viewModel.fetchPendingTodoCount(ctx);
 	}
 
 	private void observeViewModel() {
@@ -154,7 +161,18 @@ public class MainActivity extends BaseActivity {
 															.getAccountById(
 																	sharedPrefDB.getInt(
 																			"currentActiveAccountId")));
+									viewModel.fetchPendingTodoCount(ctx);
 								}
+							}
+						});
+
+		viewModel
+				.getPendingTodoCount()
+				.observe(
+						this,
+						count -> {
+							if (count != null && binding != null) {
+								updateTodoBadge(count);
 							}
 						});
 
@@ -271,6 +289,24 @@ public class MainActivity extends BaseActivity {
 		updateContextualDockActions(activeBtnId);
 	}
 
+	private void updateTodoBadge(int count) {
+		runOnUiThread(
+				() -> {
+					todoBadge = BadgeHelper.updateBadge(this, binding.btnNavTodo, todoBadge, count);
+
+					if (activeFragment == todoFrag || activeFragment == exploreFrag) {
+						updateContextualDockActions(
+								activeFragment == todoFrag
+										? R.id.btn_nav_todo
+										: R.id.btn_nav_explore);
+					}
+				});
+	}
+
+	public void refreshTodoBadge() {
+		viewModel.fetchPendingTodoCount(ctx);
+	}
+
 	private void updateContextualDockActions(int activeBtnId) {
 		ViewGroup parent = binding.dockContainer;
 		parent.removeView(detachedDivider);
@@ -279,6 +315,17 @@ public class MainActivity extends BaseActivity {
 		if (activeBtnId == R.id.btn_nav_explore
 				|| activeBtnId == R.id.btn_nav_todo
 				|| activeBtnId == R.id.btn_nav_activities) {
+
+			int badgeMargin = getResources().getDimensionPixelSize(R.dimen.dimen16dp);
+			if (todoBadge != null && todoBadge.isVisible()) {
+				badgeMargin = getResources().getDimensionPixelSize(R.dimen.dimen8dp);
+			}
+
+			ViewGroup.MarginLayoutParams params =
+					(ViewGroup.MarginLayoutParams) detachedDivider.getLayoutParams();
+			params.setMarginStart(badgeMargin);
+			detachedDivider.setLayoutParams(params);
+
 			parent.addView(detachedDivider);
 			parent.addView(detachedMenuBtn);
 		}

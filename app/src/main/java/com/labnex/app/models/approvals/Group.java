@@ -9,7 +9,7 @@ import java.io.Serializable;
 public class Group implements Serializable {
 
 	@SerializedName("id")
-	private int id;
+	private long id;
 
 	@SerializedName("name")
 	private String name;
@@ -42,7 +42,7 @@ public class Group implements Serializable {
 	private String fullPath;
 
 	@SerializedName("parent_id")
-	private int parentId;
+	private long parentId;
 
 	@SerializedName("ldap_cn")
 	private Object ldapCn;
@@ -50,7 +50,7 @@ public class Group implements Serializable {
 	@SerializedName("ldap_access")
 	private Object ldapAccess;
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
@@ -94,7 +94,7 @@ public class Group implements Serializable {
 		return fullPath;
 	}
 
-	public int getParentId() {
+	public long getParentId() {
 		return parentId;
 	}
 

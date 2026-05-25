@@ -95,11 +95,20 @@ public class LabelsAdapter extends RecyclerView.Adapter<LabelsAdapter.LabelsHold
 						label.getColor(),
 						label.getTextColor(),
 						binding.labelName,
-						binding.labelValue);
+						binding.labelValue,
+						13,
+						6,
+						12);
 			} else {
 				binding.labelValue.setVisibility(View.GONE);
 				stylingHelper.styleRegularLabel(
-						labelText, label.getColor(), label.getTextColor(), binding.labelName);
+						labelText,
+						label.getColor(),
+						label.getTextColor(),
+						binding.labelName,
+						13,
+						6,
+						12);
 			}
 
 			if (label.getDescription() != null && !label.getDescription().toString().isEmpty()) {

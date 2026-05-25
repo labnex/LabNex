@@ -19,7 +19,7 @@ public class Issues implements Serializable {
 	private References references;
 
 	@SerializedName("iid")
-	private int iid;
+	private long iid;
 
 	@SerializedName("merge_requests_count")
 	private int mergeRequestsCount;
@@ -147,7 +147,7 @@ public class Issues implements Serializable {
 		return references;
 	}
 
-	public int getIid() {
+	public long getIid() {
 		return iid;
 	}
 

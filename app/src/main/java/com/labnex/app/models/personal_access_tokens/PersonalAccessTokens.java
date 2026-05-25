@@ -16,7 +16,7 @@ public class PersonalAccessTokens implements Serializable {
 	private Object expiresAt;
 
 	@SerializedName("user_id")
-	private int userId;
+	private long userId;
 
 	@SerializedName("name")
 	private String name;
@@ -28,7 +28,7 @@ public class PersonalAccessTokens implements Serializable {
 	private boolean active;
 
 	@SerializedName("id")
-	private int id;
+	private long id;
 
 	@SerializedName("scopes")
 	private List<String> scopes;
@@ -44,7 +44,7 @@ public class PersonalAccessTokens implements Serializable {
 		return expiresAt;
 	}
 
-	public int getUserId() {
+	public long getUserId() {
 		return userId;
 	}
 
@@ -60,7 +60,7 @@ public class PersonalAccessTokens implements Serializable {
 		return active;
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 

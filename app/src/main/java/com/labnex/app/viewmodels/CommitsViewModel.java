@@ -1,17 +1,15 @@
 package com.labnex.app.viewmodels;
 
-import android.app.Activity;
 import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-import com.google.android.material.bottomappbar.BottomAppBar;
-import com.labnex.app.R;
-import com.labnex.app.adapters.CommitsAdapter;
 import com.labnex.app.clients.RetrofitClient;
-import com.labnex.app.helpers.Toasty;
+import com.labnex.app.helpers.ApiResponseHandler;
+import com.labnex.app.helpers.Constants;
 import com.labnex.app.models.commits.Commits;
+import java.util.ArrayList;
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -22,137 +20,115 @@ import retrofit2.Response;
  */
 public class CommitsViewModel extends ViewModel {
 
-	private MutableLiveData<List<Commits>> mutableList;
+	private final MutableLiveData<List<Commits>> commitsList =
+			new MutableLiveData<>(new ArrayList<>());
+	private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
+	private final MutableLiveData<String> error = new MutableLiveData<>();
 
-	public LiveData<List<Commits>> getCommits(
-			Context ctx,
-			String source,
-			int id,
-			int mergeRequestIid,
-			String branch,
-			int resultLimit,
-			int page,
-			Activity activity,
-			BottomAppBar bottomAppBar) {
+	private String source;
+	private long projectId;
+	private long mergeRequestIid;
+	private String branch;
+	private int currentPage = 1;
+	private final int resultLimit = Constants.getResultLimit();
+	private boolean isLastPage = false;
+	private boolean isLoadingMore = false;
 
-		mutableList = new MutableLiveData<>();
-		loadInitialList(
-				ctx,
-				source,
-				id,
-				mergeRequestIid,
-				branch,
-				resultLimit,
-				page,
-				activity,
-				bottomAppBar);
-
-		return mutableList;
+	public LiveData<List<Commits>> getCommitsList() {
+		return commitsList;
 	}
 
-	public void loadInitialList(
-			Context ctx,
-			String source,
-			int id,
-			int mergeRequestIid,
-			String branch,
-			int resultLimit,
-			int page,
-			Activity activity,
-			BottomAppBar bottomAppBar) {
+	public LiveData<Boolean> getIsLoading() {
+		return isLoading;
+	}
 
+	public LiveData<String> getError() {
+		return error;
+	}
+
+	public void clearError() {
+		error.setValue(null);
+	}
+
+	public void loadCommits(
+			Context ctx, String source, long projectId, long mergeRequestIid, String branch) {
+		if (ctx == null) return;
+		this.source = source;
+		this.projectId = projectId;
+		this.mergeRequestIid = mergeRequestIid;
+		this.branch = branch;
+		currentPage = 1;
+		isLastPage = false;
+		isLoadingMore = false;
+		isLoading.setValue(true);
+		fetch(ctx, 1);
+	}
+
+	public void loadNextPage(Context ctx) {
+		if (isLoadingMore || isLastPage) return;
+		isLoadingMore = true;
+		currentPage++;
+		fetch(ctx, currentPage);
+	}
+
+	private void fetch(Context ctx, int page) {
 		Call<List<Commits>> call;
-		if (source.equalsIgnoreCase("mr")) {
+		if ("mr".equals(source)) {
 			call =
 					RetrofitClient.getApiInterface(ctx)
-							.getMergeRequestCommits(id, mergeRequestIid, resultLimit, page);
+							.getMergeRequestCommits(projectId, mergeRequestIid, resultLimit, page);
 		} else {
 			call =
 					RetrofitClient.getApiInterface(ctx)
-							.getProjectCommits(id, branch, resultLimit, page);
+							.getProjectCommits(projectId, branch, resultLimit, page);
 		}
 
 		call.enqueue(
 				new Callback<>() {
-
 					@Override
 					public void onResponse(
-							@NonNull Call<List<Commits>> call,
-							@NonNull Response<List<Commits>> response) {
-
-						if (response.isSuccessful()) {
-							mutableList.postValue(response.body());
-						} else if (response.code() == 401) {
-
-							Toasty.show(ctx, ctx.getString(R.string.not_authorized));
-						} else if (response.code() == 403) {
-
-							Toasty.show(ctx, ctx.getString(R.string.access_forbidden_403));
-						} else {
-
-							Toasty.show(ctx, ctx.getString(R.string.generic_error));
-						}
+							@NonNull Call<List<Commits>> c, @NonNull Response<List<Commits>> r) {
+						ApiResponseHandler.handleFetch(
+								r,
+								isLoading,
+								() -> {
+									String totalHeader = r.headers().get("x-total");
+									List<Commits> body = r.body();
+									List<Commits> current =
+											(page == 1)
+													? new ArrayList<>()
+													: commitsList.getValue() != null
+															? new ArrayList<>(
+																	commitsList.getValue())
+															: new ArrayList<>();
+									if (body != null) current.addAll(body);
+									commitsList.setValue(current);
+									checkLastPage(
+											body != null ? body.size() : 0,
+											totalHeader,
+											current.size());
+								},
+								error);
+						isLoadingMore = false;
 					}
 
 					@Override
-					public void onFailure(@NonNull Call<List<Commits>> call, @NonNull Throwable t) {
-						Toasty.show(ctx, ctx.getString(R.string.generic_server_response_error));
+					public void onFailure(@NonNull Call<List<Commits>> c, @NonNull Throwable t) {
+						isLoading.setValue(false);
+						isLoadingMore = false;
+						if (page == 1) commitsList.setValue(new ArrayList<>());
+						error.setValue(t.getMessage());
 					}
 				});
 	}
 
-	public void loadMore(
-			Context ctx,
-			String source,
-			int id,
-			int mergeRequestIid,
-			String branch,
-			int resultLimit,
-			int page,
-			CommitsAdapter adapter,
-			Activity activity,
-			BottomAppBar bottomAppBar) {
-
-		Call<List<Commits>> call;
-		if (source.equalsIgnoreCase("mr")) {
-			call =
-					RetrofitClient.getApiInterface(ctx)
-							.getMergeRequestCommits(id, mergeRequestIid, resultLimit, page);
-		} else {
-			call =
-					RetrofitClient.getApiInterface(ctx)
-							.getProjectCommits(id, branch, resultLimit, page);
+	private void checkLastPage(int bodySize, String totalHeader, int fullListSize) {
+		if (bodySize < resultLimit) isLastPage = true;
+		else if (totalHeader != null) {
+			try {
+				if (fullListSize >= Integer.parseInt(totalHeader)) isLastPage = true;
+			} catch (NumberFormatException ignored) {
+			}
 		}
-
-		call.enqueue(
-				new Callback<>() {
-
-					@Override
-					public void onResponse(
-							@NonNull Call<List<Commits>> call,
-							@NonNull Response<List<Commits>> response) {
-
-						if (response.isSuccessful()) {
-
-							List<Commits> list = mutableList.getValue();
-							assert list != null;
-							assert response.body() != null;
-
-							if (!response.body().isEmpty()) {
-								list.addAll(response.body());
-								adapter.updateList(list);
-							} else {
-								adapter.setMoreDataAvailable(false);
-							}
-						} else {
-							Toasty.show(ctx, ctx.getString(R.string.generic_error));
-						}
-					}
-
-					@Override
-					public void onFailure(@NonNull Call<List<Commits>> call, @NonNull Throwable t) {
-						Toasty.show(ctx, ctx.getString(R.string.generic_server_response_error));
-					}
-				});
 	}
 }

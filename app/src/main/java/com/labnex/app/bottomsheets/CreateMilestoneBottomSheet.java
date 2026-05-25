@@ -33,7 +33,7 @@ public class CreateMilestoneBottomSheet extends BottomSheetDialogFragment {
 	private long projectId;
 	private String type;
 	private boolean isEditMode = false;
-	private int milestoneId;
+	private long milestoneId;
 	ItemPickerCardBinding startCard;
 	ItemPickerCardBinding dueCard;
 	private boolean startDateSet = false;

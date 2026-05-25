@@ -27,7 +27,7 @@ public class Namespace implements Serializable {
 	private String name;
 
 	@SerializedName("id")
-	private int id;
+	private long id;
 
 	@SerializedName("full_path")
 	private String fullPath;
@@ -56,7 +56,7 @@ public class Namespace implements Serializable {
 		return name;
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 

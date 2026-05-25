@@ -87,7 +87,7 @@ public class AccountContext implements Serializable {
 		return new File(context.getCacheDir() + "responses", account.getAccountName());
 	}
 
-	public int getUserId() {
+	public long getUserId() {
 		return getAccount().getUserId();
 	}
 

@@ -6,7 +6,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import com.labnex.app.clients.RetrofitClient;
-import com.labnex.app.contexts.MergeRequestContext;
 import com.labnex.app.contexts.ProjectsContext;
 import com.labnex.app.helpers.ApiResponseHandler;
 import com.labnex.app.helpers.Constants;
@@ -27,11 +26,15 @@ public class MergeRequestsViewModel extends ViewModel {
 	private final MutableLiveData<List<MergeRequests>> mrList = new MutableLiveData<>(null);
 	private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
 	private final MutableLiveData<String> error = new MutableLiveData<>();
-	private final MutableLiveData<MergeRequestContext> navigateToMr = new MutableLiveData<>();
 	private final MutableLiveData<Boolean> isActionLoading = new MutableLiveData<>(false);
 	private final MutableLiveData<Boolean> actionSuccess = new MutableLiveData<>(false);
 	private final MutableLiveData<Boolean> createSuccess = new MutableLiveData<>(false);
 	private final MutableLiveData<Boolean> editSuccess = new MutableLiveData<>(false);
+	private final MutableLiveData<ProjectsContext> projectContextForMr = new MutableLiveData<>();
+
+	public LiveData<ProjectsContext> getProjectContextForMr() {
+		return projectContextForMr;
+	}
 
 	public LiveData<List<MergeRequests>> getMrList() {
 		return mrList;
@@ -43,10 +46,6 @@ public class MergeRequestsViewModel extends ViewModel {
 
 	public LiveData<String> getError() {
 		return error;
-	}
-
-	public LiveData<MergeRequestContext> getNavigateToMr() {
-		return navigateToMr;
 	}
 
 	public LiveData<Boolean> getIsActionLoading() {
@@ -66,7 +65,7 @@ public class MergeRequestsViewModel extends ViewModel {
 	}
 
 	private String currentSource;
-	private int currentId;
+	private long currentId;
 	private String currentState;
 	private String currentSearch;
 	private int currentPage = 1;
@@ -137,7 +136,7 @@ public class MergeRequestsViewModel extends ViewModel {
 						});
 	}
 
-	public void updateMergeRequest(Context ctx, long projectId, int mrIid, CrudeMergeRequest mr) {
+	public void updateMergeRequest(Context ctx, long projectId, long mrIid, CrudeMergeRequest mr) {
 		isActionLoading.setValue(true);
 		RetrofitClient.getApiInterface(ctx)
 				.updateMergeRequest(projectId, mrIid, mr)
@@ -161,7 +160,8 @@ public class MergeRequestsViewModel extends ViewModel {
 						});
 	}
 
-	public void fetchAndNavigateMr(Context ctx, MergeRequests mr) {
+	public void fetchProjectForMr(Context ctx, MergeRequests mr) {
+		if (ctx == null) return;
 		RetrofitClient.getApiInterface(ctx)
 				.getProjectInfo(mr.getProjectId())
 				.enqueue(
@@ -172,7 +172,7 @@ public class MergeRequestsViewModel extends ViewModel {
 								if (r.isSuccessful() && r.body() != null) {
 									ProjectsContext pc = new ProjectsContext(r.body(), ctx);
 									pc.saveToDB(ctx);
-									navigateToMr.setValue(new MergeRequestContext(mr, pc));
+									projectContextForMr.setValue(pc);
 								}
 							}
 
@@ -182,12 +182,12 @@ public class MergeRequestsViewModel extends ViewModel {
 						});
 	}
 
-	public void clearNavigation() {
-		navigateToMr.setValue(null);
+	public void clearProjectContextForMr() {
+		projectContextForMr.setValue(null);
 	}
 
 	public void loadMergeRequests(
-			Context ctx, String source, int id, String scope, String state, String search) {
+			Context ctx, String source, long id, String scope, String state, String search) {
 		this.currentSource = source;
 		this.currentId = id;
 		this.currentScope = scope;

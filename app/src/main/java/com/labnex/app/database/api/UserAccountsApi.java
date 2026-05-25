@@ -27,7 +27,7 @@ public class UserAccountsApi extends BaseApi {
 			int maxResponseItems,
 			int defaultPagingNumber,
 			String tokenExpiry,
-			int userId) {
+			long userId) {
 
 		UserAccount userAccount = new UserAccount();
 		userAccount.setAccountName(accountName);

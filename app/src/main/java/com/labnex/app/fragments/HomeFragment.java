@@ -272,7 +272,7 @@ public class HomeFragment extends Fragment {
 									profile -> {
 										Intent intent = new Intent(ctx, ProfileActivity.class);
 										intent.putExtra("source", "home");
-										intent.putExtra("userId", user.getId());
+										intent.putExtra("userId", String.valueOf(user.getId()));
 										startActivity(intent);
 									});
 							binding.sectionHeader.profilePictureLayout.setEnabled(true);

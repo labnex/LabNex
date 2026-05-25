@@ -15,7 +15,7 @@ public class FileContents implements Serializable {
 	private String ref;
 
 	@SerializedName("size")
-	private int size;
+	private long size;
 
 	@SerializedName("content_sha256")
 	private String contentSha256;
@@ -49,7 +49,7 @@ public class FileContents implements Serializable {
 		return ref;
 	}
 
-	public int getSize() {
+	public long getSize() {
 		return size;
 	}
 

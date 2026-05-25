@@ -86,10 +86,10 @@ public class CreateProjectBottomSheet extends BottomSheetDialogFragment {
 					if (nsPos >= 0 && namespaceAdapter != null) {
 						selectedNs = namespaceAdapter.getItem(nsPos);
 					}
-					Integer namespaceId =
+					long namespaceId =
 							(selectedNs != null && "group".equals(selectedNs.kind))
 									? selectedNs.id
-									: null;
+									: -1;
 
 					viewModel.createProject(
 							requireContext(),

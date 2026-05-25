@@ -24,28 +24,28 @@ public interface ProjectsDao {
 
 	@Query(
 			"SELECT count(projAutoId) FROM Projects WHERE projectAccountId = :projectAccountId AND projectId = :projectId AND projectName = :projectName")
-	Integer checkProject(int projectAccountId, int projectId, String projectName);
+	Integer checkProject(int projectAccountId, long projectId, String projectName);
 
 	@Query(
 			"SELECT * FROM Projects WHERE projectAccountId = :projectAccountId AND projectId = :projectId")
-	Projects getSingleProject(int projectAccountId, int projectId);
+	Projects getSingleProject(int projectAccountId, long projectId);
 
 	@Query("SELECT * FROM Projects WHERE projAutoId = :projAutoId")
-	Projects fetchProjectById(int projAutoId);
+	Projects fetchProjectById(long projAutoId);
 
 	@Query("SELECT * FROM Projects WHERE projectId = :projectId")
-	Projects fetchByProjectId(int projectId);
+	Projects fetchByProjectId(long projectId);
 
 	@Query(
 			"SELECT * FROM Projects WHERE projectId = :projectId AND projectAccountId = :projectAccountId")
-	Projects fetchProjectByAccountIdByProjectIdDao(int projectId, int projectAccountId);
+	Projects fetchProjectByAccountIdByProjectIdDao(long projectId, int projectAccountId);
 
 	@Query(
 			"UPDATE Projects SET projectName = :projectName, projectPath = :projectPath  WHERE projectId = :projectId")
 	void updateProjectNameAndPath(String projectName, String projectPath, int projectId);
 
 	@Query("DELETE FROM Projects WHERE projectId = :projectId")
-	void deleteProject(int projectId);
+	void deleteProject(long projectId);
 
 	@Query(
 			"DELETE FROM Projects WHERE projectName = :projectName AND projectAccountId = :currentActiveAccountId")
@@ -55,7 +55,7 @@ public interface ProjectsDao {
 	void deleteProjectsByAccount(int projectAccountId);
 
 	@Query("UPDATE Projects SET mostVisited = :mostVisited WHERE projectId = :projectId")
-	void updateProjectMostVisited(int mostVisited, int projectId);
+	void updateProjectMostVisited(int mostVisited, long projectId);
 
 	@Query(
 			"SELECT * FROM Projects WHERE mostVisited > 0  AND projectAccountId = :projectAccountId ORDER BY mostVisited DESC LIMIT 50")

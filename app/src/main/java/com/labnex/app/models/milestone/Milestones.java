@@ -18,10 +18,10 @@ public class Milestones implements Serializable {
 	private String webUrl;
 
 	@SerializedName("iid")
-	private int iid;
+	private long iid;
 
 	@SerializedName("project_id")
-	private int projectId;
+	private long projectId;
 
 	@SerializedName("due_date")
 	private String dueDate;
@@ -33,7 +33,7 @@ public class Milestones implements Serializable {
 	private String createdAt;
 
 	@SerializedName("id")
-	private int id;
+	private long id;
 
 	@SerializedName("state")
 	private String state;
@@ -56,11 +56,11 @@ public class Milestones implements Serializable {
 		return webUrl;
 	}
 
-	public int getIid() {
+	public long getIid() {
 		return iid;
 	}
 
-	public int getProjectId() {
+	public long getProjectId() {
 		return projectId;
 	}
 
@@ -76,7 +76,7 @@ public class Milestones implements Serializable {
 		return createdAt;
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
@@ -92,7 +92,7 @@ public class Milestones implements Serializable {
 		return startDate;
 	}
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 

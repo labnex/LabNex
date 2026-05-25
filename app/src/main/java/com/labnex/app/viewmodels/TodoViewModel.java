@@ -7,10 +7,12 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import com.labnex.app.clients.RetrofitClient;
 import com.labnex.app.helpers.ApiResponseHandler;
+import com.labnex.app.models.issues.Issues;
+import com.labnex.app.models.merge_requests.MergeRequests;
+import com.labnex.app.models.projects.Projects;
 import com.labnex.app.models.todo.ToDoItem;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -24,15 +26,23 @@ public class TodoViewModel extends ViewModel {
 	public static final String FILTER_ISSUES = "issues";
 	public static final String FILTER_MERGE_REQUESTS = "merge_requests";
 
-	private final MutableLiveData<List<ToDoItem>> allTodos =
-			new MutableLiveData<>(new ArrayList<>());
-	private final MutableLiveData<List<ToDoItem>> filteredTodos = new MutableLiveData<>(null);
+	public static final String STATE_PENDING = "pending";
+	public static final String STATE_DONE = "done";
+
+	private final MutableLiveData<List<ToDoItem>> todoList = new MutableLiveData<>(null);
 	private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
 	private final MutableLiveData<String> error = new MutableLiveData<>();
-	private String currentFilter = FILTER_ALL;
+	private final MutableLiveData<Projects> fetchedProject = new MutableLiveData<>();
+	private final MutableLiveData<MergeRequests> fetchedMr = new MutableLiveData<>();
+	private final MutableLiveData<Issues> fetchedIssue = new MutableLiveData<>();
 
-	public LiveData<List<ToDoItem>> getFilteredTodos() {
-		return filteredTodos;
+	private String currentType = FILTER_ALL;
+	private String currentState = STATE_PENDING;
+	private String currentAction = null;
+	private boolean needsDataLoad = true;
+
+	public LiveData<List<ToDoItem>> getTodoList() {
+		return todoList;
 	}
 
 	public LiveData<Boolean> getIsLoading() {
@@ -43,20 +53,56 @@ public class TodoViewModel extends ViewModel {
 		return error;
 	}
 
-	public String getFilter() {
-		return currentFilter;
+	public LiveData<Projects> getFetchedProject() {
+		return fetchedProject;
 	}
 
-	public void setFilter(String filter) {
-		if (filter.equals(currentFilter)) return;
-		currentFilter = filter;
-		applyFilter();
+	public LiveData<MergeRequests> getFetchedMr() {
+		return fetchedMr;
+	}
+
+	public LiveData<Issues> getFetchedIssue() {
+		return fetchedIssue;
+	}
+
+	public String getCurrentType() {
+		return currentType;
+	}
+
+	public String getCurrentState() {
+		return currentState;
+	}
+
+	public String getCurrentAction() {
+		return currentAction;
+	}
+
+	public void setCurrentType(String type) {
+		this.currentType = type;
+	}
+
+	public void setCurrentState(String state) {
+		this.currentState = state;
+	}
+
+	public void setCurrentAction(String action) {
+		this.currentAction = action;
+	}
+
+	public boolean needsDataLoad() {
+		return needsDataLoad;
 	}
 
 	public void loadTodos(Context ctx) {
+		if (ctx == null) return;
 		isLoading.setValue(true);
+
+		String type = FILTER_ALL.equals(currentType) ? null : currentType;
+		String state = currentState;
+		String action = currentAction;
+
 		RetrofitClient.getApiInterface(ctx)
-				.getAllTodos()
+				.getAllTodos(type, state, action)
 				.enqueue(
 						new Callback<>() {
 							@Override
@@ -67,8 +113,13 @@ public class TodoViewModel extends ViewModel {
 										r,
 										isLoading,
 										() -> {
-											allTodos.setValue(r.body());
-											applyFilter();
+											List<ToDoItem> items = r.body();
+											if (items != null) {
+												todoList.setValue(items);
+												needsDataLoad = false;
+											} else {
+												todoList.setValue(new ArrayList<>());
+											}
 										},
 										error);
 							}
@@ -77,8 +128,7 @@ public class TodoViewModel extends ViewModel {
 							public void onFailure(
 									@NonNull Call<List<ToDoItem>> c, @NonNull Throwable t) {
 								isLoading.setValue(false);
-								allTodos.setValue(new ArrayList<>());
-								filteredTodos.setValue(null);
+								todoList.setValue(new ArrayList<>());
 								error.setValue(t.getMessage());
 							}
 						});
@@ -86,18 +136,17 @@ public class TodoViewModel extends ViewModel {
 
 	public void markAsDone(Context ctx, long todoId) {
 		RetrofitClient.getApiInterface(ctx)
-				.markTodoAsDone((int) todoId)
+				.markTodoAsDone(todoId)
 				.enqueue(
 						new Callback<>() {
 							@Override
 							public void onResponse(
 									@NonNull Call<ToDoItem> c, @NonNull Response<ToDoItem> r) {
 								if (r.isSuccessful()) {
-									List<ToDoItem> current = allTodos.getValue();
+									List<ToDoItem> current = todoList.getValue();
 									if (current != null) {
 										current.removeIf(todo -> todo.getId() == todoId);
-										allTodos.setValue(current);
-										applyFilter();
+										todoList.setValue(new ArrayList<>(current));
 									}
 									error.setValue("marked_done");
 								} else {
@@ -112,29 +161,110 @@ public class TodoViewModel extends ViewModel {
 						});
 	}
 
-	private void applyFilter() {
-		List<ToDoItem> source = allTodos.getValue();
-		if (source == null) source = new ArrayList<>();
-
-		List<ToDoItem> filtered =
-				switch (currentFilter) {
-					case FILTER_ISSUES ->
-							source.stream()
-									.filter(item -> "Issue".equalsIgnoreCase(item.getTargetType()))
-									.collect(Collectors.toList());
-					case FILTER_MERGE_REQUESTS ->
-							source.stream()
-									.filter(
-											item ->
-													"MergeRequest"
-															.equalsIgnoreCase(item.getTargetType()))
-									.collect(Collectors.toList());
-					default -> new ArrayList<>(source);
-				};
-		filteredTodos.setValue(filtered);
-	}
-
 	public void clearError() {
 		error.setValue(null);
+	}
+
+	public void clearFetchedData() {
+		fetchedProject.setValue(null);
+		fetchedMr.setValue(null);
+		fetchedIssue.setValue(null);
+	}
+
+	public void fetchProjectForTodo(Context ctx, long projectId) {
+		isLoading.setValue(true);
+		RetrofitClient.getApiInterface(ctx)
+				.getProjectInfo(projectId)
+				.enqueue(
+						new Callback<>() {
+							@Override
+							public void onResponse(
+									@NonNull Call<Projects> c, @NonNull Response<Projects> r) {
+								ApiResponseHandler.handleFetch(
+										r,
+										isLoading,
+										() -> fetchedProject.setValue(r.body()),
+										error);
+							}
+
+							@Override
+							public void onFailure(@NonNull Call<Projects> c, @NonNull Throwable t) {
+								isLoading.setValue(false);
+								error.setValue(t.getMessage());
+							}
+						});
+	}
+
+	public void fetchMrForTodo(Context ctx, long projectId, long mrIid) {
+		isLoading.setValue(true);
+		RetrofitClient.getApiInterface(ctx)
+				.getMergeRequest(projectId, mrIid)
+				.enqueue(
+						new Callback<>() {
+							@Override
+							public void onResponse(
+									@NonNull Call<MergeRequests> c,
+									@NonNull Response<MergeRequests> r) {
+								ApiResponseHandler.handleFetch(
+										r, isLoading, () -> fetchedMr.setValue(r.body()), error);
+							}
+
+							@Override
+							public void onFailure(
+									@NonNull Call<MergeRequests> c, @NonNull Throwable t) {
+								isLoading.setValue(false);
+								error.setValue(t.getMessage());
+							}
+						});
+	}
+
+	public void fetchIssueForTodo(Context ctx, long projectId, long issueIid) {
+		isLoading.setValue(true);
+		RetrofitClient.getApiInterface(ctx)
+				.getIssue(projectId, issueIid)
+				.enqueue(
+						new Callback<>() {
+							@Override
+							public void onResponse(
+									@NonNull Call<Issues> c, @NonNull Response<Issues> r) {
+								ApiResponseHandler.handleFetch(
+										r, isLoading, () -> fetchedIssue.setValue(r.body()), error);
+							}
+
+							@Override
+							public void onFailure(@NonNull Call<Issues> c, @NonNull Throwable t) {
+								isLoading.setValue(false);
+								error.setValue(t.getMessage());
+							}
+						});
+	}
+
+	public void markAllAsDone(Context ctx) {
+		if (ctx == null) return;
+
+		isLoading.setValue(true);
+		RetrofitClient.getApiInterface(ctx)
+				.markAllTodoAsDone()
+				.enqueue(
+						new Callback<>() {
+							@Override
+							public void onResponse(
+									@NonNull Call<ToDoItem> c, @NonNull Response<ToDoItem> r) {
+								isLoading.setValue(false);
+								if (r.isSuccessful()) {
+									todoList.setValue(new ArrayList<>());
+									needsDataLoad = true;
+									error.setValue("all_marked_done");
+								} else {
+									error.setValue(ApiResponseHandler.getErrorMessageStatic(r));
+								}
+							}
+
+							@Override
+							public void onFailure(@NonNull Call<ToDoItem> c, @NonNull Throwable t) {
+								isLoading.setValue(false);
+								error.setValue(t.getMessage());
+							}
+						});
 	}
 }

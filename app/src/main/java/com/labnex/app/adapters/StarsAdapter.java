@@ -112,7 +112,7 @@ public class StarsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 					profile -> {
 						Intent intent = new Intent(context, ProfileActivity.class);
 						intent.putExtra("source", "starrers");
-						intent.putExtra("userId", stars.getUser().getId());
+						intent.putExtra("userId", String.valueOf(stars.getUser().getId()));
 						context.startActivity(intent);
 					});
 		}
