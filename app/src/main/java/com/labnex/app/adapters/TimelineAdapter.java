@@ -41,18 +41,21 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 	private final ProjectsContext projectsContext;
 	private final FragmentManager fragmentManager;
 	private final long currentUserId;
+	private final String type;
 
 	public TimelineAdapter(
 			Context ctx,
 			List<Notes> list,
 			ProjectsContext projectsContext,
 			FragmentManager fragmentManager,
-			long currentUserId) {
+			long currentUserId,
+			String type) {
 		this.ctx = ctx;
 		this.list = list != null ? list : new ArrayList<>();
 		this.projectsContext = projectsContext;
 		this.fragmentManager = fragmentManager;
 		this.currentUserId = currentUserId;
+		this.type = type;
 	}
 
 	@SuppressLint("NotifyDataSetChanged")
@@ -164,7 +167,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
 			b.reactionsView.configure(
 					projectsContext.getProjectId(),
-					"issue",
+					type,
 					note.getNoteableIid(),
 					note.getId(),
 					fragmentManager,

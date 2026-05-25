@@ -145,7 +145,7 @@ public class TimelineViewModel extends ViewModel {
 		}
 	}
 
-	public void addComment(Context ctx, long projectId, long issueIid, String body) {
+	public void addComment(Context ctx, long projectId, long iid, String body) {
 		if (ctx == null) return;
 		isSubmitting.setValue(true);
 		error.setValue(null);
@@ -153,26 +153,30 @@ public class TimelineViewModel extends ViewModel {
 		CrudeNote note = new CrudeNote();
 		note.setBody(body);
 
-		RetrofitClient.getApiInterface(ctx)
-				.createIssueNote(projectId, issueIid, note)
-				.enqueue(
-						new Callback<>() {
-							@Override
-							public void onResponse(
-									@NonNull Call<Notes> c, @NonNull Response<Notes> r) {
-								isSubmitting.setValue(false);
-								if (r.isSuccessful() && r.body() != null) {
-									submittedComment.setValue(r.body());
-								} else {
-									error.setValue(ApiResponseHandler.getErrorMessageStatic(r));
-								}
-							}
+		Call<Notes> call;
+		if ("mr".equals(type)) {
+			call = RetrofitClient.getApiInterface(ctx).createMergeRequestNote(projectId, iid, note);
+		} else {
+			call = RetrofitClient.getApiInterface(ctx).createIssueNote(projectId, iid, note);
+		}
 
-							@Override
-							public void onFailure(@NonNull Call<Notes> c, @NonNull Throwable t) {
-								isSubmitting.setValue(false);
-								error.setValue(t.getMessage());
-							}
-						});
+		call.enqueue(
+				new Callback<>() {
+					@Override
+					public void onResponse(@NonNull Call<Notes> c, @NonNull Response<Notes> r) {
+						isSubmitting.setValue(false);
+						if (r.isSuccessful() && r.body() != null) {
+							submittedComment.setValue(r.body());
+						} else {
+							error.setValue(ApiResponseHandler.getErrorMessageStatic(r));
+						}
+					}
+
+					@Override
+					public void onFailure(@NonNull Call<Notes> c, @NonNull Throwable t) {
+						isSubmitting.setValue(false);
+						error.setValue(t.getMessage());
+					}
+				});
 	}
 }

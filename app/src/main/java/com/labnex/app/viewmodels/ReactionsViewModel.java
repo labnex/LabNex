@@ -27,10 +27,21 @@ public class ReactionsViewModel extends ViewModel {
 		if (ctx == null) return;
 
 		Call<List<AwardEmoji>> call;
+		boolean isMr = "mr".equals(type);
+
 		if (noteId != null) {
-			call = RetrofitClient.getApiInterface(ctx).getNoteAwardEmojis(projectId, iid, noteId);
+			call =
+					isMr
+							? RetrofitClient.getApiInterface(ctx)
+									.getMrNoteAwardEmojis(projectId, iid, noteId)
+							: RetrofitClient.getApiInterface(ctx)
+									.getNoteAwardEmojis(projectId, iid, noteId);
 		} else {
-			call = RetrofitClient.getApiInterface(ctx).getIssueAwardEmojis(projectId, iid);
+			call =
+					isMr
+							? RetrofitClient.getApiInterface(ctx).getMrAwardEmojis(projectId, iid)
+							: RetrofitClient.getApiInterface(ctx)
+									.getIssueAwardEmojis(projectId, iid);
 		}
 
 		call.enqueue(
@@ -46,12 +57,17 @@ public class ReactionsViewModel extends ViewModel {
 								if (a.getUser().getId() == currentUserId) mine.add(a);
 							}
 							callback.onLoaded(noteId, all, mine);
+						} else if (callback != null) {
+							callback.onLoaded(noteId, new ArrayList<>(), new ArrayList<>());
 						}
 					}
 
 					@Override
-					public void onFailure(
-							@NonNull Call<List<AwardEmoji>> c, @NonNull Throwable t) {}
+					public void onFailure(@NonNull Call<List<AwardEmoji>> c, @NonNull Throwable t) {
+						if (callback != null) {
+							callback.onLoaded(noteId, new ArrayList<>(), new ArrayList<>());
+						}
+					}
 				});
 	}
 
@@ -66,13 +82,23 @@ public class ReactionsViewModel extends ViewModel {
 			ReactionsLoadedCallback callback) {
 		if (ctx == null) return;
 
+		boolean isMr = "mr".equals(type);
 		Call<AwardEmoji> call;
+
 		if (noteId != null) {
 			call =
-					RetrofitClient.getApiInterface(ctx)
-							.addNoteAwardEmoji(projectId, iid, noteId, name);
+					isMr
+							? RetrofitClient.getApiInterface(ctx)
+									.addMrNoteAwardEmoji(projectId, iid, noteId, name)
+							: RetrofitClient.getApiInterface(ctx)
+									.addNoteAwardEmoji(projectId, iid, noteId, name);
 		} else {
-			call = RetrofitClient.getApiInterface(ctx).addIssueAwardEmoji(projectId, iid, name);
+			call =
+					isMr
+							? RetrofitClient.getApiInterface(ctx)
+									.addMrAwardEmoji(projectId, iid, name)
+							: RetrofitClient.getApiInterface(ctx)
+									.addIssueAwardEmoji(projectId, iid, name);
 		}
 
 		call.enqueue(
@@ -102,15 +128,23 @@ public class ReactionsViewModel extends ViewModel {
 			ReactionsLoadedCallback callback) {
 		if (ctx == null) return;
 
+		boolean isMr = "mr".equals(type);
 		Call<Void> call;
+
 		if (noteId != null) {
 			call =
-					RetrofitClient.getApiInterface(ctx)
-							.deleteNoteAwardEmoji(projectId, iid, noteId, awardId);
+					isMr
+							? RetrofitClient.getApiInterface(ctx)
+									.deleteMrNoteAwardEmoji(projectId, iid, noteId, awardId)
+							: RetrofitClient.getApiInterface(ctx)
+									.deleteNoteAwardEmoji(projectId, iid, noteId, awardId);
 		} else {
 			call =
-					RetrofitClient.getApiInterface(ctx)
-							.deleteIssueAwardEmoji(projectId, iid, awardId);
+					isMr
+							? RetrofitClient.getApiInterface(ctx)
+									.deleteMrAwardEmoji(projectId, iid, awardId)
+							: RetrofitClient.getApiInterface(ctx)
+									.deleteIssueAwardEmoji(projectId, iid, awardId);
 		}
 
 		call.enqueue(

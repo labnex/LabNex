@@ -31,7 +31,7 @@
             android:paddingHorizontal="@dimen/dimen8dp">
 
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/issue_card"
+                android:id="@+id/mr_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/dimen2dp"
@@ -49,8 +49,8 @@
                     <ImageView
                         android:id="@+id/state_badge"
                         android:layout_width="wrap_content"
-                        android:layout_height="@dimen/dimen22dp"
-                        android:layout_marginHorizontal="@dimen/dimen18dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dimen18dp"
                         android:layout_marginTop="@dimen/dimen12dp"
                         android:adjustViewBounds="true"
                         android:contentDescription="@string/state"
@@ -58,13 +58,14 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <ImageView
-                        android:id="@+id/confidential_badge"
-                        android:layout_width="wrap_content"
-                        android:layout_height="@dimen/dimen22dp"
-                        android:layout_marginStart="@dimen/dimen6dp"
-                        android:adjustViewBounds="true"
-                        android:contentDescription="@string/confidential"
+                        android:id="@+id/draft_icon"
+                        android:layout_width="@dimen/dimen20dp"
+                        android:layout_height="@dimen/dimen20dp"
+                        android:layout_marginStart="@dimen/dimen12dp"
+                        android:contentDescription="@string/draft"
+                        android:src="@drawable/ic_draft"
                         android:visibility="gone"
+                        app:tint="?attr/iconsColor"
                         app:layout_constraintBottom_toBottomOf="@id/state_badge"
                         app:layout_constraintStart_toEndOf="@id/state_badge"
                         app:layout_constraintTop_toTopOf="@id/state_badge" />
@@ -73,13 +74,13 @@
                         android:id="@+id/lock_icon"
                         android:layout_width="@dimen/dimen20dp"
                         android:layout_height="@dimen/dimen20dp"
-                        android:layout_marginStart="@dimen/dimen6dp"
+                        android:layout_marginStart="@dimen/dimen12dp"
                         android:contentDescription="@string/discussion_locked"
                         android:src="@drawable/ic_lock"
                         android:visibility="gone"
                         app:tint="?attr/iconsColor"
                         app:layout_constraintBottom_toBottomOf="@id/state_badge"
-                        app:layout_constraintStart_toEndOf="@id/confidential_badge"
+                        app:layout_constraintStart_toEndOf="@id/draft_icon"
                         app:layout_constraintTop_toTopOf="@id/state_badge" />
 
                     <com.google.android.material.button.MaterialButton
@@ -98,10 +99,10 @@
                         app:layout_constraintTop_toTopOf="@id/state_badge" />
 
                     <com.google.android.material.textview.MaterialTextView
-                        android:id="@+id/issue_title_and_number"
+                        android:id="@+id/mr_title_and_number"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/dimen12dp"
+                        android:layout_marginTop="@dimen/dimen16dp"
                         android:layout_marginHorizontal="@dimen/dimen18dp"
                         android:textAppearance="?attr/textAppearanceHeadlineSmall"
                         android:textColor="?attr/colorOnSurface"
@@ -120,7 +121,7 @@
                         android:visibility="gone"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/issue_title_and_number">
+                        app:layout_constraintTop_toBottomOf="@id/mr_title_and_number">
 
                         <LinearLayout
                             android:id="@+id/labels_container"
@@ -191,7 +192,7 @@
                     </LinearLayout>
 
                     <LinearLayout
-                        android:id="@+id/info_due_date"
+                        android:id="@+id/info_branches"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/dimen16dp"
@@ -206,12 +207,12 @@
                         <ImageView
                             android:layout_width="@dimen/dimen16dp"
                             android:layout_height="@dimen/dimen16dp"
-                            android:contentDescription="@string/due_date"
-                            android:src="@drawable/ic_calendar"
+                            android:contentDescription="@string/branch"
+                            android:src="@drawable/ic_branch"
                             app:tint="?attr/iconsColor" />
 
                         <com.google.android.material.textview.MaterialTextView
-                            android:id="@+id/info_due_date_text"
+                            android:id="@+id/info_branches_text"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/dimen8dp"
@@ -226,7 +227,50 @@
                         android:layout_height="@dimen/dimen1dp"
                         android:layout_marginTop="@dimen/dimen20dp"
                         android:background="?attr/colorOutlineVariant"
-                        app:layout_constraintTop_toBottomOf="@id/info_due_date" />
+                        app:layout_constraintTop_toBottomOf="@id/info_branches" />
+
+                    <LinearLayout
+                        android:id="@+id/approval_section"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dimen16dp"
+                        android:layout_marginHorizontal="@dimen/dimen18dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:visibility="gone"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/info_divider">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_approve"
+                            style="@style/Widget.Material3.Button.TonalButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="@dimen/dimen36dp"
+                            android:text="@string/approve"
+                            android:textAppearance="?attr/textAppearanceLabelMedium"
+                            app:cornerRadius="@dimen/dimen18dp" />
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/approval_count"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/dimen12dp"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:textAppearance="?attr/textAppearanceBodySmall"
+                            android:textColor="?attr/colorOnSurfaceVariant" />
+
+                    </LinearLayout>
+
+                    <View
+                        android:id="@+id/approval_divider"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dimen1dp"
+                        android:layout_marginTop="@dimen/dimen16dp"
+                        android:background="?attr/colorOutlineVariant"
+                        android:visibility="gone"
+                        app:layout_constraintTop_toBottomOf="@id/approval_section" />
 
                     <com.google.android.material.imageview.ShapeableImageView
                         android:id="@+id/author_avatar"
@@ -237,7 +281,7 @@
                         android:contentDescription="@string/generic_img_copy"
                         android:src="@drawable/ic_spinner"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/info_divider"
+                        app:layout_constraintTop_toBottomOf="@id/approval_divider"
                         app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Medium" />
 
                     <com.google.android.material.textview.MaterialTextView
@@ -269,7 +313,7 @@
                         app:layout_constraintTop_toBottomOf="@id/author_name" />
 
                     <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/issue_description"
+                        android:id="@+id/mr_description"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/dimen16dp"
@@ -288,7 +332,7 @@
                         android:layout_marginEnd="@dimen/dimen18dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/issue_description" />
+                        app:layout_constraintTop_toBottomOf="@id/mr_description" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 

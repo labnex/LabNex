@@ -17,19 +17,22 @@ import java.util.concurrent.Executor;
 public class BiometricLockActivity extends AppCompatActivity {
 
 	protected Context ctx = this;
+	private boolean isAuthenticating = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-
 		super.onCreate(savedInstanceState);
-
 		ActivityBiometricLockBinding activityUnlockBinding =
 				ActivityBiometricLockBinding.inflate(getLayoutInflater());
 		setContentView(activityUnlockBinding.getRoot());
 	}
 
+	@Override
 	public void onResume() {
 		super.onResume();
+
+		if (isAuthenticating) return;
+		isAuthenticating = true;
 
 		Executor executor = ContextCompat.getMainExecutor(this);
 
@@ -42,14 +45,11 @@ public class BiometricLockActivity extends AppCompatActivity {
 							@Override
 							public void onAuthenticationError(
 									int errorCode, @NonNull CharSequence errString) {
-
 								super.onAuthenticationError(errorCode, errString);
-
 								MainActivity.closeActivity = true;
 								finish();
 							}
 
-							// Authentication succeeded, continue to app
 							@Override
 							public void onAuthenticationSucceeded(
 									@NonNull BiometricPrompt.AuthenticationResult result) {
@@ -61,7 +61,6 @@ public class BiometricLockActivity extends AppCompatActivity {
 								finish();
 							}
 
-							// Authentication failed, close the app
 							@Override
 							public void onAuthenticationFailed() {
 								super.onAuthenticationFailed();

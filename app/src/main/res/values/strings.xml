@@ -132,7 +132,6 @@
     <string name="create_issue">Create issue</string>
     <string name="issue_created">Issue created successfully</string>
     <string name="commit_author_info">%1$s authored and %2$s committed %3$s</string>
-    <string name="diff_statistics">%1$s addition(s) and %2$s deletion(s)</string>
     <string name="broadcast_message">Broadcast message</string>
     <string name="source_branch">Source branch</string>
     <string name="target_branch">Target branch</string>
@@ -176,7 +175,7 @@
     <string name="merge_request_exists">Another open merge request already exists for this source branch.</string>
     <string name="merge_info">%1$s wants to merge branch %2$s into %3$s</string>
     <string name="mr_cannot_be_merged">This merge request cannot be merged at this time. Please check for merge conflicts and other issues.</string>
-    <string name="close_mr">You are about to close this merge request. Tap the Close button to proceed.</string>
+    <string name="close_mr">Close merge request</string>
     <string name="merge_fail_text">Merge may fail if you are not authorized to merge this Merge Request.</string>
     <string name="merge_error_405">Method not allowed</string>
     <string name="merge_error_409">SHA does not match HEAD of source branch</string>
@@ -415,6 +414,13 @@
     <string name="unlock_discussion">Unlock discussion</string>
     <string name="discussion_locked_success">Discussion locked</string>
     <string name="discussion_unlocked_success">Discussion unlocked</string>
+    <string name="cannot_find_mr">Cannot find merge request</string>
+    <string name="merge_options">Merge options</string>
+    <string name="mr_reopened">Merge request reopened</string>
+    <string name="close_mr_confirmation">You are about to close this merge request. Tap the Close button to proceed.</string>
+    <string name="mark_draft">Mark as draft</string>
+    <string name="mark_ready">Mark as ready</string>
+    <string name="commit_sha_copied">Commit SHA copied to clipboard</string>
 
     <!-- errors -->
     <string name="generic_error">An unexpected error occurred</string>
@@ -576,5 +582,7 @@
     <string name="commit">Commit</string>
     <string name="reopen">Reopen</string>
     <string name="send">Send</string>
+    <string name="draft">Draft</string>
+    <string name="diffs">Diffs</string>
     <!-- generic copy -->
 </resources>

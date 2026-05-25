@@ -1,930 +1,979 @@
 package com.labnex.app.activities;
 
+import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.Typeface;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
+import android.util.TypedValue;
 import android.view.Gravity;
-import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
-import android.widget.CheckBox;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import androidx.annotation.NonNull;
-import androidx.core.content.res.ResourcesCompat;
-import androidx.core.text.HtmlCompat;
+import android.widget.TextView;
+import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
-import com.bumptech.glide.request.RequestOptions;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.labnex.app.R;
-import com.labnex.app.adapters.IssueNotesAdapter;
-import com.labnex.app.bottomsheets.CommentOnIssueBottomSheet;
-import com.labnex.app.clients.RetrofitClient;
+import com.labnex.app.adapters.TimelineAdapter;
+import com.labnex.app.bottomsheets.CommitDiffsBottomSheet;
+import com.labnex.app.bottomsheets.CreateMergeRequestBottomSheet;
+import com.labnex.app.bottomsheets.GenericMenuBottomSheet;
+import com.labnex.app.bottomsheets.MergeMrBottomSheet;
 import com.labnex.app.contexts.MergeRequestContext;
-import com.labnex.app.contexts.ProjectsContext;
-import com.labnex.app.databinding.ActivityMergeRequestDetailBinding;
-import com.labnex.app.databinding.BottomSheetMergeRequestActionsBinding;
-import com.labnex.app.helpers.Markdown;
-import com.labnex.app.helpers.TextDrawable.ColorGenerator;
-import com.labnex.app.helpers.TextDrawable.TextDrawable;
-import com.labnex.app.helpers.TimeUtils;
-import com.labnex.app.helpers.Toasty;
-import com.labnex.app.helpers.Utils;
-import com.labnex.app.interfaces.BottomSheetListener;
-import com.labnex.app.models.approvals.Approvals;
+import com.labnex.app.databinding.ActivityMrDetailBinding;
+import com.labnex.app.helpers.*;
+import com.labnex.app.models.app.GenericMenuItemModel;
 import com.labnex.app.models.approvals.ApprovedBy;
 import com.labnex.app.models.labels.Labels;
-import com.labnex.app.models.merge_requests.CrudeMergeRequest;
+import com.labnex.app.models.merge_requests.AssigneesItem;
+import com.labnex.app.models.merge_requests.Author;
 import com.labnex.app.models.merge_requests.MergeRequests;
-import com.labnex.app.models.user.User;
-import com.labnex.app.viewmodels.IssueMrNotesViewModel;
+import com.labnex.app.viewmodels.MrDetailViewModel;
+import com.labnex.app.viewmodels.ReactionsViewModel;
+import com.labnex.app.viewmodels.TimelineViewModel;
 import com.vdurmont.emoji.EmojiParser;
-import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * @author mmarif
  */
-public class MergeRequestDetailActivity extends BaseActivity
-		implements BottomSheetListener, CommentOnIssueBottomSheet.UpdateInterface {
+public class MergeRequestDetailActivity extends BaseActivity {
 
-	public MergeRequestContext mergeRequestContext;
-	private long mergeRequestIndex;
+	private ActivityMrDetailBinding binding;
+	private MrDetailViewModel viewModel;
+	private TimelineViewModel timelineViewModel;
+	private TimelineAdapter timelineAdapter;
+	private ReactionsViewModel reactionsViewModel;
+
+	private MergeRequestContext mrContext;
+	private long mrIid;
 	private long projectId;
-	private ActivityMergeRequestDetailBinding activityMergeRequestDetailBinding;
-	private IssueMrNotesViewModel issueMrNotesViewModel;
-	private IssueNotesAdapter issueNotesAdapter;
-	private boolean infoCard = false;
-	private int page = 1;
-	private int resultLimit;
-	private final String type = "mr";
-	private int approvals = 0;
-	private int requiredApprovals = 0;
-	private BottomSheetMergeRequestActionsBinding sheetBinding;
+	private boolean timelineInitialized = false;
+	private boolean labelsObserverSet = false;
+	private List<String> currentLabelNames = new ArrayList<>();
+	private boolean hasUserApproved = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-
 		super.onCreate(savedInstanceState);
+		binding = ActivityMrDetailBinding.inflate(getLayoutInflater());
+		setContentView(binding.getRoot());
 
-		activityMergeRequestDetailBinding =
-				ActivityMergeRequestDetailBinding.inflate(getLayoutInflater());
-		setContentView(activityMergeRequestDetailBinding.getRoot());
+		UIHelper.applyEdgeToEdge(this, binding.dockedToolbar, binding.scrollView, null, null);
 
-		issueMrNotesViewModel = new ViewModelProvider(this).get(IssueMrNotesViewModel.class);
+		viewModel = new ViewModelProvider(this).get(MrDetailViewModel.class);
 
-		CommentOnIssueBottomSheet.setUpdateListener(this);
+		mrContext = MergeRequestContext.fromIntent(getIntent());
 
-		Locale locale = ctx.getResources().getConfiguration().getLocales().get(0);
-		mergeRequestContext = MergeRequestContext.fromIntent(getIntent());
-
-		resultLimit = getAccount().getMaxPageLimit();
-
-		mergeRequestIndex = mergeRequestContext.getMergeRequestIndex();
-		if (mergeRequestContext.getProjects() != null) {
-			projectId = mergeRequestContext.getProjects().getProjectId();
+		if (mrContext == null || mrContext.getProjects() == null) {
+			Toasty.show(ctx, getString(R.string.cannot_find_mr));
+			finish();
+			return;
 		}
 
-		activityMergeRequestDetailBinding.bottomAppBar.setNavigationOnClickListener(
-				bottomAppBar -> finish());
+		mrIid = mrContext.getMergeRequestIndex();
+		projectId = mrContext.getProjects().getProjectId();
 
-		activityMergeRequestDetailBinding.bottomAppBar.setOnMenuItemClickListener(
-				menuItem -> {
-					if (menuItem.getItemId() == R.id.menu) {
-						showMergeRequestActionsBottomSheet();
-						return true;
-					}
-					return false;
-				});
+		if (mrIid <= 0 || projectId <= 0) {
+			Toasty.show(ctx, getString(R.string.cannot_find_mr));
+			finish();
+			return;
+		}
 
-		if (!mergeRequestContext.getProjects().getProject().isArchived()) {
-			activityMergeRequestDetailBinding.newNote.setOnClickListener(
-					accounts -> {
-						if (mergeRequestContext.getMergeRequest().getDiscussionLocked()) {
-							MaterialAlertDialogBuilder materialAlertDialogBuilder =
-									new MaterialAlertDialogBuilder(
-											ctx,
-											com.google.android.material.R.style
-													.ThemeOverlay_Material3_Dialog_Alert);
+		setupDock();
+		observeViewModel();
+		setupCommentBox();
 
-							materialAlertDialogBuilder
-									.setTitle(R.string.discussion_locked)
-									.setMessage(R.string.discussion_locked_message)
+		binding.getRoot()
+				.getViewTreeObserver()
+				.addOnGlobalLayoutListener(
+						() -> {
+							Rect r = new Rect();
+							binding.getRoot().getWindowVisibleDisplayFrame(r);
+							int screenHeight = binding.getRoot().getRootView().getHeight();
+							int keypadHeight = screenHeight - r.bottom;
+
+							ViewGroup.MarginLayoutParams params =
+									(ViewGroup.MarginLayoutParams)
+											binding.commentBox.getRoot().getLayoutParams();
+							if (keypadHeight > screenHeight * 0.15) {
+								params.bottomMargin = keypadHeight;
+							} else {
+								params.bottomMargin =
+										(int) (36 * getResources().getDisplayMetrics().density);
+							}
+							binding.commentBox.getRoot().setLayoutParams(params);
+						});
+
+		viewModel.loadMergeRequest(ctx, projectId, mrIid);
+	}
+
+	private void setupDock() {
+		binding.btnBack.setOnClickListener(v -> finish());
+		binding.btnComment.setOnClickListener(v -> toggleCommentBox());
+		binding.btnMenu.setOnClickListener(v -> showMrMenu());
+	}
+
+	private void updateCommentButton(MergeRequests mrData) {
+		boolean isLocked = mrData.getDiscussionLocked();
+		boolean isArchived = mrContext.getProjects().getProject().isArchived();
+		boolean isMerged = "merged".equalsIgnoreCase(mrData.getState());
+
+		if (isArchived || isMerged) {
+			binding.btnComment.setVisibility(View.GONE);
+			return;
+		}
+
+		if (isLocked) {
+			int accessLevel = AccessLevel.getUserAccessLevel(mrContext.getProjects().getProject());
+			boolean isMember = accessLevel >= AccessLevel.REPORTER;
+			binding.btnComment.setEnabled(isMember);
+			binding.btnComment.setAlpha(isMember ? 1.0f : 0.4f);
+		} else {
+			binding.btnComment.setEnabled(true);
+			binding.btnComment.setAlpha(1.0f);
+		}
+	}
+
+	private void showMrMenu() {
+		MergeRequests mrData = viewModel.getMrData().getValue();
+		if (mrData == null) return;
+
+		List<GenericMenuItemModel> items = new ArrayList<>();
+		boolean isClosed = "closed".equalsIgnoreCase(mrData.getState());
+		boolean isMerged = "merged".equalsIgnoreCase(mrData.getState());
+		boolean isLocked = mrData.getDiscussionLocked();
+		int accessLevel = AccessLevel.getUserAccessLevel(mrContext.getProjects().getProject());
+		boolean canModify = accessLevel >= AccessLevel.MAINTAINER;
+
+		items.add(
+				new GenericMenuItemModel(
+						"commits",
+						R.string.commits,
+						R.drawable.ic_commits,
+						com.google.android.material.R.attr.colorPrimaryContainer,
+						com.google.android.material.R.attr.colorOnPrimaryContainer));
+		items.add(
+				new GenericMenuItemModel(
+						"files",
+						R.string.files,
+						R.drawable.ic_files_code,
+						com.google.android.material.R.attr.colorPrimaryContainer,
+						com.google.android.material.R.attr.colorOnPrimaryContainer));
+
+		if (!isMerged) {
+			if (canModify
+					&& !isClosed
+					&& "can_be_merged".equalsIgnoreCase(mrData.getMergeStatus())) {
+				items.add(
+						new GenericMenuItemModel(
+								"merge",
+								R.string.merge,
+								R.drawable.ic_merge,
+								com.google.android.material.R.attr.colorPrimaryContainer,
+								com.google.android.material.R.attr.colorOnPrimaryContainer));
+			}
+
+			if (canModify) {
+				if (isClosed && !isLocked) {
+					items.add(
+							new GenericMenuItemModel(
+									"reopen",
+									R.string.reopen,
+									R.drawable.ic_refresh,
+									com.google.android.material.R.attr.colorPrimaryContainer,
+									com.google.android.material.R.attr.colorOnPrimaryContainer));
+				} else if (!isClosed) {
+					items.add(
+							new GenericMenuItemModel(
+									"close",
+									R.string.close,
+									R.drawable.ic_close,
+									com.google.android.material.R.attr.colorErrorContainer,
+									com.google.android.material.R.attr.colorOnErrorContainer));
+				}
+
+				if (isLocked) {
+					items.add(
+							new GenericMenuItemModel(
+									"unlock",
+									R.string.unlock_discussion,
+									R.drawable.ic_unlock,
+									com.google.android.material.R.attr.colorPrimaryContainer,
+									com.google.android.material.R.attr.colorOnPrimaryContainer));
+				} else {
+					items.add(
+							new GenericMenuItemModel(
+									"lock",
+									R.string.lock_discussion,
+									R.drawable.ic_lock,
+									com.google.android.material.R.attr.colorPrimaryContainer,
+									com.google.android.material.R.attr.colorOnPrimaryContainer));
+				}
+			}
+		}
+
+		if (canModify && !isMerged) {
+			boolean isDraft = mrData.isDraft() || mrData.isWorkInProgress();
+
+			if (isDraft) {
+				items.add(
+						new GenericMenuItemModel(
+								"mark_ready",
+								R.string.mark_ready,
+								R.drawable.ic_draft,
+								com.google.android.material.R.attr.colorPrimaryContainer,
+								com.google.android.material.R.attr.colorOnPrimaryContainer));
+			} else {
+				items.add(
+						new GenericMenuItemModel(
+								"mark_draft",
+								R.string.mark_draft,
+								R.drawable.ic_draft,
+								com.google.android.material.R.attr.colorPrimaryContainer,
+								com.google.android.material.R.attr.colorOnPrimaryContainer));
+			}
+		}
+
+		items.add(
+				new GenericMenuItemModel(
+						"copy_url",
+						R.string.copy_url,
+						R.drawable.ic_link,
+						com.google.android.material.R.attr.colorPrimaryContainer,
+						com.google.android.material.R.attr.colorOnPrimaryContainer));
+		items.add(
+				new GenericMenuItemModel(
+						"open_browser",
+						R.string.open_in_browser,
+						R.drawable.ic_browser,
+						com.google.android.material.R.attr.colorPrimaryContainer,
+						com.google.android.material.R.attr.colorOnPrimaryContainer));
+
+		GenericMenuBottomSheet sheet =
+				GenericMenuBottomSheet.newInstance(mrData.getTitle(), "!" + mrIid, items);
+		sheet.setOnMenuItemClickListener(
+				id -> {
+					switch (id) {
+						case "merge":
+							MergeMrBottomSheet.newInstance(projectId, mrIid, viewModel)
+									.show(getSupportFragmentManager(), "mergeMrSheet");
+							break;
+						case "commits":
+							Intent commitsIntent =
+									mrContext.getProjects().getIntent(ctx, CommitsActivity.class);
+							commitsIntent.putExtra("source", "mr");
+							commitsIntent.putExtra("mergeRequestIid", mrIid);
+							commitsIntent.putExtra("projectId", projectId);
+							startActivity(commitsIntent);
+							break;
+						case "files":
+							Bundle bundle = new Bundle();
+							bundle.putString("source", "mr");
+							bundle.putLong("projectId", projectId);
+							bundle.putLong("mrIid", mrIid);
+							CommitDiffsBottomSheet bottomSheet = new CommitDiffsBottomSheet();
+							bottomSheet.setArguments(bundle);
+							bottomSheet.show(
+									((FragmentActivity) ctx).getSupportFragmentManager(),
+									"mrDiffsBottomSheet");
+							break;
+						case "close":
+							new MaterialAlertDialogBuilder(ctx)
+									.setTitle(R.string.close_mr)
+									.setMessage(R.string.close_mr_confirmation)
 									.setPositiveButton(
-											R.string.proceed,
-											(dialog, whichButton) -> initComment())
-									.setNeutralButton(R.string.cancel, null)
+											R.string.close,
+											(d, w) ->
+													viewModel.toggleMrState(
+															ctx, projectId, mrIid, "close"))
+									.setNegativeButton(R.string.cancel, null)
 									.show();
-						} else {
-							initComment();
-						}
-					});
+							break;
+						case "reopen":
+							viewModel.toggleMrState(ctx, projectId, mrIid, "reopen");
+							break;
+						case "lock":
+							viewModel.toggleDiscussionLock(ctx, projectId, mrIid, true);
+							break;
+						case "unlock":
+							viewModel.toggleDiscussionLock(ctx, projectId, mrIid, false);
+							break;
+						case "mark_ready":
+							viewModel.toggleDraft(ctx, projectId, mrIid, mrData.getTitle(), false);
+							break;
+						case "mark_draft":
+							viewModel.toggleDraft(ctx, projectId, mrIid, mrData.getTitle(), true);
+							break;
+						case "copy_url":
+							Utils.copyToClipboard(
+									ctx,
+									mrData.getWebUrl(),
+									getString(R.string.copied_to_clipboard));
+							break;
+						case "open_browser":
+							Utils.openUrlInBrowser(this, mrData.getWebUrl());
+							break;
+					}
+				});
+		sheet.show(getSupportFragmentManager(), "mrMenuSheet");
+	}
+
+	private void setupHeader(MergeRequests mrData) {
+		boolean isDraft = mrData.isDraft() || mrData.isWorkInProgress();
+		binding.draftIcon.setVisibility(isDraft ? View.VISIBLE : View.GONE);
+		binding.draftIcon.setOnClickListener(v -> Toasty.show(ctx, R.string.draft));
+
+		String state = mrData.getState();
+		int stateColor;
+		String stateLabel;
+		if ("merged".equalsIgnoreCase(state)) {
+			stateColor =
+					ctx.getResources().getColor(R.color.alert_important_border, ctx.getTheme());
+			stateLabel = getString(R.string.merged);
+		} else if ("closed".equalsIgnoreCase(state)) {
+			stateColor = ctx.getResources().getColor(R.color.label_default_color, ctx.getTheme());
+			stateLabel = getString(R.string.closed);
 		} else {
-			activityMergeRequestDetailBinding.newNote.setVisibility(View.GONE);
+			stateColor = ctx.getResources().getColor(R.color.green, ctx.getTheme());
+			stateLabel = getString(R.string.open);
+		}
+		Drawable stateBadge = AvatarGenerator.getLabelDrawable(ctx, stateLabel, stateColor, 22);
+		binding.stateBadge.setImageDrawable(stateBadge);
+		binding.stateBadge.setVisibility(View.VISIBLE);
+
+		binding.lockIcon.setVisibility(mrData.getDiscussionLocked() ? View.VISIBLE : View.GONE);
+		if (mrData.getDiscussionLocked()) {
+			binding.lockIcon.setOnClickListener(
+					v -> Toasty.show(ctx, getString(R.string.discussion_locked_message)));
 		}
 
-		activityMergeRequestDetailBinding.recyclerView.setHasFixedSize(true);
-		activityMergeRequestDetailBinding.recyclerView.setLayoutManager(
-				new LinearLayoutManager(this));
-		activityMergeRequestDetailBinding.recyclerView.setNestedScrollingEnabled(false);
-
-		ColorGenerator generator = ColorGenerator.MATERIAL;
-		int color = generator.getColor(mergeRequestContext.getMergeRequest().getAuthor().getName());
-		String firstCharacter =
-				String.valueOf(
-						mergeRequestContext.getMergeRequest().getAuthor().getName().charAt(0));
-
-		TextDrawable drawable =
-				TextDrawable.builder()
-						.beginConfig()
-						.useFont(Typeface.DEFAULT)
-						.fontSize(16)
-						.toUpperCase()
-						.width(28)
-						.height(28)
-						.endConfig()
-						.buildRoundRect(firstCharacter, color, 8);
-
-		String mrId =
-				"<font color='"
-						+ ResourcesCompat.getColor(
-								getResources(), R.color.md_theme_onBackground, null)
-						+ "'>"
-						+ appCtx.getResources().getString(R.string.hash)
-						+ mergeRequestIndex
-						+ "</font>";
-		String modifiedTime =
-				TimeUtils.formatTime(
-						Date.from(
-								OffsetDateTime.parse(
-												mergeRequestContext
-														.getMergeRequest()
-														.getCreatedAt())
-										.toInstant()),
-						locale);
-
-		if (mergeRequestContext.getMergeRequest().getAuthor().getAvatarUrl() != null) {
-
-			Glide.with(ctx)
-					.load(mergeRequestContext.getMergeRequest().getAuthor().getAvatarUrl())
-					.diskCacheStrategy(DiskCacheStrategy.ALL)
-					.placeholder(R.drawable.ic_spinner)
-					.centerCrop()
-					.into(activityMergeRequestDetailBinding.userAvatar);
-		} else {
-			activityMergeRequestDetailBinding.userAvatar.setImageDrawable(drawable);
-		}
-
-		Markdown.render(
-				ctx,
-				String.valueOf(
-						HtmlCompat.fromHtml(
-								EmojiParser.parseToUnicode(
-												mergeRequestContext.getMergeRequest().getTitle())
-										+ " "
-										+ mrId,
-								HtmlCompat.FROM_HTML_MODE_LEGACY)),
-				activityMergeRequestDetailBinding.mrTitle);
-
-		if (mergeRequestContext.getMergeRequest().getMilestone() != null) {
-
-			activityMergeRequestDetailBinding.milestoneFrame.setVisibility(View.VISIBLE);
-			activityMergeRequestDetailBinding.mrMilestone.setText(
-					mergeRequestContext.getMergeRequest().getMilestone().getTitle());
-			infoCard = true;
-		}
-
-		getLabels();
-
-		if (!mergeRequestContext.getMergeRequest().getDescription().isEmpty()) {
-			Markdown.render(
-					ctx,
-					EmojiParser.parseToUnicode(
-							mergeRequestContext.getMergeRequest().getDescription().trim()),
-					activityMergeRequestDetailBinding.mrDescription,
-					mergeRequestContext.getProjects());
-		} else {
-			activityMergeRequestDetailBinding.mrDescription.setVisibility(View.GONE);
-		}
-
-		activityMergeRequestDetailBinding.username.setText(
-				mergeRequestContext.getMergeRequest().getAuthor().getName());
-		activityMergeRequestDetailBinding.createdTime.setText(modifiedTime);
-		activityMergeRequestDetailBinding.mrThumbsUpCount.setText(
-				String.valueOf(mergeRequestContext.getMergeRequest().getUpvotes()));
-		activityMergeRequestDetailBinding.mrThumbsDownCount.setText(
-				String.valueOf(mergeRequestContext.getMergeRequest().getDownvotes()));
-
-		activityMergeRequestDetailBinding.userAvatar.setOnClickListener(
-				profile -> {
-					Intent intent = new Intent(ctx, ProfileActivity.class);
-					intent.putExtra("source", "mr_detail");
-					intent.putExtra(
-							"userId",
-							String.valueOf(
-									mergeRequestContext.getMergeRequest().getAuthor().getId()));
-					ctx.startActivity(intent);
+		int accessLevel = AccessLevel.getUserAccessLevel(mrContext.getProjects().getProject());
+		boolean canModify = accessLevel >= AccessLevel.MAINTAINER;
+		boolean isMerged = "merged".equalsIgnoreCase(state);
+		binding.btnEdit.setVisibility(canModify && !isMerged ? View.VISIBLE : View.GONE);
+		binding.btnEdit.setOnClickListener(
+				v -> {
+					CreateMergeRequestBottomSheet.newInstance(
+									"project", projectId, canModify, false, null, null, mrData,
+									null)
+							.show(getSupportFragmentManager(), "editMrSheet");
 				});
 
-		if (!mergeRequestContext.getMergeRequest().getAssignees().isEmpty()) {
+		setupMrHeaderTitle(mrData.getTitle(), mrIid);
 
-			infoCard = true;
-			LinearLayout.LayoutParams paramsAssignees = new LinearLayout.LayoutParams(64, 64);
-			paramsAssignees.setMargins(0, 0, 16, 0);
-
-			activityMergeRequestDetailBinding.assigneesScrollView.setVisibility(View.VISIBLE);
-
-			for (int i = 0; i < mergeRequestContext.getMergeRequest().getAssignees().size(); i++) {
-
-				ImageView assigneesView = new ImageView(ctx);
-
+		Author author = mrData.getAuthor();
+		if (author != null) {
+			if (author.getAvatarUrl() != null) {
 				Glide.with(ctx)
-						.load(
-								mergeRequestContext
-										.getMergeRequest()
-										.getAssignees()
-										.get(i)
-										.getAvatarUrl())
+						.load(author.getAvatarUrl())
 						.diskCacheStrategy(DiskCacheStrategy.ALL)
 						.placeholder(R.drawable.ic_spinner)
 						.centerCrop()
-						.apply(RequestOptions.bitmapTransform(new RoundedCorners(20)))
-						.into(assigneesView);
-
-				activityMergeRequestDetailBinding.assigneesFrame.addView(assigneesView);
-				assigneesView.setLayoutParams(paramsAssignees);
-
-				int finalI = i;
-				assigneesView.setOnClickListener(
-						profile -> {
-							Intent intent = new Intent(ctx, ProfileActivity.class);
-							intent.putExtra("source", "mr_detail");
-							intent.putExtra(
-									"userId",
-									mergeRequestContext
-											.getMergeRequest()
-											.getAssignees()
-											.get(finalI)
-											.getId());
-							ctx.startActivity(intent);
-						});
+						.into(binding.authorAvatar);
+			} else {
+				binding.authorAvatar.setImageDrawable(
+						AvatarGenerator.getLetterAvatar(ctx, author.getName(), 36));
 			}
+			String displayName = author.getName() != null ? author.getName() : author.getUsername();
+			binding.authorName.setText(displayName);
+			binding.authorAvatar.setOnClickListener(v -> openProfile(author.getId()));
 		}
 
-		if (!infoCard) {
-			activityMergeRequestDetailBinding.mrInfoCard.setVisibility(View.GONE);
+		String createdAt = mrData.getCreatedAt();
+		if (createdAt != null) {
+			Date date = TimeHelper.parseIso8601(createdAt);
+			binding.createdTime.setText(TimeHelper.formatTime(date));
+			binding.createdTime.setOnClickListener(
+					v -> Toasty.show(ctx, TimeHelper.getFullDateTime(date, Locale.getDefault())));
 		}
 
-		activityMergeRequestDetailBinding.mergeInfo.setText(
-				getString(
-						R.string.merge_info,
-						mergeRequestContext.getMergeRequest().getAuthor().getName(),
-						mergeRequestContext.getMergeRequest().getSourceBranch(),
-						mergeRequestContext.getMergeRequest().getTargetBranch()));
-
-		getMergeRequestNotesData();
-
-		fetchApprovals();
+		String description = mrData.getDescription();
+		if (description != null && !description.isEmpty()) {
+			Markdown.render(
+					ctx,
+					EmojiParser.parseToUnicode(description.trim()),
+					binding.mrDescription,
+					mrContext.getProjects());
+		} else {
+			binding.mrDescription.setVisibility(View.GONE);
+		}
 	}
 
-	private void showMergeRequestActionsBottomSheet() {
+	private void setupMrHeaderTitle(String titleText, long mrIid) {
+		if (titleText == null) titleText = "";
+		String numberText = " " + getString(R.string.mr_number, mrIid);
 
-		sheetBinding =
-				BottomSheetMergeRequestActionsBinding.inflate(
-						LayoutInflater.from(this), null, false);
-		BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
-		bottomSheetDialog.setContentView(sheetBinding.getRoot());
+		TypedValue typedValue = new TypedValue();
+		getTheme()
+				.resolveAttribute(
+						com.google.android.material.R.attr.colorOnSurface, typedValue, true);
+		int baseColor = typedValue.data;
+		int alphaColor = (baseColor & 0x00FFFFFF) | (0x99 << 24);
 
-		if (mergeRequestContext.getMergeRequest().isWorkInProgress()
-				|| mergeRequestContext.getMergeRequest().isDraft()
-				|| !mergeRequestContext.getMergeRequest().isBlockingDiscussionsResolved()
-				|| mergeRequestContext.getMergeRequest().isHasConflicts()) {
-			sheetBinding.mergeItemCard.setVisibility(View.GONE);
-		}
-		if (mergeRequestContext.getMergeRequest().getState().equalsIgnoreCase("closed")) {
-			sheetBinding.closeItemCard.setVisibility(View.GONE);
-		}
+		Spanned titleSpanned =
+				Markdown.renderToSpanned(ctx, EmojiParser.parseToUnicode(titleText.trim()));
 
-		sheetBinding.commitsItem.setOnClickListener(
-				v -> {
-					ProjectsContext project =
-							new ProjectsContext(
-									mergeRequestContext.getProjects().getProject(), ctx);
-					Intent intent = project.getIntent(ctx, CommitsActivity.class);
-					intent.putExtra("source", "mr");
-					intent.putExtra(
-							"mergeRequestIid", mergeRequestContext.getMergeRequest().getIid());
-					intent.putExtra("projectId", projectId);
-					ctx.startActivity(intent);
-					bottomSheetDialog.dismiss();
-				});
+		SpannableStringBuilder builder = new SpannableStringBuilder();
+		builder.append(titleSpanned);
 
-		sheetBinding.mergeItem.setOnClickListener(
-				v -> {
-					MaterialAlertDialogBuilder materialAlertDialogBuilder =
-							new MaterialAlertDialogBuilder(ctx);
+		int startPos = builder.length();
+		builder.append(numberText);
+		builder.setSpan(
+				new ForegroundColorSpan(alphaColor),
+				startPos,
+				builder.length(),
+				Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-					View customDialogView =
-							LayoutInflater.from(this)
-									.inflate(
-											R.layout.custom_merge_mr_dialog,
-											findViewById(android.R.id.content),
-											false);
-
-					if (mergeRequestContext
-							.getMergeRequest()
-							.getMergeStatus()
-							.equalsIgnoreCase("can_be_merged")) {
-						materialAlertDialogBuilder
-								.setView(customDialogView)
-								.setTitle(R.string.merge)
-								.setMessage(R.string.merge_fail_text)
-								.setPositiveButton(
-										R.string.merge,
-										(dialog, whichButton) -> {
-											CheckBox removeSourceBranchCheckbox =
-													customDialogView.findViewById(
-															R.id.remove_source_branch);
-											boolean removeSourceBranch =
-													removeSourceBranchCheckbox.isChecked();
-											CheckBox squashCheckbox =
-													customDialogView.findViewById(
-															R.id.squash_commits);
-											boolean squash = squashCheckbox.isChecked();
-
-											mergeMergeRequest(removeSourceBranch, squash);
-										})
-								.setNeutralButton(R.string.cancel, null)
-								.show();
-					} else {
-						materialAlertDialogBuilder
-								.setTitle(R.string.merge)
-								.setMessage(R.string.mr_cannot_be_merged)
-								.setNeutralButton(R.string.cancel, null)
-								.show();
-					}
-					bottomSheetDialog.dismiss();
-				});
-
-		sheetBinding.closeItem.setOnClickListener(
-				v -> {
-					MaterialAlertDialogBuilder materialAlertDialogBuilder =
-							new MaterialAlertDialogBuilder(ctx);
-
-					materialAlertDialogBuilder
-							.setTitle(R.string.close)
-							.setMessage(R.string.close_mr)
-							.setPositiveButton(
-									R.string.close, (dialog, whichButton) -> closeMergeRequest())
-							.setNeutralButton(R.string.cancel, null)
-							.show();
-					bottomSheetDialog.dismiss();
-				});
-
-		sheetBinding.urlCopyItem.setOnClickListener(
-				v -> {
-					Utils.copyToClipboard(
-							ctx,
-							mergeRequestContext.getMergeRequest().getWebUrl(),
-							getString(R.string.copy_url_message));
-					bottomSheetDialog.dismiss();
-				});
-
-		sheetBinding.openInBrowserItem.setOnClickListener(
-				v -> {
-					Utils.openUrlInBrowser(this, mergeRequestContext.getMergeRequest().getWebUrl());
-					bottomSheetDialog.dismiss();
-				});
-
-		bottomSheetDialog.show();
+		binding.mrTitleAndNumber.setText(builder);
 	}
 
-	@Override
-	public void updateDataListener(String str) {
+	@SuppressLint("SetTextI18n")
+	private void setupInfoSection(MergeRequests mrData) {
+		setupLabels(mrData.getLabels());
+		setupAssignees(mrData.getAssignees());
 
-		if (str.equalsIgnoreCase("created")) {
-			Toasty.show(ctx, getString(R.string.comment_posted));
+		if (mrData.getMilestone() != null) {
+			binding.infoMilestone.setVisibility(View.VISIBLE);
+			binding.infoMilestoneText.setText(mrData.getMilestone().getTitle());
 		}
 
-		issueNotesAdapter.clearAdapter();
-		page = 1;
-		getMergeRequestNotesData();
+		String sourceBranch = mrData.getSourceBranch();
+		String targetBranch = mrData.getTargetBranch();
+		if (sourceBranch != null && targetBranch != null) {
+			binding.infoBranches.setVisibility(View.VISIBLE);
+			binding.infoBranchesText.setText(targetBranch + " ← " + sourceBranch);
+		}
 	}
 
-	private void initComment() {
+	private void setupApprovals(MergeRequests mrData) {
+		viewModel.fetchApprovals(ctx, projectId, mrIid);
 
-		Bundle bsBundle = new Bundle();
-		bsBundle.putString("source", "mr_comment");
-		bsBundle.putLong("projectId", mergeRequestContext.getProjects().getProjectId());
-		bsBundle.putInt("mergeRequestIid", mergeRequestContext.getMergeRequestIndex());
-		CommentOnIssueBottomSheet bottomSheet = new CommentOnIssueBottomSheet();
-		bottomSheet.setArguments(bsBundle);
-		bottomSheet.show(getSupportFragmentManager(), "commentOnMergeRequestBottomSheet");
-	}
-
-	@Override
-	public void onButtonClicked(String text) {}
-
-	private void closeMergeRequest() {
-
-		CrudeMergeRequest crudeMergeRequest = new CrudeMergeRequest();
-		crudeMergeRequest.setStateEvent("close");
-
-		Call<MergeRequests> call =
-				RetrofitClient.getApiInterface(ctx)
-						.updateMergeRequest(projectId, mergeRequestIndex, crudeMergeRequest);
-
-		call.enqueue(
-				new Callback<>() {
-
-					@Override
-					public void onResponse(
-							@NonNull Call<MergeRequests> call,
-							@NonNull Response<MergeRequests> response) {
-
-						if (response.code() == 200) {
-
-							sheetBinding.closeItemCard.setVisibility(View.GONE);
-							// MergeRequestsActivity.updateMergeRequestList = true;
-							Toasty.show(ctx, getString(R.string.mr_closed));
-						} else if (response.code() == 401) {
-
-							Toasty.show(ctx, getString(R.string.not_authorized));
-						} else if (response.code() == 403) {
-
-							Toasty.show(ctx, getString(R.string.access_forbidden_403));
-						} else {
-
-							Toasty.show(ctx, getString(R.string.generic_error));
-						}
-					}
-
-					@Override
-					public void onFailure(@NonNull Call<MergeRequests> call, @NonNull Throwable t) {
-
-						Toasty.show(ctx, getString(R.string.generic_server_response_error));
-					}
-				});
-	}
-
-	private void mergeMergeRequest(boolean removeSourceBranch, boolean squash) {
-
-		CrudeMergeRequest crudeMergeRequest = new CrudeMergeRequest();
-		crudeMergeRequest.setShouldRemoveSourceBranch(removeSourceBranch);
-		crudeMergeRequest.setSquash(squash);
-
-		Call<MergeRequests> call =
-				RetrofitClient.getApiInterface(ctx)
-						.mergeMergeRequest(projectId, mergeRequestIndex, crudeMergeRequest);
-
-		call.enqueue(
-				new Callback<>() {
-
-					@Override
-					public void onResponse(
-							@NonNull Call<MergeRequests> call,
-							@NonNull Response<MergeRequests> response) {
-
-						if (response.code() == 200) {
-
-							// MergeRequestsActivity.updateMergeRequestList = true;
-							Toasty.show(ctx, getString(R.string.merge_request_merged_text));
-						} else if (response.code() == 401) {
-
-							Toasty.show(ctx, getString(R.string.not_authorized));
-						} else if (response.code() == 403) {
-
-							Toasty.show(ctx, getString(R.string.access_forbidden_403));
-						} else if (response.code() == 405) {
-
-							Toasty.show(ctx, getString(R.string.merge_error_405));
-						} else if (response.code() == 409) {
-
-							Toasty.show(ctx, getString(R.string.merge_error_409));
-						} else if (response.code() == 422) {
-
-							Toasty.show(ctx, getString(R.string.merge_error_422));
-						} else {
-
-							Toasty.show(ctx, getString(R.string.generic_error));
-						}
-					}
-
-					@Override
-					public void onFailure(@NonNull Call<MergeRequests> call, @NonNull Throwable t) {
-						Toasty.show(ctx, getString(R.string.generic_server_response_error));
-					}
-				});
-	}
-
-	private void getMergeRequestNotesData() {
-
-		activityMergeRequestDetailBinding.progressBar.setVisibility(View.VISIBLE);
-
-		issueMrNotesViewModel
-				.getNotes(
-						ctx,
-						projectId,
-						mergeRequestIndex,
-						type,
-						resultLimit,
-						page,
-						MergeRequestDetailActivity.this,
-						activityMergeRequestDetailBinding.bottomAppBar)
+		viewModel
+				.getApprovals()
 				.observe(
-						MergeRequestDetailActivity.this,
-						mainList -> {
-							issueNotesAdapter =
-									new IssueNotesAdapter(
-											MergeRequestDetailActivity.this,
-											mainList,
-											mergeRequestContext.getProjects());
-							issueNotesAdapter.setLoadMoreListener(
-									new IssueNotesAdapter.OnLoadMoreListener() {
+						this,
+						approvals -> {
+							if (approvals == null) return;
 
-										@Override
-										public void onLoadMore() {
+							binding.approvalSection.setVisibility(View.VISIBLE);
+							binding.approvalDivider.setVisibility(View.VISIBLE);
 
-											page += 1;
-											issueMrNotesViewModel.loadMore(
-													ctx,
-													projectId,
-													mergeRequestIndex,
-													type,
-													resultLimit,
-													page,
-													issueNotesAdapter,
-													MergeRequestDetailActivity.this,
-													activityMergeRequestDetailBinding.bottomAppBar);
-											activityMergeRequestDetailBinding.progressBar
-													.setVisibility(View.VISIBLE);
-										}
+							int approvedCount =
+									approvals.getApprovedBy() != null
+											? approvals.getApprovedBy().size()
+											: 0;
+							long requiredCount = approvals.getApprovalsRequired();
 
-										@Override
-										public void onLoadFinished() {
+							binding.approvalCount.setText(
+									getString(
+											R.string.activity_mr_approvals,
+											approvedCount,
+											requiredCount));
 
-											activityMergeRequestDetailBinding.progressBar
-													.setVisibility(View.GONE);
-										}
-									});
-
-							if (issueNotesAdapter.getItemCount() > 0) {
-								activityMergeRequestDetailBinding.notesInfoCard.setVisibility(
-										View.VISIBLE);
-								activityMergeRequestDetailBinding.recyclerView.setAdapter(
-										issueNotesAdapter);
-							}
-
-							activityMergeRequestDetailBinding.progressBar.setVisibility(View.GONE);
-						});
-	}
-
-	private void getLabels() {
-
-		LinearLayout.LayoutParams params =
-				new LinearLayout.LayoutParams(
-						LinearLayout.LayoutParams.WRAP_CONTENT,
-						LinearLayout.LayoutParams.WRAP_CONTENT);
-		params.setMargins(0, 0, 20, 0);
-
-		if (!mergeRequestContext.getMergeRequest().getLabels().isEmpty()) {
-
-			infoCard = true;
-			activityMergeRequestDetailBinding.labelsScrollView.setVisibility(View.VISIBLE);
-			activityMergeRequestDetailBinding.labelsFrame.removeAllViews();
-
-			for (int i = 0; i < mergeRequestContext.getMergeRequest().getLabels().size(); i++) {
-
-				ImageView labelsView = new ImageView(ctx);
-				activityMergeRequestDetailBinding.labelsFrame.setOrientation(
-						LinearLayout.HORIZONTAL);
-				activityMergeRequestDetailBinding.labelsFrame.setGravity(
-						Gravity.START | Gravity.TOP);
-				labelsView.setLayoutParams(params);
-
-				int height = Utils.getPixelsFromDensity(ctx, 22);
-				int textSize = Utils.getPixelsFromScaledDensity(ctx, 14);
-
-				Call<Labels> call =
-						RetrofitClient.getApiInterface(ctx)
-								.getProjectLabel(
-										projectId,
-										mergeRequestContext.getMergeRequest().getLabels().get(i));
-
-				call.enqueue(
-						new Callback<>() {
-
-							@Override
-							public void onResponse(
-									@NonNull Call<Labels> call,
-									@NonNull Response<Labels> response) {
-
-								if (response.code() == 200) {
-
-									assert response.body() != null;
-									int labelColor =
-											Color.parseColor(
-													Utils.repeatString(
-															response.body().getColor(), 4, 1, 2));
-									int textColor =
-											Color.parseColor(
-													Utils.repeatString(
-															response.body().getTextColor(),
-															4,
-															1,
-															2));
-									String labelName = response.body().getName();
-
-									TextDrawable drawable =
-											TextDrawable.builder()
-													.beginConfig()
-													.textColor(textColor)
-													.fontSize(textSize)
-													.width(
-															Utils.calculateLabelWidth(
-																	labelName,
-																	textSize,
-																	Utils.getPixelsFromDensity(
-																			ctx, 8)))
-													.height(height)
-													.endConfig()
-													.buildRoundRect(
-															labelName,
-															labelColor,
-															Utils.getPixelsFromDensity(ctx, 18));
-
-									labelsView.setImageDrawable(drawable);
-									activityMergeRequestDetailBinding.labelsFrame.addView(
-											labelsView);
+							hasUserApproved = false;
+							long myUserId =
+									getAccount().getUserInfo() != null
+											? getAccount().getUserInfo().getId()
+											: 0;
+							if (approvals.getApprovedBy() != null) {
+								for (ApprovedBy ab : approvals.getApprovedBy()) {
+									if (ab.getUser().getId() == myUserId) {
+										hasUserApproved = true;
+										break;
+									}
 								}
 							}
 
-							@Override
-							public void onFailure(
-									@NonNull Call<Labels> call, @NonNull Throwable t) {}
+							boolean isMerged = "merged".equalsIgnoreCase(mrData.getState());
+							binding.btnApprove.setEnabled(!isMerged);
+							binding.btnApprove.setText(
+									hasUserApproved ? R.string.revoke_approval : R.string.approve);
+							binding.btnApprove.setOnClickListener(
+									v -> {
+										if (hasUserApproved) {
+											viewModel.revokeApproval(ctx, projectId, mrIid);
+										} else {
+											viewModel.approveMr(ctx, projectId, mrIid);
+										}
+									});
 						});
-			}
+	}
+
+	private void setupLabels(List<String> labelNames) {
+		this.currentLabelNames = labelNames != null ? labelNames : new ArrayList<>();
+		if (currentLabelNames.isEmpty()) {
+			binding.labelsScrollView.setVisibility(View.GONE);
+			return;
+		}
+		binding.labelsScrollView.setVisibility(View.VISIBLE);
+		binding.labelsContainer.removeAllViews();
+
+		for (String name : currentLabelNames) {
+			viewModel.fetchLabel(ctx, projectId, name);
+		}
+
+		if (!labelsObserverSet) {
+			labelsObserverSet = true;
+			viewModel
+					.getLabelCache()
+					.observe(
+							this,
+							cache -> {
+								LabelStylingHelper styler = LabelStylingHelper.getInstance(ctx);
+								binding.labelsContainer.removeAllViews();
+								for (String name : currentLabelNames) {
+									Labels label = cache.get(name);
+									if (label != null) addLabelView(label, styler);
+								}
+							});
 		}
 	}
 
-	private void fetchApprovals() {
-		Call<Approvals> call =
-				RetrofitClient.getApiInterface(ctx)
-						.getApprovals(projectId, mergeRequestContext.getMergeRequest().getIid());
+	private void addLabelView(Labels label, LabelStylingHelper styler) {
+		if (LabelStylingHelper.isScopedLabel(label.getName())) {
+			LinearLayout container = new LinearLayout(ctx);
+			container.setOrientation(LinearLayout.HORIZONTAL);
+			container.setGravity(Gravity.CENTER_VERTICAL);
+			TextView labelName = new TextView(ctx);
+			TextView labelValue = new TextView(ctx);
+			styler.styleScopedLabel(
+					label.getName(),
+					label.getColor(),
+					label.getTextColor(),
+					labelName,
+					labelValue,
+					13,
+					4,
+					10);
+			container.addView(labelName);
+			container.addView(labelValue);
+			LinearLayout.LayoutParams params =
+					new LinearLayout.LayoutParams(
+							ViewGroup.LayoutParams.WRAP_CONTENT,
+							ViewGroup.LayoutParams.WRAP_CONTENT);
+			int margin = (int) (8 * ctx.getResources().getDisplayMetrics().density);
+			params.setMargins(0, 0, margin, 0);
+			container.setLayoutParams(params);
+			binding.labelsContainer.addView(container);
+		} else {
+			TextView labelName = new TextView(ctx);
+			styler.styleRegularLabel(
+					label.getName(), label.getColor(), label.getTextColor(), labelName, 13, 4, 10);
+			LinearLayout.LayoutParams params =
+					new LinearLayout.LayoutParams(
+							ViewGroup.LayoutParams.WRAP_CONTENT,
+							ViewGroup.LayoutParams.WRAP_CONTENT);
+			int margin = (int) (8 * ctx.getResources().getDisplayMetrics().density);
+			params.setMargins(0, 0, margin, 0);
+			labelName.setLayoutParams(params);
+			binding.labelsContainer.addView(labelName);
+		}
+	}
 
-		call.enqueue(
-				new Callback<>() {
+	private void setupAssignees(List<AssigneesItem> assignees) {
+		if (assignees == null || assignees.isEmpty()) {
+			binding.infoAssignees.setVisibility(View.GONE);
+			return;
+		}
+		binding.infoAssignees.setVisibility(View.VISIBLE);
+		binding.assigneesContainer.removeAllViews();
 
+		int sizeDp = 24;
+		int marginDp = 4;
+		for (AssigneesItem a : assignees) {
+			ImageView iv = new ImageView(ctx);
+			int sizePx = (int) (sizeDp * getResources().getDisplayMetrics().density);
+			LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(sizePx, sizePx);
+			params.setMargins(
+					0, 0, (int) (marginDp * getResources().getDisplayMetrics().density), 0);
+			iv.setLayoutParams(params);
+			Glide.with(ctx)
+					.load(a.getAvatarUrl())
+					.diskCacheStrategy(DiskCacheStrategy.ALL)
+					.placeholder(R.drawable.ic_spinner)
+					.centerCrop()
+					.transform(new RoundedCorners(14))
+					.into(iv);
+			iv.setOnClickListener(v -> openProfile(a.getId()));
+			binding.assigneesContainer.addView(iv);
+		}
+	}
+
+	private void initTimeline() {
+		if (timelineInitialized) return;
+		timelineInitialized = true;
+
+		timelineViewModel = new ViewModelProvider(this).get(TimelineViewModel.class);
+
+		long myUserId = getAccount().getUserInfo() != null ? getAccount().getUserInfo().getId() : 0;
+		timelineAdapter =
+				new TimelineAdapter(
+						ctx,
+						new ArrayList<>(),
+						mrContext.getProjects(),
+						getSupportFragmentManager(),
+						myUserId,
+						"mr");
+
+		LinearLayoutManager layoutManager = new LinearLayoutManager(ctx);
+		binding.recyclerView.setLayoutManager(layoutManager);
+		binding.recyclerView.setAdapter(timelineAdapter);
+
+		EndlessRecyclerViewScrollListener scrollListener =
+				new EndlessRecyclerViewScrollListener(layoutManager) {
 					@Override
-					public void onResponse(
-							@NonNull Call<Approvals> call, @NonNull Response<Approvals> response) {
-
-						if (response.code() == 200) {
-							Call<User> userCall =
-									RetrofitClient.getApiInterface(ctx).getCurrentUser();
-
-							userCall.enqueue(
-									new Callback<>() {
-										@Override
-										public void onResponse(
-												@NonNull Call<User> userCall,
-												@NonNull Response<User> userResponse) {
-											assert response.body() != null;
-											assert userResponse.body() != null;
-
-											List<ApprovedBy> approvedByList =
-													response.body().getApprovedBy();
-
-											for (ApprovedBy approvedBy : approvedByList) {
-												if (approvedBy.getUser().getId()
-														== userResponse.body().getId()) {
-													activityMergeRequestDetailBinding.approveMr
-															.setText(
-																	getString(
-																			R.string
-																					.revoke_approval));
-												}
-											}
-
-											approvals = approvedByList.size();
-											requiredApprovals =
-													response.body().getApprovalsRequired();
-
-											activityMergeRequestDetailBinding.mrRequiredApprovals
-													.setText(
-															getString(
-																	R.string.activity_mr_approvals,
-																	approvals,
-																	requiredApprovals));
-
-											activityMergeRequestDetailBinding.approveMr
-													.setOnClickListener(
-															view -> {
-																activityMergeRequestDetailBinding
-																		.progressBar.setVisibility(
-																		View.VISIBLE);
-
-																if (activityMergeRequestDetailBinding
-																		.approveMr
-																		.getText()
-																		.toString()
-																		.equals(
-																				getString(
-																						R.string
-																								.approve))) {
-																	Call<Approvals> approveCall =
-																			RetrofitClient
-																					.getApiInterface(
-																							ctx)
-																					.approve(
-																							projectId,
-																							mergeRequestContext
-																									.getMergeRequest()
-																									.getIid());
-
-																	approveCall.enqueue(
-																			new Callback<>() {
-																				@Override
-																				public void
-																						onResponse(
-																								@NonNull Call<
-																														Approvals>
-																												approveCall,
-																								@NonNull Response<
-																														Approvals>
-																												approveResponse) {
-																					activityMergeRequestDetailBinding
-																							.progressBar
-																							.setVisibility(
-																									View
-																											.GONE);
-
-																					if (approveResponse
-																									.code()
-																							== 201) {
-																						activityMergeRequestDetailBinding
-																								.approveMr
-																								.setText(
-																										getString(
-																												R
-																														.string
-																														.revoke_approval));
-
-																						assert approveResponse
-																										.body()
-																								!= null;
-																						approvals =
-																								approveResponse
-																										.body()
-																										.getApprovedBy()
-																										.size();
-																						requiredApprovals =
-																								approveResponse
-																										.body()
-																										.getApprovalsRequired();
-
-																						activityMergeRequestDetailBinding
-																								.mrRequiredApprovals
-																								.setText(
-																										getString(
-																												R
-																														.string
-																														.activity_mr_approvals,
-																												approvals,
-																												requiredApprovals));
-
-																						refreshNotes();
-																					} else {
-																						Toasty.show(
-																								ctx,
-																								getString(
-																										R
-																												.string
-																												.mr_approve_failed));
-																					}
-																				}
-
-																				@Override
-																				public void
-																						onFailure(
-																								@NonNull Call<
-																														Approvals>
-																												approveCall,
-																								@NonNull Throwable
-																												approveThrowable) {
-																					activityMergeRequestDetailBinding
-																							.progressBar
-																							.setVisibility(
-																									View
-																											.GONE);
-																				}
-																			});
-																} else if (activityMergeRequestDetailBinding
-																		.approveMr
-																		.getText()
-																		.toString()
-																		.equals(
-																				getString(
-																						R.string
-																								.revoke_approval))) {
-																	Call<Approvals> revokeCall =
-																			RetrofitClient
-																					.getApiInterface(
-																							ctx)
-																					.revokeApproval(
-																							projectId,
-																							mergeRequestContext
-																									.getMergeRequest()
-																									.getIid());
-
-																	revokeCall.enqueue(
-																			new Callback<>() {
-																				@Override
-																				public void
-																						onResponse(
-																								@NonNull Call<
-																														Approvals>
-																												revokeCall,
-																								@NonNull Response<
-																														Approvals>
-																												revokeResponse) {
-																					activityMergeRequestDetailBinding
-																							.progressBar
-																							.setVisibility(
-																									View
-																											.GONE);
-
-																					if (revokeResponse
-																									.code()
-																							== 201) {
-																						activityMergeRequestDetailBinding
-																								.approveMr
-																								.setText(
-																										getText(
-																												R
-																														.string
-																														.approve));
-
-																						approvals--;
-
-																						activityMergeRequestDetailBinding
-																								.mrRequiredApprovals
-																								.setText(
-																										getString(
-																												R
-																														.string
-																														.activity_mr_approvals,
-																												approvals,
-																												requiredApprovals));
-
-																						refreshNotes();
-																					}
-																				}
-
-																				@Override
-																				public void
-																						onFailure(
-																								@NonNull Call<
-																														Approvals>
-																												revokeCall,
-																								@NonNull Throwable
-																												revokeThrowable) {
-																					activityMergeRequestDetailBinding
-																							.progressBar
-																							.setVisibility(
-																									View
-																											.GONE);
-																				}
-																			});
-																}
-															});
-										}
-
-										@Override
-										public void onFailure(
-												@NonNull Call<User> userCall,
-												@NonNull Throwable userThrowable) {}
-									});
-						}
+					public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+						timelineViewModel.loadNextPage(ctx);
 					}
+				};
+		binding.recyclerView.addOnScrollListener(scrollListener);
 
-					@Override
-					public void onFailure(@NonNull Call<Approvals> call, @NonNull Throwable t) {}
+		timelineViewModel
+				.getIsLoading()
+				.observe(
+						this,
+						loading -> {
+							if (Boolean.TRUE.equals(loading)
+									&& timelineAdapter.getItemCount() == 0) {
+								binding.progressBar.setVisibility(View.VISIBLE);
+							} else {
+								binding.progressBar.setVisibility(View.GONE);
+							}
+						});
+
+		timelineViewModel
+				.getTimelineList()
+				.observe(
+						this,
+						list -> {
+							if (list != null && !list.isEmpty()) {
+								binding.recyclerView.setVisibility(View.VISIBLE);
+								timelineAdapter.updateList(list);
+							}
+						});
+
+		timelineViewModel
+				.getIsSubmitting()
+				.observe(
+						this,
+						isSubmitting -> {
+							if (Boolean.TRUE.equals(isSubmitting)) {
+								binding.commentBox.btnQuickSend.setVisibility(View.GONE);
+								binding.commentBox.commentLoader.setVisibility(View.VISIBLE);
+							} else {
+								binding.commentBox.commentLoader.setVisibility(View.GONE);
+								binding.commentBox.btnQuickSend.setVisibility(View.VISIBLE);
+							}
+						});
+
+		timelineViewModel
+				.getSubmittedComment()
+				.observe(
+						this,
+						comment -> {
+							if (comment != null) {
+								Toasty.show(ctx, getString(R.string.comment_posted));
+								hideCommentBox();
+								timelineViewModel.clearSubmittedComment();
+								refreshTimeline();
+								binding.recyclerView.postDelayed(
+										this::scrollTimelineToBottom, 1500);
+							}
+						});
+
+		timelineViewModel
+				.getError()
+				.observe(
+						this,
+						errorMsg -> {
+							if (errorMsg == null) return;
+							switch (errorMsg) {
+								case "auth_error":
+									Toasty.show(ctx, getString(R.string.not_authorized));
+									break;
+								case "access_forbidden_403":
+									Toasty.show(ctx, getString(R.string.access_forbidden_403));
+									break;
+								case "not_found":
+									Toasty.show(ctx, getString(R.string.not_found));
+									break;
+								case "generic_error":
+									Toasty.show(ctx, getString(R.string.generic_error));
+									break;
+								default:
+									Toasty.show(ctx, errorMsg);
+									break;
+							}
+							timelineViewModel.clearError();
+						});
+	}
+
+	private void refreshTimeline() {
+		timelineViewModel.loadTimeline(ctx, projectId, mrIid, "mr");
+	}
+
+	private void loadTimeline() {
+		initTimeline();
+		refreshTimeline();
+	}
+
+	private void toggleCommentSectionSpace(boolean expand) {
+		float density = getResources().getDisplayMetrics().density;
+		int targetHeight = expand ? (int) (190 * density) : 0;
+		ValueAnimator animator =
+				ValueAnimator.ofInt(binding.scrollSpacer.getLayoutParams().height, targetHeight);
+		animator.setDuration(300);
+		animator.addUpdateListener(
+				animation -> {
+					binding.scrollSpacer.getLayoutParams().height =
+							(int) animation.getAnimatedValue();
+					binding.scrollSpacer.requestLayout();
+				});
+		animator.start();
+	}
+
+	private void toggleCommentBox() {
+		if (binding.commentBox.getRoot().getVisibility() == View.VISIBLE) {
+			hideCommentBox();
+		} else {
+			showCommentBox();
+		}
+	}
+
+	private void showCommentBox() {
+		MergeRequests mrData = viewModel.getMrData().getValue();
+		if (mrData != null && mrData.getDiscussionLocked()) {
+			int accessLevel = AccessLevel.getUserAccessLevel(mrContext.getProjects().getProject());
+			boolean isMember = accessLevel >= AccessLevel.REPORTER;
+			if (!isMember) {
+				Toasty.show(ctx, getString(R.string.discussion_locked));
+				return;
+			}
+		}
+		toggleCommentSectionSpace(true);
+		binding.commentBox.getRoot().setVisibility(View.VISIBLE);
+		binding.commentBox.getRoot().setAlpha(0f);
+		binding.commentBox.getRoot().setTranslationY(100f);
+		binding.commentBox
+				.getRoot()
+				.animate()
+				.alpha(1f)
+				.translationY(0f)
+				.setDuration(250)
+				.withEndAction(() -> binding.commentBox.etQuickComment.requestFocus())
+				.start();
+	}
+
+	private void hideCommentBox() {
+		toggleCommentSectionSpace(false);
+		Utils.hideKeyboard(this);
+		binding.commentBox.etQuickComment.setText("");
+		binding.commentBox
+				.getRoot()
+				.animate()
+				.alpha(0f)
+				.translationY(100f)
+				.setDuration(200)
+				.withEndAction(() -> binding.commentBox.getRoot().setVisibility(View.GONE))
+				.start();
+	}
+
+	private void setupCommentBox() {
+		binding.commentBox.etQuickComment.setOnFocusChangeListener(
+				(v, hasFocus) -> {
+					if (hasFocus) Utils.showKeyboard(this, binding.commentBox.etQuickComment);
+				});
+		binding.commentBox.btnCloseReply.setOnClickListener(v -> hideCommentBox());
+		binding.commentBox.btnQuickSend.setOnClickListener(v -> submitComment());
+		binding.commentBox.etQuickComment.setOnTouchListener(
+				(v, event) -> {
+					if (event.getAction() == MotionEvent.ACTION_DOWN) {
+						v.getParent().requestDisallowInterceptTouchEvent(true);
+					} else if (event.getAction() == MotionEvent.ACTION_UP
+							|| event.getAction() == MotionEvent.ACTION_CANCEL) {
+						v.getParent().requestDisallowInterceptTouchEvent(false);
+						v.performClick();
+					}
+					return false;
 				});
 	}
 
-	private void refreshNotes() {
-		page = 1;
-		getMergeRequestNotesData();
+	private void submitComment() {
+		String body =
+				binding.commentBox.etQuickComment.getText() != null
+						? binding.commentBox.etQuickComment.getText().toString().trim()
+						: "";
+		if (body.isEmpty()) return;
+		timelineViewModel.addComment(ctx, projectId, mrIid, body);
+	}
+
+	private void scrollTimelineToBottom() {
+		binding.scrollView.post(
+				() ->
+						binding.scrollView.smoothScrollTo(
+								0, binding.scrollView.getChildAt(0).getHeight()));
+	}
+
+	private void setupReactions() {
+		if (reactionsViewModel == null) {
+			reactionsViewModel = new ViewModelProvider(this).get(ReactionsViewModel.class);
+		}
+		long myUserId = getAccount().getUserInfo() != null ? getAccount().getUserInfo().getId() : 0;
+		binding.reactionsView.configure(
+				projectId, "mr", mrIid, null, getSupportFragmentManager(), myUserId);
+		binding.reactionsView.loadReactions(reactionsViewModel);
+	}
+
+	private void openProfile(long userId) {
+		Intent intent = new Intent(ctx, ProfileActivity.class);
+		intent.putExtra("userId", String.valueOf(userId));
+		startActivity(intent);
+	}
+
+	private void observeViewModel() {
+		viewModel
+				.getIsLoading()
+				.observe(
+						this,
+						loading -> {
+							if (Boolean.TRUE.equals(loading)) {
+								binding.progressBar.setVisibility(View.VISIBLE);
+							} else {
+								binding.progressBar.setVisibility(View.GONE);
+								binding.scrollView.setVisibility(View.VISIBLE);
+							}
+						});
+
+		viewModel
+				.getMrData()
+				.observe(
+						this,
+						mrData -> {
+							if (mrData == null) return;
+							mrContext.setMergeRequest(mrData);
+							setupHeader(mrData);
+							updateCommentButton(mrData);
+							setupInfoSection(mrData);
+							setupApprovals(mrData);
+							setupReactions();
+							loadTimeline();
+						});
+
+		viewModel
+				.getCloseSuccess()
+				.observe(
+						this,
+						success -> {
+							if (Boolean.TRUE.equals(success)) {
+								Toasty.show(ctx, getString(R.string.mr_closed));
+								AppUIStateManager.refreshData();
+								viewModel.clearCloseSuccess();
+							}
+						});
+
+		viewModel
+				.getReopenSuccess()
+				.observe(
+						this,
+						success -> {
+							if (Boolean.TRUE.equals(success)) {
+								Toasty.show(ctx, getString(R.string.mr_reopened));
+								AppUIStateManager.refreshData();
+								viewModel.clearReopenSuccess();
+							}
+						});
+
+		viewModel
+				.getMergeSuccess()
+				.observe(
+						this,
+						success -> {
+							if (Boolean.TRUE.equals(success)) {
+								Toasty.show(ctx, getString(R.string.merge_request_merged_text));
+								AppUIStateManager.refreshData();
+								viewModel.clearMergeSuccess();
+							}
+						});
+
+		viewModel
+				.getApproveSuccess()
+				.observe(
+						this,
+						success -> {
+							if (Boolean.TRUE.equals(success)) {
+								viewModel.clearApproveSuccess();
+								viewModel.fetchApprovals(ctx, projectId, mrIid);
+							}
+						});
+
+		viewModel
+				.getLockSuccess()
+				.observe(
+						this,
+						success -> {
+							if (Boolean.TRUE.equals(success)) {
+								Toasty.show(ctx, getString(R.string.discussion_locked_success));
+								viewModel.clearLockSuccess();
+							}
+						});
+
+		viewModel
+				.getUnlockSuccess()
+				.observe(
+						this,
+						success -> {
+							if (Boolean.TRUE.equals(success)) {
+								Toasty.show(ctx, getString(R.string.discussion_unlocked_success));
+								viewModel.clearUnlockSuccess();
+							}
+						});
+
+		viewModel
+				.getError()
+				.observe(
+						this,
+						errorMsg -> {
+							if (errorMsg == null) return;
+							switch (errorMsg) {
+								case "auth_error":
+									Toasty.show(ctx, getString(R.string.not_authorized));
+									break;
+								case "access_forbidden_403":
+									Toasty.show(ctx, getString(R.string.access_forbidden_403));
+									break;
+								case "not_found":
+									Toasty.show(ctx, getString(R.string.not_found));
+									break;
+								case "generic_error":
+									Toasty.show(ctx, getString(R.string.generic_error));
+									break;
+								default:
+									Toasty.show(ctx, errorMsg);
+									break;
+							}
+							viewModel.clearError();
+						});
+	}
+
+	@Override
+	protected void onGlobalRefresh() {
+		viewModel.loadMergeRequest(ctx, projectId, mrIid);
 	}
 }

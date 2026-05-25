@@ -11,6 +11,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.labnex.app.R;
 import com.labnex.app.adapters.MergeRequestsAdapter;
 import com.labnex.app.bottomsheets.CreateMergeRequestBottomSheet;
+import com.labnex.app.contexts.MergeRequestContext;
 import com.labnex.app.contexts.ProjectsContext;
 import com.labnex.app.databinding.ActivityMergeRequestsBinding;
 import com.labnex.app.databinding.BottomsheetMergeRequestsMenuBinding;
@@ -34,6 +35,7 @@ public class MergeRequestsActivity extends BaseActivity
 	private MergeRequestsAdapter adapter;
 	private EndlessRecyclerViewScrollListener scrollListener;
 
+	private MergeRequests pendingMr;
 	private String source;
 	private long id;
 	private final String scope = "created_by_me";
@@ -232,21 +234,25 @@ public class MergeRequestsActivity extends BaseActivity
 						});
 
 		viewModel
-				.getNavigateToMr()
+				.getProjectContextForMr()
 				.observe(
 						this,
-						mrCtx -> {
-							if (mrCtx != null) {
-								startActivity(
-										mrCtx.getIntent(ctx, MergeRequestDetailActivity.class));
-								viewModel.clearNavigation();
+						pc -> {
+							if (pc != null && pendingMr != null) {
+								Intent intent =
+										new MergeRequestContext(pendingMr, pc)
+												.getIntent(ctx, MergeRequestDetailActivity.class);
+								startActivity(intent);
+								pendingMr = null;
+								viewModel.clearProjectContextForMr();
 							}
 						});
 	}
 
 	@Override
 	public void onMrClick(MergeRequests mr) {
-		viewModel.fetchAndNavigateMr(ctx, mr);
+		pendingMr = mr;
+		viewModel.fetchProjectForMr(ctx, mr);
 	}
 
 	@Override

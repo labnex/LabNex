@@ -60,12 +60,6 @@ public class MergeRequestsAdapter
 		notifyDataSetChanged();
 	}
 
-	@SuppressLint("NotifyDataSetChanged")
-	public void clearAdapter() {
-		list.clear();
-		notifyDataSetChanged();
-	}
-
 	@NonNull @Override
 	public MergeRequestsHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 		ListMergeRequestsBinding binding =

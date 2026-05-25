@@ -6,15 +6,19 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import com.labnex.app.R;
 import com.labnex.app.bottomsheets.CommitDiffsBottomSheet;
-import com.labnex.app.helpers.TimeUtils;
+import com.labnex.app.databinding.ListCommitsBinding;
+import com.labnex.app.helpers.AvatarGenerator;
+import com.labnex.app.helpers.TimeHelper;
+import com.labnex.app.helpers.Toasty;
+import com.labnex.app.helpers.Utils;
 import com.labnex.app.models.commits.Commits;
-import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -22,44 +26,35 @@ import java.util.Locale;
 /**
  * @author mmarif
  */
-public class CommitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class CommitsAdapter extends RecyclerView.Adapter<CommitsAdapter.CommitsViewHolder> {
 
-	// private ProjectsContext projectsContext;
-	private final Context context;
+	private final Context ctx;
 	private List<Commits> list;
-	private OnLoadMoreListener loadMoreListener;
-	private boolean isLoading = false, isMoreDataAvailable = true;
-	Bundle bundle = new Bundle();
-	private final int projectId;
+	private final long projectId;
 
-	public CommitsAdapter(Context ctx, List<Commits> mainList, int projectId) {
-		this.context = ctx;
-		this.list = mainList;
+	public CommitsAdapter(Context ctx, List<Commits> list, long projectId) {
+		this.ctx = ctx;
+		this.list = list != null ? list : new ArrayList<>();
 		this.projectId = projectId;
 	}
 
+	@SuppressLint("NotifyDataSetChanged")
+	public void updateList(List<Commits> newList) {
+		this.list = new ArrayList<>(newList);
+		notifyDataSetChanged();
+	}
+
 	@NonNull @Override
-	public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-		LayoutInflater inflater = LayoutInflater.from(context);
-		return new CommitsHolder(inflater.inflate(R.layout.list_commits, parent, false));
+	public CommitsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+		ListCommitsBinding binding =
+				ListCommitsBinding.inflate(LayoutInflater.from(ctx), parent, false);
+		return new CommitsViewHolder(binding);
 	}
 
 	@Override
-	public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-		if (position >= getItemCount() - 1
-				&& isMoreDataAvailable
-				&& !isLoading
-				&& loadMoreListener != null) {
-			isLoading = true;
-			loadMoreListener.onLoadMore();
-		}
-
-		((CommitsHolder) holder).bindData(list.get(position));
-	}
-
-	@Override
-	public int getItemViewType(int position) {
-		return position;
+	public void onBindViewHolder(@NonNull CommitsViewHolder holder, int position) {
+		holder.bind(list.get(position));
+		holder.binding.getRoot().updateAppearance(position, getItemCount());
 	}
 
 	@Override
@@ -67,99 +62,96 @@ public class CommitsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 		return list.size();
 	}
 
-	public void setMoreDataAvailable(boolean moreDataAvailable) {
-		isMoreDataAvailable = moreDataAvailable;
-		if (!isMoreDataAvailable) {
-			loadMoreListener.onLoadFinished();
-		}
-	}
+	public class CommitsViewHolder extends RecyclerView.ViewHolder {
 
-	@SuppressLint("NotifyDataSetChanged")
-	public void notifyDataChanged() {
-		notifyDataSetChanged();
-		isLoading = false;
-		loadMoreListener.onLoadFinished();
-	}
+		final ListCommitsBinding binding;
 
-	public void setLoadMoreListener(OnLoadMoreListener loadMoreListener) {
-		this.loadMoreListener = loadMoreListener;
-	}
-
-	public void updateList(List<Commits> list_) {
-		list = list_;
-		notifyDataChanged();
-	}
-
-	public abstract static class OnLoadMoreListener {
-
-		protected abstract void onLoadMore();
-
-		public void onLoadFinished() {}
-	}
-
-	public void clearAdapter() {
-		list.clear();
-		notifyDataChanged();
-	}
-
-	public class CommitsHolder extends RecyclerView.ViewHolder {
-
-		private final TextView title;
-		private final TextView info;
-		private final TextView sha;
-		private Commits commits;
-
-		CommitsHolder(View itemView) {
-
-			super(itemView);
-
-			title = itemView.findViewById(R.id.title);
-			info = itemView.findViewById(R.id.info_section);
-			sha = itemView.findViewById(R.id.commit_sha);
+		CommitsViewHolder(ListCommitsBinding binding) {
+			super(binding.getRoot());
+			this.binding = binding;
 
 			itemView.setOnClickListener(
 					v -> {
+						int pos = getBindingAdapterPosition();
+						if (pos == RecyclerView.NO_POSITION) return;
+
+						Commits commit = list.get(pos);
+						Bundle bundle = new Bundle();
 						bundle.putString("source", "commits");
-						bundle.putString("sha", commits.getId());
-						bundle.putInt("projectId", projectId);
+						bundle.putString("sha", commit.getId());
+						bundle.putLong("projectId", projectId);
 
 						CommitDiffsBottomSheet bottomSheet = new CommitDiffsBottomSheet();
 						bottomSheet.setArguments(bundle);
 						bottomSheet.show(
-								((FragmentActivity) context).getSupportFragmentManager(),
+								((FragmentActivity) ctx).getSupportFragmentManager(),
 								"CommitDiffsBottomSheet");
 					});
 		}
 
-		void bindData(Commits commits) {
+		void bind(Commits commit) {
+			if (commit.getShortId() != null && !commit.getShortId().trim().isEmpty()) {
+				binding.commitBadge.setVisibility(View.VISIBLE);
 
-			this.commits = commits;
-			Locale locale = context.getResources().getConfiguration().getLocales().get(0);
+				int badgeColor = ContextCompat.getColor(ctx, R.color.alert_important_border);
+				binding.commitBadge.setImageDrawable(
+						AvatarGenerator.getLabelDrawable(ctx, commit.getShortId(), badgeColor, 22));
 
-			title.setText(commits.getTitle());
+				binding.commitBadge.setOnClickListener(
+						v -> {
+							if (commit.getId() != null) {
+								Utils.copyToClipboard(
+										ctx,
+										commit.getId(),
+										ctx.getString(R.string.commit_sha_copied));
+							}
+						});
+			} else {
+				binding.commitBadge.setVisibility(View.GONE);
+			}
 
-			sha.setText(commits.getShortId());
+			if (commit.getAuthorName() != null && !commit.getAuthorName().trim().isEmpty()) {
+				binding.commitAuthor.setVisibility(View.VISIBLE);
+				binding.commitAuthor.setText(commit.getAuthorName());
+			} else {
+				binding.commitAuthor.setVisibility(View.GONE);
+			}
 
-			if (commits.getAuthorName() != null && commits.getCommitterName() != null) {
-				String modifiedTime =
-						TimeUtils.formatTime(
-								Date.from(
-										OffsetDateTime.parse(
-														commits.getCreatedAt()
-																		.substring(
-																				0,
-																				commits.getCommittedDate()
-																						.indexOf(
-																								"."))
-																+ "Z")
-												.toInstant()),
-								locale);
-				info.setText(
-						String.format(
-								context.getResources().getString(R.string.commit_author_info),
-								commits.getAuthorName(),
-								commits.getCommitterName(),
-								modifiedTime));
+			if (commit.getCreatedAt() != null && !commit.getCreatedAt().trim().isEmpty()) {
+				binding.commitTime.setVisibility(View.VISIBLE);
+				Date date = TimeHelper.parseIso8601(commit.getCreatedAt());
+				binding.commitTime.setText(TimeHelper.formatTime(date));
+
+				binding.commitTime.setOnClickListener(
+						v ->
+								Toasty.show(
+										ctx,
+										TimeHelper.getFullDateTime(date, Locale.getDefault())));
+			} else {
+				binding.commitTime.setVisibility(View.GONE);
+			}
+
+			if (commit.getTitle() != null && !commit.getTitle().trim().isEmpty()) {
+				binding.commitTitle.setVisibility(View.VISIBLE);
+				binding.commitTitle.setText(commit.getTitle());
+			} else {
+				binding.commitTitle.setVisibility(View.GONE);
+			}
+
+			if (commit.getMessage() != null && !commit.getMessage().trim().isEmpty()) {
+				String msgBody = commit.getMessage().trim();
+				if (commit.getTitle() != null && msgBody.startsWith(commit.getTitle().trim())) {
+					msgBody = msgBody.substring(commit.getTitle().trim().length()).trim();
+				}
+
+				if (!msgBody.isEmpty()) {
+					binding.commitMessage.setVisibility(View.VISIBLE);
+					binding.commitMessage.setText(msgBody);
+				} else {
+					binding.commitMessage.setVisibility(View.GONE);
+				}
+			} else {
+				binding.commitMessage.setVisibility(View.GONE);
 			}
 		}
 	}

@@ -8,6 +8,7 @@ import com.labnex.app.models.broadcast_messages.Messages;
 import com.labnex.app.models.commits.Commits;
 import com.labnex.app.models.commits.CrudeCommit;
 import com.labnex.app.models.commits.Diff;
+import com.labnex.app.models.commits.MrChanges;
 import com.labnex.app.models.events.Events;
 import com.labnex.app.models.groups.CreateGroup;
 import com.labnex.app.models.groups.GroupsItem;
@@ -323,7 +324,7 @@ public interface ApiInterface {
 	// notes/comments
 	Call<Notes> createMergeRequestNote(
 			@Path("id") long id,
-			@Path("merge_request_iid") int merge_request_iid,
+			@Path("merge_request_iid") long merge_request_iid,
 			@Body CrudeNote body);
 
 	@GET("projects/{id}/merge_requests/{merge_request_iid}/approvals")
@@ -353,7 +354,7 @@ public interface ApiInterface {
 	@GET("projects/{id}/merge_requests/{merge_request_iid}/commits") // get merge request commits
 	Call<List<Commits>> getMergeRequestCommits(
 			@Path("id") long id,
-			@Path("merge_request_iid") int merge_request_iid,
+			@Path("merge_request_iid") long merge_request_iid,
 			@Query("per_page") int per_page,
 			@Query("page") int page);
 
@@ -372,6 +373,9 @@ public interface ApiInterface {
 			@Path("id") long id,
 			@Path("merge_request_iid") long issue_iid,
 			@Body CrudeMergeRequest body);
+
+	@GET("projects/{id}/merge_requests/{mr_iid}/changes") // get mr files/changes
+	Call<MrChanges> getMrChanges(@Path("id") long projectId, @Path("mr_iid") long mrIid);
 
 	// Issue endpoints
 	@GET("projects/{id}/issues") // get project issues
@@ -558,6 +562,37 @@ public interface ApiInterface {
 	Call<Void> deleteNoteAwardEmoji(
 			@Path("id") long id,
 			@Path("issue_iid") long issueIid,
+			@Path("note_id") long noteId,
+			@Path("award_id") long awardId);
+
+	// MR emojis
+	@GET("projects/{id}/merge_requests/{mr_iid}/award_emoji")
+	Call<List<AwardEmoji>> getMrAwardEmojis(@Path("id") long id, @Path("mr_iid") long mrIid);
+
+	@POST("projects/{id}/merge_requests/{mr_iid}/award_emoji")
+	Call<AwardEmoji> addMrAwardEmoji(
+			@Path("id") long id, @Path("mr_iid") long mrIid, @Query("name") String name);
+
+	@DELETE("projects/{id}/merge_requests/{mr_iid}/award_emoji/{award_id}")
+	Call<Void> deleteMrAwardEmoji(
+			@Path("id") long id, @Path("mr_iid") long mrIid, @Path("award_id") long awardId);
+
+	// MR note emojis
+	@GET("projects/{id}/merge_requests/{mr_iid}/notes/{note_id}/award_emoji")
+	Call<List<AwardEmoji>> getMrNoteAwardEmojis(
+			@Path("id") long id, @Path("mr_iid") long mrIid, @Path("note_id") long noteId);
+
+	@POST("projects/{id}/merge_requests/{mr_iid}/notes/{note_id}/award_emoji")
+	Call<AwardEmoji> addMrNoteAwardEmoji(
+			@Path("id") long id,
+			@Path("mr_iid") long mrIid,
+			@Path("note_id") long noteId,
+			@Query("name") String name);
+
+	@DELETE("projects/{id}/merge_requests/{mr_iid}/notes/{note_id}/award_emoji/{award_id}")
+	Call<Void> deleteMrNoteAwardEmoji(
+			@Path("id") long id,
+			@Path("mr_iid") long mrIid,
 			@Path("note_id") long noteId,
 			@Path("award_id") long awardId);
 }

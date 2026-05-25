@@ -2,6 +2,7 @@ package com.labnex.app.activities;
 
 import android.animation.ValueAnimator;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Spannable;
@@ -101,6 +102,27 @@ public class IssueDetailActivity extends BaseActivity {
 		setupDock();
 		observeViewModel();
 		setupCommentBox();
+
+		binding.getRoot()
+				.getViewTreeObserver()
+				.addOnGlobalLayoutListener(
+						() -> {
+							Rect r = new Rect();
+							binding.getRoot().getWindowVisibleDisplayFrame(r);
+							int screenHeight = binding.getRoot().getRootView().getHeight();
+							int keypadHeight = screenHeight - r.bottom;
+
+							ViewGroup.MarginLayoutParams params =
+									(ViewGroup.MarginLayoutParams)
+											binding.commentBox.getRoot().getLayoutParams();
+							if (keypadHeight > screenHeight * 0.15) {
+								params.bottomMargin = keypadHeight;
+							} else {
+								params.bottomMargin =
+										(int) (36 * getResources().getDisplayMetrics().density);
+							}
+							binding.commentBox.getRoot().setLayoutParams(params);
+						});
 
 		viewModel.loadIssue(ctx, projectId, issueIid);
 	}
@@ -300,7 +322,7 @@ public class IssueDetailActivity extends BaseActivity {
 						com.google.android.material.R.attr.colorOnPrimaryContainer));
 
 		GenericMenuBottomSheet sheet =
-				GenericMenuBottomSheet.newInstance(issueData.getTitle(), "#"+issueIid, items);
+				GenericMenuBottomSheet.newInstance(issueData.getTitle(), "#" + issueIid, items);
 		sheet.setOnMenuItemClickListener(
 				id -> {
 					switch (id) {
@@ -588,7 +610,8 @@ public class IssueDetailActivity extends BaseActivity {
 						new ArrayList<>(),
 						issue.getProjects(),
 						getSupportFragmentManager(),
-						myUserId);
+						myUserId,
+						"issue");
 
 		LinearLayoutManager layoutManager = new LinearLayoutManager(ctx);
 		binding.recyclerView.setLayoutManager(layoutManager);
