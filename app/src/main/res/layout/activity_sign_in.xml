@@ -1,105 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main_frame"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    android:layout_gravity="bottom">
+    android:background="?attr/colorSurface">
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:clipToPadding="false"
+        android:fillViewport="true">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="bottom"
-            android:orientation="vertical">
+            android:paddingHorizontal="@dimen/dimen16dp">
 
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/app_logo_frame"
-                android:layout_height="@dimen/dimen48dp"
-                android:layout_width="@dimen/dimen48dp"
-                android:layout_marginStart="@dimen/dimen24dp"
-                android:layout_marginEnd="@dimen/dimen24dp"
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/logo"
+                android:layout_width="@dimen/dimen64dp"
+                android:layout_height="@dimen/dimen64dp"
                 android:layout_marginTop="@dimen/dimen24dp"
-                app:strokeWidth="@dimen/dimen0dp"
-                android:layout_gravity="start"
-                app:cardElevation="@dimen/dimen0dp">
-
-                <ImageView
-                    android:id="@+id/logo"
-                    android:layout_height="@dimen/dimen50dp"
-                    android:layout_width="@dimen/dimen50dp"
-                    android:layout_gravity="center_vertical|center_horizontal"
-                    android:contentDescription="@string/app_name"
-                    android:src="@drawable/labnex_logo" />
-
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/sign_in_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_marginStart="@dimen/dimen24dp"
-                android:layout_marginEnd="@dimen/dimen24dp"
-                android:layout_marginTop="@dimen/dimen16dp"
-                android:layout_marginBottom="@dimen/dimen16dp"
-                android:text="@string/action_sign_in"
-                android:textSize="@dimen/dimen24sp" />
+                android:contentDescription="@string/app_name"
+                android:scaleType="centerCrop"
+                android:src="@drawable/labnex_logo"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Large" />
 
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/sign_in_frame"
-                android:layout_height="wrap_content"
+                android:id="@+id/form_card"
                 android:layout_width="match_parent"
-                android:layout_margin="@dimen/dimen0dp"
-                style="@style/CustomCardViewStyle"
-                android:backgroundTint="?attr/divider"
-                app:strokeWidth="@dimen/dimen0dp"
-                app:cardElevation="@dimen/dimen0dp">
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen32dp"
+                app:cardBackgroundColor="?attr/colorSurfaceContainerLow"
+                app:cardCornerRadius="@dimen/dimen20dp"
+                app:cardElevation="@dimen/dimen0dp"
+                app:strokeWidth="0dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/logo">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="@dimen/dimen20dp">
+                    android:padding="@dimen/dimen24dp">
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/instance_url_layout"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/gitlab_link"
-                        app:helperText="@string/gitlab_link_help"
                         app:endIconMode="clear_text"
                         app:endIconTint="?attr/iconsColor"
-                        android:layout_marginBottom="@dimen/dimen8dp">
+                        app:helperText="@string/gitlab_link_help"
+                        app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Medium">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/instance_url"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:autofillHints="@string/gitlab_link"
-                            android:inputType="text"
+                            android:inputType="textUri"
                             android:maxLength="120"
-                            android:singleLine="true"
-                            android:textSize="@dimen/dimen16sp" />
+                            android:singleLine="true" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/access_token_frame"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/dimen16dp"
                         android:hint="@string/personal_access_token"
-                        android:layout_marginTop="@dimen/dimen12dp"
-                        app:helperText="@string/api_scopes"
                         app:endIconMode="clear_text"
                         app:endIconTint="?attr/iconsColor"
-                        android:layout_marginBottom="@dimen/dimen8dp">
+                        app:helperText="@string/api_scopes"
+                        app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Medium">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/personal_token"
@@ -108,56 +92,80 @@
                             android:autofillHints="@string/personal_access_token"
                             android:inputType="text"
                             android:maxLength="120"
-                            android:singleLine="true"
-                            android:textSize="@dimen/dimen16sp" />
+                            android:singleLine="true" />
 
                     </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textview.MaterialTextView
-                        android:id="@+id/personal_token_helper"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/dimen16dp"
-                        android:layout_gravity="center_horizontal"
-                        android:textSize="@dimen/dimen16sp"
-                        android:text="@string/personal_access_token_helper" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/dimen32dp"
-                        android:orientation="horizontal"
-                        android:gravity="start">
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/restore"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/import_button"
-                            style="@style/CustomMaterialButton"
-                            android:layout_gravity="start" />
-
-                        <View
-                            android:layout_width="0dp"
-                            android:layout_height="0dp"
-                            android:layout_weight="1" />
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/sign_in"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/action_sign_in"
-                            android:imeOptions="actionDone"
-                            style="@style/CustomMaterialButton"
-                            android:layout_gravity="end" />
-
-                    </LinearLayout>
 
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
 
-        </LinearLayout>
+            <com.google.android.material.chip.Chip
+                android:id="@+id/personal_token_helper"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen12dp"
+                android:checkable="false"
+                android:text="@string/personal_access_token_helper"
+                android:textAppearance="?attr/textAppearanceLabelMedium"
+                app:chipBackgroundColor="?attr/colorPrimaryContainer"
+                app:chipIcon="@drawable/ic_info"
+                app:chipIconSize="@dimen/dimen18dp"
+                app:chipIconTint="?attr/colorOnPrimaryContainer"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/form_card" />
+
+            <LinearLayout
+                android:id="@+id/bottom_section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen48dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/personal_token_helper"
+                app:layout_constraintVertical_bias="1.0">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/sign_in"
+                        style="@style/Widget.Material3.Button"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dimen56dp"
+                        android:text="@string/action_sign_in"
+                        app:cornerRadius="@dimen/dimen32dp" />
+
+                    <com.google.android.material.progressindicator.CircularProgressIndicator
+                        android:id="@+id/loading_indicator"
+                        android:layout_width="@dimen/dimen24dp"
+                        android:layout_height="@dimen/dimen24dp"
+                        android:layout_gravity="center"
+                        android:indeterminate="true"
+                        android:visibility="gone"
+                        app:indicatorSize="@dimen/dimen24dp" />
+
+                </FrameLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/restore"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dimen54dp"
+                    android:layout_marginTop="@dimen/dimen12dp"
+                    android:text="@string/import_button"
+                    app:cornerRadius="@dimen/dimen24dp"
+                    app:icon="@drawable/ic_database"
+                    app:iconGravity="textStart" />
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.core.widget.NestedScrollView>
 

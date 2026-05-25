@@ -23,24 +23,19 @@
     <string name="data_concatenate" translatable="false">%1$s - %2$s</string>
     <string name="single_string_conversion" translatable="false">%1$s</string>
     <string name="username_with_domain" translatable="false">%1$s | %2$s</string>
-    <string name="hash" translatable="false">#</string>
     <string name="username_with_at_sign" translatable="false">\@%1$s</string>
-    <string name="source_position" translatable="false">%1$d:%2$d</string>
     <string name="discord_user_profile_link" translatable="false">https://discord.com/users/%1$s</string>
-    <string name="personal_access_token_helper_link" translatable="false">https://gitlab.com/-/user_settings/personal_access_tokens</string>
-    <string name="visibility_internal" translatable="false">Internal</string>
     <string name="visibility_private" translatable="false">Private</string>
     <string name="visibility_public" translatable="false">Public</string>
     <string name="dark" translatable="false">Dark</string>
     <string name="light" translatable="false">Light</string>
     <string name="dynamic" translatable="false">Dynamic</string>
     <string name="theme_system" translatable="false">System</string>
-    <string name="where_to_get_token_message" translatable="false"><![CDATA[• Log in to your account on your instance (GitLab, framagit, etc.).<br>• Click on your user profile picture, then go to Preferences.<br>• In the left side menu, click on Personal access tokens.<br>• Click on Add new token button.<br>• Enter token name and choose expiration date as long as possible.<br>• Check all the scopes.<br><br>Once created, copy and paste or type the token in Personal access token input field.]]></string>
+    <string name="where_to_get_token_message" translatable="false"><![CDATA[• Log in to your account on your instance (GitLab, framagit, etc.).<br>• Click on your user profile picture, then go to Preferences.<br>• On the left side menu, click on Access → Personal access tokens.<br>• Click on Generate token button.<br>• Enter token name and choose expiration date as long as possible.<br>• Check all the scopes.<br><br>Once created, copy and paste or type the token in Personal access token input field.]]></string>
     <string name="number_label" translatable="false">12</string>
     <string name="number_zero" translatable="false">0</string>
     <string name="main" translatable="false">main</string>
     <string name="cursor_position_format" translatable="false">Ln %d, Col %d</string>
-    <string name="separator_dot" translatable="false">●</string>
     <string name="readme" translatable="false">Readme</string>
     <string name="tag_info" translatable="false">%1$s • %2$s</string>
     <string name="issue_number" translatable="false">#%d</string>
@@ -48,15 +43,12 @@
     <!-- non translatable strings -->
 
     <string name="action_sign_in">Sign in</string>
-    <string name="hi_username">Hi %1$s</string>
-    <string name="welcome_back">Welcome back</string>
-    <string name="login_failed">Login failed</string>
     <string name="all_good">You\'re all caught up</string>
     <string name="most_visited">Most visited projects</string>
     <string name="gitlab_link">GitLab URL</string>
     <string name="gitlab_link_help">i.e., gitlab.com (do not add https, http is not supported by LabNex)</string>
     <string name="personal_access_token">Personal access token</string>
-    <string name="personal_access_token_helper"><u>Where can I get a personal access token?</u></string>
+    <string name="personal_access_token_helper"><u>Where can I get a personal access token (PAT)?</u></string>
     <string name="add_new_account">Add account</string>
     <string name="remove_all_accounts">Remove all accounts</string>
     <string name="remove_all_accounts_from_app_message">This will remove all the accounts from the app only, including projects data, personal notes, etc.</string>
@@ -65,16 +57,12 @@
     <string name="remove_account_from_app_message">Are you sure you want to remove this account from the app?\n\nThis will remove all data related to this account on the app only.</string>
     <string name="remove_account_from_app_success">Account removed successfully</string>
     <string name="api_scopes">Scopes: all api scopes are required</string>
-    <string name="gitlab_version">GitLab version</string>
-    <string name="theme_selector_dialog_title">Select app theme</string>
     <string name="settings_saved">Settings saved</string>
     <string name="settings_language_selector_dialog_title">Choose language</string>
     <string name="settings_biometric_header">Biometric lock</string>
     <string name="biometric_auth_title">Biometric authentication</string>
     <string name="biometric_auth_sub_title">Unlock using your biometric credentials</string>
     <string name="biometric_not_supported">No biometric features available on this device</string>
-    <string name="biometric_not_available">Biometric features are currently unavailable</string>
-    <string name="enroll_biometric">Enroll biometric from phone settings</string>
     <string name="nothing_found">There is no data to display at the moment.</string>
     <string name="created_with">Created %1$s</string>
     <string name="updated_with">Updated %1$s</string>
@@ -84,12 +72,10 @@
     </plurals>
     <string name="delete_note_dialog_message">Do you really want to delete this note?</string>
     <string name="delete_all_notes_dialog_message">This will delete all of your notes. This action cannot be undone.</string>
-    <string name="new_note_content_hint">Start taking your notes here</string>
     <string name="group_name">Group name</string>
     <string name="gitlab_saas_message">It looks like you are using GitLab SaaS (gitlab.com). Currently, the SaaS version does not support this feature.</string>
     <string name="gitlab_saas_message_extra">On GitLab SaaS, you must use the GitLab UI to create groups without a parent group.</string>
     <string name="group_created">New group created</string>
-    <string name="starred_projects">Starred projects</string>
     <string name="archived_project">This is an archived project. Repository and other project resources are read-only.</string>
     <string name="project_starred">The project has been starred successfully</string>
     <string name="project_unstarred">The project has been unstarred successfully</string>
@@ -98,14 +84,11 @@
     <string name="label_color">Background color</string>
     <string name="label_title_empty">Label name is required</string>
     <string name="label_created">Label created successfully</string>
-    <string name="new_label">New label</string>
     <string name="edit_label">Edit label</string>
     <string name="delete_dialog_title">Delete %1$s?</string>
     <string name="delete_label_dialog_message">Do you really want to delete this label?</string>
     <string name="label_deleted">Label deleted successfully</string>
     <string name="label_updated">Label updated successfully</string>
-    <string name="add_new_member">Add new member</string>
-    <string name="copy_url_message">URL has been copied to the clipboard</string>
     <string name="copy_project_id">Copy project ID</string>
     <string name="copy_web_url">Copy project URL</string>
     <string name="copy_clone_https_url">Copy HTTPS clone URL</string>
@@ -124,15 +107,11 @@
     <string name="due_on">Due on %1$s</string>
     <string name="open_in_browser">Open in browser</string>
     <string name="copy_url">Copy URL</string>
-    <string name="notes_and_activities">Notes and Activities</string>
     <string name="discussion_locked">Discussion locked</string>
     <string name="discussion_locked_message">The discussion is locked. Only project members can comment.</string>
     <string name="comment_posted">Comment posted</string>
-    <string name="comment_is_empty">Did you forget to write something?</string>
     <string name="create_issue">Create issue</string>
     <string name="issue_created">Issue created successfully</string>
-    <string name="commit_author_info">%1$s authored and %2$s committed %3$s</string>
-    <string name="broadcast_message">Broadcast message</string>
     <string name="source_branch">Source branch</string>
     <string name="target_branch">Target branch</string>
     <string name="branch_name">Branch name</string>
@@ -164,50 +143,24 @@
     <string name="activity_created_project">\@%1$s created project</string>
     <string name="activity_updated_wiki_page">\@%1$s updated wiki page</string>
     <string name="activity_mr_approvals">Approvals: %1$d / %2$d</string>
-    <string name="activity_mr_not_eligible">You can not approve this merge request</string>
-    <string name="mr_approve_failed">Approval failed. You are probably not authorized to approve this merge request.</string>
     <string name="activity_approved_mr">\@%1$s approved merge request</string>
     <string name="activity_accepted_mr">\@%1$s accepted merge request</string>
     <string name="activity_closed_mr">\@%1$s closed merge request</string>
     <string name="activity_commented_on_mr">\@%1$s commented on merge request</string>
     <string name="activity_opened_mr">\@%1$s opened merge request</string>
     <string name="mr_closed">Merge request was closed successfully</string>
-    <string name="merge_request_exists">Another open merge request already exists for this source branch.</string>
-    <string name="merge_info">%1$s wants to merge branch %2$s into %3$s</string>
-    <string name="mr_cannot_be_merged">This merge request cannot be merged at this time. Please check for merge conflicts and other issues.</string>
     <string name="close_mr">Close merge request</string>
-    <string name="merge_fail_text">Merge may fail if you are not authorized to merge this Merge Request.</string>
-    <string name="merge_error_405">Method not allowed</string>
-    <string name="merge_error_409">SHA does not match HEAD of source branch</string>
-    <string name="merge_error_422">Branch cannot be merged</string>
     <string name="merge_request_merged_text">Merge request merged successfully</string>
     <string name="create_mr">Create merge request</string>
     <string name="mr_created">Merge request created successfully</string>
     <string name="merge_requests">Merge requests</string>
     <string name="mr_branches_are_same">Target and source branches cannot be the same</string>
     <string name="revoke_approval">Revoke approval</string>
-    <string name="files_ref">Files - ref:%1$s</string>
     <string name="exclude_files_in_fileviewer">This file type cannot be previewed. Please download to view.</string>
     <string name="render_md">Render Markdown</string>
-    <string name="file_viewer_notification_title_started">Download in progress</string>
-    <string name="file_viewer_notification_description_started">Downloading %1$s</string>
-    <string name="file_viewer_notification_title_finished">Download successful</string>
-    <string name="file_viewer_notification_description_finished">Downloaded %1$s</string>
-    <string name="file_viewer_notification_title_failed">Download failed</string>
-    <string name="file_viewer_notification_description_failed">Couldn\'t download %1$s</string>
     <string name="create_file">Create file</string>
     <string name="filename">File name</string>
-    <string name="filename_hint">with directory: app/config.json</string>
     <string name="commit_message">Commit message</string>
-    <string name="edit_commit_message">Update %1$s</string>
-    <string name="delete_commit_message">Delete %1$s</string>
-    <string name="delete_file_via_branch">The file has been sent for deletion via the %1$s branch</string>
-    <string name="file_content">File content</string>
-    <string name="all_fields_are_required">All fields are required and must be filled out</string>
-    <string name="open_ce">Open in Code Editor</string>
-    <string name="ce_no_filename_filled">You haven\'t entered a filename in the File name field. To better utilize the code editor\'s capabilities, it is recommended to provide a filename with an extension.\n\nPress Ignore to continue or Cancel to exit.</string>
-    <string name="code_editor">Code editor</string>
-    <string name="new_file_created">New file created successfully</string>
     <string name="file_update">The file has been sent for an update via the %1$s branch</string>
     <string name="home_screen">Home screen</string>
     <string name="home_screen_dialog_title">Select home screen</string>
@@ -221,9 +174,7 @@
     <string name="at_least_one_file">At least one file is required</string>
     <string name="max_files_reached">Maximum files limit reached</string>
     <string name="delete_file">Delete File</string>
-    <string name="delete_file_confirmation">Are you sure you want to delete this file? This action cannot be undone.</string>
     <string name="snippet_created">Snippet created successfully</string>
-    <string name="create_snippet_with_count">Create Snippet (%1$d/10 files)</string>
     <string name="duplicate_file_name">Duplicate file names are not allowed</string>
     <string name="update_token">Update Token</string>
     <string name="token_empty_error">Token cannot be empty</string>
@@ -231,9 +182,6 @@
     <string name="token_expiry_warning_title">Token Expiring Soon</string>
     <string name="token_expiry_warning_message">Your access token will expire soon. Update it now to avoid interruptions.</string>
     <string name="no_commit">No commit</string>
-    <string name="author_committer_info">Authored by %1$s, committed by %2$s, %3$s</string>
-    <string name="author_committer_info_no_commit">Created at %1$s</string>
-    <string name="copy_commit_id">Copy commit ID</string>
     <string name="commit_id_copied">Commit ID copied to clipboard</string>
     <string name="new_tag">New Tag</string>
     <string name="create_new_tag">Create Tag</string>
@@ -242,8 +190,6 @@
     <string name="tag_created">Tag created</string>
     <string name="tag_name_empty">Tag name is required</string>
     <string name="ref_empty">Ref is required</string>
-    <string name="tag_already_exists">Tag already exists</string>
-    <string name="tag_ref_invalid">Target ref is invalid</string>
     <string name="delete_tag">Delete Tag</string>
     <string name="delete_tag_confirmation">Are you sure you want to delete tag %1$s?</string>
     <string name="tag_deleted">Tag deleted</string>
@@ -251,7 +197,6 @@
     <string name="create_milestone">Create milestone</string>
     <string name="due_date">Due date</string>
     <string name="start_date">Start date</string>
-    <string name="dates_same_error">Start date and due date cannot be the same</string>
     <string name="select_date">Select date</string>
     <string name="milestone_created">Milestone created successfully</string>
     <string name="import_export_database">Import/export database</string>
@@ -265,24 +210,18 @@
     <string name="backup_failed">Failed to create a backup file</string>
     <string name="import_success">Data restored successfully</string>
     <string name="import_failed">Failed to restore data from a backup file</string>
-    <string name="select_backup_file">Select backup file</string>
     <string name="account_does_not_exist">No account exists in the app for %1$s. You can add one by tapping the Add account button.</string>
     <string name="no_action_text">LabNex cannot handle the requested resource. You can open an issue in the project repository with details so we can improve it. Use the buttons below to return to the screen of your choice.</string>
     <string name="go_to_app">Go to App</string>
-    <string name="how_to_get_access_token">How to get access token</string>
-    <string name="fetching_data">Fetching data</string>
+    <string name="how_to_get_access_token">How to get PAT</string>
     <string name="member_since">Member since %s</string>
     <string name="todo_list">To-Do List</string>
-    <string name="todo_empty_message">All caught up! No pending todos.</string>
     <string name="mark_as_done">Mark as done</string>
     <string name="todo_marked_done">Todo is masked as done</string>
-    <string name="todo_action_assigned">Assigned to you</string>
     <string name="todo_action_marked">Marked</string>
     <string name="todo_action_mentioned">Mentioned</string>
     <string name="todo_action_build_failed">Build failed</string>
     <string name="todo_action_approval_required">Approval required</string>
-    <string name="todo_action_unmergeable">Cannot be merged</string>
-    <string name="todo_action_directly_addressed">Directly addressed</string>
     <string name="time_in_moments">in moments</string>
     <string name="time_in_minute">in %d minute</string>
     <string name="time_in_minutes">in %d minutes</string>
@@ -310,13 +249,11 @@
     <string name="settings_subtitle">Theme, language, backup &amp; more</string>
     <string name="activities_subtitle">Recent account activity</string>
     <string name="issues_subtitle">Manage issues</string>
-    <string name="mr_subtitle">Manage merge requests</string>
     <string name="snippets_subtitle">Browse snippets</string>
     <string name="good_morning">Good morning</string>
     <string name="good_afternoon">Good afternoon</string>
     <string name="good_evening">Good evening</string>
     <string name="nothing_found_title">Nothing here</string>
-    <string name="explore_search_subtitle">Search across projects, issues, merge requests, and users</string>
     <string name="namespace">Namespace</string>
     <string name="default_branch">Default branch</string>
     <string name="enable_lfs">Enable LFS</string>
@@ -389,7 +326,6 @@
     <string name="mark_all_as_done_confirm">Are you sure you want to mark all todos as done?</string>
     <string name="todo_all_marked_done">All todos marked as done</string>
     <string name="file_downloaded">File downloaded successfully</string>
-    <string name="delete_file_dialog_message">Are you sure you want to delete this file?</string>
     <string name="files_created">Files created successfully</string>
     <string name="file_updated">File updated successfully</string>
     <string name="file_deleted">File deleted successfully</string>
@@ -425,7 +361,6 @@
     <!-- errors -->
     <string name="generic_error">An unexpected error occurred</string>
     <string name="browserOpenFailed">No application found to open this link</string>
-    <string name="gitlab_url_error">The GitLab URL is not valid</string>
     <string name="gitlab_url_empty_error">GitLab URL cannot be empty</string>
     <string name="gitlab_token_empty_error">Personal token cannot be empty</string>
     <string name="gitlab_url_spaces_not_supported">GitLab URL cannot contain spaces</string>
@@ -438,35 +373,24 @@
     <string name="version_unsupported_new">New GitLab version detected! Please update LabNex!</string>
     <string name="version_alert_dialog_header">Unsupported version of GitLab</string>
     <string name="not_authorized">Not authorized. You may not be allowed to perform this action or check your credentials and try again</string>
+    <string name="token_auth_error">Token is not valid</string>
     <string name="generic_server_response_error">We cannot reach the server at the moment. Please check again later</string>
-    <string name="generic_api_error">GitLab has returned an error. Code %1$d</string>
     <string name="authorization_error">Authorization Error</string>
     <string name="authorization_error_message">It seems that your personal access token has been revoked or is no longer valid.\n\nYou can click the Update button to update your personal access token.</string>
     <string name="group_name_required">Group name is required</string>
     <string name="access_forbidden_403">Access forbidden, the request isn’t allowed</string>
-    <string name="no_description">No description provided</string>
-    <string name="no_files_snippet">No files found for this snippet</string>
-    <string name="file_content_error">Failed to load file content</string>
     <string name="empty_file_content">File content cannot be empty</string>
-    <string name="branch_check_failed">Failed to check branch: %1$s</string>
-    <string name="branch_creation_failed">Failed to create branch: %1$s</string>
-    <string name="issue_detail_not_available">Issue details not available</string>
-    <string name="mr_detail_not_available">Merge request details not available</string>
-    <string name="project_info_not_available">Project information not available</string>
     <string name="not_found">Resource not found</string>
     <!-- errors -->
 
     <!-- generic copy -->
     <string name="home">Home</string>
     <string name="activities">Activities</string>
-    <string name="notifications">Notifications</string>
     <string name="explore">Explore</string>
-    <string name="work">Work</string>
     <string name="groups">Groups</string>
     <string name="projects">Projects</string>
     <string name="starred">Starred</string>
     <string name="star">Star</string>
-    <string name="unstar">Unstar</string>
     <string name="fork">Fork</string>
     <string name="forks">Forks</string>
     <string name="issues">Issues</string>
@@ -477,8 +401,6 @@
     <string name="cancel">Cancel</string>
     <string name="update">Update</string>
     <string name="add">Add</string>
-    <string name="new_text">New</string>
-    <string name="error">error</string>
     <string name="ok">OK</string>
     <string name="proceed">Proceed</string>
     <string name="theme">Theme</string>
@@ -490,15 +412,10 @@
     <string name="remove">Remove</string>
     <string name="name">Name</string>
     <string name="username">Username</string>
-    <string name="about">About</string>
     <string name="website">Website</string>
     <string name="system">System</string>
     <string name="search">Search</string>
-    <string name="appearance">Appearance</string>
-    <string name="translation">Translation</string>
-    <string name="security">Security</string>
     <string name="version">Version</string>
-    <string name="links">Links</string>
     <string name="source_code">Source code</string>
     <string name="close">Close</string>
     <string name="path">Path</string>
@@ -506,7 +423,6 @@
     <string name="description">Description</string>
     <string name="create">Create</string>
     <string name="labels">Labels</string>
-    <string name="watchers">Watchers</string>
     <string name="milestones">Milestones</string>
     <string name="releases">Releases</string>
     <string name="wiki">Wiki</string>
@@ -518,7 +434,6 @@
     <string name="title">Title</string>
     <string name="copy">Copy</string>
     <string name="save">Save</string>
-    <string name="upcoming">Upcoming</string>
     <string name="open">Open</string>
     <string name="due">Due</string>
     <string name="comment">Comment</string>
@@ -528,25 +443,19 @@
     <string name="download">Download</string>
     <string name="clear">Clear</string>
     <string name="content">Content</string>
-    <string name="ignore">Ignore</string>
     <string name="closed">Closed</string>
     <string name="merged">Merged</string>
     <string name="approve">Approve</string>
-    <string name="refreshed">Refreshed</string>
     <string name="ref">Ref</string>
     <string name="filter">Filter</string>
     <string name="menu">Menu</string>
     <string name="snippets">Snippets</string>
-    <string name="refresh">Refresh</string>
     <string name="tags">Tags</string>
     <string name="unknown">Unknown</string>
-    <string name="languages">Languages</string>
     <string name="backup">Backup</string>
     <string name="there">there</string>
-    <string name="plan">plan</string>
     <string name="total">Total</string>
     <string name="users">Users</string>
-    <string name="reset">Reset</string>
     <string name="all">All</string>
     <string name="epics">Epics</string>
     <string name="admin">Admin</string>
