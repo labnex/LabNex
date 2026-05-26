@@ -36,7 +36,7 @@
                 android:layout_marginEnd="@dimen/dimen8dp"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:textAppearance="?attr/textAppearanceLabelSmall"
+                android:textAppearance="?attr/textAppearanceLabelMedium"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:alpha="0.8"
                 app:layout_constraintEnd_toStartOf="@id/btn_menu"

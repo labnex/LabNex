@@ -57,8 +57,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/close"
-                android:minWidth="0dp"
-                android:paddingHorizontal="@dimen/dimen24dp"
                 app:icon="@drawable/ic_arrow_back" />
 
             <com.google.android.material.button.MaterialButton
@@ -67,8 +65,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/delete"
-                android:minWidth="0dp"
-                android:paddingHorizontal="@dimen/dimen24dp"
                 app:icon="@drawable/ic_trash" />
 
         </com.google.android.material.overflow.OverflowLinearLayout>

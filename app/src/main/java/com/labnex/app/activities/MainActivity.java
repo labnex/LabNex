@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -221,11 +220,6 @@ public class MainActivity extends BaseActivity {
 						((ActivitiesFragment) activeFragment).openContextMenu();
 					}
 				});
-
-		LinearLayout.LayoutParams params =
-				(LinearLayout.LayoutParams) binding.btnNavActivities.getLayoutParams();
-		params.setMarginEnd((int) getResources().getDimension(R.dimen.dimen12dp));
-		binding.btnNavActivities.setLayoutParams(params);
 	}
 
 	private void prepareNavButton(MaterialButton btn) {

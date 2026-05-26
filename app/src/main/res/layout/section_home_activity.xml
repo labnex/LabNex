@@ -112,7 +112,7 @@
                     android:maxLines="1"
                     android:ellipsize="end"
                     android:textColor="?attr/colorOnSurfaceVariant"
-                    android:textAppearance="@style/TextAppearance.Material3.TitleMedium" />
+                    android:textAppearance="@style/TextAppearance.Material3.TitleSmall" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -121,7 +121,7 @@
                     android:maxLines="1"
                     android:ellipsize="end"
                     android:textColor="?attr/colorOnSurfaceVariant"
-                    android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                    android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
                     android:alpha="0.7" />
 
             </LinearLayout>
@@ -191,7 +191,7 @@
                     android:maxLines="1"
                     android:ellipsize="end"
                     android:textColor="?attr/colorOnSurfaceVariant"
-                    android:textAppearance="@style/TextAppearance.Material3.TitleMedium" />
+                    android:textAppearance="@style/TextAppearance.Material3.TitleSmall" />
 
             </LinearLayout>
 
@@ -254,7 +254,7 @@
                 android:ellipsize="end"
                 android:gravity="center"
                 android:textColor="?attr/colorOnSurfaceVariant"
-                android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/snippet_icon" />
@@ -270,7 +270,7 @@
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:textColor="?attr/colorOnSurfaceVariant"
-                android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
                 android:alpha="0.7"
                 android:gravity="center"
                 app:layout_constraintEnd_toEndOf="parent"
