@@ -258,7 +258,7 @@
                             android:layout_marginStart="@dimen/dimen12dp"
                             android:layout_weight="1"
                             android:gravity="end"
-                            android:textAppearance="?attr/textAppearanceBodySmall"
+                            android:textAppearance="?attr/textAppearanceBodyMedium"
                             android:textColor="?attr/colorOnSurfaceVariant" />
 
                     </LinearLayout>
@@ -304,8 +304,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/dimen12dp"
                         android:layout_marginEnd="@dimen/dimen18dp"
-                        android:alpha="0.8"
-                        android:textAppearance="?attr/textAppearanceLabelSmall"
+                        android:alpha="0.7"
+                        android:textAppearance="?attr/textAppearanceLabelMedium"
                         android:textColor="?attr/colorOnSurfaceVariant"
                         app:layout_constraintBottom_toBottomOf="@id/author_avatar"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -390,8 +390,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/close"
-                android:minWidth="0dp"
-                android:paddingHorizontal="@dimen/dimen24dp"
                 app:icon="@drawable/ic_arrow_back" />
 
             <com.google.android.material.button.MaterialButton
@@ -400,8 +398,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/comment"
-                android:minWidth="0dp"
-                android:paddingHorizontal="@dimen/dimen24dp"
                 app:icon="@drawable/ic_comments" />
 
             <com.google.android.material.button.MaterialButton
@@ -410,8 +406,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/menu"
-                android:minWidth="0dp"
-                android:paddingHorizontal="@dimen/dimen24dp"
                 app:icon="@drawable/ic_menu" />
 
         </com.google.android.material.overflow.OverflowLinearLayout>

@@ -229,7 +229,7 @@
     <!-- custom material button -->
 
     <style name="CustomChipFilter" parent="Widget.Material3.Chip.Filter">
-        <item name="chipBackgroundColor">@color/md_theme_outlineVariant_light</item>
+        <item name="chipBackgroundColor">?attr/colorSurfaceDim</item>
         <item name="chipStrokeWidth">0dp</item>
         <item name="chipStrokeColor">@android:color/transparent</item>
         <item name="android:textColor">?attr/textColor</item>
@@ -238,7 +238,7 @@
     </style>
 
     <style name="CustomChipFilterDark" parent="Widget.Material3.Chip.Filter">
-        <item name="chipBackgroundColor">@color/md_theme_inverseOnSurface_dark</item>
+        <item name="chipBackgroundColor">?attr/colorSurfaceDim</item>
         <item name="chipStrokeWidth">0dp</item>
         <item name="chipStrokeColor">@android:color/transparent</item>
         <item name="android:textColor">?attr/textColor</item>

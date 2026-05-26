@@ -155,8 +155,8 @@ public class MergeRequestsAdapter
 
 			binding.project.setText(mr.getReferences() != null ? mr.getReferences().getFull() : "");
 
-			String titleText = "!" + mr.getIid() + " " + mr.getTitle();
-			Markdown.render(context, EmojiParser.parseToUnicode(titleText.trim()), binding.title);
+			Markdown.render(
+					context, EmojiParser.parseToUnicode(mr.getTitle().trim()), binding.title);
 
 			binding.labelsContainer.removeAllViews();
 			boolean showLabels =

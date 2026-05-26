@@ -1,0 +1,18 @@
+8.0.0
+
+🎉 Features 🎉
+- Redesigned app UI with M3 expressive
+- Create a new release
+- Group merge requests and issues
+- Mark MR as draft or ready
+- Lock/unlock issue/MR discussions
+- View all files of a merge request
+- Edit a group
+- Edit a milestone
+- Delete a milestone
+- Choose group/namespace when creating a new project
+- React with emojis on issues, MRs, and comments
+- New floating comment box
+- and many more...
+
+Release Notes: https://github.com/labnex/LabNex/releases

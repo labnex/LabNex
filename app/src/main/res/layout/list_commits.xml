@@ -46,8 +46,9 @@
                 android:id="@+id/commit_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?attr/textAppearanceLabelSmall"
+                android:textAppearance="?attr/textAppearanceLabelMedium"
                 android:textColor="?attr/colorOnSurfaceVariant"
+                android:alpha=".7"
                 app:layout_constraintBottom_toBottomOf="@id/commit_badge"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/commit_badge" />

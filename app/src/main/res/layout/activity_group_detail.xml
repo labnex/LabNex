@@ -64,7 +64,7 @@
                         android:layout_marginEnd="@dimen/dimen4dp"
                         android:ellipsize="end"
                         android:maxLines="1"
-                        android:textAppearance="?attr/textAppearanceTitleMedium"
+                        android:textAppearance="?attr/textAppearanceTitleLarge"
                         android:textColor="?attr/colorOnSurface"
                         android:textStyle="bold"
                         app:layout_constrainedWidth="true"
@@ -90,10 +90,10 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/dimen12dp"
-                        android:alpha="0.7"
+                        android:alpha="0.8"
                         android:ellipsize="end"
                         android:maxLines="1"
-                        android:textAppearance="?attr/textAppearanceLabelMedium"
+                        android:textAppearance="?attr/textAppearanceLabelLarge"
                         android:textColor="?attr/colorOnSurfaceVariant"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@id/group_avatar"
@@ -171,8 +171,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/close"
-                android:minWidth="0dp"
-                android:paddingHorizontal="@dimen/dimen24dp"
                 app:icon="@drawable/ic_arrow_back" />
 
             <com.google.android.material.button.MaterialButton
@@ -181,8 +179,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/menu"
-                android:minWidth="0dp"
-                android:paddingHorizontal="@dimen/dimen24dp"
                 app:icon="@drawable/ic_menu" />
 
         </com.google.android.material.overflow.OverflowLinearLayout>

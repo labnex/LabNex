@@ -101,7 +101,6 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssuesHold
 					});
 		}
 
-		@SuppressLint("SetTextI18n")
 		void bind(Issues issue) {
 			String state = issue.getState();
 			String stateLabel =
@@ -156,7 +155,7 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssuesHold
 							.into(binding.avatar);
 				} else {
 					binding.avatar.setImageDrawable(
-							AvatarGenerator.getLetterAvatar(context, authorName, 28));
+							AvatarGenerator.getLetterAvatar(context, authorName, 40));
 				}
 			}
 			binding.authorName.setText(authorName);
@@ -164,8 +163,8 @@ public class IssuesAdapter extends RecyclerView.Adapter<IssuesAdapter.IssuesHold
 			binding.project.setText(
 					issue.getReferences() != null ? issue.getReferences().getFull() : "");
 
-			String titleText = "#" + issue.getIid() + " " + issue.getTitle();
-			Markdown.render(context, EmojiParser.parseToUnicode(titleText.trim()), binding.title);
+			Markdown.render(
+					context, EmojiParser.parseToUnicode(issue.getTitle().trim()), binding.title);
 
 			binding.labelsContainer.removeAllViews();
 			boolean showLabels =

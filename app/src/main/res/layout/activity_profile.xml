@@ -35,9 +35,9 @@
 
                 <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/user_avatar"
-                    android:layout_width="@dimen/dimen104dp"
-                    android:layout_height="@dimen/dimen104dp"
-                    android:padding="@dimen/dimen4dp"
+                    android:layout_width="@dimen/dimen132dp"
+                    android:layout_height="@dimen/dimen132dp"
+                    android:padding="@dimen/dimen2dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -276,7 +276,6 @@
                 style="@style/Widget.Material3.Button.IconButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:minWidth="0dp"
                 app:icon="@drawable/ic_arrow_back" />
 
             <View

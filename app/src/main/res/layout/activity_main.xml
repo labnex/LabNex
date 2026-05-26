@@ -29,16 +29,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingHorizontal="@dimen/dimen4dp">
+            android:orientation="horizontal">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_nav_home"
                 style="@style/Widget.Material3.Button.IconButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:minWidth="0dp"
-                android:paddingHorizontal="@dimen/dimen24dp"
                 app:icon="@drawable/ic_home" />
 
             <com.google.android.material.button.MaterialButton
@@ -46,8 +43,6 @@
                 style="@style/Widget.Material3.Button.IconButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:minWidth="0dp"
-                android:paddingHorizontal="@dimen/dimen24dp"
                 app:icon="@drawable/ic_explore" />
 
             <com.google.android.material.button.MaterialButton
@@ -55,8 +50,6 @@
                 style="@style/Widget.Material3.Button.IconButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:minWidth="0dp"
-                android:paddingHorizontal="@dimen/dimen24dp"
                 app:icon="@drawable/ic_list_details" />
 
             <com.google.android.material.button.MaterialButton
@@ -64,8 +57,6 @@
                 style="@style/Widget.Material3.Button.IconButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:minWidth="0dp"
-                android:paddingHorizontal="@dimen/dimen24dp"
                 app:icon="@drawable/ic_activities" />
 
             <View
@@ -74,18 +65,13 @@
                 android:layout_height="@dimen/dimen24dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginHorizontal="@dimen/dimen4dp"
-                android:background="?attr/colorOutlineVariant"
-                android:visibility="gone" />
+                android:background="?attr/colorOutlineVariant" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_dock_menu"
                 style="@style/Widget.Material3.Button.IconButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:backgroundTint="@android:color/transparent"
-                android:contentDescription="@string/menu"
-                android:visibility="gone"
                 app:icon="@drawable/ic_menu" />
 
         </com.google.android.material.overflow.OverflowLinearLayout>

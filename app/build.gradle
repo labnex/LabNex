@@ -11,8 +11,8 @@ android {
         applicationId "com.labnex.app"
         minSdk = 26
         targetSdk = 37
-        versionCode 796
-        versionName "8.0.0-rc2"
+        versionCode 800
+        versionName "8.0.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

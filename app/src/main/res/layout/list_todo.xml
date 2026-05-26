@@ -79,7 +79,7 @@
                 android:layout_marginTop="@dimen/dimen4dp"
                 android:textAppearance="?attr/textAppearanceLabelMedium"
                 android:textColor="?attr/colorOnSurfaceVariant"
-                android:alpha="0.8"
+                android:alpha="0.7"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/todo_icon"
                 app:layout_constraintTop_toBottomOf="@id/todo_project" />

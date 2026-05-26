@@ -17,7 +17,7 @@ public interface Theme {
 
 	static Theme getDefaultTheme(Context context) {
 
-		return FIVE_COLORS_DARK;
+		return BLUE_MOON_DARK_THEME;
 
 		/*if (Integer.parseInt(
 				AppSettingsInit.getSettingsValue(

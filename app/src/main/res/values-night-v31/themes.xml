@@ -40,7 +40,7 @@
     <!-- dynamic colors - dark -->
 
     <style name="CustomChipFilterDynamic" parent="Widget.Material3.Chip.Filter">
-        <item name="chipBackgroundColor">@android:color/system_neutral1_700</item>
+        <item name="chipBackgroundColor">@android:color/system_neutral1_800</item>
         <item name="chipStrokeWidth">0dp</item>
         <item name="chipStrokeColor">@android:color/transparent</item>
         <item name="android:textColor">@android:color/system_accent1_0</item>

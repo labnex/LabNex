@@ -13,26 +13,13 @@ public class FiveColorsDarkTheme implements Theme {
 	@Override
 	@ColorRes
 	public int getColor(LanguageElement element) {
-		switch (element) {
-			case HEX:
-			case NUMBER:
-			case KEYWORD:
-			case OPERATION:
-			case GENERIC:
-				return R.color.five_dark_purple;
-			case CHAR:
-			case STRING:
-				return R.color.five_dark_yellow;
-			case SINGLE_LINE_COMMENT:
-			case MULTI_LINE_COMMENT:
-				return R.color.five_dark_grey;
-			case ATTRIBUTE:
-			case TODO_COMMENT:
-			case ANNOTATION:
-				return R.color.five_dark_blue;
-			default:
-				return R.color.five_dark_white;
-		}
+		return switch (element) {
+			case HEX, NUMBER, KEYWORD, OPERATION, GENERIC -> R.color.five_dark_purple;
+			case CHAR, STRING -> R.color.five_dark_yellow;
+			case SINGLE_LINE_COMMENT, MULTI_LINE_COMMENT -> R.color.five_dark_grey;
+			case ATTRIBUTE, TODO_COMMENT, ANNOTATION -> R.color.five_dark_blue;
+			default -> R.color.five_dark_white;
+		};
 	}
 
 	@Override

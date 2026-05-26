@@ -45,7 +45,7 @@
                 android:id="@+id/created_time"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:alpha="0.6"
+                android:alpha="0.7"
                 android:textAppearance="?attr/textAppearanceLabelMedium"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 app:layout_constraintBottom_toBottomOf="@id/author_avatar"
