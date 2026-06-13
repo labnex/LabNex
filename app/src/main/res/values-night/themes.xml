@@ -51,6 +51,7 @@
         <item name="colorSurfaceContainerHigh">@color/md_theme_surfaceContainerHigh</item>
         <item name="colorSurfaceContainerHighest">@color/md_theme_surfaceContainerHighest</item>
 
+        <item name="primaryTextColor">@color/md_theme_onSurface</item>
         <item name="iconsColor">@color/md_system_default_icons_color</item>
         <item name="textColor">@color/md_system_default_icons_color</item>
         <item name="inputBackgroundColor">@color/md_system_default_input_background_color</item>
