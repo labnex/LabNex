@@ -53,6 +53,7 @@
         <item name="colorSurfaceContainerHighest">@color/md_theme_surfaceContainerHighest</item>
         <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
 
+        <item name="primaryTextColor">@color/md_theme_onSurface</item>
         <item name="iconsColor">@color/md_system_default_icons_color</item>
         <item name="textColor">@color/md_system_default_icons_color</item>
         <item name="inputBackgroundColor">@color/md_system_default_input_background_color</item>
@@ -121,6 +122,7 @@
         <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
 
         <item name="isDark">0</item>
+        <item name="primaryTextColor">@color/md_theme_onSurface_light</item>
         <item name="iconsColor">@color/md_light_theme_icons_color</item>
         <item name="textColor">@color/md_light_theme_icons_color</item>
         <item name="inputBackgroundColor">@color/md_light_input_background_color</item>
@@ -189,6 +191,7 @@
         <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
 
         <item name="isDark">1</item>
+        <item name="primaryTextColor">@color/md_theme_onSurface_dark</item>
         <item name="iconsColor">@color/md_dark_theme_icons_color</item>
         <item name="textColor">@color/md_dark_theme_icons_color</item>
         <item name="inputBackgroundColor">@color/md_dark_input_background_color</item>
