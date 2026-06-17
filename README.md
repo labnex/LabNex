@@ -1,3 +1,5 @@
+# LabNex has moved to [Codeberg](https://codeberg.org/labnex/LabNex). This repository is now in read-only mode.
+
 [![License: GPL v3](https://raw.githubusercontent.com/labnex/LabNex/main/assets/license.svg)](https://spdx.org/licenses/GPL-3.0-only.html) [![Release](https://img.shields.io/github/v/release/labnex/LabNex?display_name=release&label=release)](https://github.com/labnex/LabNex/releases) [![Crowdin](https://badges.crowdin.net/labnex/localized.svg)](https://crowdin.com/project/labnex)
 
 [<img alt="Become a Patreon" src="https://raw.githubusercontent.com/labnex/LabNex/main/assets/patreon.png" height="80"/>](https://www.patreon.com/mmarif)
